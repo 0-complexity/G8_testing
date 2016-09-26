@@ -41,6 +41,7 @@ class BaseTest(unittest.TestCase):
         self._logger = logging.LoggerAdapter(logging.getLogger('portal_testsuite'),
                                              {'testid': self.shortDescription() or self._testID})
         self.lg('Testcase %s Started at %s' % (self._testID, self._startTime))
+        self.set_browser()
         self.wait = WebDriverWait(self.driver, 30)
         for temp in range(5):
             try:
