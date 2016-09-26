@@ -11,7 +11,7 @@ class AccountsTests(BaseTest):
         self.create_new_user(self.username, self.password, self.email, self.group)
 
     def test01_edit_account(self):
-        """ PRTL-0
+        """ PRTL-026
         *Test case to make sure that creating account with decimal limitations working as expected*
 
         **Test Scenario:**
