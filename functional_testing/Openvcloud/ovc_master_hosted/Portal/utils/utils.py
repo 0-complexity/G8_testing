@@ -366,7 +366,7 @@ class BaseTest(unittest.TestCase):
             self.lg("There is no %s user" % username)
             return False
 
-    def create_new_account(self, account='', username=''):
+    def create_new_account(self, account='', username='', max_memory=None):
         account = account or str(uuid.uuid4()).replace('-', '')[0:10]
         username = username
         self.open_base_page("cloud_broker", "accounts")
@@ -377,6 +377,7 @@ class BaseTest(unittest.TestCase):
         self.set_text("account_name", account)
         self.set_text("account_username", username)
 
+        if max_memory:self.set_text("account_maxmemory", max_memory)
         self.click("account_confirm")
 
         self.set_text("account_search", account)
