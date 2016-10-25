@@ -67,7 +67,7 @@ class AccountsTests(Framework):
         account_maxmemory = self.get_text("account_page_maxmemory")
         self.assertTrue(account_maxmemory.startswith(max_memory), "Account max memory is [%s]"
                                                                   " and expected is [%s]" % (
-                        account_maxmemory, max_memory))
+                            account_maxmemory, max_memory))
         self.lg('%s ENDED' % self._testID)
 
     def test04_account_page_paging_table(self):
@@ -149,15 +149,26 @@ class AccountsTests(Framework):
         table_head_elements = self.get_table_head_elements()
         self.assertNotEqual(table_head_elements, False)
 
-        for element in table_head_elements:
-            current_column = element.text
+        for column_order in range(len(table_head_elements)):
+            table_head_elements = self.get_table_head_elements()
+            element = table_head_elements[column_order]
             element.click()
-            time.sleep(3)
+            sorting_item = element.text
+            time.sleep(1)
             table_before = self.Tables.get_table_data('table cloudbroker account info')
+
+            table_head_elements = self.get_table_head_elements()
+            element = table_head_elements[column_order]
+            element.click()
             element.click()
             table_after = self.Tables.get_table_data('table cloudbroker account info')
+
             self.assertEqual(len(table_before), len(table_after),
-                             'The length of account table is changing according to sorting by ID')
+                             'The length of table is changing according to sorting by %s, %s != %s' % (
+                             sorting_item, len(table_before), len(table_after)))
+
             for temp in range(len(table_before)):
-                self.assertEqual(table_before[temp], table_after[(len(table_after) - temp - 1)])
-            self.lg('pass %s column' % current_column)
+                self.assertEqual(table_before[temp][column_order],
+                                 table_after[(len(table_after) - temp - 1)][column_order])
+
+            self.lg('pass %s' % sorting_item)

@@ -78,6 +78,9 @@ class BaseTest(unittest.TestCase):
     def lg(self, msg):
         self._logger.info(msg)
 
+    def refresh(self):
+        self.driver.refresh()
+
     def find_element(self, element):
         method = self.elements[element][0]
         value = self.elements[element][1]
@@ -289,7 +292,7 @@ class BaseTest(unittest.TestCase):
         return storage_menu
 
     def get_table_rows(self):
-        'This method return all rows in the current page else return false'
+        'This method return all rows elements in the current page else return false'
         try:
             tbody = self.driver.find_element_by_tag_name('tbody')
             rows = tbody.find_elements_by_tag_name('tr')
