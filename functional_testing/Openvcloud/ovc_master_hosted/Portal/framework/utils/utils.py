@@ -127,8 +127,7 @@ class BaseTest(unittest.TestCase):
                 break
             except:
                 self.lg("can't locate the left menu")
-        else:
-            self.lg("error to find lift menu ")
+       
     def open_base_page(self, menu_item='', sub_menu_item=''):
 
         self.get_page(self.base_page)
