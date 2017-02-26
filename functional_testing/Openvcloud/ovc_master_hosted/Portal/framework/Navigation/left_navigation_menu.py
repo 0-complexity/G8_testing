@@ -55,7 +55,8 @@ class Grid():
 
     def __init__(self, framework):
         self.framework = framework
-
+    def grid_page(self):
+        self.framework.open_base_page("grid_page")
     def error_conditions(self):
         self.framework.open_base_page("grid_arrow","error_conditions")
 
