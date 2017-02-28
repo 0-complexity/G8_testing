@@ -63,6 +63,11 @@ class Grid():
     def status_overview(self):
         self.framework.open_base_page("grid_arrow","status_overview")
 
+    def vmachin_grid(self):
+        self.framework.open_base_page("grid_arrow","vmachine_grid")
+
+
+
 class Storage():
 
     def __init__(self, framework):

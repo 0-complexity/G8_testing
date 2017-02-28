@@ -194,7 +194,6 @@ class BaseTest(unittest.TestCase):
             return False
 
     def wait_until_table_element_has_text(self, element,row,column,text):
-
         for temp in range(10):
             table = self.find_element(element)
             tbody = table.find_elements_by_tag_name('tbody')

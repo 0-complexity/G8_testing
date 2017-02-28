@@ -6,7 +6,7 @@ class GridTests(Framework):
     def setUp(self):
         super(GridTests, self).setUp()
         self.Login.Login()
-        
+
     def test001_grid_page(self):
         """
         Prtl-000
@@ -55,7 +55,7 @@ class GridTests(Framework):
         #skip " Issue in env "
         #self.assertEqual(self.get_text("grid_alert","Every thing is Ok")
 
-    @unittest.skip("https://github.com/0-complexity/openvcloud/issues/759")
+    #@unittest.skip("https://github.com/0-complexity/openvcloud/issues/759")
     def test002_Running_VM_gauge(self):
         """
         Prtl-000
@@ -70,14 +70,14 @@ class GridTests(Framework):
         """
         self.lg('%s STARTED' % self._testID)
         self.lg('get grid page ')
-        self.assertTrue(self.Grid.get_VM_cloudbroker())
+        self.assertTrue(self.Grid.get_VM_grid())
         cloudbroker_running_VMs=self.Grid.Running_VMs_in_table()
 
         self.Grid.get_it()
         result = self.Grid.is_at()
         self.assertTrue(result)
 
-        grid_running_VMs=self.get_text("grid_running_VMS")
+        grid_running_VMs=int(self.get_text("grid_running_VMS"))
         self.assertEqual(grid_running_VMs,cloudbroker_running_VMs)
         self.lg('%s ENDED' % self._testID)
 

@@ -21,8 +21,8 @@ class grid():
         else:
             return False
 
-    def get_VM_cloudbroker(self):
-        self.framework.LeftNavigationMenu.CloudBroker.VirtualMachines()
+    def get_VM_grid(self):
+        self.framework.LeftNavigationMenu.Grid.vmachin_grid()
         for _ in range(10):
             if 'Virtual Machines' in self.framework.driver.title:
                 return True
@@ -62,9 +62,9 @@ class grid():
             return False
 
     def Running_VMs_in_table(self):
-        self.framework.set_text_columns("VM_table_element_search" ,'RUNNING', 3)
-        self.framework.assertTrue(self.framework.wait_until_table_element_has_text("table cloudbroker vmachine",0,2,'RUNNING'))
-        vms_info = self.framework.Tables.get_table_info('table cloudbroker vmachine info')
+        self.framework.set_text_columns("VM_grid_table_element_search" ,'RUNNING', 2)
+        self.framework.assertTrue(self.framework.wait_until_table_element_has_text("Vmachine_grid_table",0,1,'RUNNING'))
+        vms_info = self.framework.Tables.get_table_info('Vmachine_grid_table_info')
         Running_VMs= int(vms_info[vms_info.index('f') + 2:vms_info.index('en') - 1].replace(',', ''))
         return Running_VMs
 
