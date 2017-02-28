@@ -6,7 +6,7 @@ class GridTests(Framework):
     def setUp(self):
         super(GridTests, self).setUp()
         self.Login.Login()
-
+        
     def test001_grid_page(self):
         """
         Prtl-000
@@ -27,8 +27,7 @@ class GridTests(Framework):
         self.lg('%s STARTED' % self._testID)
         self.lg('get grid page ')
         self.Grid.get_it()
-        result = self.Grid.is_at()
-        self.assertTrue(result)
+        self.assertTrue(self.Grid.is_at())
         self.lg('check that "Grid portal" in head of page side of administration ')
 
         self.assertEqual(self.get_text("grid_portal_title"),"Grid Portal")
@@ -98,7 +97,6 @@ class GridTests(Framework):
         self.lg('get grid page ')
         self.assertTrue(self.Grid.get_error_condition_page())
         ECs_last_24Hr=self.Grid.ECs_in_table_last_24Hr()
-        print ECs_last_24Hr
         self.Grid.get_it()
         result = self.Grid.is_at()
         self.assertTrue(result)

@@ -36,7 +36,7 @@ class StatusTests(Framework):
         health_check = self.StatusOverview.run_health_check()
         self.assertEqual(health_check, 'Scheduled healthcheck', 'Health check message: %s' % health_check)
 
-    #def test03_healthcheck_page(self):
+    #def test03_status_overview_page(self):
     #   """ PRTL-054
     #    *Test case to make sure that health check page is working as expected*
     #    **Test Scenario:**
@@ -47,7 +47,7 @@ class StatusTests(Framework):
     #   """
 
 
-    #def test04_health_page_table_sorting(self):
+    #def test04_status_overview_page_table_sorting(self):
     #   """ PRTL-055
     #    *Test case to make sure that sorting of health check  page are working as expected*
     #    **Test Scenario:**
@@ -57,7 +57,7 @@ class StatusTests(Framework):
     #    """
 
 
-    #def test05_helathcheck_page_table_paging_buttons(self)
+    #def test05_status_overview_page_table_paging_buttons(self)
     #""" PRTL-056
     #*Test case to make sure that paging of healthcheck page are working as expected*
     #**Test Scenario:**
@@ -66,7 +66,7 @@ class StatusTests(Framework):
     #  #. try paging from start/previous/next/last and verify it should succeed
     # """
 
-    #def test06_healthcheck_page_searchbox(self):
+    #def test06_status_overview_page_searchbox(self):
     #    """ PRTL-057
     #    *Test case to make sure that search boxes of healthcheck page are working as expected*
     #        **Test Scenario:**
@@ -76,7 +76,7 @@ class StatusTests(Framework):
     #        """
 
 
-    #def test07_healthcheck_details_page(self):
+    #def test07_status_overview_details_page(self):
     #   """ PRTL-058
     #    *Test case to make sure that details_status_overview of every page running well*
     #    **Test Scenario:**
