@@ -87,3 +87,44 @@ class GridTests(Framework):
             return False
 
         self.lg('%s ENDED' % self._testID)
+    #def test002_EC_page_table_sorting(self):
+    #   """ PRTL-050
+    #    *Test case to make sure that paging and sorting of EC  page are working as expected*
+    #    **Test Scenario:**
+    #    #. go to EC page.
+    #    #. get all table head elements
+    #    #. sorting of all fields of EC table, should be working as expected
+    #    """
+
+
+    #def test003_EC_page_table_paging_buttons(self)
+    #""" PRTL-051
+    #*Test case to make sure that paging and sorting of Ec page are working as expected*
+    #**Test Scenario:**
+    #  #. go to EC page.
+    #  #. get number of ECS
+    #  #. try paging from start/previous/next/last and verify it should succeed
+    # """
+
+    #def test004_EC_page_searchbox(self):
+    #    """ PRTL-052
+    #    *Test case to make sure that search boxes of EC page are working as expected*
+    #        **Test Scenario:**
+    #        #. go to ECs page.
+    #        #. try use general search box  to search for values in  all columns and verfiy it return the right value
+    #        #. try use the search box in every column and  verfiy it return the right value
+    #        """
+
+    #def test01_specific_Ec_page(self):
+    #    """ PRTL-053
+    #    *Test case to make sure that element on EC page are working as expected*
+    #    **Test Scenario:**
+    #
+    #    #. go to ECs page
+    #    #. open one EC page
+    #    #. check that all elements on grid page exist(headers)
+    #    #. check that right error message
+    #    #. check that you can get job page of error
+    #    #. check that you can get (type , APPLication Name,Category,Type,level,creation time,last_time,occurrence,Error Message Pub,Function Name,Function Line Number,Function File Number,node,Grid,tags)
+    #    #. check that you can get Grid page and node which error occure on it
+    #    #. checl that you can get code and Backtrace
