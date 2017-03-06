@@ -46,13 +46,17 @@ class tables():
             page_numbers += 1
 
         tableData = []
+        i=0
         for page in range(page_numbers):
-
+            if i==1:
+                break
             table_rows = self.framework.get_table_rows(table_element)
             self.framework.assertTrue(table_rows)
             for row in table_rows:
+
                 cells = row.find_elements_by_tag_name('td')
                 tableData.append([x.text for x in cells])
+
             if  page < (page_numbers-1):
                 previous_button, next_button = self.get_previous_next_button()
                 next_button.click()
@@ -67,5 +71,5 @@ class tables():
                 text = "Showing %s to %s of %s entries" %("{:,}".format(tb_start_number), "{:,}".format(tb_end_number), "{:,}".format(tb_max_number))
                 if not self.framework.wait_until_element_located_and_has_text(element, text):
                     return False
-
+            i=i+1
         return tableData
