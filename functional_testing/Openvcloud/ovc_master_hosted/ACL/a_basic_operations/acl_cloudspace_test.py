@@ -504,7 +504,7 @@ class Write(ACLCLOUDSPACE):
             self.assertEqual(e.message, '404 Not Found')
 
         self.lg('%s ENDED' % self._testID)
-
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/745')
     def test005_cloudspace_create_clone_delete_machine(self):
         """ ACL-33
         *Test case for create/clone/delete machine api with user has write access on cloud space level.*
@@ -789,7 +789,7 @@ class Write(ACLCLOUDSPACE):
         #. Check that the machine is updated
         """
 
-        self.lg('1- Creating machine to the account_owner\' default cloud space')
+        self.lg('1- Creating machine to the account_owner default cloud space')
         machine_id = self.cloudapi_create_machine(self.cloudspace_id,
                                                   self.account_owner_api)
 
@@ -801,10 +801,12 @@ class Write(ACLCLOUDSPACE):
         self.user_api.cloudapi.machines.stop(machineId=machine_id)
         self.assertEqual(self.api.cloudapi.machines.get(machineId=machine_id)['status'],
                              'HALTED')
+        sleep(2)
 
         self.lg('4- Resize the machine with new user [user], should succeed')
-        sizesAva = len(self.api.cloudapi.sizes.list(self.cloudspace_id)[1]['disks'])
-        resizeId = randint(0,sizesAva)
+        sizesAva = len(self.api.cloudapi.sizes.list(self.cloudspace_id))
+        resizeId = randint(1,sizesAva)
+        self.lg("resize with size ID  %s"%resizeId)
         self.account_owner_api.cloudapi.machines.resize(machineId=machine_id,
                                                sizeId=resizeId)
 
