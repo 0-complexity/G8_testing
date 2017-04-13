@@ -26,7 +26,7 @@ class GridAPIBase(object):
 
     def build_api(self, api):
         api_path = self.api_base_url
-        if api_path != '/':
+        if api_path[-1] != '/':
             api_path += '/'
 
         for item in api:

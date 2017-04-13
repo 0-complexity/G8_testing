@@ -1,8 +1,3 @@
-import os, re, requests, uuid, logging, time, configparser
-from subprocess import Popen, PIPE
-from xml.etree.ElementTree import Element, SubElement, tostring
-from bs4 import BeautifulSoup
-from random import randint
 from unittest import TestCase
 from api_testing.utiles.utiles import Utiles
 from api_testing.grid_apis.apis.nodes_apis import NodesAPI

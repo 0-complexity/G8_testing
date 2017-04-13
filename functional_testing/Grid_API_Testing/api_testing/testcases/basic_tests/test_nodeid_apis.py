@@ -37,6 +37,7 @@ class TestNodeidAPI(TestcasesBase):
         #. Send get nodes/{nodeid} api request.
         #. Compare results with golden value.
         """
+
         self.lg.info('Choose one random node of list of running nodes.')
         node_id = self.base_test.get_random_node()
         self.lg.info(' Send get nodes/{nodeid} api request.')
