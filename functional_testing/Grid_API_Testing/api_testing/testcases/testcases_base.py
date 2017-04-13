@@ -28,7 +28,7 @@ class TestcasesBase(TestCase):
         node_id = nodes_list[random.randint(0, len(nodes_list)-1)]['id']
         return node_id
 
-    def randomMAC():
+    def randomMAC(self):
         random_mac = [0x00, 0x16, 0x3e, random.randint(0x00, 0x7f), random.randint(0x00, 0xff), random.randint(0x00, 0xff)]
         mac_address = ':'.join(map(lambda x: "%02x" %x, random_mac))
         return mac_address

@@ -74,12 +74,12 @@ class TestNodeidAPI(TestcasesBase):
         #. Check that all jobs has been killed.
         """
 
-        self.lg.info.info('Choose one random node of list of running nodes.')
+        self.lg.info('Choose one random node of list of running nodes.')
         node_id = self.base_test.get_random_node()
-        self.lg.info.info(' Send get /nodes/{nodeid}/jobs api request.')
+        self.lg.info(' Send get /nodes/{nodeid}/jobs api request.')
         status_code = self.nodes_api.delete_nodes_nodeid_jobs(node_id=node_id)
         self.assertEqual(status_code, 204)
-        self.lg.info.info('Check that all jobs has been killed.')
+        self.lg.info('Check that all jobs has been killed.')
         response = response.self.nodes_api.get_nodes_nodeid_jobs(node_id=node_id)
         jobs_list = response.json()
         for job in jobs_list:
@@ -101,19 +101,19 @@ class TestNodeidAPI(TestcasesBase):
         self.lg.info('Choose one random node of list of running nodes.')
         node_id = self.base_test.get_random_node()
 
-        self.lg.info.info('Get list of jobs of this node .')
+        self.lg.info('Get list of jobs of this node .')
         response = self.nodes_api.get_nodes_nodeid_jobs(node_id=node_id)
         self.assertEqual(response.status_code, 200)
 
-        self.lg.info.info('Choose one of these jobs to list its details.')
+        self.lg.info('Choose one of these jobs to list its details.')
         jobs_list = response.json()
         job_id = jobs_list[random.randint(0, len(jobs_list))]['id']
 
-        self.lg.info.info('Send get /nodes/{nodeid}/jobs/{jobid} api request.')
+        self.lg.info('Send get /nodes/{nodeid}/jobs/{jobid} api request.')
         response = self.nodes_api.get_nodes_nodeid_jobs_jobid(node_id=node_id, job_id=job_id)
         self.assertEqual(response.status_code, 200)
 
-        self.lg.info.info('Compare response with the golden values.')
+        self.lg.info('Compare response with the golden values.')
         ##result ->from python client should be in form of dectionary
         # Properties= response.json()
         # for key in Properties.keys():
@@ -163,13 +163,13 @@ class TestNodeidAPI(TestcasesBase):
         #. check response status code.
         """
 
-        self.lg.info.info('Choose one random node of list of running nodes.')
+        self.lg.info('Choose one random node of list of running nodes.')
         node_id = self.base_test.get_random_node()
 
         self.lg.info('post /nodes/{nodeid}/ping api.')
         response = self.nodes_api.post_nodes_nodeid_ping(node_id=node_id)
 
-        self.lg.info.info('check response status code.')
+        self.lg.info('check response status code.')
         self.assertEqual(response.status_code, 200)
 
     def test008_get_node_state(self):
@@ -186,7 +186,7 @@ class TestNodeidAPI(TestcasesBase):
         self.lg.info('Choose one random node from list of running nodes.')
         node_id = self.base_test.get_random_node()
 
-        self.lg.info.info(' get /nodes/{nodeid}/state api.')
+        self.lg.info(' get /nodes/{nodeid}/state api.')
         response = self.nodes_api.get_nodes_nodeid_state(node_id=node_id)
         self.assertEqual(response.status_code, 200)
 
@@ -234,7 +234,7 @@ class TestNodeidAPI(TestcasesBase):
 
         self.lg.info('get /nodes/{nodeid}/cpus api.')
         response = self.nodes_api.get_nodes_nodeid_cpu(node_id=node_id)
-        self.assertEqual(responsestatus_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         self.lg.info('compare response data with the golden values.')
         ##result ->from python client .
@@ -257,7 +257,7 @@ class TestNodeidAPI(TestcasesBase):
         self.lg.info('Choose one random node from list of running nodes.')
         node_id = self.base_test.get_random_node()
 
-        self.lg.info.info('get /nodes/{nodeid}/disks api.')
+        self.lg.info('get /nodes/{nodeid}/disks api.')
         response = self.nodes_api.get_nodes_nodeid_disk(node_id=node_id)
         self.assertEqual(response.status_code, 200)
 
@@ -482,13 +482,13 @@ class TestNodeidAPI(TestcasesBase):
         #. Delete created bridge by Delete /nodes/{nodeid}/bridges/{bridgeid} api.
 
         """
-        bridge_name = str(uuid.uuid4()).replace('-', '')[1:10]
+        bridge_name = self.base_test.rand_str()
         hardwareaddress=self.base_test.randomMAC()
         nat=random.choice([True,False])
-        network_setting={'none':{},'static':{'cidr':'10.1.1.1/24'},
+        network_setting = {'none':{},'static':{'cidr':'10.1.1.1/24'},
                         ' dnsmasq':{'cidr':'10.1.1.1/24','start':'10.1.1.2','end':'10.1.1.5'}}
 
-        networkMode = random.choice(network_setting.keys())
+        networkMode = random.choice(list(network_setting.keys()))
         settings = network_setting[networkMode]
 
         body={'name':bridge_name , 'hwaddr':hardwareaddress, 'networkMode':networkMode,
@@ -512,8 +512,8 @@ class TestNodeidAPI(TestcasesBase):
         content = response().json()
         self.assertEqual(content, "Bridge removed successfully")
 
-    def test014_get_bridge_details(self):
-        """ GAT-014
+    def test020_get_bridge_details(self):
+        """ GAT-020
         *GET:/nodes/{nodeid}/bridges/{bridgeid} - network interface information*
 
         **Test Scenario:**
@@ -535,7 +535,7 @@ class TestNodeidAPI(TestcasesBase):
         bridges_list = response.json()
 
         self.lg.info('Choose one of these bridges to list its details.')
-        bridge_id = processes_list[random.randint(0, len(bridges_list)-1)]['name']
+        bridge_id = bridges_list[random.randint(0, len(bridges_list)-1)]['name']
 
         self.lg.info('get /nodes/{nodeid}/bridges/{bridgeid}.')
         response = self.nodes_api.get_nodes_nodeid_bridges_bridgeid(node_id=node_id, bridge_id=bridge_id)
