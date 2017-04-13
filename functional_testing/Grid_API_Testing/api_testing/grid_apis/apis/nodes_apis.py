@@ -3,7 +3,7 @@ from api_testing.grid_apis.grid_api_base import GridAPIBase
 
 class NodesAPI(GridAPIBase):
     def __init__(self):
-        super(NodesAPI, self).__init__()
+        super().__init__()
 
     def get_nodes(self):
         method = 'get'
@@ -138,7 +138,7 @@ class NodesAPI(GridAPIBase):
         api = ['nodes', node_id, 'bridges',bridge_id]
 
         return self.request_api(api=api,
-                                method=metho
+                                method=method)
 
     def delete_nodes_nodeid_bridges_bridgeid(self, node_id, bridge_id):
         method = 'delete'
