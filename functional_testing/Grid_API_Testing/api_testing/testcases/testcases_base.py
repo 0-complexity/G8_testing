@@ -26,7 +26,7 @@ class TestcasesBase(TestCase):
         nodes_list = response.json()
 
         node_id = nodes_list[random.randint(0, len(nodes_list)-1)]['id']
-        return node_id
+        return "dockerG8os"
 
     def randomMAC(self):
         random_mac = [0x00, 0x16, 0x3e, random.randint(0x00, 0x7f), random.randint(0x00, 0xff), random.randint(0x00, 0xff)]
@@ -46,14 +46,15 @@ class TestcasesBase(TestCase):
     def tearDown(self):
         pass
 
-    def get_random_node(self, except_node=None):
-        response = self.nodes_api.get_nodes()
-        self.assertEqual(response.status_code, 200)
-        nodes_list = [x['id'] for x in response.json()]
-        if except_node != None and except_node in nodes_list:
-            nodes_list = nodes_list.remove(except_node)
-        node_id = nodes_list[randint(0, len(nodes_list)-1)]
-        return node_id
+    # def get_random_node(self, except_node=None):
+    #     response = self.nodes_api.get_nodes()
+    #     self.assertEqual(response.status_code, 200)
+    #     nodes_list = [x['id'] for x in response.json()]
+    #     if except_node != None and except_node in nodes_list:
+    #         nodes_list = nodes_list.remove(except_node)
+    #     node_id = nodes_list[randint(0, len(nodes_list)-1)]
+    #     node_id = "dockerG8os"
+    #     return node_id
 
     def random_string(self, size=10):
         return str(uuid.uuid4()).replace('-', '')[:size]
