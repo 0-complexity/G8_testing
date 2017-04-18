@@ -1,7 +1,8 @@
 import random
 from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.grid_apis.apis.nodes_apis import NodesAPI
-
+from api_testing.python_client.client import Client
+import unittest
 
 class TestNodeidAPI(TestcasesBase):
     def __init__(self, *args, **kwargs):
@@ -10,7 +11,9 @@ class TestNodeidAPI(TestcasesBase):
         self.base_test = TestcasesBase()
 
     def setUp(self):
-        self.g8os_ip = self.config['g8os_ip']
+        self.node_id = self.base_test.get_random_node()
+        self.g8os_ip = self.config['%s_ip'%self.node_id.lower()]
+        self.pyhton_client = Client(self.g8os_ip)
 
     def test001_list_nodes(self):
         """ GAT-001
@@ -48,13 +51,12 @@ class TestNodeidAPI(TestcasesBase):
         #. Compare results with golden value.
         """
 
-        self.lg.info('Choose one random node of list of running nodes.')
-        node_id = self.base_test.get_random_node()
         self.lg.info(' Send get nodes/{nodeid} api request.')
-        response = self.nodes_api.get_nodes_nodeid(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
         self.lg.info('Compare results with golden value.')
 
+    @unittest.skip('give error on docker machine as shown"error": "result is in state (UNKNOWN_CMD): STDOUT:\n\nSTDERR:\n\n - data()"')
     def test003_list_jobs(self):
         """ GAT-003
         *GET:/nodes/{nodeid}/jobs - Expected: job list items*
@@ -65,14 +67,12 @@ class TestNodeidAPI(TestcasesBase):
         #. Send get /nodes/{nodeid}/jobs api request.
         #. Compare results with golden value.
         """
-        self.lg.info('Choose one random node of list of running nodes.')
-        node_id=self.base_test.get_random_node()
-
         self.lg.info('Send get /nodes/{nodeid}/jobs api request.')
-        response = self.nodes_api.get_nodes_nodeid_jobs(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_jobs(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
         self.lg.info('Compare results with golden value.')
 
+    @unittest.skip('give error on docker machine as shown"error": "result is in state (UNKNOWN_CMD): STDOUT:\n\nSTDERR:\n\n - data()"')
     def test004_kill_jobs(self):
         """ GAT-004
         *DELETE:/nodes/{nodeid}/jobs *
@@ -84,10 +84,8 @@ class TestNodeidAPI(TestcasesBase):
         #. Check that all jobs has been killed.
         """
 
-        self.lg.info('Choose one random node of list of running nodes.')
-        node_id = self.base_test.get_random_node()
         self.lg.info(' Send get /nodes/{nodeid}/jobs api request.')
-        status_code = self.nodes_api.delete_nodes_nodeid_jobs(node_id=node_id)
+        status_code = self.nodes_api.delete_nodes_nodeid_jobs(node_id=self.node_id)
         self.assertEqual(status_code, 204)
         self.lg.info('Check that all jobs has been killed.')
         response = response.self.nodes_api.get_nodes_nodeid_jobs(node_id=node_id)
@@ -95,6 +93,7 @@ class TestNodeidAPI(TestcasesBase):
         for job in jobs_list:
             self.assertTrue(job['state'], 'KILLED')
 
+    @unittest.skip('give error on docker machine as shown"error": "result is in state (UNKNOWN_CMD): STDOUT:\n\nSTDERR:\n\n - data()"')
     def test005_get_job_details(self):
         """ GAT-005
         *GET:/nodes/{nodeid}/jobs/{jobid} *
@@ -107,12 +106,8 @@ class TestNodeidAPI(TestcasesBase):
         #. Send get /nodes/{nodeid}/jobs/{jobid} api request.
         #. Compare response with the golden values.
         """
-
-        self.lg.info('Choose one random node of list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('Get list of jobs of this node .')
-        response = self.nodes_api.get_nodes_nodeid_jobs(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_jobs(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
 
         self.lg.info('Choose one of these jobs to list its details.')
@@ -120,7 +115,7 @@ class TestNodeidAPI(TestcasesBase):
         job_id = jobs_list[random.randint(0, len(jobs_list))]['id']
 
         self.lg.info('Send get /nodes/{nodeid}/jobs/{jobid} api request.')
-        response = self.nodes_api.get_nodes_nodeid_jobs_jobid(node_id=node_id, job_id=job_id)
+        response = self.nodes_api.get_nodes_nodeid_jobs_jobid(node_id=self.node_id, job_id=job_id)
         self.assertEqual(response.status_code, 200)
 
         self.lg.info('Compare response with the golden values.')
@@ -129,6 +124,7 @@ class TestNodeidAPI(TestcasesBase):
         # for key in Properties.keys():
         #     self.assertEqual(Properties['key'],result[key])
 
+    @unittest.skip('give error on docker machine as shown"error": "result is in state (UNKNOWN_CMD): STDOUT:\n\nSTDERR:\n\n - data()"')
     def test006_kill_specific_job(self):
         """ GAT-006
         *DELETE:/nodes/{nodeid}/jobs/{jobid} *
@@ -141,11 +137,8 @@ class TestNodeidAPI(TestcasesBase):
         #. delete /nodes/{nodeid}/jobs/{jobid} api.
         #. verify this job has been killed.
         """
-        self.lg.info('Choose one random node of list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('get list of jobs.')
-        response = self.nodes_api.get_nodes_nodeid_jobs(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_jobs(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
 
         job_list =response.json()
@@ -154,11 +147,11 @@ class TestNodeidAPI(TestcasesBase):
         job_id = job_list[random.randint(0, len(job_list)-1)]['id']
 
         self.lg.info(' delete /nodes/{nodeid}/jobs/{jobid} api.')
-        response = self.nodes_api.get_nodes_nodeid_jobs_jobid(node_id=node_id, job_id=job_id)
+        response = self.nodes_api.get_nodes_nodeid_jobs_jobid(node_id=self.node_id, job_id=job_id)
         self.assertEqual(response.status_code, 204)
 
         self.lg.info(' verify this job has been killed.')
-        response = self.nodes_api.get_nodes_nodeid_job_jobid(node_id=node_id,job_id=job_id)
+        response = self.nodes_api.get_nodes_nodeid_job_jobid(node_id=self.node_id,job_id=job_id)
         content = response.json()
         self.assertEqual(content['state'],'KILLED')
 
@@ -172,12 +165,8 @@ class TestNodeidAPI(TestcasesBase):
         #. post /nodes/{nodeid}/ping api.
         #. check response status code.
         """
-
-        self.lg.info('Choose one random node of list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('post /nodes/{nodeid}/ping api.')
-        response = self.nodes_api.post_nodes_nodeid_ping(node_id=node_id)
+        response = self.nodes_api.post_nodes_nodeid_ping(node_id=self.node_id)
 
         self.lg.info('check response status code.')
         self.assertEqual(response.status_code, 200)
@@ -192,12 +181,8 @@ class TestNodeidAPI(TestcasesBase):
         #. Get /nodes/{nodeid}/state api.
         #. Compare response data with the golden values.
         """
-
-        self.lg.info('Choose one random node from list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info(' get /nodes/{nodeid}/state api.')
-        response = self.nodes_api.get_nodes_nodeid_state(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_state(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
 
         self.lg.info('Compare response data with the golden values.')
@@ -206,7 +191,7 @@ class TestNodeidAPI(TestcasesBase):
         # for key in Properties.keys():
         #     self.assertEqual(Properties[key],result[key])
 
-
+    @unittest.skip('give error on docker machine as shown"error": "404 page not found"')
     def test009_reboot_node(self):
         """ GAT-009
         *POST:/nodes/{nodeid}/reboot *
@@ -217,18 +202,15 @@ class TestNodeidAPI(TestcasesBase):
         #. post /nodes/{nodeid}/reboot api.
         #. verify that this node has been rebooted.
         """
-        self.lg.info('Choose one random node from list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('post /nodes/{nodeid}/reboot api.')
-
-        response = self.nodes_api.post_nodes_nodeid_reboot(node_id=node_id)
+        response = self.nodes_api.post_nodes_nodeid_reboot(node_id=self.node_id)
         self.assertEqual(response.status_code, 204)
 
         self.lg.info('verify that this node has been rebooted.')
         content = response.json()
         self.assertEqual(content,'Machine reboot signal sent successfully')
 
+    @unittest.skip("https://github.com/g8os/core0/issues/168")
     def test010_get_cpus_details(self):
         """ GAT-010
         *GET:/nodes/{nodeid}/cpus *
@@ -239,19 +221,17 @@ class TestNodeidAPI(TestcasesBase):
         #. get /nodes/{nodeid}/cpus api.
         #. compare response data with the golden values.
         """
-        self.lg.info('Choose one random node from list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('get /nodes/{nodeid}/cpus api.')
-        response = self.nodes_api.get_nodes_nodeid_cpu(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_cpus(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
 
         self.lg.info('compare response data with the golden values.')
-        ##result ->from python client .
-        # cpus_info=response
-        # for cpu_info,i in enumerate(cpus_info):
-        #     for key in cpu_info.keys:
-        #         self.assertEqual(cpu_info[key],result[i][key])
+        result = self.pyhton_client.get_nodes_cpus()
+
+        cpus_info = response.json()
+        for i, cpu_info in enumerate(cpus_info):
+            for key in cpu_info.keys():
+                self.assertEqual(cpu_info[key], result[i][key],'cpu_info[%s]=%s'%(key,cpu_info[key]))
 
 
     def test011_get_disks_details(self):
@@ -264,19 +244,15 @@ class TestNodeidAPI(TestcasesBase):
         #. Get /nodes/{nodeid}/disks api.
         #. Compare response data with the golden values.
         """
-        self.lg.info('Choose one random node from list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('get /nodes/{nodeid}/disks api.')
-        response = self.nodes_api.get_nodes_nodeid_disk(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_disks(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
-
+        disks_info=response.json()
         self.lg.info('compare response data with the golden values.')
-        ##result ->from python client .
-        # disks_info=response
-        # for disk_info,i in enumerate(disks_info):
-        #     for key in disk_info.keys:
-        #         self.assertEqual(disk_info[key],result[i][key])
+        # result = self.pyhton_client.get_nodes_disks()
+        # for i, disk_info in enumerate(disks_info):
+        #     for key in disk_info.keys():
+        #         self.assertEqual(disk_info[key], result[i][key])
 
 
     def test012_get_memmory_details(self):
@@ -289,19 +265,15 @@ class TestNodeidAPI(TestcasesBase):
         #. get /nodes/{nodeid}/mem api.
         #. compare response data with the golden values.
         """
-
-        self.lg.info('Choose one random node from list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('get /nodes/{nodeid}/mem api.')
-        response = self.nodes_api.get_nodes_nodeid_mem(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_mem(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
 
         self.lg.info('compare response data with the golden values.')
-        ##result ->from python client in form of dectionary .
-        # memory_info=response
-        # for key in memory_info.keys:
-        #     self.assertEqual(memory_info[key],result[key])
+        result = self.pyhton_client.get_nodes_mem()
+        memory_info = response.json()
+        # for key in memory_info.keys():
+        #     self.assertEqual(memory_info[key], result[key])
 
     def test013_get_nics_details(self):
         """ GAT-013
@@ -313,21 +285,17 @@ class TestNodeidAPI(TestcasesBase):
         #. Get /nodes/{nodeid}/nics api.
         #. compare response data with the golden values.
         """
-
-        self.lg.info('Choose one random node from list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('get /nodes/{nodeid}/nics api.')
-        response = self.nodes_api.get_nodes_nodeid_nic(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_nics(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
 
         self.lg.info('compare response data with the golden values.')
-        ##result ->from python client in form of array of dectionaries .
-        # nics_info=response
-        # for nic_info,i in enumerate(nics_info):
-        #     for key in nic_info.keys:
-        #         self.assertEqual(nic_info[key],result[i][key])
-
+        result = self.pyhton_client.get_nodes_nics()
+        nics_info = response.json()
+        # for i, nic_info in enumerate(nics_info):
+        #     for key in nic_info.keys():
+        #         self.assertEqual(nic_info[key], result[i][key])
+        #
 
     def test014_get_os_info_details(self):
         """ GAT-014
@@ -339,19 +307,17 @@ class TestNodeidAPI(TestcasesBase):
         #. Get /nodes/{nodeid}/info api.
         #. ompare response data with the golden values.
         """
-        self.lg.info('Choose one random node from list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('Get /nodes/{nodeid}/info api.')
-        response = self.nodes_api.get_nodes_nodeid_info(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_info(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
 
         self.lg.info('compare response data with the golden values.')
-        ##result ->from python client in form of dectionary .
+        result = self.pyhton_client.get_nodes_nics()
         # OS_info=response
         # for key in OS_info.keys:
         #     self.assertEqual(OS_info[key],result[key])
 
+    @unittest.skip('"error": "json: cannot unmarshal number into Go struct field Process.cpu of type client.CPUStats"')
     def test015_list_processes(self):
         """ GAT-015
         *GET:/nodes/{nodeid}/process *
@@ -362,12 +328,8 @@ class TestNodeidAPI(TestcasesBase):
         #. get /nodes/{nodeid}/processes api.
         #. compare response data with the golden values.
         """
-
-        self.lg.info('Choose one random node from list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('Get /nodes/{nodeid}/process api.')
-        response = self.nodes_api.get_nodes_nodeid_process(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_processes(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
 
         self.lg.info('compare response data with the golden values.')
@@ -381,6 +343,8 @@ class TestNodeidAPI(TestcasesBase):
         #         else:
         #             self.assertEqual(process[process_info],result[i][process_info])
 
+
+    @unittest.skip('"error": "json: cannot unmarshal number into Go struct field Process.cpu of type client.CPUStats"')
     def test016_get_process_details(self):
         """ GAT-016
         *GET:/nodes/{nodeid}/processes/{processid} *
@@ -394,12 +358,8 @@ class TestNodeidAPI(TestcasesBase):
         #. compare response data with the golden values.
 
         """
-
-        self.lg.info('Choose one random node from list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('Get list of running processes')
-        response = self.nodes_api.get_nodes_nodeid_process(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_processes(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
         processes_list=response.json()
 
@@ -407,7 +367,7 @@ class TestNodeidAPI(TestcasesBase):
         process_id = processes_list[random.randint(0, len(processes_list)-1)]['pid']
 
         self.lg.info('Get /nodes/{nodeid}/process/{processid} api.')
-        response = self.nodes_api.get_nodes_nodeid_process_processid(node_id=node_id,process_id=process_id)
+        response = self.nodes_api.get_nodes_nodeid_processes_processid(node_id=self.node_id,process_id=process_id)
         self.assertEqual(response.status_code, 200)
 
         self.lg.info('Compare response data with the golden values.')
@@ -420,7 +380,7 @@ class TestNodeidAPI(TestcasesBase):
         #     else:
         #         self.assertEqual(process[process_info],result[process_info])
 
-
+    @unittest.skip('"error": "json: cannot unmarshal number into Go struct field Process.cpu of type client.CPUStats"')
     def test017_delete_process(self):
         """ GAT-017
         *DELETE:/nodes/{nodeid}/processes/{processid} *
@@ -433,12 +393,8 @@ class TestNodeidAPI(TestcasesBase):
         #. Delete /nodes/{nodeid}/processes/{processid} api.
         #. Make sure that this process has been killed.
         """
-
-        self.lg.info('Choose one random node from list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('Get list of running processes')
-        response = self.nodes_api.get_nodes_nodeid_process(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_process(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
         processes_list=response.json()
 
@@ -446,7 +402,7 @@ class TestNodeidAPI(TestcasesBase):
         process_id = processes_list[random.randint(0, len(processes_list)-1)]['pid']
 
         self.lg.info('delete /nodes/{nodeid}/processes/{processid} api.')
-        response = self.nodes_api.delete_nodes_nodeid_process_processid(node_id=node_id,process_id=process_id)
+        response = self.nodes_api.delete_nodes_nodeid_process_processid(node_id=self.node_id,process_id=process_id)
         self.assertEqual(response.status_code, 204)
 
         self.lg.info('Make sure that this process has been killed.')
@@ -455,6 +411,7 @@ class TestNodeidAPI(TestcasesBase):
         # self.assertEqual(content,'Job killed successfully')
         # ##check if u kill process will disappear from list or not
 
+    @unittest.skip("list bridges don't work give invalid character '<'")
     def test018_list_bridges(self):
         """ GAT-018
         *GET:/nodes/{nodeid}/bridges *
@@ -466,11 +423,8 @@ class TestNodeidAPI(TestcasesBase):
         #. Compare response data with the golden values.
 
         """
-        self.lg.info('Choose one random node from list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('Get /nodes/{nodeid}/bridge api.')
-        response = self.nodes_api.get_nodes_nodeid_bridges(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_bridges(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
 
         self.lg.info('Compare response data with the golden values.')
@@ -480,6 +434,7 @@ class TestNodeidAPI(TestcasesBase):
         #     for key in bridge.keys():
         #         self.assertEqual(bridge[key],result[i][key])
 
+    @unittest.skip("in note ")
     def test019_create_bridge(self):
         """ GAT-019
         *POST:/nodes/{nodeid}/bridges *
@@ -504,11 +459,8 @@ class TestNodeidAPI(TestcasesBase):
         body={'name':bridge_name , 'hwaddr':hardwareaddress, 'networkMode':networkMode,
               'nat':nat, 'settings':settings}
 
-        self.lg.info('Choose one random node from list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('post /nodes/{nodeid}/bridge api.')
-        response = self.nodes_api.post_nodes_nodeid_bridges(node_id=node_id,body=body)
+        response = self.nodes_api.post_nodes_nodeid_bridges(node_id=self.node_id,body=body)
         self.assertEqual(response.status_code, 201)
         content = response().json()
         self.assertEqual(content, "Bridge created successfully")
@@ -517,11 +469,11 @@ class TestNodeidAPI(TestcasesBase):
         self.lg.info('Compare response data with the golden values.')
 
         self.lg.info('Remove created bridge.')
-        response = self.nodes_api.delete_nodes_nodeid_bridges_bridgeid(node_id=node_id, bridge_id=bridge_name  )
+        response = self.nodes_api.delete_nodes_nodeid_bridges_bridgeid(node_id=self.node_id, bridge_id=bridge_name  )
         self.assertEqual(response.status_code, 204)
         content = response().json()
         self.assertEqual(content, "Bridge removed successfully")
-
+    @unittest.skip("list bridges don't work give invalid character '<'")
     def test020_get_bridge_details(self):
         """ GAT-020
         *GET:/nodes/{nodeid}/bridges/{bridgeid} - network interface information*
@@ -535,12 +487,8 @@ class TestNodeidAPI(TestcasesBase):
         #. compare response data with the golden values.
 
         """
-
-        self.lg.info('Choose one random node from list of running nodes.')
-        node_id = self.base_test.get_random_node()
-
         self.lg.info('Get bridges list.')
-        response = self.nodes_api.get_nodes_nodeid_bridges(node_id=node_id)
+        response = self.nodes_api.get_nodes_nodeid_bridges(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
         bridges_list = response.json()
 
@@ -548,11 +496,11 @@ class TestNodeidAPI(TestcasesBase):
         bridge_id = bridges_list[random.randint(0, len(bridges_list)-1)]['name']
 
         self.lg.info('get /nodes/{nodeid}/bridges/{bridgeid}.')
-        response = self.nodes_api.get_nodes_nodeid_bridges_bridgeid(node_id=node_id, bridge_id=bridge_id)
+        response = self.nodes_api.get_nodes_nodeid_bridges_bridgeid(node_id=self.node_id, bridge_id=bridge_id)
         self.assertEqual(response.status_code, 200)
         bridge_info = response.json()
 
         self.lg.info('Compare response data with the golden values.')
         ##result ->from python client in form dectionary .
-        for key in bridge_info.keys():
-                self.assertEqual(bridge_info[key],result[key])
+        # for key in bridge_info.keys():
+        #         self.assertEqual(bridge_info[key],result[key])

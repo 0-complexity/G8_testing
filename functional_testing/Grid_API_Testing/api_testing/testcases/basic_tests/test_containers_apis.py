@@ -2,7 +2,7 @@ import random
 from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.grid_apis.apis.nodes_apis import NodesAPI
 from api_testing.grid_apis.apis.containers_apis import ContainersAPI
-
+import json
 
 class TestcontaineridAPI(TestcasesBase):
     def __init__(self, *args, **kwargs):
@@ -17,7 +17,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_name = self.base_test.rand_str()
         self.hostname = self.base_test.rand_str()
         self.body = {"id": self.container_name, "hostname": self.hostname,
-                     "flist": self.root_url, "hostNetworking": False}
+                     "flist": self.root_url, "hostNetworking":False}
 
 
     def test001_list_containers(self):
@@ -71,6 +71,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.lg.info('Choose one random node of list of running nodes.')
         node_id = self.base_test.get_random_node()
         self.lg.info('Send post nodes/{nodeid}/containers api request.')
+        self.body = json.dumps(self.body)
         response = self.containers_api.post_containers( node_id=node_id, body=self.body)
         self.assertEqual(response.status_code, 201)
 
@@ -125,6 +126,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.lg.info('Choose one random node of list of running nodes.')
         node_id = self.base_test.get_random_node()
         self.lg.info('Create container ')
+        self.body = json.dumps(self.body)
         response = self.containers_api.post_containers(node_id, self.body)
         self.assertEqual(response.status_code,200)
         self.lg.info('post:/node/{nodeid}/containers/containerid/stop.')
