@@ -1,4 +1,5 @@
 import g8core
+import time
 
 class Client:
     def __init__(self, ip):
@@ -88,3 +89,53 @@ class Client:
             diskInfo['opts'].append(line[5][1:-1])
 
         return diskInfo
+
+    def get_container_info(self, container_id):
+        container_info = {}
+        golden_data = self.client.container.list().get(str(container_id), None)
+        if not golden_data:
+            return False
+        golden_value = golden_data['container']
+        container_info['nics'] = ([{i: nic[i] for i in nic if i != 'hwaddr'} for nic in golden_value['arguments']['nics']])
+        container_info['ports'] = (['%s:%s' % (key, value) for key, value in golden_value['arguments']['port'].items()])
+        container_info['hostNetworking'] = golden_value['arguments']['host_network']
+        container_info['hostname'] = golden_value['arguments']['hostname']
+        container_info['flist'] = golden_value['arguments']['root']
+        container_info['storage'] = golden_value['arguments']['storage']
+        return container_info
+
+    def get_container_job_list(self, container_id):
+        golden_values = []
+        container = self.client.container.client(container_id)
+        container_data = container.job.list()
+        # cannot compare directly as the job.list is considered a job and has a different id everytime is is called
+        for i, golden_value in enumerate(container_data[:]):
+            if golden_value.get('command', "") == 'job.list':
+                container_data.pop(i)
+                continue
+            golden_values.append((golden_value['cmd']['id'], golden_value['starttime']))
+        return set(golden_values)
+
+    def wait_on_container_update(self, container_id, timeout, removed):
+        for _ in range(timeout):
+            if removed:
+                if str(container_id) not in self.client.container.list().keys():
+                    return True
+            else:
+                if str(container_id) in self.client.container.list().keys():
+                    return True
+            time.sleep(1)
+        return False
+
+    def wait_on_container_job_update(self, container_id, job_id, timeout, removed):
+        container = self.client.container.client(container_id)
+        for _ in range(timeout):
+            if removed:
+                if job_id not in [item['cmd']['id']for item in container.job.list()]:
+                    return True
+            else:
+                if job_id in [item['cmd']['id']for item in container.job.list()]:
+                    return True
+            time.sleep(1)
+        return False
+
