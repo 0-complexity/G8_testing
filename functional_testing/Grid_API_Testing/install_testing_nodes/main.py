@@ -3,8 +3,8 @@ from random import randint
 from install_testing_nodes.src.ExecuteRemoteCommands import ExecuteRemoteCommands
 from install_testing_nodes.src.install_g8os_on_packet import InstallG8OSOnPacket
 
-MACHINE_PLAN = 'baremetal_1'  # Type 1
-ZEROTIER_NW_ID = "93afae5963df177c"
+MACHINE_PLAN = 'baremetal_0'  # Type 1
+ZEROTIER_NW_ID = None
 MACHINES_NUMBER = 1
 AUTO_DISCOVERING = True
 
@@ -33,10 +33,10 @@ if __name__ == '__main__':
     print(colored(' [*] STEP 4 : create cloud space', 'yellow'))
     executer.create_cloudspace()
 
-    if not AUTO_DISCOVERING:
-        MACHINE_IP = install_g8os_on_packet.get_packt_machine_ip(machine_name=MACHINE_NAME)
-        MACHINE_MAC = install_g8os_on_packet.get_packet_machine_mac(ip=MACHINE_IP)
-        executer.update_g8os_valuse(MACHINE_IP, MACHINE_MAC)
+    # if not AUTO_DISCOVERING:
+    #     MACHINE_IP = install_g8os_on_packet.get_packt_machine_ip(machine_name=MACHINE_NAME)
+    #     MACHINE_MAC = install_g8os_on_packet.get_packet_machine_mac(ip=MACHINE_IP)
+    #     executer.update_g8os_valuse(MACHINE_IP, MACHINE_MAC)
 
     # AYS server vm
     print(colored(' [*] STEP 5 : create AYS server node', 'yellow'))
