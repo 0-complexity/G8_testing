@@ -3,7 +3,6 @@ from api_testing.grid_apis.apis.nodes_apis import NodesAPI
 def get_node_physical_ip(nodeid):
     response = nodes_api.get_nodes_nodeid_nics(nodeid)
     for nic in response.json():
-        import ipdb; ipdb.set_trace()
         nic_hwaddr = nic['hardwareaddr'].replace(':', '') 
         if nic_hwaddr == nodeid:
             ip = nic['addrs'][0]
