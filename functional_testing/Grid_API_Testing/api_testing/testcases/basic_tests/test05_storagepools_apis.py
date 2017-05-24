@@ -1,6 +1,6 @@
 import  random
 from api_testing.testcases.testcases_base import TestcasesBase
-from api_testing.grid_apis.apis.storagepools_apis import StoragepoolsAPI
+from api_testing.grid_apis.pyclient.storagepools_apis import StoragepoolsAPI
 from api_testing.python_client.client import Client
 import unittest, time
 
@@ -103,8 +103,7 @@ class TestStoragepoolsAPI(TestcasesBase):
             self.lg.error('snapshot {} is not created {}'.format(name))
 
         return body
-        
-
+    
 
     def test001_get_storagepool(self):
         """ GAT-045
@@ -256,14 +255,17 @@ class TestStoragepoolsAPI(TestcasesBase):
         """
         self.lg.info('Create storagepool (SP0) on node (N0), should succeed')
         storagepool = self.create_storagepool()
+        time.sleep(15)
 
         self.lg.info('Get device (DV0), should succeed with 200')
         response = self.storagepool_api.get_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'])
         self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.json(), [])
         device_uuid = response.json()[0]['uuid']
 
         response = self.storagepool_api.get_storagepools_storagepoolname_devices_deviceid(self.nodeid, storagepool['name'], device_uuid)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['deviceName'][:-1], storagepool['devices'][0])
         self.assertEqual(response.json()['uuid'], device_uuid)
         self.assertEqual(response.json()['status'], 'healthy')
 
@@ -285,7 +287,8 @@ class TestStoragepoolsAPI(TestcasesBase):
         self.lg.info('list storagepool (SP0) devices, should succeed with 200')
         response = self.storagepool_api.get_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'])
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 1)
+        self.assertNotEqual(response.json(), [])
+        self.assertEqual(len(response.json()), len(storagepool['devices']))
         self.assertEqual(response.json()[0]['status'], 'healthy')
 
     @unittest.skip('https://github.com/g8os/resourcepool/issues/93')
@@ -311,8 +314,14 @@ class TestStoragepoolsAPI(TestcasesBase):
         body = [device]
         response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'], body)
         self.assertEqual(response.status_code, 204)
-        time.sleep(10)
-
+        
+        for _ in range(30):
+            free_devices = self.pyclient.getFreeDisks()
+            if device not in free_devices:
+                break
+            else:
+                time.sleep(1)
+            
         self.lg.info('list storagepool (SP0) devices, should succeed with 200')
         response = self.storagepool_api.get_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'])
         self.assertEqual(response.status_code, 200)
@@ -320,7 +329,7 @@ class TestStoragepoolsAPI(TestcasesBase):
 
         self.lg.info('Create device with invalid body, should fail with 400')
         body = self.random_string()
-        response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, self.storagepool_name, body)
+        response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'], body)
         self.assertEqual(response.status_code, 404)
 
     @unittest.skip('https://github.com/g8os/resourcepool/issues/93')
@@ -337,11 +346,21 @@ class TestStoragepoolsAPI(TestcasesBase):
         storagepool = self.create_storagepool()
 
         self.lg.info('Create device (DV1) on storagepool (SP0), should succeed with 201')
-        device = random.choice(self.pyclient.getFreeDisks())
+        free_devices = self.pyclient.getFreeDisks()
+        if free_devices == []:
+            self.skipTest('no free disks on node {}'.format(self.nodeid))
+
+        device = random.choice(free_devices)
         body = [device]
         response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'], body)
         self.assertEqual(response.status_code, 204)
-        time.sleep(10)
+        
+        for _ in range(30):
+            free_devices = self.pyclient.getFreeDisks()
+            if device not in free_devices:
+                break
+            else:
+                time.sleep(1)
 
         self.lg.info('list storagepool (SP0) devices, device (DV0) should be gone')
         response = self.storagepool_api.get_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'])
@@ -352,7 +371,13 @@ class TestStoragepoolsAPI(TestcasesBase):
         self.lg.info('Delete device (DV1), should succeed with 204')
         response = self.storagepool_api.delete_storagepools_storagepoolname_devices_deviceid(self.nodeid, storagepool['name'], deviceuuid[0])
         self.assertEqual(response.status_code, 204)
-        time.sleep(10)
+
+        for _ in range(30):
+            free_devices = self.pyclient.getFreeDisks()
+            if device in free_devices:
+                break
+            else:
+                time.sleep(1)
 
         self.lg.info('list storagepool (SP0) devices, device (DV0) should be gone')
         response = self.storagepool_api.get_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'])
@@ -360,7 +385,7 @@ class TestStoragepoolsAPI(TestcasesBase):
         self.assertNotIn(device, [x['deviceName'][:-1] for x in response.json()])
 
         self.lg.info('Delete nonexisting device, should fail with 404')
-        response = self.storagepool_api.delete_storagepools_storagepoolname_devices_deviceid(self.nodeid, self.storagepool_name, 'fake_device')
+        response = self.storagepool_api.delete_storagepools_storagepoolname_devices_deviceid(self.nodeid, storagepool['name'], 'fake_device')
         self.assertEqual(response.status_code, 404)
 
     def test009_get_storagepool_filessystem(self):
