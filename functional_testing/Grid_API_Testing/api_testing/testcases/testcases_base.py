@@ -7,14 +7,16 @@ from api_testing.grid_apis.pyclient.containers_apis import ContainersAPI
 import random
 import requests
 import time
+from testconfig import config
+
 
 class TestcasesBase(TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.utiles = Utiles()
         self.nodes_api = NodesAPI()
-        self.config = self.utiles.get_config_values()
-        self.nodes = self.update_nodes_info()
+        self.config = config['main']
+        self.nodes = NODES_INFO
         self.containers_api = ContainersAPI()
         self.lg = self.utiles.logging
         self.session = requests.Session()
@@ -116,26 +118,4 @@ class TestcasesBase(TestCase):
             else:
                 self.createdcontainer.append({"node": node_id, "container": container_name})
                 return container_name
-
-
-    def get_node_physical_ip(self, node_id):
-            response = self.nodes_api.get_nodes_nodeid_nics(node_id)
-            self.assertEqual(response.status_code, 200)
-
-            nic = {}
-            for data in response.json():
-                if data['addrs']:
-                    if "147." in data['addrs'][0]:
-                        nic['ip'] = data['addrs'][0].split('/')[0]
-                        nic['id'] = data['hardwareaddr'].replace(':', '')
-                        return nic
-
-    def update_nodes_info(self):
-        nodes_info = []
-        response = self.nodes_api.get_nodes()
-        self.assertEqual(response.status_code, 200)
-        for node in response.json():
-            if node['status'] == 'running':
-                nodes_info.append(self.get_node_physical_ip(node['id']))
-
-        return nodes_info
+                

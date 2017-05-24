@@ -9,11 +9,11 @@ MACHINES_NUMBER = 1
 AUTO_DISCOVERING = True
 
 JUMPSACLE_BRANCH = "8.2.0"
-RELEASE_VERSION = "1.1.0-alpha"
+RELEASE_VERSION = "master"
 AYS_TEMPLATE_BRANCH = RELEASE_VERSION
 GRID_API_BRANCH = RELEASE_VERSION
 G8CORE_CLIENT = RELEASE_VERSION
-IPXE_SCRIPT = 'https://bootstrap.gig.tech/ipxe/{}/{}/console=ttyS1,115200n8'.format(RELEASE_VERSION, {})
+IPXE_SCRIPT = 'https://bootstrap.gig.tech/ipxe/{}/{}/debug'.format(RELEASE_VERSION, {})
 
 MACHINES = []
 
@@ -33,10 +33,10 @@ if __name__ == '__main__':
     print(colored(' [*] STEP 4 : create cloud space', 'yellow'))
     executer.create_cloudspace()
 
-    if not AUTO_DISCOVERING:
-        MACHINE_IP = install_g8os_on_packet.get_packt_machine_ip(machine_name=MACHINE_NAME)
-        MACHINE_MAC = install_g8os_on_packet.get_packet_machine_mac(ip=MACHINE_IP)
-        executer.update_g8os_valuse(MACHINE_IP, MACHINE_MAC)
+    # if not AUTO_DISCOVERING:
+    #     MACHINE_IP = install_g8os_on_packet.get_packt_machine_ip(machine_name=MACHINE_NAME)
+    #     MACHINE_MAC = install_g8os_on_packet.get_packet_machine_mac(ip=MACHINE_IP)
+    #     executer.update_g8os_valuse(MACHINE_IP, MACHINE_MAC)
 
     # AYS server vm
     print(colored(' [*] STEP 5 : create AYS server node', 'yellow'))

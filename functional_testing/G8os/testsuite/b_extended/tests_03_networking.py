@@ -334,7 +334,7 @@ class ExtendedNetworking(BaseTest):
                 response = container_client.bash('ping -w3 8.8.8.8', response.stdout).get()
                 self.assertEqual(response.state, 'SUCCESS', response.stdout)
             else:
-                time.sleep(20)
+                time.sleep(25)
                 self.lg('Try to ping 8.8.8.8 when NAT is disabled, should fail')
                 response = container_client.bash('ping -w3 8.8.8.8', response.stdout).get()
                 self.assertEqual(response.state, 'ERROR', response.stdout)

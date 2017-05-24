@@ -106,6 +106,10 @@ class ExtendedMachines(BaseTest):
         """
 
         self.lg('{} STARTED'.format(self._testID))
+
+        self.lg('Destroy any vm on the system')
+        self.client.bash('virsh list --all --name | xargs -n 1 virsh destroy')
+
         self.lg('Create Virtual machine (vm1)')
         vm_name = self.rand_str()
         self.create_vm(name=vm_name)
@@ -125,7 +129,9 @@ class ExtendedMachines(BaseTest):
         self.assertEqual(len(self.client.kvm.info(vm_uuid)['Block']), l+1)
 
         self.lg('Deattach L1 from vm1, should succeed')
+        time.sleep(3)
         self.client.kvm.detach_disk(vm_uuid, {'url': loop_dev})
+        time.sleep(2)
         self.assertEqual(len(self.client.kvm.info(vm_uuid)['Block']), l)
 
         self.lg('Delete (vm1)')
