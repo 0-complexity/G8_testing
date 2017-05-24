@@ -8,7 +8,7 @@ import random
 import requests
 import time
 from testconfig import config
-
+from  api_testing.testcases import NODES_INFO
 
 class TestcasesBase(TestCase):
     def __init__(self, *args, **kwargs):
