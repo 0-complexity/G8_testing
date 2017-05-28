@@ -63,7 +63,6 @@ class NodesAPI(GridPyclientBase):
         finally:
             return response
 
-
     def get_nodes_nodeid_state(self,node_id):
         try:
             response = self.api_client.nodes.GetNodeState(nodeid=node_id)
