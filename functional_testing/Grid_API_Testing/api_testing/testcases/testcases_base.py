@@ -19,18 +19,13 @@ class TestcasesBase(TestCase):
         self.nodes_api = NodesAPI()
         self.config = config['main']
         self.nodes = NODES_INFO
-        self.containers_api = ContainersAPI()
         self.lg = self.utiles.logging
         self.session = requests.Session()
         self.zerotier_token = self.config['zerotier_token']
         self.session.headers['Authorization'] = 'Bearer {}'.format(self.zerotier_token)
         self.createdcontainer=[]
-        self.testcases_timeout()
 
     def setUp(self):
-        pass
-
-    def testcases_timeout(self):
         self._testID = self._testMethodName
         self._startTime = time.time()
 

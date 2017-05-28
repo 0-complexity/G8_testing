@@ -1,6 +1,7 @@
 from api_testing.grid_apis.grid_pyclient_base import GridPyclientBase
 from requests import HTTPError
 
+
 class ContainersAPI(GridPyclientBase):
     def __init__(self):
         super().__init__()
@@ -20,7 +21,7 @@ class ContainersAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
+
     def delete_containers_containerid(self, nodeid, containername):
         try:
             response = self.api_client.nodes.DeleteContainer(nodeid=nodeid, containername=containername)
@@ -28,7 +29,7 @@ class ContainersAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
+
     def get_containers_containerid(self, nodeid, containername):
         try:
             response = self.api_client.nodes.GetContainer(nodeid=nodeid, containername=containername)
@@ -45,7 +46,7 @@ class ContainersAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
+
     def post_containers_containerid_stop(self, nodeid, containername):
         # work around
         try:
@@ -54,7 +55,7 @@ class ContainersAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-                
+
     def post_containers_containerid_filesystem(self, nodeid, containername, data, params):
         try:
             response = self.api_client.nodes.FileUpload(nodeid=nodeid, containername=containername, data=data, query_params=params)
@@ -79,7 +80,7 @@ class ContainersAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
+
     def get_containers_containerid_jobs(self, nodeid, containername):
         try:
             response = self.api_client.nodes.ListContainerJobs(nodeid=nodeid, containername=containername)
@@ -136,7 +137,7 @@ class ContainersAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
+
     def get_containers_containerid_info(self, nodeid, containername):
         try:
             response = self.api_client.nodes.GetContainerOSInfo(nodeid=nodeid, containername=containername)
@@ -144,7 +145,7 @@ class ContainersAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
+
     def get_containers_containerid_processes(self, nodeid, containername):
         try:
             response = self.api_client.nodes.ListContainerProcesses(nodeid=nodeid, containername=containername)
@@ -153,9 +154,9 @@ class ContainersAPI(GridPyclientBase):
         finally:
             return response
 
-    def post_containers_containerid_processes(self, nodeid, containername, data):
+    def post_containers_containerid_jobs(self, nodeid, containername, data):
         try:
-            response = self.api_client.nodes.StartContainerProcess(nodeid=nodeid, containername=containername, data=data)
+            response = self.api_client.nodes.StartContainerJob(nodeid=nodeid, containername=containername, data=data)
         except HTTPError as e:
             response = e.response
         finally:
@@ -176,7 +177,7 @@ class ContainersAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
+
     def delete_containers_containerid_processes_processid(self, nodeid, containername, processid):
         try:
             response = self.api_client.nodes.KillContainerProcess(nodeid=nodeid, containername=containername, processid=processid)
@@ -184,5 +185,3 @@ class ContainersAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
-     

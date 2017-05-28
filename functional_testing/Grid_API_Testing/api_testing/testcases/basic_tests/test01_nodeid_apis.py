@@ -11,6 +11,7 @@ class TestNodeidAPI(TestcasesBase):
         self.nodes_api = NodesAPI()
 
     def setUp(self):
+        super(TestNodeidAPI,  self).setUp()
 
         self.lg.info('Choose one random node of list of running nodes.')
         self.node_id = self.get_random_node()
