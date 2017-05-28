@@ -14,8 +14,9 @@ class TestZerotiersAPI(TestcasesBase):
 
         self.lg.info('Get random nodid (N0)')
         self.nodeid = self.get_random_node()
-        pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]
-        self.pyclient = Client(pyclient_ip)
+        pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
+        self.assertNotEqual(pyclient_ip, [])
+        self.pyclient = Client(pyclient_ip[0])
 
         self.lg.info('Join zerotier network (ZT0)')
         self.nwid = self.create_zerotier_network()
@@ -30,18 +31,16 @@ class TestZerotiersAPI(TestcasesBase):
                 else:
                     time.sleep(3)
             else:
-                self.lg.info('can\'t join zerotier network {}'.format(self.nwid))
+                self.lg.info('can\'t list node zerotier networks')
         else:
-            self.lg.info('zerotier network status is {}'.format(response.json()['status']))
+            self.lg.info('can\'t join zerotier network after 150 seconds')
             
         
-
     def tearDown(self):
         self.lg.info('Exit zerotier network (ZT0)')
         self.zerotier_api.delete_nodes_zerotiers_zerotierid(self.nodeid, self.nwid)
         self.delete_zerotier_network(self.nwid)
         super(TestZerotiersAPI, self).tearDown()
-
 
     def test001_get_nodes_zerotiers_zerotierid(self):
         """ GAT-078
@@ -100,26 +99,23 @@ class TestZerotiersAPI(TestcasesBase):
         #. Leave zerotier network (ZT1), should succeed with 204.
         #. Join zerotier with invalid body, should fail with 400.
         """
-        self.lg.info('Get random nodid (N0)')
-        nodeid = self.get_random_node()
-
         self.lg.info('Join zerotier network (ZT1)')
         nwid = self.create_zerotier_network()
         body = {"nwid":nwid}
-        response = self.zerotier_api.post_nodes_zerotiers(nodeid, body)
+        response = self.zerotier_api.post_nodes_zerotiers(self.nodeid, body)
         self.assertEqual(response.status_code, 201)
         
         for _ in range(50):
-            response = self.zerotier_api.get_nodes_zerotiers_zerotierid(nodeid, nwid)
+            response = self.zerotier_api.get_nodes_zerotiers_zerotierid(self.nodeid, nwid)
             if response.status_code == 200:
                 if response.json()['status'] == 'OK':
                     break
                 else:
                     time.sleep(3)
             else:
-                self.lg.info('can\'t join zerotier network {}'.format(nwid))
+                self.lg.info('can\'t list node zerotier networks')
         else:
-            self.lg.info('zerotier network status is {}'.format(response.json()['status']))
+            self.lg.info('can\'t join zerotier network after 150 seconds')
 
         self.lg.info('List node (N0) zerotier networks, (ZT1) should be listed')
         response = self.zerotier_api.get_nodes_zerotiers(self.nodeid)
@@ -138,7 +134,7 @@ class TestZerotiersAPI(TestcasesBase):
 
         self.lg.info('Join zerotier with invalid body, should fail with 400')
         body = {"worngparameter":self.rand_str()}
-        response = self.zerotier_api.post_nodes_zerotiers(nodeid, body)
+        response = self.zerotier_api.post_nodes_zerotiers(self.nodeid, body)
         self.assertEqual(response.status_code, 400)
 
     def test004_leave_zerotier(self):
