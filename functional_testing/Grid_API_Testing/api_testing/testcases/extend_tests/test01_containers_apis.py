@@ -346,7 +346,8 @@ class TestcontaineridAPI(TestcasesBase):
 
         response = self.bridges_api.post_nodes_bridges(self.node_id, body1)
         self.assertEqual(response.status_code, 201, response.content)
-
+        time.sleep(3)
+        
         response = self.bridges_api.post_nodes_bridges(self.node_id, body2)
         self.assertEqual(response.status_code, 201, response.content)
         time.sleep(3)

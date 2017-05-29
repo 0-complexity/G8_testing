@@ -221,7 +221,11 @@ class Client:
         nic = [nic for nic in nics if nic['name'] == 'eth0']
         if not nic :
             return False
-        address = [x['addr'] for x in nic[0]['addrs'] if x['addr'][:x['addr'].find('/')] in ip_range][0]
+        addresses = [x['addr'] for x in nic[0]['addrs'] if x['addr'][:x['addr'].find('/')] in ip_range]
+        if not addresses:
+            return False
+        address = addresses[0]
+
         if not address:
             self.lg('can\'t find bridge netowrk interface')
             return False
