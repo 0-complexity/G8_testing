@@ -155,7 +155,6 @@ class ContainersAPI(GridPyclientBase):
             return response
 
     def post_containers_containerid_jobs(self, nodeid, containername, data):
-        import ipdb;ipdb.set_trace()
         try:
             response = self.api_client.nodes.StartContainerJob(nodeid=nodeid, containername=containername, data=data)
         except HTTPError as e:
