@@ -210,7 +210,7 @@ class TestNodeidAPI(TestcasesBase):
             if key in client_state.keys():
                 self.assertAlmostEqual(node_state[key],
                                        client_state[key],
-                                       delta=2000000,msg='different value for key%s'%key)
+                                       delta=6000000,msg='different value for key%s'%key)
 
     @unittest.skip("https://github.com/g8os/grid/issues/107")
     def test009_reboot_node(self):
@@ -301,7 +301,7 @@ class TestNodeidAPI(TestcasesBase):
             if key in result.keys():
                 self.assertAlmostEqual(memory_info[key], result[key],
                                        msg="different keys%s"%key,
-                                        delta=5000000)
+                                        delta=10000000)
 
     def test013_get_nics_details(self):
         """ GAT-013
@@ -374,27 +374,15 @@ class TestNodeidAPI(TestcasesBase):
 
         for process in response.json():
             processes[process['pid']]= process
-
+        skip_keys = ['cpu', 'vms', 'rss']
         for process_id in processes.keys():
             process_info = processes[process_id]
             for info in process_info.keys():
-                if info != 'cpu':
+                if info not in skip_keys:
                     if info in client_processes[process_id].keys():
-                        if info == 'rss':
-                            self.assertAlmostEqual(process_info[info],
-                                                   client_processes[process_id][info],
-                                                   msg="different value with key%s"%info,
-                                                   delta=7000000)
-                        elif info == 'vms':
-                            self.assertAlmostEqual(process_info[info],
-                                                   client_processes[process_id][info],
-                                                   msg="different value with key%s"%info,
-                                                   delta=5000000)
-
-                        else:
-                            self.assertEqual(process_info[info],
-                                             client_processes[process_id][info],
-                                             "different value with key%s"%info)
+                        self.assertEqual(process_info[info],
+                                         client_processes[process_id][info],
+                                         "different value with key%s"%info)
 
     def test016_get_process_details(self):
         """ GAT-016

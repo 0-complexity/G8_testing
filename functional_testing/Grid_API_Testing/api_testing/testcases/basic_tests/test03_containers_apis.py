@@ -7,6 +7,7 @@ from api_testing.grid_apis.pyclient.nodes_apis import NodesAPI
 from api_testing.grid_apis.pyclient.containers_apis import ContainersAPI
 import json
 
+
 class TestcontaineridAPI(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -28,7 +29,7 @@ class TestcontaineridAPI(TestcasesBase):
                 break
         self.g8core = Client(self.g8os_ip)
 
-        self.root_url = "https://hub.gig.tech/deboeckj/flist-lede-17.01.0-r3205-59508e3-x86-64-generic-rootfs.flist"
+        self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
         self.storage = "ardb://hub.gig.tech:16379"
         self.container_name = self.rand_str()
         self.hostname = self.rand_str()
@@ -241,7 +242,6 @@ class TestcontaineridAPI(TestcasesBase):
         response = self.containers_api.get_containers_containerid_jobs_jobid(self.node_id, container_name, job_id)
         self.assertEqual(response.status_code, 200)
 
-    @unittest.skip("")
     def test007_kill_all_running_jobs(self):
         """ GAT-028
         *get:/node/{nodeid}/containers/containerid/jobs Expected: get container details*
@@ -435,9 +435,7 @@ class TestcontaineridAPI(TestcasesBase):
         container_state = response.json()
         container_id = int(list(self.g8core.client.container.find(container_name).keys())[0])
         golden_value = self.g8core.client.container.list()[str(container_id)]
-        self.assertAlmostEqual(golden_value['rss'], container_state['rss'], delta=1000000)
         self.assertEqual(golden_value['swap'], container_state['swap'])
-        self.assertAlmostEqual(golden_value['vms'], container_state['vms'], delta=10000000)
 
     def test013_get_info_of_container_os(self):
         """ GAT-034
@@ -499,9 +497,7 @@ class TestcontaineridAPI(TestcasesBase):
         for i, p in enumerate(processes):
             self.assertEqual(p['cmdline'], golden_values[i]['cmdline'])
             self.assertEqual(p['pid'], golden_values[i]['pid'])
-            self.assertAlmostEqual(p['rss'], golden_values[i]['rss'], delta=1000000)
             self.assertEqual(p['swap'], golden_values[i]['swap'])
-            self.assertAlmostEqual(p['vms'], golden_values[i]['vms'], delta=10000000)
 
     def test015_get_process_details_in_container(self):
         """ GAT-036
@@ -545,10 +541,9 @@ class TestcontaineridAPI(TestcasesBase):
         golden_value = container.process.list(process_id)[0]
 
         self.lg.info(' Compare results with golden value.')
-        self.assertAlmostEqual(golden_value.pop('rss'), process.pop('rss'), delta=1000000)
-        self.assertAlmostEqual(golden_value.pop('vms'), process.pop('vms'), delta=10000000)
+        skip_keys = ['cpu', 'vms', 'rss']
         for key in process:
-            if key == 'cpu':
+            if key in skip_keys:
                 continue
             if key in golden_value.keys():
                 self.assertEqual(golden_value[key], process[key])
@@ -645,7 +640,7 @@ class TestcontaineridAPI(TestcasesBase):
                                                                                        str(process_id), body)
         self.assertEqual(response.status_code, 204)
 
-    @unittest.skip('https://github.com/Jumpscale/go-raml/issues/280')
+    @unittest.skip('https://github.com/Jumpscale/go-raml/issues/297')
     def test018_upload_file_to_container(self):
         """ GAT-039
         *post:/node/{nodeid}/containers/containerid/filesystem  *
@@ -677,7 +672,7 @@ class TestcontaineridAPI(TestcasesBase):
                                                                             containername=self.container_name,
                                                                             data=body,
                                                                             params=params)
-        self.assertTrue(response.status_code,201)
+        self.assertEqual(response.status_code,204)
 
         self.lg.info('Check that file exist in container ')
         container=self.g8core.client.container.find(self.container_name)
