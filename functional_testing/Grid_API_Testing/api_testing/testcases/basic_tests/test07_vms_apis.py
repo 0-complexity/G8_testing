@@ -84,7 +84,7 @@ class TestVmsAPI(TestcasesBase):
     def create_boot_vdisk(self, storagecluster):
         body = {"id": 'ubuntu-test-vdisk',
                 "size": 15,
-                "blocksize": 4096,
+                "blocksize": 1024,
                 "type": 'boot',
                 "storagecluster": storagecluster,
                 "templatevdisk":"ardb://hub.gig.tech:16379/template:ubuntu-1604"}
