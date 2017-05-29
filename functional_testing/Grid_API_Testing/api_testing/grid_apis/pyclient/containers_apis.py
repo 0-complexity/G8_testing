@@ -122,7 +122,6 @@ class ContainersAPI(GridPyclientBase):
             return response
 
     def post_containers_containerid_ping(self, nodeid, containername):
-        #work around
         try:
             response = self.api_client.nodes.PingContainer(nodeid=nodeid, containername=containername, data={})
         except HTTPError as e:
