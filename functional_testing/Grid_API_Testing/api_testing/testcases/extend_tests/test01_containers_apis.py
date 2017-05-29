@@ -306,9 +306,9 @@ class TestcontaineridAPI(TestcasesBase):
         self.lg.info("Delete created bridge ")
         self.bridges_api.delete_nodes_bridges_bridgeid(self.node_id, bridge_name)
 
-    def test007_create_containers_with_multi_bridge(self):
+    def test007_create_containers_with_diff_bridges(self):
         """ GAT-088
-        *Test case for create containers with same bridge and make sure they can connect to each other *
+        *Test case for create containers with different bridges and make sure they can't connect to  each other through bridge ip *
 
         **Test Scenario:**
 
@@ -347,7 +347,7 @@ class TestcontaineridAPI(TestcasesBase):
         response = self.bridges_api.post_nodes_bridges(self.node_id, body1)
         self.assertEqual(response.status_code, 201, response.content)
         time.sleep(3)
-        
+
         response = self.bridges_api.post_nodes_bridges(self.node_id, body2)
         self.assertEqual(response.status_code, 201, response.content)
         time.sleep(3)
@@ -385,11 +385,11 @@ class TestcontaineridAPI(TestcasesBase):
         C1_br_ip = self.g8core.get_container_bridge_ip(C1_client, ip_range1)
         C2_br_ip = self.g8core.get_container_bridge_ip(C2_client, ip_range2)
 
-        self.lg.info("Check if first container (c1) can ping second container (c2), should succeed.")
+        self.lg.info("Check if first container (c1) can ping second container (c2), should fail.")
         response = C1_client.bash('ping -w 5 %s'%C2_br_ip).get()
         self.assertEqual(response.state, 'ERROR')
 
-        self.lg.info("Check if second container (c2) can ping first container (c1), should succeed.")
+        self.lg.info("Check if second container (c2) can ping first container (c1), should fail.")
         response = C2_client.bash('ping -w 5 %s'%C1_br_ip).get()
         self.assertEqual(response.state, 'ERROR')
 
@@ -399,7 +399,7 @@ class TestcontaineridAPI(TestcasesBase):
 
     def test008_Create_container_with_zerotier_network(self):
         """ GAT-089
-        *Test case for testing creating, listing, deleting bridges*
+        *Test case for create containers with same zerotier network *
 
         **Test Scenario:**
         #. Create Zerotier network using zerotier api ,should succeed.
@@ -756,7 +756,7 @@ class TestcontaineridAPI(TestcasesBase):
     def test013_create_container_with_filesystem(self):
         """ GAT-094
 
-        *Test case for test creation of containers with different network and with dns *
+        *Test case for test creation of containers with filesystem. *
 
         **Test Scenario:**
 
@@ -838,7 +838,7 @@ class TestcontaineridAPI(TestcasesBase):
         response = C2_client.bash("ls | grep %s"%file_name).get()
         self.assertEqual(response.state, 'ERROR')
 
-    def test015_Writing_in_containers_files_create_containers_with_open_ports(self):
+    def test015_create_containers_with_open_ports(self):
         """ GAT-096
 
         *Test case for test create containers with open ports*
