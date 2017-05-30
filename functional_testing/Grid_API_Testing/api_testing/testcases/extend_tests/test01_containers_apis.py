@@ -641,7 +641,7 @@ class TestcontaineridAPI(TestcasesBase):
     def test011_create_containers_with_gateway_network_in_config(self):
         """ GAT-092
 
-        *Test case for test creation of containers with different network and with dns *
+        *Test case for test creation of containers with gateway in configeration  *
 
         **Test Scenario:**
 
@@ -867,7 +867,7 @@ class TestcontaineridAPI(TestcasesBase):
                                                         "container %s status is halted"%self.container_name)
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
         C1_client = self.g8core.get_container_client(self.container_name)
-        self.g8core.timeout = 200
+        self.g8core.timeout = 300
         time.sleep(2)
         self.lg.info("Open server in container port ,should succeed")
         response = C1_client.bash("apt-get -y install python ").get()

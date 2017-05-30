@@ -249,9 +249,7 @@ class Client:
         if not ovs_exist:
             ovs_flist = "https://hub.gig.tech/gig-official-apps/ovs.flist"
             ovs = int(self.client.container.create(ovs_flist, host_network=True , tags=['ovs']).get().data)
-            self.ovs_client = self.client.container.client(ovs)
+            ovs_client = self.client.container.client(ovs)
             time.sleep(2)
-            self.ovs_client.json('ovs.bridge-add', {"bridge": "backplane"})
-            self.ovs_client.json('ovs.vlan-ensure', {'master': 'backplane', 'vlan': 2000, 'name': 'vxbackend'})
-        else:
-            ovs = int(ovs_exist[0])
+            ovs_client.json('ovs.bridge-add', {"bridge": "backplane"})
+            ovs_client.json('ovs.vlan-ensure', {'master': 'backplane', 'vlan': 2000, 'name': 'vxbackend'})
