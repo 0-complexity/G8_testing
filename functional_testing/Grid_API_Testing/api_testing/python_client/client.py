@@ -142,7 +142,6 @@ class Client:
         return processes
 
     def get_container_client(self,container_name):
-        import ipdb;ipdb.set_trace()
         container = self.client.container.find(container_name)
         if not container:
             return False
