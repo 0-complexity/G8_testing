@@ -5,6 +5,7 @@ from api_testing.utiles.utiles import Utiles
 from api_testing.grid_apis.pyclient.nodes_apis import NodesAPI
 from api_testing.grid_apis.pyclient.containers_apis import ContainersAPI
 import random
+import random, string
 import requests
 import time
 from testconfig import config
@@ -42,6 +43,9 @@ class TestcasesBase(TestCase):
 
     def rand_str(self):
         return str(uuid.uuid4()).replace('-', '')[1:10]
+
+    def rand_str_chars_only(self):
+        return(''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase) for _ in range(9)))
 
     def tearDown(self):
         pass

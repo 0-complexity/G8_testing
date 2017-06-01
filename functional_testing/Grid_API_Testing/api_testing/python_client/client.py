@@ -1,10 +1,10 @@
-import g8core
 import time
+from zeroos.core0 import client
 
 
 class Client:
     def __init__(self, ip):
-        self.client = g8core.Client(ip)
+        self.client = client.Client(ip)
 
     def stdout(self, resource):
         return resource.get().stdout.replace('\n', '').lower()
@@ -142,6 +142,7 @@ class Client:
         return processes
 
     def get_container_client(self,container_name):
+        import ipdb;ipdb.set_trace()
         container = self.client.container.find(container_name)
         if not container:
             return False
