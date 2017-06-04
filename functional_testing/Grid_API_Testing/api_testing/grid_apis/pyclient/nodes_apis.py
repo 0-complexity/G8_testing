@@ -1,6 +1,7 @@
 from api_testing.grid_apis.grid_pyclient_base import GridPyclientBase
 from requests import HTTPError
 
+
 class NodesAPI(GridPyclientBase):
     def __init__(self):
         super().__init__()
@@ -28,15 +29,15 @@ class NodesAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-    
+
     def get_nodes_nodeid_jobs_jobid(self, node_id, job_id):
         try:
             response = self.api_client.nodes.GetNodeJob(nodeid=node_id, jobid=job_id)
         except HTTPError as e:
             response = e.response
         finally:
-            return response 
-        
+            return response
+
     def delete_nodes_nodeid_jobs(self, node_id):
         try:
             response = self.api_client.nodes.KillAllNodeJobs(nodeid=node_id)
@@ -52,7 +53,7 @@ class NodesAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
+
     def post_nodes_nodeid_ping(self, node_id):
         ###work around
         try:
@@ -61,8 +62,7 @@ class NodesAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
-        
+
     def get_nodes_nodeid_state(self,node_id):
         try:
             response = self.api_client.nodes.GetNodeState(nodeid=node_id)
@@ -79,7 +79,7 @@ class NodesAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
+
     def get_nodes_nodeid_cpus(self,node_id):
         try:
             response = self.api_client.nodes.GetCPUInfo(nodeid=node_id)
@@ -95,7 +95,7 @@ class NodesAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
- 
+
     def get_nodes_nodeid_mem(self,node_id):
         try:
             response = self.api_client.nodes.GetMemInfo(nodeid=node_id)
@@ -103,7 +103,7 @@ class NodesAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
+
     def get_nodes_nodeid_nics(self, node_id):
         try:
             response = self.api_client.nodes.GetNicInfo(nodeid=node_id)
@@ -111,7 +111,7 @@ class NodesAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-    
+
     def get_nodes_nodeid_info(self,node_id):
         try:
             response = self.api_client.nodes.GetNodeOSInfo(nodeid=node_id)

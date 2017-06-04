@@ -9,6 +9,8 @@ import requests
 import time
 from testconfig import config
 from api_testing.testcases import NODES_INFO
+import signal
+from nose.tools import TimeExpired
 
 class TestcasesBase(TestCase):
     def __init__(self, *args, **kwargs):
@@ -17,7 +19,6 @@ class TestcasesBase(TestCase):
         self.nodes_api = NodesAPI()
         self.config = config['main']
         self.nodes = NODES_INFO
-        self.containers_api = ContainersAPI()
         self.lg = self.utiles.logging
         self.session = requests.Session()
         self.zerotier_token = self.config['zerotier_token']
@@ -25,7 +26,14 @@ class TestcasesBase(TestCase):
         self.createdcontainer=[]
 
     def setUp(self):
-        pass
+        self._testID = self._testMethodName
+        self._startTime = time.time()
+
+        def timeout_handler(signum, frame):
+            raise TimeExpired('Timeout expired before end of test %s' % self._testID)
+
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(600)
 
     def randomMAC(self):
         random_mac = [0x00, 0x16, 0x3e, random.randint(0x00, 0x7f), random.randint(0x00, 0xff), random.randint(0x00, 0xff)]
@@ -72,7 +80,6 @@ class TestcasesBase(TestCase):
     def delete_zerotier_network(self, nwid):
         url = 'https://my.zerotier.com/api/network/{}'.format(nwid)
         self.session.delete(url=url)
-       
 
     def wait_for_container_status(self, status, func, timeout=100, **kwargs):
         resource = func(**kwargs)
@@ -118,4 +125,3 @@ class TestcasesBase(TestCase):
             else:
                 self.createdcontainer.append({"node": node_id, "container": container_name})
                 return container_name
-                
