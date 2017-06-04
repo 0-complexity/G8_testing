@@ -8,7 +8,7 @@ ZEROTIER_NW_ID = None
 MACHINES_NUMBER = 1
 AUTO_DISCOVERING = True
 
-JUMPSACLE_BRANCH = "8.2.0"
+JUMPSACLE_BRANCH = "master"
 RELEASE_VERSION = "master"
 AYS_TEMPLATE_BRANCH = RELEASE_VERSION
 GRID_API_BRANCH = RELEASE_VERSION
@@ -44,12 +44,13 @@ if __name__ == '__main__':
     executer.create_port_forward(publicPorts={22: 2201, 5000: 5000})
     executer.connect_to_virtual_machine(port=2201)
     executer.update_machine()
+    executer.add_ssh_key()
     executer.install_zerotire()
     executer.add_node_to_zerotire_nw()
     executer.authorize_zerotire_member(member=executer.get_zerotire_info())
     executer.install_jumpscale(branch=JUMPSACLE_BRANCH)
     executer.install_zerotire_lib()
-    executer.install_g8core_python_client(branch=G8CORE_CLIENT)
+    executer.install_orchestrator_python_client(branch=G8CORE_CLIENT)
     executer.start_AYS_server()
     executer.clone_ays_templates(branch=AYS_TEMPLATE_BRANCH)
     executer.discover_g8os_nodes(auto_discovering=True)
@@ -62,6 +63,7 @@ if __name__ == '__main__':
     executer.create_port_forward(publicPorts={22: 2202, 8080: 8080})
     executer.connect_to_virtual_machine(port=2202)
     executer.update_machine()
+    executer.add_ssh_key()
     executer.install_zerotire()
     executer.add_node_to_zerotire_nw()
     executer.authorize_zerotire_member(member=executer.get_zerotire_info())
