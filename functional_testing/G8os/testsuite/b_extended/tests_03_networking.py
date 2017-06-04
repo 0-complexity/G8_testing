@@ -144,6 +144,7 @@ class ExtendedNetworking(BaseTest):
 
         self.lg('{} ENDED'.format(self._testID))
 
+    @unittest.skiptest('bug: https://github.com/zero-os/0-core/issues/291')
     def test003_create_bridges_with_specs_network(self):
         """ g8os-024
         *Test case for testing creating, listing, deleting bridges*
