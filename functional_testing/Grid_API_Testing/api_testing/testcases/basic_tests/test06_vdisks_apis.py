@@ -59,7 +59,7 @@ class TestVdisks(TestcasesBase):
         self.size = random.randint(1, 50)
         self.types = ['boot','db','cache','tmp']
         self.type = random.choice(self.types)
-        self.block_size = 1024
+        self.block_size = random.randint(1, self.size)*512
         self.storagecluster = sc_label
         self.readOnly = random.choice([False, True])
 
