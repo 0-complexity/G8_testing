@@ -212,7 +212,8 @@ class ExtendedNetworking(BaseTest):
         self.assertNotIn(bridge_name, bridges)
 
         self.lg('{} ENDED'.format(self._testID))
-
+ 
+    @unittest.skiptest('bug: https://github.com/zero-os/0-core/issues/291')
     def test004_attach_bridge_to_container(self):
         """ g8os-027
         *Test case for testing creating, listing, deleting bridges*
