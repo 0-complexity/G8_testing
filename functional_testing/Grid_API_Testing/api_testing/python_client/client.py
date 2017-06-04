@@ -203,3 +203,53 @@ class Client:
                     return True
             time.sleep(1)
         return False
+
+    def get_client_zt_ip(self, client):
+        nics = client.info.nic()
+        nic = [nic for nic in nics if 'zt' in nic['name']]
+        if not nic :
+            return False
+        address = nic[0]['addrs'][0]['addr']
+        if not address:
+            self.lg('can\'t find zerotier netowrk interface')
+            return False
+        return address[:address.find('/')]
+
+    def get_container_bridge_ip(self, client,ip_range):
+        nics = client.info.nic()
+
+        nic = [nic for nic in nics if nic['name'] == 'eth0']
+        if not nic :
+            return False
+        addresses = [x['addr'] for x in nic[0]['addrs'] if x['addr'][:x['addr'].find('/')] in ip_range]
+        if not addresses:
+            return False
+        address = addresses[0]
+
+        if not address:
+            self.lg('can\'t find bridge netowrk interface')
+            return False
+        return address[:address.find('/')]
+
+    def check_container_vlan_vxlan_ip(self, client, cidr_ip):
+        nics = client.info.nic()
+
+        nic = [nic for nic in nics if nic['name'] == 'eth1']
+        if not nic :
+            return False
+        address = [x['addr'] for x in nic[0]['addrs'] if x['addr'][:x['addr'].find('/')] == cidr_ip][0]
+        if not address:
+            self.lg('can\'t find netowrk interface')
+            return False
+        return True
+
+    def create_ovs_container(self):
+        containers = self.client.container.find('ovs')
+        ovs_exist = [key for key, value in containers.items()]
+        if not ovs_exist:
+            ovs_flist = "https://hub.gig.tech/gig-official-apps/ovs.flist"
+            ovs = int(self.client.container.create(ovs_flist, host_network=True , tags=['ovs']).get().data)
+            ovs_client = self.client.container.client(ovs)
+            time.sleep(2)
+            ovs_client.json('ovs.bridge-add', {"bridge": "backplane"})
+            ovs_client.json('ovs.vlan-ensure', {'master': 'backplane', 'vlan': 2000, 'name': 'vxbackend'})
