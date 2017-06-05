@@ -6,7 +6,7 @@ from api_testing.grid_apis.pyclient.vdisks_apis import VDisksAPIs
 from api_testing.python_client.client import Client
 import time, unittest
 
-
+@unittest.skip('https://github.com/g8os/resourcepool/issues/298')
 class TestVmsAPI(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -84,7 +84,7 @@ class TestVmsAPI(TestcasesBase):
     def create_boot_vdisk(self, storagecluster):
         body = {"id": 'ubuntu-test-vdisk',
                 "size": 15,
-                "blocksize": 4096,
+                "blocksize": 1024,
                 "type": 'boot',
                 "storagecluster": storagecluster,
                 "templatevdisk":"ardb://hub.gig.tech:16379/template:ubuntu-1604"}
