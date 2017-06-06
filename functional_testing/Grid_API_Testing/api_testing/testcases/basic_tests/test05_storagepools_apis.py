@@ -324,11 +324,11 @@ class TestStoragepoolsAPI(TestcasesBase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(device, [x['deviceName'][:-1] for x in response.json()])
 
-        #issue
+        #issue https://github.com/zero-os/0-orchestrator/issues/398
         # self.lg.info('Create device with invalid body, should fail with 400')
-        # body = []
+        # body = ""
         # response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'], body)
-        # self.assertEqual(response.status_code, 404)
+        # self.assertEqual(response.status_code, 400)
 
     @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/394')
     def test008_delete_storagepool_device(self):

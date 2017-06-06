@@ -97,7 +97,6 @@ class TestNodeidAPI(TestcasesBase):
                     self.assertEqual(job['startTime'], client_job['starttime'])
                     break
 
-    @unittest.skip(' ')
     def test004_kill_jobs(self):
         """ GAT-004
         *DELETE:/nodes/{nodeid}/jobs *
@@ -212,7 +211,7 @@ class TestNodeidAPI(TestcasesBase):
                                        client_state[key],
                                        delta=6000000,msg='different value for key%s'%key)
 
-    @unittest.skip("https://github.com/g8os/grid/issues/107")
+    @unittest.skip("https://github.com/zero-os/0-core/issues/125, wontfix")
     def test009_reboot_node(self):
         """ GAT-009
         *POST:/nodes/{nodeid}/reboot *
