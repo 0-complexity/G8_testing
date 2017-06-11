@@ -1,10 +1,10 @@
-import g8core
+import zeroos.core0.client as zeroos
 import time
 
 
 class Client:
     def __init__(self, ip):
-        self.client = g8core.Client(ip)
+        self.client = zeroos.Client(ip)
 
     def stdout(self, resource):
         return resource.get().stdout.replace('\n', '').lower()

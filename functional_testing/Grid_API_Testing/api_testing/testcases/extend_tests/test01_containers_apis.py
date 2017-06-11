@@ -4,7 +4,7 @@ import unittest
 from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.python_client.client import Client
 from api_testing.grid_apis.apis.nodes_apis import NodesAPI
-from api_testing.grid_apis.apis.containers_apis import ContainersAPI
+from api_testing.grid_apis.pyclient.containers_apis import ContainersAPI
 import json
 from api_testing.grid_apis.apis.bridges_apis import BridgesAPI
 from api_testing.grid_apis.apis.storagepools_apis import StoragepoolsAPI
@@ -14,6 +14,7 @@ from urllib.request import urlopen
 class TestcontaineridAPI(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.containers_api = ContainersAPI()
         self.bridges_api = BridgesAPI()
         self.storagepool_api = StoragepoolsAPI()
 
@@ -22,16 +23,9 @@ class TestcontaineridAPI(TestcasesBase):
     def setUp(self):
         self.lg.info('Choose one random node of list of running nodes.')
         self.node_id = self.get_random_node()
-        if self.node_id is None:
-            self.lg.info(' No node found')
-            return
-        self.node = {}
-        for node in self.nodes:
-            if node['id'] == self.node_id:
-                self.g8os_ip = node['ip']
-                self.node = node
-                break
-        self.g8core = Client(self.g8os_ip)
+        self.zeroos_ip= [x['ip'] for x in self.nodes if x['id'] == self.node_id]
+        self.assertTrue(self.zeroos_ip,'No node match the random node')
+        self.zeroos = Client(self.zeroos_ip[0])
         self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
         self.storage = "ardb://hub.gig.tech:16379"
         self.container_name = self.rand_str()
@@ -69,7 +63,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
 
         self.lg.info("Try to connect to internet from created container ,Should fail.")
-        container = self.g8core.get_container_client(self.container_name)
+        container = self.zeroos.get_container_client(self.container_name)
         self.assertTrue(container)
         response = container.bash('ping -c 5 google.com').get()
         self.assertEqual(response.state, 'ERROR')
@@ -98,7 +92,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
 
         self.lg.info("Try to connect to internet from created container ,Should succeed.")
-        container = self.g8core.get_container_client(self.container_name)
+        container = self.zeroos.get_container_client(self.container_name)
         self.assertTrue(container)
         response = container.bash('ping -c 5 google.com').get()
         self.assertEqual(response.state, 'SUCCESS')
@@ -135,7 +129,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
 
         self.lg.info("Check that container created with init process.")
-        container = self.g8core.get_container_client(self.container_name)
+        container = self.zeroos.get_container_client(self.container_name)
         response = container.bash("ls |grep  out.text").get()
         self.assertEqual(response.state, "SUCCESS")
         response = container.bash("cat out.text | grep %s"%stdin).get()
@@ -181,7 +175,7 @@ class TestcontaineridAPI(TestcasesBase):
                 self.assertEqual(response_data[key], self.container_body[key])
 
         self.lg.info("check that container created on node, should succeed")
-        self.assertTrue(self.g8core.client.container.find(self.container_name))
+        self.assertTrue(self.zeroos.client.container.find(self.container_name))
 
 
     @unittest.skip("https://github.com/g8os/core0/issues/228")
@@ -208,7 +202,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
 
         self.lg.info("Check that container doesn't has access to host dev files .")
-        container = self.g8core.get_container_client(self.container_name)
+        container = self.zeroos.get_container_client(self.container_name)
         response = container.bash("ls -alh").get().stdout
         for line in response.splitlines():
             if "dev" in line:
@@ -269,12 +263,12 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
 
         self.lg.info("Get two containers client C1_client and C2_client .")
-        C1_client = self.g8core.get_container_client(C1_name)
-        C2_client = self.g8core.get_container_client(C2_name)
+        C1_client = self.zeroos.get_container_client(C1_name)
+        C2_client = self.zeroos.get_container_client(C2_name)
 
         self.lg.info("Check that two containers get ip and they are in bridge range, should succeed ")
-        C1_br_ip = self.g8core.get_container_bridge_ip(C1_client, ip_range)
-        C2_br_ip = self.g8core.get_container_bridge_ip(C2_client, ip_range)
+        C1_br_ip = self.zeroos.get_container_bridge_ip(C1_client, ip_range)
+        C2_br_ip = self.zeroos.get_container_bridge_ip(C2_client, ip_range)
         self.assertNotEqual(C2_br_ip, C1_br_ip)
 
         self.lg.info("Check if first container (c1) can ping second container (c2), should succeed.")
@@ -297,7 +291,7 @@ class TestcontaineridAPI(TestcasesBase):
                                                         nodeid=self.node_id,
                                                         containername=C3_name))
         self.createdcontainer.append({"node": self.node_id, "container": C3_name})
-        C3_client = self.g8core.get_container_client(C3_name)
+        C3_client = self.zeroos.get_container_client(C3_name)
 
         self.lg.info("Check if third container (c3) can ping first container (c1), should fail.")
         response = C3_client.bash('ping -c 10 %s'%C1_br_ip).get()
@@ -378,12 +372,12 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
 
         self.lg.info("Get two containers client C1_client and C2_client .")
-        C1_client = self.g8core.get_container_client(C1_name)
-        C2_client = self.g8core.get_container_client(C2_name)
+        C1_client = self.zeroos.get_container_client(C1_name)
+        C2_client = self.zeroos.get_container_client(C2_name)
 
         self.lg.info("Check that two containers get ip and they are in bridge range, should succeed ")
-        C1_br_ip = self.g8core.get_container_bridge_ip(C1_client, ip_range1)
-        C2_br_ip = self.g8core.get_container_bridge_ip(C2_client, ip_range2)
+        C1_br_ip = self.zeroos.get_container_bridge_ip(C1_client, ip_range1)
+        C2_br_ip = self.zeroos.get_container_bridge_ip(C2_client, ip_range2)
 
         self.lg.info("Check if first container (c1) can ping second container (c2), should fail.")
         response = C1_client.bash('ping -w 5 %s'%C2_br_ip).get()
@@ -434,14 +428,14 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
 
         self.lg.info("Get two containers client C1_client and C2_client .")
-        C1_client = self.g8core.get_container_client(C1_name)
-        C2_client = self.g8core.get_container_client(C2_name)
+        C1_client = self.zeroos.get_container_client(C1_name)
+        C2_client = self.zeroos.get_container_client(C2_name)
 
         self.lg.info("Check that two containers get zerotier ip, should succeed ")
         time.sleep(5)
-        C1_Zt_ip = self.g8core.get_client_zt_ip(C1_client)
+        C1_Zt_ip = self.zeroos.get_client_zt_ip(C1_client)
         self.assertTrue(C1_Zt_ip)
-        C2_Zt_ip = self.g8core.get_client_zt_ip(C2_client)
+        C2_Zt_ip = self.zeroos.get_client_zt_ip(C2_client)
         self.assertTrue(C2_Zt_ip)
 
         self.lg.info("first container C1 ping second container C2 ,should succeed")
@@ -464,7 +458,7 @@ class TestcontaineridAPI(TestcasesBase):
                                                        nodeid=self.node_id,
                                                        containername=C3_name))
         self.createdcontainer.append({"node": self.node_id, "container": C3_name})
-        C3_client = self.g8core.get_container_client(C3_name)
+        C3_client = self.zeroos.get_container_client(C3_name)
 
         self.lg.info("Check if third container (c3) can ping first container (c1), should fail.")
         response = C3_client.bash('ping -c 10 %s'%C1_Zt_ip).get()
@@ -490,19 +484,19 @@ class TestcontaineridAPI(TestcasesBase):
 
         """
         self.lg.info("create ovs container")
-        self.g8core.create_ovs_container()
+        self.zeroos.create_ovs_container()
 
         self.lg.info("create two container with same vlan tag,should succeed")
 
         vlan1_id = random.randint(1, 2000)
-        C1_ip = "201.100.2.0"
-        C2_ip = "201.100.3.0"
+        C1_ip = "201.100.2.1"
+        C2_ip = "201.100.2.2"
 
         C1_name = self.rand_str()
         nic = [{'type': 'default'}, {'type': 'vlan', 'id': "%s"%vlan1_id, 'config': {'cidr':'%s/24'%C1_ip}}]
         self.container_body["nics"] = nic
         self.container_body["name"] = C1_name
-        response = self.containers_api.post_containers(self.node_id,self.container_body)
+        response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
@@ -521,24 +515,24 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
 
         self.lg.info("Get two containers client C1_client and C2_client.")
-        C1_client = self.g8core.get_container_client(C1_name)
-        C2_client = self.g8core.get_container_client(C2_name)
+        C1_client = self.zeroos.get_container_client(C1_name)
+        C2_client = self.zeroos.get_container_client(C2_name)
 
         self.lg.info("Check that two containers get correct vlan ip, should succeed ")
-        self.assertTrue(self.g8core.check_container_vlan_vxlan_ip(C1_client, C1_ip))
-        self.assertTrue(self.g8core.check_container_vlan_vxlan_ip(C2_client, C2_ip))
+        self.assertTrue(self.zeroos.check_container_vlan_vxlan_ip(C1_client, C1_ip))
+        self.assertTrue(self.zeroos.check_container_vlan_vxlan_ip(C2_client, C2_ip))
 
         self.lg.info("first container C1 ping second container C2 ,should succeed")
-        response = C1_client.bash('ping -w 2 %s'%C1_ip).get()
+        response = C1_client.bash('ping -w 2 %s'%C2_ip).get()
         self.assertEqual(response.state, "SUCCESS")
 
         self.lg.info("second container C2 ping first container C1 ,should succeed")
-        response = C2_client.bash('ping -w 2 %s'%C2_ip).get()
+        response = C2_client.bash('ping -w 2 %s'%C1_ip).get()
         self.assertEqual(response.state, "SUCCESS")
 
         self.lg.info("Create C3 with different vlan tag ")
         vlan2_id = random.randint(2001, 4096)
-        C3_ip = "200.200.4.0"
+        C3_ip = "201.100.2.3"
         C3_name = self.rand_str()
         nic = [{'type': 'default'}, {'type': 'vlan', 'id': "%s"%vlan2_id, 'config': {'cidr':'%s/24'%C3_ip}}]
         self.container_body["nics"] = nic
@@ -549,7 +543,7 @@ class TestcontaineridAPI(TestcasesBase):
                                                        nodeid=self.node_id,
                                                        containername=C3_name))
         self.createdcontainer.append({"node": self.node_id, "container": C3_name})
-        C3_client = self.g8core.get_container_client(C3_name)
+        C3_client = self.zeroos.get_container_client(C3_name)
         self.assertTrue(C3_client)
 
         self.lg.info("Check if third container (c3) can ping first container (c1), should fail.")
@@ -572,13 +566,13 @@ class TestcontaineridAPI(TestcasesBase):
         #. Check if third container (c3) can ping first container (c1), should fail.
         """
         self.lg.info("create ovs container")
-        self.g8core.create_ovs_container()
+        self.zeroos.create_ovs_container()
 
         self.lg.info("create two container with same vxlan id,should succeed")
 
         vxlan1_id = random.randint(5000, 6000)
-        C1_ip = "201.100.2.0"
-        C2_ip = "201.100.3.0"
+        C1_ip = "201.100.3.1"
+        C2_ip = "201.100.3.2"
 
         C1_name = self.rand_str()
         nic = [{'type': 'default'}, {'type': 'vxlan', 'id': "%s"%vxlan1_id, 'config': {'cidr':'%s/24'%C1_ip}}]
@@ -602,24 +596,24 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
 
         self.lg.info("Get two containers client C1_client and C2_client.")
-        C1_client = self.g8core.get_container_client(C1_name)
-        C2_client = self.g8core.get_container_client(C2_name)
+        C1_client = self.zeroos.get_container_client(C1_name)
+        C2_client = self.zeroos.get_container_client(C2_name)
 
         self.lg.info("Check that two containers get correct vxlan ip, should succeed ")
-        self.assertTrue(self.g8core.check_container_vlan_vxlan_ip(C1_client, C1_ip))
-        self.assertTrue(self.g8core.check_container_vlan_vxlan_ip(C2_client, C2_ip))
+        self.assertTrue(self.zeroos.check_container_vlan_vxlan_ip(C1_client, C1_ip))
+        self.assertTrue(self.zeroos.check_container_vlan_vxlan_ip(C2_client, C2_ip))
 
         self.lg.info("first container C1 ping second container C2 ,should succeed")
-        response = C1_client.bash('ping -w 5 %s'%C1_ip).get()
+        response = C1_client.bash('ping -w 5 %s'%C2_ip).get()
         self.assertEqual(response.state, "SUCCESS")
 
         self.lg.info("second container C2 ping first container C1 ,should succeed")
-        response = C2_client.bash('ping -w 5 %s'%C2_ip).get()
+        response = C2_client.bash('ping -w 5 %s'%C1_ip).get()
         self.assertEqual(response.state, "SUCCESS")
 
         self.lg.info("Create third container c3 with different vxlan Id,should succeed")
         vxlan2_id = random.randint(7000, 8000)
-        C3_ip = "200.200.4.0"
+        C3_ip = "201.100.3.3"
         C3_name = self.rand_str()
         nic = [{'type': 'default'}, {'type': 'vxlan', 'id': "%s"%vxlan2_id, 'config': {'cidr':'%s/24'%C3_ip}}]
         self.container_body["nics"] = nic
@@ -630,11 +624,13 @@ class TestcontaineridAPI(TestcasesBase):
                                                        nodeid=self.node_id,
                                                        containername=C3_name))
         self.createdcontainer.append({"node": self.node_id, "container": C3_name})
-        C3_client = self.g8core.get_container_client(C3_name)
+        C3_client = self.zeroos.get_container_client(C3_name)
         self.assertTrue(C3_client)
 
-        self.lg.info("Check if third container (c3) can ping first container (c1), should fail.")
+        self.lg.info("Check if third container (c3) can ping (c1) and (c2), should fail.")
         response = C3_client.bash('ping -w 5 %s'%C1_ip).get()
+        self.assertEqual(response.state, 'ERROR')
+        response = C3_client.bash('ping -w 5 %s'%C2_ip).get()
         self.assertEqual(response.state, 'ERROR')
 
     @unittest.skip("https://github.com/g8os/resourcepool/pull/293")
@@ -653,7 +649,7 @@ class TestcontaineridAPI(TestcasesBase):
         """
 
         self.lg.info("create ovs container")
-        self.g8core.create_ovs_container()
+        self.zeroos.create_ovs_container()
 
         self.lg.info("create container (C1) with type default in nic, should succeed")
         C1_name = self.rand_str()
@@ -683,8 +679,8 @@ class TestcontaineridAPI(TestcasesBase):
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
-        C1_client = self.g8core.get_container_client(C1_name)
-        C2_client = self.g8core.get_container_client(C2_name)
+        C1_client = self.zeroos.get_container_client(C1_name)
+        C2_client = self.zeroos.get_container_client(C2_name)
 
         self.lg.info("Check that C1  can ping second container C2 , should fail.")
         response = C1_client.bash("ping -w2 %s "%C_ip).get()
@@ -709,7 +705,7 @@ class TestcontaineridAPI(TestcasesBase):
         """
 
         self.lg.info("create ovs container")
-        self.g8core.create_ovs_container()
+        self.zeroos.create_ovs_container()
 
         self.lg.info("create container (C1) with type default in nic with dns , should succeed")
 
@@ -727,7 +723,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": C1_name})
 
         self.lg.info("Check if values of dns in /etc/resolve.conf ,should fail")
-        C1_client = self.g8core.get_container_client(C1_name)
+        C1_client = self.zeroos.get_container_client(C1_name)
         response = C1_client.bash('cat /etc/resolv.conf | grep %s'%dns).get()
         self.assertEqual(response.state,"ERROR")
 
@@ -747,7 +743,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
 
         self.lg.info("Check if values of dns in /etc/resolve.conf ,should succeed. ")
-        C2_client = self.g8core.get_container_client(C2_name)
+        C2_client = self.zeroos.get_container_client(C2_name)
         response = C2_client.bash('cat /etc/resolv.conf | grep %s'%dns).get()
         self.assertEqual(response.state, "SUCCESS")
         response = C2_client.bash('ping -c 2 %s'%dns).get()
@@ -785,7 +781,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
 
         self.lg.info("Check that file exist in /fs/storagepool_name/filesystem_name ,should succeed")
-        C_client = self.g8core.get_container_client(self.container_name)
+        C_client = self.zeroos.get_container_client(self.container_name)
         response = C_client.filesystem.list('/fs/%s'%storagepool_name)
         self.assertEqual(response[0]['name'], name)
 
@@ -822,8 +818,8 @@ class TestcontaineridAPI(TestcasesBase):
                                                        containername=C2_name),
                                                        "container %s status is halted"%self.container_name)
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
-        C1_client = self.g8core.get_container_client(C1_name)
-        C2_client = self.g8core.get_container_client(C2_name)
+        C1_client = self.zeroos.get_container_client(C1_name)
+        C2_client = self.zeroos.get_container_client(C2_name)
 
         self.lg.info("Create file in C1,should succeed.")
         file_name = self.rand_str()
@@ -866,8 +862,8 @@ class TestcontaineridAPI(TestcasesBase):
                                                         containername=self.container_name),
                                                         "container %s status is halted"%self.container_name)
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
-        C1_client = self.g8core.get_container_client(self.container_name)
-        self.g8core.timeout = 300
+        C1_client = self.zeroos.get_container_client(self.container_name)
+        self.zeroos.timeout = 300
         time.sleep(2)
         self.lg.info("Open server in container port ,should succeed")
         response = C1_client.bash("apt-get -y install python ").get()
@@ -917,14 +913,14 @@ class TestcontaineridAPI(TestcasesBase):
                                                        containername=self.container_name),
                                                        "container %s status is halted"%self.container_name)
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
-        C1_client = self.g8core.get_container_client(self.container_name)
+        C1_client = self.zeroos.get_container_client(self.container_name)
 
         self.lg.info('Send post  nodes/{nodeid}/containers/containerid/jobs api request.')
         response = self.containers_api.post_containers_containerid_jobs(self.node_id, self.container_name,
                                                                         job_body)
         self.assertEqual(response.status_code, 202)
         job_id = response.headers['Location'].split('/')[6]
-        self.assertTrue(self.g8core.wait_on_container_job_update(self.container_name, job_id, 15, False))
+        self.assertTrue(self.zeroos.wait_on_container_job_update(self.container_name, job_id, 15, False))
 
         self.lg.info("check that job created successfully with it's specs.")
         response = C1_client.bash("ls |grep  out.text").get()
