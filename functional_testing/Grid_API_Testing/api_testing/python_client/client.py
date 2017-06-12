@@ -1,10 +1,10 @@
-import g8core
+from zeroos.core0.client import Client as core0_client
 import time
 
 
 class Client:
     def __init__(self, ip):
-        self.client = g8core.Client(ip)
+        self.client = core0_client(ip)
 
     def stdout(self, resource):
         return resource.get().stdout.replace('\n', '').lower()
@@ -68,24 +68,41 @@ class Client:
         return {"hostname":hostname, "os":krn_name}
 
     def get_nodes_disks(self):
-        diskInfo = []
-        diskInfo_format = {'mountpoint':"", 'fstype': "", 'device': [], 'size': 0}
-        response = self.client.disk.list()
-        disks = response['blockdevices']
+        disks_info = []
+        disks = self.client.disk.list()['blockdevices']
         for disk in disks:
-            item = dict(diskInfo_format)
-            if disk['mountpoint']:
-                item['mountpoint'] = disk['mountpoint']
+            disk_type = None
+            disk_parts = []
+            if 'children' in disk.keys():
+                for part in disk['children']:
+                    disk_parts.append({
+                        "name": '/dev/{}'.format(part['name']),
+                        "size": int(int(part['size'])/1073741824),
+                        "partuuid": part['partuuid'],
+                        "label": part['label'],
+                        "fstype": part['fstype']
+                    })
 
-            if disk['fstype']!= None:
-                item['fstype'] = disk['fstype']
+            if int(disk['rota']):
+                if int(disk['size']) > (1073741824**1024*7):
+                    disk_type = 'archive'
+                else:
+                    disk_type = 'hdd'
+            else:
+                if 'nvme' in disk['name']:
+                    disk_type = 'nvme'
+                else:
+                    disk_type = 'ssd'
+            
+            disks_info.append({
+                "device": '/dev/{}'.format(disk['name']),
+                "size": int(int(disk['size'])/1073741824),
+                "type": disk_type,
+                "partitions": disk_parts
+            })
 
-            item['device'] = '/dev/%s'%disk['name']
+        return disks_info
 
-            if int(disk['size']) >= 1073741824:
-                item['size'] = int(int(disk['size'])/(1024*1024*1024))
-            diskInfo.append(item)
-        return diskInfo
 
     def get_jobs_list(self):
         jobs = self.client.job.list()

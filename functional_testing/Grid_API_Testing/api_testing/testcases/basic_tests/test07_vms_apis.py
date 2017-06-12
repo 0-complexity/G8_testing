@@ -84,7 +84,7 @@ class TestVmsAPI(TestcasesBase):
     def create_boot_vdisk(self, storagecluster):
         body = {"id": 'ubuntu-test-vdisk',
                 "size": 15,
-                "blocksize": 1024,
+                "blocksize": 4096,
                 "type": 'boot',
                 "storagecluster": storagecluster,
                 "templatevdisk":"ardb://hub.gig.tech:16379/template:ubuntu-1604"}
@@ -530,11 +530,14 @@ class TestVmsAPI(TestcasesBase):
         #. Shutdown virtual machine (VM0), should succeed with 204.
         #. Get virtual machine (VM0), virtual machine (VM0) status should be halted.
         """
+        self.lg.info('Create virtual machine (VM0) on node (N0)')
+        vm = self.create_vm()
+
         self.lg.info('Shutdown virtual machine (VM0), should succeed with 204')
-        response = self.vms_api.post_nodes_vms_vmid_shutdown(self.nodeid, self.vm_id)
+        response = self.vms_api.post_nodes_vms_vmid_shutdown(self.nodeid, vm['id'])
         self.assertEqual(response.status_code, 204)
         for _ in range(15):
-            response = self.vms_api.get_nodes_vms_vmid(self.nodeid, self.vm_id)
+            response = self.vms_api.get_nodes_vms_vmid(self.nodeid, vm['id'])
             self.assertEqual(response.status_code, 200)
             status = response.json()['status']
             if status in ['halting', 'halted']:
@@ -545,7 +548,7 @@ class TestVmsAPI(TestcasesBase):
             raise AssertionError('{} not {}'.format(status, 'halting or halted'))
 
         vms = self.pyclient.client.kvm.list()
-        vm0 = [x for x in vms if x['name'] == self.vm_id]
+        vm0 = [x for x in vms if x['name'] == vm['id']]
         self.assertEqual(vm0, [])
 
     @unittest.skip('https://github.com/g8os/resourcepool/issues/215')
@@ -561,28 +564,24 @@ class TestVmsAPI(TestcasesBase):
         if len(self.nodes) < 2:
             self.skipTest('need at least 2 nodes')
 
+        self.lg.info('Create virtual machine (VM0) on node (N0)')
+        vm = self.create_vm()
+
         self.lg.info('Migrate virtual machine (VM0) to another node, should succeed with 204')
         node_2 = self.get_random_node(except_node=self.nodeid)
         body = {"nodeid": node_2}
-        response = self.vms_api.post_nodes_vms_vmid_migrate(self.nodeid, self.vm_id, body)
+        response = self.vms_api.post_nodes_vms_vmid_migrate(self.nodeid, vm['id'], body)
         self.assertEqual(response.status_code, 204)
 
-        for _ in range(15):
-            response = self.vms_api.get_nodes_vms_vmid(self.nodeid, self.vm_id)
-            self.assertEqual(response.status_code, 200)
-            status = response.json()['status']
-            if status == 'running':
-                break
-            else:
-                time.sleep(1)
+        time.sleep(30)
         
-        response = self.vms_api.get_nodes_vms_vmid(node_2, self.vm_id)
+        response = self.vms_api.get_nodes_vms_vmid(node_2, vm['id'])
         self.assertEqual(response.status_code, 200)
 
         pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == node_2]
         self.assertNotEqual(pyclient_ip, [])
         pyclient = Client(pyclient_ip)
         vms = pyclient.client.kvm.list()
-        self.assertIn(self.vm_id, [x['name'] for x in vms])
+        self.assertIn(vm['id'], [x['name'] for x in vms])
 
 

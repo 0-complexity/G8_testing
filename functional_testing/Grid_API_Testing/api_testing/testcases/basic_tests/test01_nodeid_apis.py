@@ -97,7 +97,6 @@ class TestNodeidAPI(TestcasesBase):
                     self.assertEqual(job['startTime'], client_job['starttime'])
                     break
 
-    @unittest.skip(' ')
     def test004_kill_jobs(self):
         """ GAT-004
         *DELETE:/nodes/{nodeid}/jobs *
@@ -212,7 +211,7 @@ class TestNodeidAPI(TestcasesBase):
                                        client_state[key],
                                        delta=6000000,msg='different value for key%s'%key)
 
-    @unittest.skip("https://github.com/g8os/grid/issues/107")
+    @unittest.skip("https://github.com/zero-os/0-core/issues/125, wontfix")
     def test009_reboot_node(self):
         """ GAT-009
         *POST:/nodes/{nodeid}/reboot *
@@ -256,7 +255,7 @@ class TestNodeidAPI(TestcasesBase):
                     if key != 'cores' and key != 'mhz':
                         self.assertEqual(cpu_info[key], result[i][key], "different cpu info for key %s"%key)
 
-    @unittest.skip('https://github.com/g8os/resourcepool/issues/219')
+
     def test011_get_disks_details(self):
         """ GAT-011
         *GET:/nodes/{nodeid}/disks *
@@ -270,15 +269,10 @@ class TestNodeidAPI(TestcasesBase):
         self.lg.info('get /nodes/{nodeid}/disks api.')
         response = self.nodes_api.get_nodes_nodeid_disks(node_id=self.node_id)
         self.assertEqual(response.status_code, 200)
-        disks_info=response.json()
+        disks_info = response.json()
         self.lg.info('compare response data with the golden values.')
         result = self.python_client.get_nodes_disks()
-        for disk_info in disks_info:
-            for disk in result:
-                if disk['device'] == disk_info['device']:
-                    for key in disk.keys():
-                        self.assertEqual(disk_info[key], disk[key], "different value for key%s"%key)
-                    break
+        self.assertEqual(result, disks_info)
 
     def test012_get_memmory_details(self):
         """ GAT-012
