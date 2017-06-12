@@ -1,10 +1,10 @@
-import g8core
+import zeroos.core0.client as zeroos
 import time
 
 
 class Client:
     def __init__(self, ip):
-        self.client = g8core.Client(ip)
+        self.client = zeroos.Client(ip)
 
     def stdout(self, resource):
         return resource.get().stdout.replace('\n', '').lower()
@@ -233,15 +233,12 @@ class Client:
 
     def check_container_vlan_vxlan_ip(self, client, cidr_ip):
         nics = client.info.nic()
-
-        nic = [nic for nic in nics if nic['name'] == 'eth1']
-        if not nic :
-            return False
-        address = [x['addr'] for x in nic[0]['addrs'] if x['addr'][:x['addr'].find('/')] == cidr_ip][0]
-        if not address:
-            self.lg('can\'t find netowrk interface')
-            return False
-        return True
+        for nic in nics:
+            address = [x['addr'] for x in nic['addrs'] if x['addr'][:x['addr'].find('/')] == cidr_ip]
+            if address:
+                return True
+        self.lg('can\'t find netowrk interface')
+        return False
 
     def create_ovs_container(self):
         containers = self.client.container.find('ovs')
