@@ -545,6 +545,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": C3_name})
         C3_client = self.zeroos.get_container_client(C3_name)
         self.assertTrue(C3_client)
+        self.assertTrue(self.zeroos.check_container_vlan_vxlan_ip(C3_client, C3_ip))
 
         self.lg.info("Check if third container (c3) can ping first container (c1), should fail.")
         response = C3_client.bash('ping -w 2 %s'%C1_ip).get()
@@ -626,6 +627,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.createdcontainer.append({"node": self.node_id, "container": C3_name})
         C3_client = self.zeroos.get_container_client(C3_name)
         self.assertTrue(C3_client)
+        self.assertTrue(self.zeroos.check_container_vlan_vxlan_ip(C3_client, C3_ip))
 
         self.lg.info("Check if third container (c3) can ping (c1) and (c2), should fail.")
         response = C3_client.bash('ping -w 5 %s'%C1_ip).get()
@@ -929,3 +931,95 @@ class TestcontaineridAPI(TestcasesBase):
         self.assertEqual(response.state, "SUCCESS", "job didn't get stdin correctly")
         response = C1_client.bash("cat out.text | grep %s"%Environmentvaraible).get()
         self.assertEqual(response.state, "SUCCESS", "job didn't get Env varaible  correctly")
+
+    def test017_Create_containers_with_common_vlan(self):
+        """ GAT-098
+
+        *Test case for test creation of containers with cmmon vlan  network*
+
+        **Test Scenario:**
+
+        #. Create ovs container .
+        #. Create C1 which is binding to vlan1 and vlan2.
+        #. Create C2 which is binding to vlan1.
+        #. Create C3 which is binding to vlan2.
+        #. Check that containers get correct vlan ip, should succeed
+        #. Check that C1 can ping C2 and C3 ,should succeed.
+        #. Check that C2 can ping C1 and can't ping C3, should succeed.
+        #. Check that C3 can ping C1 and can't ping C2,should succeed.
+
+        """
+        self.lg.info("create ovs container")
+        self.zeroos.create_ovs_container()
+        vlan1_id, vlan2_id = random.sample(range(1, 4096), 2)
+        C1_ip_vlan1 = "201.100.2.1"
+        C1_ip_vlan2 = "201.100.3.1"
+        C2_ip = "201.100.2.2"
+        C3_ip = "201.100.3.2"
+
+        self.lg.info("Create C1 which is binding to vlan1 and vlan2.")
+        C1_name = self.rand_str()
+        nic = [{'type': 'vlan', 'id': "%s"%vlan1_id, 'config': {'cidr':'%s/24'%C1_ip_vlan1}},{'type': 'vlan', 'id': "%s"%vlan2_id, 'config': {'cidr':'%s/24'%C1_ip_vlan2}}]
+        self.container_body["nics"] = nic
+        self.container_body["name"] = C1_name
+        response = self.containers_api.post_containers(self.node_id, self.container_body)
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+                                                       nodeid=self.node_id,
+                                                       containername=C1_name))
+        self.createdcontainer.append({"node": self.node_id, "container": C1_name})
+
+        self.lg.info("Create C2 which is binding to vlan1.")
+        C2_name = self.rand_str()
+        nic = [{'type': 'vlan', 'id': "%s"%vlan1_id, 'config': {'cidr':'%s/24'%C2_ip}}]
+        self.container_body["nics"] = nic
+        self.container_body["name"] = C2_name
+        response = self.containers_api.post_containers(self.node_id, self.container_body)
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+                                                       nodeid=self.node_id,
+                                                       containername=C2_name))
+        self.createdcontainer.append({"node": self.node_id, "container": C2_name})
+
+        self.lg.info("Create C3 which is binding to vlan2.")
+        C3_name = self.rand_str()
+        nic = [{'type': 'vlan', 'id': "%s"%vlan2_id, 'config': {'cidr': '%s/24'%C3_ip}}]
+        self.container_body["nics"] = nic
+        self.container_body["name"] = C3_name
+        response = self.containers_api.post_containers(self.node_id, self.container_body)
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+                                                       nodeid=self.node_id,
+                                                       containername=C3_name))
+        self.createdcontainer.append({"node": self.node_id, "container": C3_name})
+
+        self.lg.info("Get three containers client C1_client ,C2_client ansd C3_client.")
+        C1_client = self.zeroos.get_container_client(C1_name)
+        C2_client = self.zeroos.get_container_client(C2_name)
+        C3_client = self.zeroos.get_container_client(C3_name)
+
+        self.lg.info("Check that containers get correct vlan ip, should succeed ")
+        self.assertTrue(self.zeroos.check_container_vlan_vxlan_ip(C1_client, C1_ip_vlan1))
+        self.assertTrue(self.zeroos.check_container_vlan_vxlan_ip(C1_client, C1_ip_vlan2))
+        self.assertTrue(self.zeroos.check_container_vlan_vxlan_ip(C2_client, C2_ip))
+        self.assertTrue(self.zeroos.check_container_vlan_vxlan_ip(C3_client, C3_ip))
+
+        self.lg.info("Check that C1 can ping C2 and C3 ,should succeed.")
+        response = C1_client.bash('ping -w 5 %s'%C2_ip).get()
+        self.assertEqual(response.state, "SUCCESS")
+        response = C1_client.bash('ping -w 5 %s'%C3_ip).get()
+        self.assertEqual(response.state, "SUCCESS")
+
+        self.lg.info("Check that C2 can ping C1 and can't ping C3, should succeed.")
+        response = C2_client.bash('ping -w 5 %s'%C1_ip_vlan1).get()
+        self.assertEqual(response.state, "SUCCESS")
+
+        response = C2_client.bash('ping -w 5 %s'%C3_ip).get()
+        self.assertEqual(response.state, "ERROR")
+
+        self.lg.info("Check that C3 can ping C1 and can't ping C2, should succeed.")
+        response = C3_client.bash('ping -w 5 %s'%C1_ip_vlan2).get()
+        self.assertEqual(response.state, "SUCCESS")
+
+        response = C3_client.bash('ping -w 5 %s'%C2_ip).get()
+        self.assertEqual(response.state, "ERROR")
