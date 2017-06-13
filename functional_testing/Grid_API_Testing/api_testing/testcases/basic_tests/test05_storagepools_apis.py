@@ -1,7 +1,7 @@
 import  random
 from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.grid_apis.pyclient.storagepools_apis import StoragepoolsAPI
-from api_testing.python_client.client import Client
+from api_testing.utiles.core0_client import Client
 import unittest, time
 
 class TestStoragepoolsAPI(TestcasesBase):
