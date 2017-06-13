@@ -222,11 +222,12 @@ class Client:
         if not nic :
             return False
         addresses = [x['addr'] for x in nic[0]['addrs'] if x['addr'][:x['addr'].find('/')] in ip_range]
-        if not addresses:
+        if not addresses: 
             return False
         address = addresses[0]
 
-        if not address:
+        if not address: ## this part is useless the previous part checks that the addresses have at least on item, just
+            ## move the log message before the return Fales line 
             self.lg('can\'t find bridge netowrk interface')
             return False
         return address[:address.find('/')]
