@@ -56,12 +56,11 @@ class TestVmsAPI(TestcasesBase):
         label = self.rand_str()
         servers = random.randint(1, len(free_disks))
         drivetype = 'ssd'
-        slaveNodes = False
         nodes = [self.nodeid]
         body = {"label": label,
                 "servers": servers,
                 "driveType": drivetype,
-                "slaveNodes": slaveNodes,
+                "clusterType": "storage",
                 "nodes":nodes}
 
         self.storageclusters_api.post_storageclusters(body)
