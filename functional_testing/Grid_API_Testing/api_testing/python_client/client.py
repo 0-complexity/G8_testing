@@ -1,10 +1,10 @@
-import time
-from zeroos.core0 import client
 
+from zeroos.core0.client import Client as core0_client
+import time
 
 class Client:
     def __init__(self, ip):
-        self.client = client.Client(ip)
+        self.client = core0_client(ip)
 
     def stdout(self, resource):
         return resource.get().stdout.replace('\n', '').lower()
@@ -68,24 +68,41 @@ class Client:
         return {"hostname":hostname, "os":krn_name}
 
     def get_nodes_disks(self):
-        diskInfo = []
-        diskInfo_format = {'mountpoint':"", 'fstype': "", 'device': [], 'size': 0}
-        response = self.client.disk.list()
-        disks = response['blockdevices']
+        disks_info = []
+        disks = self.client.disk.list()['blockdevices']
         for disk in disks:
-            item = dict(diskInfo_format)
-            if disk['mountpoint']:
-                item['mountpoint'] = disk['mountpoint']
+            disk_type = None
+            disk_parts = []
+            if 'children' in disk.keys():
+                for part in disk['children']:
+                    disk_parts.append({
+                        "name": '/dev/{}'.format(part['name']),
+                        "size": int(int(part['size'])/1073741824),
+                        "partuuid": part['partuuid'],
+                        "label": part['label'],
+                        "fstype": part['fstype']
+                    })
 
-            if disk['fstype']!= None:
-                item['fstype'] = disk['fstype']
+            if int(disk['rota']):
+                if int(disk['size']) > (1073741824**1024*7):
+                    disk_type = 'archive'
+                else:
+                    disk_type = 'hdd'
+            else:
+                if 'nvme' in disk['name']:
+                    disk_type = 'nvme'
+                else:
+                    disk_type = 'ssd'
+            
+            disks_info.append({
+                "device": '/dev/{}'.format(disk['name']),
+                "size": int(int(disk['size'])/1073741824),
+                "type": disk_type,
+                "partitions": disk_parts
+            })
 
-            item['device'] = '/dev/%s'%disk['name']
+        return disks_info
 
-            if int(disk['size']) >= 1073741824:
-                item['size'] = int(int(disk['size'])/(1024*1024*1024))
-            diskInfo.append(item)
-        return diskInfo
 
     def get_jobs_list(self):
         jobs = self.client.job.list()
@@ -203,3 +220,53 @@ class Client:
                     return True
             time.sleep(1)
         return False
+
+    def get_client_zt_ip(self, client):
+        nics = client.info.nic()
+        nic = [nic for nic in nics if 'zt' in nic['name']]
+        if not nic :
+            return False
+        address = nic[0]['addrs'][0]['addr']
+        if not address:
+            self.lg('can\'t find zerotier netowrk interface')
+            return False
+        return address[:address.find('/')]
+
+    def get_container_bridge_ip(self, client,ip_range):
+        nics = client.info.nic()
+
+        nic = [nic for nic in nics if nic['name'] == 'eth0']
+        if not nic :
+            return False
+        addresses = [x['addr'] for x in nic[0]['addrs'] if x['addr'][:x['addr'].find('/')] in ip_range]
+        if not addresses:
+            return False
+        address = addresses[0]
+
+        if not address:
+            self.lg('can\'t find bridge netowrk interface')
+            return False
+        return address[:address.find('/')]
+
+    def check_container_vlan_vxlan_ip(self, client, cidr_ip):
+        nics = client.info.nic()
+
+        nic = [nic for nic in nics if nic['name'] == 'eth1']
+        if not nic :
+            return False
+        address = [x['addr'] for x in nic[0]['addrs'] if x['addr'][:x['addr'].find('/')] == cidr_ip][0]
+        if not address:
+            self.lg('can\'t find netowrk interface')
+            return False
+        return True
+
+    def create_ovs_container(self):
+        containers = self.client.container.find('ovs')
+        ovs_exist = [key for key, value in containers.items()]
+        if not ovs_exist:
+            ovs_flist = "https://hub.gig.tech/gig-official-apps/ovs.flist"
+            ovs = int(self.client.container.create(ovs_flist, host_network=True , tags=['ovs']).get().data)
+            ovs_client = self.client.container.client(ovs)
+            time.sleep(2)
+            ovs_client.json('ovs.bridge-add', {"bridge": "backplane"})
+            ovs_client.json('ovs.vlan-ensure', {'master': 'backplane', 'vlan': 2000, 'name': 'vxbackend'})

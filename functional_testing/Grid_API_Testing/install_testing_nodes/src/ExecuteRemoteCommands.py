@@ -1,4 +1,4 @@
-import paramiko, time
+import paramiko, time, subprocess
 from install_testing_nodes.src.RequestEnvAPI import RequestEnvAPI
 from termcolor import colored
 
@@ -87,14 +87,13 @@ class ExecuteRemoteCommands(RequestEnvAPI):
             self.logging.info(' [-] Failed!')
             print(colored(' [-] Failed!', 'red'))
 
-    def install_g8core_python_client(self, branch):
-        self.logging.info(' [*] Installing g8core python client .... ')
-        print(colored(' [*] Installing g8core python client .... ', 'white'))
-        command = """echo echo 'cd $TMPDIR;\ngit clone https://github.com/g8os/core0/\ncd core0\ngit checkout %s\ncd pyclient\npip install .\n' > g8_python_client.sh""" % branch
+    def install_orchestrator_python_client(self, branch):
+        self.logging.info(' [*] Installing orchestrator python client .... ')
+        print(colored(' [*] Installing orchestratorpython client .... ', 'white'))
+        command = """echo echo 'cd $TMPDIR;\ngit clone https://github.com/zero-os/0-orchestrator.git\ncd 0-orchestrator\ngit checkout %s\ncd py-client\npip install .\n' > orchestrator_pyclient.sh""" % branch
         self.execute_command(command=command, skip_error=True)
 
-        command = 'echo %s | sudo -S bash g8_python_client.sh' % self.virtualmachine['password']
-        # command = 'echo %s | sudo -S pip3 install g8core' % self.virtualmachine['password']
+        command = 'echo %s | sudo -S bash orchestrator_pyclient.sh' % self.virtualmachine['password']
         self.execute_command(command=command)
 
     def start_AYS_server(self):
@@ -192,3 +191,27 @@ class ExecuteRemoteCommands(RequestEnvAPI):
         command = 'echo %s | sudo -S bash -c "zerotier-cli info" ' % self.virtualmachine['password']
         info = self.execute_command(command=command)[0].split()
         return info[2]
+
+    def add_ssh_key(self):
+        s = subprocess.Popen('cat ~/.ssh/id_rsa.pub', shell=True, stdout=subprocess.PIPE)
+        ssh_key = s.stdout.readlines()[0].decode('utf-8')
+        cmd = 'echo %s >> /root/.ssh/authorized_keys' % ssh_key
+        self.execute_command(cmd)
+
+
+    def install_jumpscale9(self, branch):
+        self.logging.info(' [*] Installing jumpscale9 .... ')
+        print(colored(' [*] Installing jumpscale .... ', 'white'))
+        command = """echo 'apt-get install -y python3-pip && pip3 install git+https://github.com/gigforks/PyInotify && cd /tmp && export GIGBRANCH="%s" && curl https://raw.githubusercontent.com/Jumpscale/developer/master/jsinit.sh?$RANDOM > /tmp/jsinit.sh; bash /tmp/jsinit.sh' > jsInstaller.sh""" % branch
+        self.execute_command(command=command, skip_error=True)
+        command = """ echo %s | sudo -S bash -c "tmux new-session -d -s installJS 'bash jsInstaller.sh; bash -i'" """ % \
+                  self.virtualmachine['password']
+        self.execute_command(command=command, skip_error=True)
+
+        for _ in range(15):
+            command = 'which js'
+            tracback = self.execute_command(command=command, skip_error=True)
+            if not tracback:
+                time.sleep(60)
+            else:
+                break

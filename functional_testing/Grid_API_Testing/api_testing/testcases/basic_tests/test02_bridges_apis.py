@@ -4,7 +4,6 @@ from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.grid_apis.pyclient.bridges_apis import BridgesAPI
 from api_testing.python_client.client import Client
 
-
 class TestBridgesAPI(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
