@@ -4,7 +4,6 @@ from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.grid_apis.pyclient.bridges_apis import BridgesAPI
 from api_testing.python_client.client import Client
 
-# @unittest.skip('bugs: #113, #104, #105')
 class TestBridgesAPI(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -37,7 +36,6 @@ class TestBridgesAPI(TestcasesBase):
         self.bridges_api.delete_nodes_bridges_bridgeid(self.nodeid, self.name)
         super(TestBridgesAPI, self).tearDown()
 
-    # @unittest.skip('bug: #105')
     def test001_get_bridges_bridgeid(self):
         """ GAT-018
         *GET:/nodes/{nodeid}/bridges/{bridgeid} *
@@ -57,10 +55,9 @@ class TestBridgesAPI(TestcasesBase):
         bridges = self.pyclient.client.bridge.list()
         self.assertIn(self.name, bridges)
 
-        #issue #143
-        # self.lg.info('Get nonexisting bridge, should fail with 404')
-        # response = self.bridges_api.get_nodes_bridges_bridgeid(self.nodeid, 'fake_bridge')
-        # self.assertEqual(response.status_code, 404)
+        self.lg.info('Get nonexisting bridge, should fail with 404')
+        response = self.bridges_api.get_nodes_bridges_bridgeid(self.nodeid, 'fake_bridge')
+        self.assertEqual(response.status_code, 404)
 
     def test002_list_node_bridges(self):
         """ GAT-019
@@ -114,7 +111,6 @@ class TestBridgesAPI(TestcasesBase):
         nics = self.pyclient.client.info.nic()
         self.assertEqual(hwaddr, [x['hardwareaddr'] for x in nics if x['name'] == name ][0])
 
-        #bug #104
         self.lg.info('Get bridge (B0), should succeed with 200')
         response = self.bridges_api.get_nodes_bridges(self.nodeid)
         self.assertEqual(response.status_code, 200)
@@ -142,7 +138,6 @@ class TestBridgesAPI(TestcasesBase):
         bridges = self.pyclient.client.bridge.list()
         self.assertNotIn(self.name, bridges)
 
-        #bug #104
         self.lg.info('List node (N0) bridges, (B0) should be gone')
         response = self.bridges_api.get_nodes_bridges(self.nodeid)
         self.assertEqual(response.status_code, 200)

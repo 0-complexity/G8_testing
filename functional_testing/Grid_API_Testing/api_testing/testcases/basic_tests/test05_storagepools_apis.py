@@ -244,7 +244,6 @@ class TestStoragepoolsAPI(TestcasesBase):
         response = self.storagepool_api.delete_storagepools_storagepoolname(self.nodeid, 'fake_storagepool')
         self.assertEqual(response.status_code, 404)
 
-    @unittest.skip('https://github.com/g8os/resourcepool/issues/93')
     def test005_get_storagepool_device(self):
         """ GAT-049
         **Test Scenario:**
@@ -273,7 +272,6 @@ class TestStoragepoolsAPI(TestcasesBase):
         response = self.storagepool_api.get_storagepools_storagepoolname_devices_deviceid(self.nodeid, storagepool['name'], 'fake_device')
         self.assertEqual(response.status_code, 404)
 
-    @unittest.skip('https://github.com/g8os/resourcepool/issues/93')
     def test006_list_storagepool_devices(self):
         """ GAT-050
         **Test Scenario:**
@@ -291,7 +289,6 @@ class TestStoragepoolsAPI(TestcasesBase):
         self.assertEqual(len(response.json()), len(storagepool['devices']))
         self.assertEqual(response.json()[0]['status'], 'healthy')
 
-    @unittest.skip('https://github.com/g8os/resourcepool/issues/93')
     def test007_post_storagepool_device(self):
         """ GAT-051
         **Test Scenario:**
@@ -327,12 +324,13 @@ class TestStoragepoolsAPI(TestcasesBase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(device, [x['deviceName'][:-1] for x in response.json()])
 
-        self.lg.info('Create device with invalid body, should fail with 400')
-        body = self.random_string()
-        response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'], body)
-        self.assertEqual(response.status_code, 404)
+        #issue https://github.com/zero-os/0-orchestrator/issues/398
+        # self.lg.info('Create device with invalid body, should fail with 400')
+        # body = ""
+        # response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'], body)
+        # self.assertEqual(response.status_code, 400)
 
-    @unittest.skip('https://github.com/g8os/resourcepool/issues/93')
+    @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/394')
     def test008_delete_storagepool_device(self):
         """ GAT-052
         **Test Scenario:**
