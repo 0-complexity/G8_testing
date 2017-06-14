@@ -187,8 +187,7 @@ class ImagesTests(Framework):
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
         self.Images.open_image_page()
-        self.lg('-try search boxes in VM table')
+        self.lg('2-try search boxes in VM table')
         self.assertTrue(self.Tables.check_search_box('machines',column))
-        self.lg('try the search box in every column and verfiy it return the right value')
+        self.lg('3-try the search box in every column and verfiy it return the right value')
         self.assertTrue(self.Tables.check_data_filters('machines',column))
-
