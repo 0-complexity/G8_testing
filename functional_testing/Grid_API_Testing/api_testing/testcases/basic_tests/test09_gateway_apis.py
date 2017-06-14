@@ -30,7 +30,7 @@ class TestGatewayAPICreation(TestcasesBase):
         super().tearDown()
 
     def test004_create_gateway_with_vlan_vlan_container(self):
-        """ GAT-085
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -42,7 +42,7 @@ class TestGatewayAPICreation(TestcasesBase):
         pass
 
     def test005_create_gateway_with_vxlan_vxlan_container(self):
-        """ GAT-086
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -54,7 +54,7 @@ class TestGatewayAPICreation(TestcasesBase):
         pass
 
     def test006_create_gateway_with_vlan_vlan_vm(self):
-        """ GAT-085
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -66,7 +66,7 @@ class TestGatewayAPICreation(TestcasesBase):
         pass
 
     def test007_create_gateway_with_vxlan_vxlan_vm(self):
-        """ GAT-086
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -78,18 +78,7 @@ class TestGatewayAPICreation(TestcasesBase):
         pass
 
     def test008_create_gateway_with_bridge_vlan_container(self):
-        """ GAT-087
-        **Test Scenario:**
-
-        #. Get random node (N0), should succeed.
-        #. Create gateway with bridge and vlan as nics on node (N0), should succeed.
-        #. Bind a new container to vlan(1).
-        #. Verify that this container has public access.
-        """
-        pass
-
-    def test009_create_gateway_with_bridge_vlan_container(self):
-        """ GAT-088
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -100,7 +89,7 @@ class TestGatewayAPICreation(TestcasesBase):
         pass
 
     def test010_create_gateway_with_bridge_vxlan_container(self):
-        """ GAT-089
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -111,7 +100,7 @@ class TestGatewayAPICreation(TestcasesBase):
         pass
 
     def test011_create_gateway_with_bridge_vlan_vm(self):
-        """ GAT-090
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -122,7 +111,7 @@ class TestGatewayAPICreation(TestcasesBase):
         pass
 
     def test012_create_gateway_with_bridge_vxlan_vm(self):
-        """ GAT-091
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -133,7 +122,7 @@ class TestGatewayAPICreation(TestcasesBase):
         pass
 
     def test013_create_gateway_dhcpserver(self):
-        """ GAT-092
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -145,7 +134,7 @@ class TestGatewayAPICreation(TestcasesBase):
         pass
 
     def test014_create_gateway_httpproxy(self):
-        """ GAT-091
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -156,7 +145,7 @@ class TestGatewayAPICreation(TestcasesBase):
         pass
 
     def test015_create_gateway_portforwards(self):
-        """ GAT-091
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -169,7 +158,7 @@ class TestGatewayAPICreation(TestcasesBase):
         pass
 
     def test016_create_two_gateways_zerotierbridge(self):
-        """ GAT-091
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -298,7 +287,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
 
     def test004_update_gw_nics_config(self):
-        """ GAT-084
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Use put method to update the nics config for the gw
@@ -306,7 +295,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
 
     def test004_update_gw_portforwards_config(self):
-        """ GAT-084
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Use put method to update the portforwards config for the gw
@@ -314,7 +303,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
 
     def test004_update_gw_dhcpserver_config(self):
-        """ GAT-084
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Use put method to update the dhcpserver config for the gw
@@ -322,7 +311,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
 
     def test004_update_gw_httpproxies_config(self):
-        """ GAT-084
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Use put method to update the dhcpserver config for the gw
