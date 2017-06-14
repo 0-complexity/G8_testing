@@ -227,7 +227,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         super().tearDown()
 
     def test001_list_gateways(self):
-        """ GAT-082
+        """ GAT-098
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -240,7 +240,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.assertIn(self.gw_name, [x['name'] for x in response.json()])
 
     def test002_get_gateway_info(self):
-        """ GAT-083
+        """ GAT-099
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -251,7 +251,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.assertEqual(response.status_code, 200)
 
     def test003_delete_gateway(self):
-        """ GAT-084
+        """ GAT-100
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -270,21 +270,23 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.assertNotIn(self.gw_name, [x['name'] for x in response.json()])
 
     def test004_stop_gw(self):
-        """ GAT-084
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Stop the running gatway
         #. Verify its status
         """
+        pass
 
     def test004_start_gw(self):
-        """ GAT-084
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Stop the running gatway and make sure that its status has been changed
         #. Start the gatway
         #. Verify its status
         """
+        pass
 
     def test004_update_gw_nics_config(self):
         """ GAT-xxx
@@ -319,7 +321,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
 
     def test_create_new_portforward(self):
-        """ GAT-084
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Create new portforward table using firewall/forwards api
@@ -327,7 +329,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
 
     def test_list_portforward(self):
-        """ GAT-084
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Create new portforward table using firewall/forwards api
@@ -336,7 +338,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
 
     def test_delete_portforward(self):
-        """ GAT-084
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Create new portforward table using firewall/forwards api
@@ -347,7 +349,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
 
     def test_add_dhcp_host(self):
-        """ GAT-084
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Add new dhcp host to an interface
@@ -356,7 +358,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
 
     def test_delete_dhcp_host(self):
-        """ GAT-084
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Add new dhcp host to an interface
@@ -368,7 +370,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
 
 
     def test_create_new_httpproxy(self):
-        """ GAT-084
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Create new httpproxy
@@ -377,7 +379,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
 
     def test_delete_httpproxyid(self):
-        """ GAT-084
+        """ GAT-xxx
         **Test Scenario:**
 
         #. Create new httpproxy
