@@ -3,9 +3,10 @@ from api_testing.grid_apis.pyclient.bridges_apis import BridgesAPI
 from api_testing.grid_apis.pyclient.containers_apis import ContainersAPI
 from api_testing.grid_apis.pyclient.gateways_apis import GatewayAPI
 from api_testing.utiles.core0_client import Client
+from random import randint
 
 
-class TestGatewayAPI(TestcasesBase):
+class TestGatewayAPICreation(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bridges_apis = BridgesAPI()
@@ -13,82 +14,20 @@ class TestGatewayAPI(TestcasesBase):
         self.gateways_apis = GatewayAPI()
 
     def setUp(self):
-        super(TestGatewayAPI, self).setUp()
+        super().setUp()
         self.nodeid = self.get_random_node()
         self.lg.info('Get random nodeid : %s' % str(self.nodeid))
         core0_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
         self.assertNotEqual(core0_ip, [])
         self.core0_client = Client(core0_ip[0])
-
-        self.gw_name = self.random_string()
-        self.gw_domain = self.random_string()
-
-        self.body = {
-            "name": self.gw_name,
-            "domain": self.gw_domain,
-            "nics": [
-                {
-                    'type': 'default',
-                    'name': 'internet'
-                }
-            ],
-            "portforwards": [],
-            "httpproxies": []
-        }
-
         self.core0_client.create_ovs_container()
-        response = self.gateways_apis.post_nodes_gateway(self.nodeid, self.body)
-        self.assertEqual(response.status_code, 201)
 
     def tearDown(self):
         self.lg.info('Delete all node {} gateways'.format(self.nodeid))
         response = self.gateways_apis.list_nodes_gateways(self.nodeid)
         for gw in response.json():
             self.gateways_apis.delete_nodes_gateway(self.nodeid, gw['name'])
-        super(TestGatewayAPI, self).tearDown()
-
-    def test001_list_nodes_gateways(self):
-        """ GAT-082
-        **Test Scenario:**
-
-        #. Get random node (N0), should succeed.
-        #. Create gateway (GW0) on node (N0), should succeed.
-        #. List all node (N0) gateways, (GW0) should be listed.
-        """
-        self.lg.info('List node (N0) gateways, (GW0) should be listed')
-        response = self.gateways_apis.list_nodes_gateways(self.nodeid)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(self.gw_name, [x['name'] for x in response.json()])
-
-    def test002_get_gateway_info(self):
-        """ GAT-083
-        **Test Scenario:**
-
-        #. Get random node (N0), should succeed.
-        #. Create gateway (GW0) on node (N0), should succeed.
-        #. Get gateway (GW0) info, should succeed.
-        """
-        response = self.gateways_apis.get_nodes_gateway(self.nodeid, self.gw_name)
-        self.assertEqual(response.status_code, 200)
-
-    def test003_delete_gateway(self):
-        """ GAT-084
-        **Test Scenario:**
-
-        #. Get random node (N0), should succeed.
-        #. Create gateway (GW0) on node (N0), should succeed.
-        #. Delete gateway (GW0), should succeed.
-        #. List node (N0) gateways, (GW0) should not be listed.
-        """
-
-        self.lg.info('Delete gateway (GW0), should succeed')
-        response = self.gateways_apis.delete_nodes_gateway(self.nodeid, self.gw_name)
-        self.assertEqual(response.status_code, 204)
-
-        self.lg.info('List node (N0) gateways, (GW0) should not be listed')
-        response = self.gateways_apis.list_nodes_gateways(self.nodeid)
-        self.assertEqual(response.status_code, 200)
-        self.assertNotIn(self.gw_name, [x['name'] for x in response.json()])
+        super().tearDown()
 
     def test004_create_gateway_with_vlan_vlan_container(self):
         """ GAT-085
@@ -229,7 +168,6 @@ class TestGatewayAPI(TestcasesBase):
         """
         pass
 
-
     def test016_create_two_gateways_zerotierbridge(self):
         """ GAT-091
         **Test Scenario:**
@@ -239,4 +177,143 @@ class TestGatewayAPI(TestcasesBase):
         #. Verify that each containers' hosts can reach each others.
         """
         pass
-    
+
+
+class TestGatewayAPIUpdate(TestcasesBase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bridges_apis = BridgesAPI()
+        self.containers_apis = ContainersAPI()
+        self.gateways_apis = GatewayAPI()
+
+    def setUp(self):
+        super().setUp()
+        self.nodeid = self.get_random_node()
+        self.lg.info('Get random nodeid : %s' % str(self.nodeid))
+        core0_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
+        self.assertNotEqual(core0_ip, [])
+        self.core0_client = Client(core0_ip[0])
+        self.gw_name = self.random_string()
+        self.gw_domain = self.random_string()
+
+        self.public_vlan_id = randint(1, 4094)
+        self.private_vxlan_id = randint(1, 100000)
+
+        self.body = {
+            "name": self.gw_name,
+            "domain": self.gw_domain,
+            "nics": [
+                {
+                    "name": "public",
+                    "type": "vlan",
+                    "id": self.public_vlan_id,
+                    "config": {
+                        "cidr": "192.168.1.10/24",
+                        "gateway": "192.168.1.1"
+                    }
+                },
+
+                {
+                    "name": "private",
+                    "type": "vxlan",
+                    "id": self.private_vxlan_id,
+                    "config": {
+                        "cidr": "192.168.2.20/24"
+                    }
+                }
+            ],
+            "portforwards": [],
+            "httpproxies": [],
+            "dhcpserver": []
+        }
+        self.core0_client.create_ovs_container()
+        response = self.gateways_apis.post_nodes_gateway(self.nodeid, self.body)
+        self.assertEqual(response.status_code, 201)
+
+    def tearDown(self):
+        self.lg.info('Delete all node {} gateways'.format(self.nodeid))
+        response = self.gateways_apis.list_nodes_gateways(self.nodeid)
+        for gw in response.json():
+            self.gateways_apis.delete_nodes_gateway(self.nodeid, gw['name'])
+        super().tearDown()
+
+    def test001_list_gateways(self):
+        """ GAT-082
+        **Test Scenario:**
+
+        #. Get random node (N0), should succeed.
+        #. Create gateway (GW0) on node (N0), should succeed.
+        #. List all node (N0) gateways, (GW0) should be listed.
+        """
+        self.lg.info('List node (N0) gateways, (GW0) should be listed')
+        response = self.gateways_apis.list_nodes_gateways(self.nodeid)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.gw_name, [x['name'] for x in response.json()])
+
+    def test002_get_gateway_info(self):
+        """ GAT-083
+        **Test Scenario:**
+
+        #. Get random node (N0), should succeed.
+        #. Create gateway (GW0) on node (N0), should succeed.
+        #. Get gateway (GW0) info, should succeed.
+        """
+        response = self.gateways_apis.get_nodes_gateway(self.nodeid, self.gw_name)
+        self.assertEqual(response.status_code, 200)
+
+    def test003_delete_gateway(self):
+        """ GAT-084
+        **Test Scenario:**
+
+        #. Get random node (N0), should succeed.
+        #. Create gateway (GW0) on node (N0), should succeed.
+        #. Delete gateway (GW0), should succeed.
+        #. List node (N0) gateways, (GW0) should not be listed.
+        """
+
+        self.lg.info('Delete gateway (GW0), should succeed')
+        response = self.gateways_apis.delete_nodes_gateway(self.nodeid, self.gw_name)
+        self.assertEqual(response.status_code, 204)
+
+        self.lg.info('List node (N0) gateways, (GW0) should not be listed')
+        response = self.gateways_apis.list_nodes_gateways(self.nodeid)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(self.gw_name, [x['name'] for x in response.json()])
+
+    def test004_update_gw_nics_config(self):
+        """ GAT-084
+        **Test Scenario:**
+
+        #. Use put method to update the nics config for the gw
+        #. List the gw and make sure that its nics config have been updated
+        """
+
+    def test004_update_gw_portforwards_config(self):
+        """ GAT-084
+        **Test Scenario:**
+
+        #. Use put method to update the portforwards config for the gw
+        #. List the gw and make sure that its portforwards config have been updated
+        """
+
+    def test004_update_gw_dhcpserver_config(self):
+        """ GAT-084
+        **Test Scenario:**
+
+        #. Use put method to update the dhcpserver config for the gw
+        #. List the gw and make sure that its dhcpserver config have been updated
+        """
+
+    def test004_update_gw_httpproxies_config(self):
+        """ GAT-084
+        **Test Scenario:**
+
+        #. Use put method to update the dhcpserver config for the gw
+        #. List the gw and make sure that its dhcpserver config have been updated
+        """
+
+
+
+
+
+
