@@ -280,6 +280,23 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(self.gw_name, [x['name'] for x in response.json()])
 
+    def test004_stop_gw(self):
+        """ GAT-084
+        **Test Scenario:**
+
+        #. Stop the running gatway
+        #. Verify its status
+        """
+
+    def test004_start_gw(self):
+        """ GAT-084
+        **Test Scenario:**
+
+        #. Stop the running gatway and make sure that its status has been changed
+        #. Start the gatway
+        #. Verify its status
+        """
+
     def test004_update_gw_nics_config(self):
         """ GAT-084
         **Test Scenario:**
@@ -312,8 +329,71 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. List the gw and make sure that its dhcpserver config have been updated
         """
 
+    def test_create_new_portforward(self):
+        """ GAT-084
+        **Test Scenario:**
+
+        #. Create new portforward table using firewall/forwards api
+        #. Verify it is working right
+        """
+
+    def test_list_portforward(self):
+        """ GAT-084
+        **Test Scenario:**
+
+        #. Create new portforward table using firewall/forwards api
+        #. List portfowards table
+        #. Verify it has the right configuration
+        """
+
+    def test_delete_portforward(self):
+        """ GAT-084
+        **Test Scenario:**
+
+        #. Create new portforward table using firewall/forwards api
+        #. List portfowards table
+        #. Delete this portforward config
+        #. List portforwards
+        #. Verify that it has been deleted
+        """
+
+    def test_add_dhcp_host(self):
+        """ GAT-084
+        **Test Scenario:**
+
+        #. Add new dhcp host to an interface
+        #. List dhcp hosts
+        #. Verify that is the list has the config
+        """
+
+    def test_delete_dhcp_host(self):
+        """ GAT-084
+        **Test Scenario:**
+
+        #. Add new dhcp host to an interface
+        #. List dhcp hosts
+        #. Delete one host form the dhcp
+        #. List dhcp hosts
+        #. Verify that the dhcp has been updated
+        """
 
 
+    def test_create_new_httpproxy(self):
+        """ GAT-084
+        **Test Scenario:**
 
+        #. Create new httpproxy
+        #. List httpproxy config
+        #. Verify that is the list has the config
+        """
 
+    def test_delete_httpproxyid(self):
+        """ GAT-084
+        **Test Scenario:**
 
+        #. Create new httpproxy
+        #. List httpproxy config
+        #. Delete httpproxy id
+        #. List dhcp hosts
+        #. Verify that the dhcp has been updated
+        """
