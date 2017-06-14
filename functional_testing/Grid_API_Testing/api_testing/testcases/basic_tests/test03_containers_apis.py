@@ -90,7 +90,7 @@ class TestcontaineridAPI(TestcasesBase):
 
         self.lg.info('Make sure it created with required values, should succeed.')
         self.assertEqual(response.headers['Location'], "/nodes/%s/containers/%s" % (self.node_id, self.container_name))
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=self.container_name))
 
@@ -160,7 +160,7 @@ class TestcontaineridAPI(TestcasesBase):
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
-        container_id = self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        container_id = self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                       nodeid=self.node_id,
                                                       containername=self.container_name)
         self.assertTrue(container_id)
@@ -170,7 +170,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.assertEqual(response.status_code, 204)
 
         self.lg.info('Check that container stoped.')
-        self.assertTrue(self.wait_for_container_status("halted", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("halted", self.containers_api.get_containers_containerid,
                                                         nodeid=self.node_id,
                                                         containername=self.container_name))
 
@@ -181,7 +181,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.assertEqual(response.status_code, 201)
 
         self.lg.info('Check that container running.')
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                       nodeid=self.node_id,
                                                       containername=self.container_name))
         self.assertTrue(self.g8core.wait_on_container_update(self.container_name, 60, False))
@@ -659,7 +659,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.lg.info('create container ')
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status('running', self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status('running', self.containers_api.get_containers_containerid,
                                                           nodeid=self.node_id, containername=self.container_name))
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
 
@@ -718,7 +718,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.lg.info('create container ')
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status('running', self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status('running', self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id, containername=self.container_name))
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
 

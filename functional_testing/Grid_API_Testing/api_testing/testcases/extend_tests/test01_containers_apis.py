@@ -57,10 +57,7 @@ class TestcontaineridAPI(TestcasesBase):
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
         self.lg.info('Make sure it running .')
-
-        ## why you pass self.containers_api.get_containers_containerid to wait_for_container_status method ?
-        ## modifiy wait_for_container_status method to get container status from it name or id 
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=self.container_name))
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
@@ -89,9 +86,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.assertEqual(response.status_code, 201)
 
         self.lg.info('Make sure it is running .')
-        ## you pass self.containers_api.get_containers_containerid to wait_for_container_status method?
-        ## modifiy wait_for_container_status method to get container status from it name or id 
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=self.container_name))
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
@@ -120,17 +115,15 @@ class TestcontaineridAPI(TestcasesBase):
         stdin = self.rand_str()
         self.container_body['initProcesses'] = [{"name": "sh", "pwd": "/",
                                                  "args": ["sbin/process_init"],
-                                                 "environment":["%s"%Environmentvaraible], ## "%s"% is useless ? replace with "environment":[Environmentvaraible]
-                                                 "stdin":"%s"%stdin}] ## check the previous comment
-
+                                                 "environment":[Environmentvaraible],
+                                                 "stdin":stdin}]
         self.lg.info('Send post nodes/{nodeid}/containers api request.')
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
 
         self.lg.info('Make sure it running')
-         ## you pass self.containers_api.get_containers_containerid to wait_for_container_status method?
-        ## modifiy wait_for_container_status method to get container status from it name or id 
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=self.container_name))
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
@@ -167,9 +160,8 @@ class TestcontaineridAPI(TestcasesBase):
         self.assertEqual(response.status_code, 201)
 
         self.lg.info('Make sure it created with required values and running, should succeed.')
-        ## you pass self.containers_api.get_containers_containerid to wait_for_container_status method?
-        ## modifiy wait_for_container_status method to get container status from it name or id
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=self.container_name))
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
@@ -179,7 +171,6 @@ class TestcontaineridAPI(TestcasesBase):
         for key in response_data.keys():
             if key == 'initprocesses':
                 self.assertEqual(response_data[key], self.container_body['initProcesses'])
-                continue ## continue is useless ?
             if key in self.container_body.keys():
                 self.assertEqual(response_data[key], self.container_body[key])
 
@@ -205,7 +196,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.assertEqual(response.status_code, 201)
 
         self.lg.info('Make sure it created with required values and running, should succeed.')
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=self.container_name))
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
@@ -236,12 +227,12 @@ class TestcontaineridAPI(TestcasesBase):
         self.lg.info('Create bridge with dnsmasq network, should succeed')
         bridge_name = self.rand_str()
         hwaddr = self.randomMAC()
-        ip_range = ["201.100.2.1", "201.100.2.2"]
+        ip_range = ["201.100.2.2", "201.100.2.3"]
         body = {"name": bridge_name,
                 "hwaddr": hwaddr,
                 "networkMode": "dnsmasq",
                 "nat": False,
-                "setting": {"cidr":"201.100.2.0/8", "start": ip_range[0], "end": ip_range[1]}} ## change the 0 and th subnet in cidr value 201.100.2.(0)/8
+                "setting": {"cidr":"201.100.2.1/8", "start": ip_range[0], "end": ip_range[1]}}
 
         response = self.bridges_api.post_nodes_bridges(self.node_id, body)
         self.assertEqual(response.status_code, 201, response.content)
@@ -256,7 +247,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running",
+        self.assertTrue(self.wait_for_status("running",
                                                        self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name))
@@ -266,7 +257,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C2_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
@@ -296,7 +287,7 @@ class TestcontaineridAPI(TestcasesBase):
 
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                         nodeid=self.node_id,
                                                         containername=C3_name))
         self.createdcontainer.append({"node": self.node_id, "container": C3_name})
@@ -330,10 +321,10 @@ class TestcontaineridAPI(TestcasesBase):
         B2_name = self.rand_str()
         hwaddr1 = self.randomMAC()
         hwaddr2 = self.randomMAC()
-        cidr1 = "198.101.5.0" ## change the 0 in the cidr value 
+        cidr1 = "198.101.5.1" 
         cidr2 = "201.100.2.1"
-        ip_range1 = ["198.101.5.1", "198.101.5.2"]
-        ip_range2 = ["201.100.2.1", "201.100.2.2"]
+        ip_range1 = ["198.101.5.2", "198.101.5.3"]
+        ip_range2 = ["201.100.2.2", "201.100.2.3"]
 
         body1 = {"name": B1_name,
                 "hwaddr": hwaddr1,
@@ -362,9 +353,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-         ## you pass self.containers_api.get_containers_containerid to wait_for_container_status method?
-        ## modifiy wait_for_container_status method to get container status from it name or id
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                         nodeid=self.node_id,
                                                         containername=C1_name))
         self.createdcontainer.append({"node": self.node_id, "container": C1_name})
@@ -377,9 +366,7 @@ class TestcontaineridAPI(TestcasesBase):
 
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-         ## you pass self.containers_api.get_containers_containerid to wait_for_container_status method?
-        ## modifiy wait_for_container_status method to get container status from it name or id
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
@@ -427,7 +414,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name))
         self.createdcontainer.append({"node": self.node_id, "container": C1_name})
@@ -435,7 +422,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C2_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
@@ -467,7 +454,7 @@ class TestcontaineridAPI(TestcasesBase):
 
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C3_name))
         self.createdcontainer.append({"node": self.node_id, "container": C3_name})
@@ -500,8 +487,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.zeroos.create_ovs_container()
 
         self.lg.info("create two container with same vlan tag,should succeed")
-
-        vlan1_id = random.randint(1, 2000)
+        vlan1_id, vlan2_id = random.sample(range(1, 4096), 2)
         C1_ip = "201.100.2.1"
         C2_ip = "201.100.2.2"
 
@@ -511,7 +497,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name))
         self.createdcontainer.append({"node": self.node_id, "container": C1_name})
@@ -522,7 +508,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["nics"] = nic
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
@@ -544,15 +530,14 @@ class TestcontaineridAPI(TestcasesBase):
         self.assertEqual(response.state, "SUCCESS")
 
         self.lg.info("Create C3 with different vlan tag ")
-        vlan2_id = random.randint(2001, 4096)
-        C3_ip = "201.100.2.3" # this ip is in vlan_1 ips ranges
+        C3_ip = "201.100.2.3"
         C3_name = self.rand_str()
         nic = [{'type': 'default'}, {'type': 'vlan', 'id': "%s"%vlan2_id, 'config': {'cidr':'%s/24'%C3_ip}}]
         self.container_body["nics"] = nic
         self.container_body["name"] = C3_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C3_name))
         self.createdcontainer.append({"node": self.node_id, "container": C3_name})
@@ -584,7 +569,7 @@ class TestcontaineridAPI(TestcasesBase):
 
         self.lg.info("create two container with same vxlan id,should succeed")
 
-        vxlan1_id = random.randint(5000, 6000)
+        vxlan1_id, vxlan2_id = random.sample(range(4096, 8000), 2)
         C1_ip = "201.100.3.1"
         C2_ip = "201.100.3.2"
 
@@ -594,7 +579,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name))
         self.createdcontainer.append({"node": self.node_id, "container": C1_name})
@@ -604,7 +589,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["nics"] = nic
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
@@ -626,15 +611,14 @@ class TestcontaineridAPI(TestcasesBase):
         self.assertEqual(response.state, "SUCCESS")
 
         self.lg.info("Create third container c3 with different vxlan Id,should succeed")
-        vxlan2_id = random.randint(7000, 8000)
-        C3_ip = "201.100.3.3" ## this ip is in vxlan_2 ip ranges
+        C3_ip = "201.100.3.3"
         C3_name = self.rand_str()
         nic = [{'type': 'default'}, {'type': 'vxlan', 'id': "%s"%vxlan2_id, 'config': {'cidr':'%s/24'%C3_ip}}]
         self.container_body["nics"] = nic
         self.container_body["name"] = C3_name
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C3_name))
         self.createdcontainer.append({"node": self.node_id, "container": C3_name})
@@ -674,13 +658,13 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name))
         self.createdcontainer.append({"node": self.node_id, "container": C1_name})
 
         self.lg.info("create container (C2) with type vlan and gatway in nic, should succeed")
-        C_ip = "201.100.2.0" ## fix this ip
+        C_ip = "201.100.2.1"
         vlan_Id = random.randint(1,4096)
         C2_name = self.rand_str()
         self.container_body["name"] = C2_name
@@ -689,7 +673,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["nics"] = nic
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
@@ -715,7 +699,7 @@ class TestcontaineridAPI(TestcasesBase):
         #. Create container (C1) with type default in nic with dns.
         #. Check if values of dns in /etc/resolve.conf ,should fail .
         #. Create container (c2) with vlan and with dns .
-        #. Check if values of dns in /etc/resolve.conf ,should succeed . 
+        #. Check if values of dns in /etc/resolve.conf ,should succeed .
 
         """
 
@@ -732,7 +716,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name))
         self.createdcontainer.append({"node": self.node_id, "container": C1_name})
@@ -752,7 +736,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["nics"] = nic
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
@@ -790,7 +774,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["filesystems"].append("%s:%s"%(storagepool_name,name))
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=self.container_name, timeout=300))
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
@@ -818,7 +802,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
         self.assertTrue(response.status_code,201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name),
                                                        "container %s status is halted"%self.container_name)
@@ -828,7 +812,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C2_name
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
         self.assertTrue(response.status_code,201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name),
                                                        "container %s status is halted"%self.container_name)
@@ -872,7 +856,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.lg.info("Create container C1 with open port")
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertTrue(response.status_code,201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                         nodeid=self.node_id,
                                                         containername=self.container_name),
                                                         "container %s status is halted"%self.container_name)
@@ -881,7 +865,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.zeroos.timeout = 300
         time.sleep(2)
         self.lg.info("Open server in container port ,should succeed")
-        response = C1_client.bash("apt-get -y install python ").get() ## i think you dont have to install python
+        response = C1_client.bash("apt-get -y install python ").get()
         self.assertEqual(response.state, "SUCCESS")
         response = C1_client.bash("mkdir {0} && cd {0}&& echo 'test'>{0}.text ".format(file_name)).get()
         self.assertEqual(response.state, "SUCCESS")
@@ -909,7 +893,7 @@ class TestcontaineridAPI(TestcasesBase):
 
         """
         self.lg.info("Create container C1, should succeed.")
-        self.container_body['flist']="https://hub.gig.tech/dina_magdy/initprocess.flist"
+        self.container_body['flist'] = "https://hub.gig.tech/dina_magdy/initprocess.flist"
         ## flist which have script which print environment varaibles and print stdin
         Environmentvaraible = "MYVAR=%s"%self.rand_str()
         stdin = self.rand_str()
@@ -917,13 +901,13 @@ class TestcontaineridAPI(TestcasesBase):
                     'name': 'sh',
                     'pwd': '/',
                     'args': ["sbin/process_init"],
-                    "environment":["%s"%Environmentvaraible], ##remove "%s"%
-                    "stdin":"%s"%stdin
+                    "environment": [Environmentvaraible],
+                    "stdin": stdin
                     }
 
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
-        self.assertTrue(response.status_code,201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(response.status_code, 201)
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=self.container_name),
                                                        "container %s status is halted"%self.container_name)
@@ -977,7 +961,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name))
         self.createdcontainer.append({"node": self.node_id, "container": C1_name})
@@ -989,7 +973,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C2_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
@@ -1001,7 +985,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C3_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
-        self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
+        self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C3_name))
         self.createdcontainer.append({"node": self.node_id, "container": C3_name})
