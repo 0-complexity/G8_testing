@@ -145,7 +145,10 @@ class TestVdisks(TestcasesBase):
                 "readOnly":readOnly}
 
         response = self.vdisks_apis.post_vdisks(body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
 
         self.lg.info('List vdisks, (VD1) should be listed')
         response = self.vdisks_apis.get_vdisks()

@@ -64,8 +64,11 @@ class TestVmsAPI(TestcasesBase):
                 "slaveNodes": slaveNodes,
                 "nodes":nodes}
 
-        self.storageclusters_api.post_storageclusters(body)
-
+        response = self.storageclusters_api.post_storageclusters(body)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+        
         for _ in range(60):
             response = self.storageclusters_api.get_storageclusters_label(label)
             if response.status_code == 200:
@@ -89,7 +92,11 @@ class TestVmsAPI(TestcasesBase):
                 "storagecluster": storagecluster,
                 "templatevdisk":"ardb://hub.gig.tech:16379/template:ubuntu-1604"}
 
-        self.vdisks_apis.post_vdisks(body)
+        response = self.vdisks_apis.post_vdisks(body)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         time.sleep(30)
         return body
 
@@ -114,7 +121,10 @@ class TestVmsAPI(TestcasesBase):
                 "userCloudInit":userCloudInit,
                 "systemCloudInit":systemCloudInit}
 
-        self.vms_api.post_nodes_vms(self.nodeid, body)
+        response = self.vms_api.post_nodes_vms(self.nodeid, body)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
 
         for _ in range(60):
             response = self.vms_api.get_nodes_vms_vmid(self.nodeid, vmid)
@@ -208,8 +218,9 @@ class TestVmsAPI(TestcasesBase):
                 "systemCloudInit":vm_systemCloudInit}
 
         response = self.vms_api.post_nodes_vms(self.nodeid, body)
-        self.assertEqual(response.status_code, 201)
-        time.sleep(20)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
 
         response = self.vms_api.get_nodes_vms_vmid(self.nodeid, vm_id)
         self.assertEqual(response.status_code, 200)
@@ -220,7 +231,9 @@ class TestVmsAPI(TestcasesBase):
             body['memory'] = 1024
             body['cpu'] = 1
             response = self.vms_api.post_nodes_vms(self.nodeid, body)
-            self.assertEqual(response.status_code, 201)
+            self.assertEqual(response.status_code, 202)
+            runid = response.json()['runid'] 
+            self.assertTrue(self.is_run_succeed(runid))
 
         self.lg.info('Get virtual machine (VM1), should succeed with 200')
         response = self.vms_api.get_nodes_vms_vmid(self.nodeid, vm_id)

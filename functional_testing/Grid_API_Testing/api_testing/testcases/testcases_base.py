@@ -4,6 +4,7 @@ from unittest import TestCase
 from api_testing.utiles.utiles import Utiles
 from api_testing.grid_apis.pyclient.nodes_apis import NodesAPI
 from api_testing.grid_apis.pyclient.containers_apis import ContainersAPI
+from api_testing.grid_apis.pyclient.runs_apis import RunsAPI
 import random
 import requests
 import time
@@ -17,6 +18,7 @@ class TestcasesBase(TestCase):
         super().__init__(*args, **kwargs)
         self.utiles = Utiles()
         self.nodes_api = NodesAPI()
+        self.runs_api = RunsAPI()
         self.config = config['main']
         self.nodes = NODES_INFO
         self.lg = self.utiles.logging
@@ -117,7 +119,9 @@ class TestcasesBase(TestCase):
         else:
             container_name = container_body["name"]
             response = self.containers_api.post_containers(nodeid=node_id, data=container_body)
-            self.assertEqual(response.status_code, 201)
+            self.assertEqual(response.status_code, 202)
+            runid = response.json()['runid'] 
+            self.assertTrue(self.is_run_succeed(runid))
 
             if not self.wait_for_container_status('running', self.containers_api.get_containers_containerid,
                                                           nodeid=node_id, containername=container_name):
@@ -125,3 +129,16 @@ class TestcasesBase(TestCase):
             else:
                 self.createdcontainer.append({"node": node_id, "container": container_name})
                 return container_name
+        
+    def is_run_succeed(self, runid):
+        response = self.runs_api.wait_on_run(runid=runid)
+        if response.status_code == 202:
+            if 'state' in response.json():
+                if response.json()['state'] == 'ok':
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False

@@ -103,7 +103,10 @@ class TestZerotiersAPI(TestcasesBase):
         nwid = self.create_zerotier_network()
         body = {"nwid":nwid}
         response = self.zerotier_api.post_nodes_zerotiers(self.nodeid, body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
         
         for _ in range(50):
             response = self.zerotier_api.get_nodes_zerotiers_zerotierid(self.nodeid, nwid)

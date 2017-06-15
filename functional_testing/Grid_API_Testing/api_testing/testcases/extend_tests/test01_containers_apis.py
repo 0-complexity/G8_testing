@@ -61,7 +61,9 @@ class TestcontaineridAPI(TestcasesBase):
         """
         self.lg.info('Send post nodes/{nodeid}/containers api request.')
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
         self.lg.info('Make sure it running .')
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
@@ -89,7 +91,9 @@ class TestcontaineridAPI(TestcasesBase):
 
         self.lg.info('Send post nodes/{nodeid}/containers api request.')
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
 
         self.lg.info('Make sure it is running .')
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
@@ -126,7 +130,10 @@ class TestcontaineridAPI(TestcasesBase):
 
         self.lg.info('Send post nodes/{nodeid}/containers api request.')
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
 
         self.lg.info('Make sure it running')
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
@@ -163,7 +170,9 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body['flist']="https://hub.gig.tech/gig-official-apps/%s"%flist
         self.lg.info('Send post nodes/{nodeid}/containers api request.')
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
 
         self.lg.info('Make sure it created with required values and running, should succeed.')
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
@@ -199,7 +208,9 @@ class TestcontaineridAPI(TestcasesBase):
 
         self.lg.info('Send post nodes/{nodeid}/containers api request.')
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
 
         self.lg.info('Make sure it created with required values and running, should succeed.')
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
@@ -252,7 +263,10 @@ class TestcontaineridAPI(TestcasesBase):
 
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running",
                                                        self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
@@ -262,7 +276,10 @@ class TestcontaineridAPI(TestcasesBase):
 
         self.container_body["name"] = C2_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
@@ -292,7 +309,10 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["nics"] = nics
 
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                         nodeid=self.node_id,
                                                         containername=C3_name))
@@ -358,7 +378,10 @@ class TestcontaineridAPI(TestcasesBase):
         C1_name = self.rand_str()
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                         nodeid=self.node_id,
                                                         containername=C1_name))
@@ -371,7 +394,10 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["name"] = C2_name
 
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
@@ -419,7 +445,10 @@ class TestcontaineridAPI(TestcasesBase):
 
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name))
@@ -427,7 +456,10 @@ class TestcontaineridAPI(TestcasesBase):
 
         self.container_body["name"] = C2_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
@@ -459,7 +491,10 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["nics"] = nics
 
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C3_name))
@@ -503,7 +538,10 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["nics"] = nic
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(self.node_id,self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name))
@@ -514,7 +552,10 @@ class TestcontaineridAPI(TestcasesBase):
         nic = [{'type': 'default'}, {'type': 'vlan', 'id': "%s"%vlan1_id, 'config': {'cidr':'%s/24'%C2_ip}}]
         self.container_body["nics"] = nic
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
@@ -544,7 +585,10 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["nics"] = nic
         self.container_body["name"] = C3_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C3_name))
@@ -585,7 +629,10 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["nics"] = nic
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name))
@@ -595,7 +642,10 @@ class TestcontaineridAPI(TestcasesBase):
         nic = [{'type': 'default'}, {'type': 'vxlan', 'id': "%s"%vxlan1_id, 'config': {'cidr':'%s/24'%C2_ip}}]
         self.container_body["nics"] = nic
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
@@ -625,7 +675,10 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["nics"] = nic
         self.container_body["name"] = C3_name
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C3_name))
@@ -662,7 +715,10 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["nics"] = nic
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name))
@@ -678,7 +734,10 @@ class TestcontaineridAPI(TestcasesBase):
                {'type': 'vlan', 'id': "%s"%vlan_Id, 'config': {'cidr':'%s/24'%C_ip,'gateway':'%s'%gateway}}]
         self.container_body["nics"] = nic
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
@@ -720,7 +779,10 @@ class TestcontaineridAPI(TestcasesBase):
         self.container_body["nics"] = nic
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name))
@@ -740,7 +802,10 @@ class TestcontaineridAPI(TestcasesBase):
                {'type': 'vlan', 'id': "%s"%vlan_Id, 'config': {'cidr':'%s/24'%C_ip,'dns':['%s'%dns]}}]
         self.container_body["nics"] = nic
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C2_name))
@@ -772,13 +837,19 @@ class TestcontaineridAPI(TestcasesBase):
         body = {"name": name, "quota": quota}
         storagepool_name = "%s_fscache"%self.node_id
         response = self.storagepool_api.post_storagepools_storagepoolname_filesystems(self.node_id, storagepool_name, body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         time.sleep(5)
 
         self.lg.info("Create container with created file system,should succeed.")
         self.container_body["filesystems"].append("%s:%s"%(storagepool_name,name))
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+        
         self.assertTrue(self.wait_for_container_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=self.container_name, timeout=300))

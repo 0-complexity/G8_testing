@@ -108,7 +108,10 @@ class TestStorageclustersAPI(TestcasesBase):
                 "nodes":[self.nodeid]}
 
         response = self.storageclusters_api.post_storageclusters(body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
 
         for _ in range(60):
             response = self.storageclusters_api.get_storageclusters_label(label)
