@@ -5,6 +5,7 @@ from api_testing.utiles.utiles import Utiles
 from api_testing.grid_apis.orchestrator_client.nodes_apis import NodesAPI
 from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
 import random
+import random, string
 import requests
 import time
 from testconfig import config

@@ -1,6 +1,6 @@
+
 from zeroos.core0.client import Client as core0_client
 import time
-
 
 class Client:
     def __init__(self, ip):
