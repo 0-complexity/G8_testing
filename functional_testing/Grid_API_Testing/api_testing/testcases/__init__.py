@@ -17,7 +17,7 @@ def get_node_info():
             continue
         ip = get_node_physical_ip(node['id'])
         nodes_info.append({"id":node['id'],
-                            "ip": ip,
+                            "ip": node['ipaddr'],
                             "status":node['status']})
     return nodes_info
 
