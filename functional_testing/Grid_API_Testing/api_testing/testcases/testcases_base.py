@@ -81,7 +81,7 @@ class TestcasesBase(TestCase):
         url = 'https://my.zerotier.com/api/network/{}'.format(nwid)
         self.session.delete(url=url)
 
-    def wait_for_container_status(self, status, func, timeout=100, **kwargs):
+    def wait_for_status(self, status, func, timeout=100, **kwargs):
         resource = func(**kwargs)
         if resource.status_code != 200:
             return False
@@ -90,7 +90,7 @@ class TestcasesBase(TestCase):
             if resource['status'] == status:
                 return True
             time.sleep(1)
-            resource = func(**kwargs)  # get resource
+            resource = func(**kwargs)  
             resource = resource.json()
         return False
 
@@ -119,7 +119,7 @@ class TestcasesBase(TestCase):
             response = self.containers_api.post_containers(nodeid=node_id, data=container_body)
             self.assertEqual(response.status_code, 201)
 
-            if not self.wait_for_container_status('running', self.containers_api.get_containers_containerid,
+            if not self.wait_for_status('running', self.containers_api.get_containers_containerid,
                                                           nodeid=node_id, containername=container_name):
                 return False
             else:

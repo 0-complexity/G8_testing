@@ -228,37 +228,28 @@ class Client:
             return False
         address = nic[0]['addrs'][0]['addr']
         if not address:
-            self.lg('can\'t find zerotier netowrk interface')
+            self.lg.info('can\'t find zerotier netowrk interface')
             return False
         return address[:address.find('/')]
 
-    def get_container_bridge_ip(self, client,ip_range):
+    def get_container_bridge_ip(self, client, ip_range):
         nics = client.info.nic()
-
-        nic = [nic for nic in nics if nic['name'] == 'eth0']
-        if not nic :
-            return False
-        addresses = [x['addr'] for x in nic[0]['addrs'] if x['addr'][:x['addr'].find('/')] in ip_range]
-        if not addresses:
-            return False
-        address = addresses[0]
-
-        if not address:
-            self.lg('can\'t find bridge netowrk interface')
-            return False
-        return address[:address.find('/')]
+        for nic in nics:
+            addresses = [x['addr'] for x in nic['addrs'] if x['addr'][:x['addr'].find('/')] in  ip_range]
+            if addresses:
+                address = addresses[0]
+                return address[:address.find('/')]
+        self.lg.info('can\'t find netowrk interface')
+        return False
 
     def check_container_vlan_vxlan_ip(self, client, cidr_ip):
         nics = client.info.nic()
-
-        nic = [nic for nic in nics if nic['name'] == 'eth1']
-        if not nic :
-            return False
-        address = [x['addr'] for x in nic[0]['addrs'] if x['addr'][:x['addr'].find('/')] == cidr_ip][0]
-        if not address:
-            self.lg('can\'t find netowrk interface')
-            return False
-        return True
+        for nic in nics:
+            address = [x['addr'] for x in nic['addrs'] if x['addr'][:x['addr'].find('/')] == cidr_ip]
+            if address:
+                return True
+        self.lg('can\'t find netowrk interface')
+        return False
 
     def create_ovs_container(self):
         containers = self.client.container.find('ovs')
