@@ -82,7 +82,6 @@ class TestcasesBase(TestCase):
         url = 'https://my.zerotier.com/api/network/{}'.format(nwid)
         self.session.delete(url=url)
 
-
     def wait_for_status(self, status, func, timeout=100, **kwargs):
         resource = func(**kwargs)
         if resource.status_code != 200:
