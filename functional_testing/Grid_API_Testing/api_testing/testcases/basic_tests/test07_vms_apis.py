@@ -1,8 +1,8 @@
 import random
 from api_testing.testcases.testcases_base import TestcasesBase
-from api_testing.grid_apis.pyclient.vms_apis import VmsAPI
-from api_testing.grid_apis.pyclient.storageclusters_apis import Storageclusters
-from api_testing.grid_apis.pyclient.vdisks_apis import VDisksAPIs
+from api_testing.grid_apis.orchestrator_client.vms_apis import VmsAPI
+from api_testing.grid_apis.orchestrator_client.storageclusters_apis import Storageclusters
+from api_testing.grid_apis.orchestrator_client.vdisks_apis import VDisksAPIs
 from api_testing.python_client.client import Client
 import time, unittest
 
@@ -56,12 +56,11 @@ class TestVmsAPI(TestcasesBase):
         label = self.rand_str()
         servers = random.randint(1, len(free_disks))
         drivetype = 'ssd'
-        slaveNodes = False
         nodes = [self.nodeid]
         body = {"label": label,
                 "servers": servers,
                 "driveType": drivetype,
-                "slaveNodes": slaveNodes,
+                "clusterType": "storage",
                 "nodes":nodes}
 
         self.storageclusters_api.post_storageclusters(body)

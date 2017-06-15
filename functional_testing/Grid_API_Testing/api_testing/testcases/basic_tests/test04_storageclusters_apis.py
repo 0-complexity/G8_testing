@@ -1,6 +1,6 @@
 from random import randint
 from api_testing.testcases.testcases_base import TestcasesBase
-from api_testing.grid_apis.pyclient.storageclusters_apis import Storageclusters
+from api_testing.grid_apis.orchestrator_client.storageclusters_apis import Storageclusters
 from api_testing.python_client.client import Client
 import unittest, time
 
@@ -26,13 +26,14 @@ class TestStorageclustersAPI(TestcasesBase):
             self.label = self.rand_str()
             self.servers = randint(1,len(free_disks))
             self.drivetype = 'ssd'
-            self.slaveNodes = False
 
-            self.body = {"label": self.label,
-                        "servers": self.servers,
-                        "driveType": self.drivetype,
-                        "slaveNodes": self.slaveNodes,
-                        "nodes":[self.nodeid]}
+            self.body = {
+                    "label": self.label,
+                    "servers": self.servers,
+                    "driveType": self.drivetype,
+                    "clusterType": "storage",
+                    "nodes":[self.nodeid]
+                }
 
             self.storageclusters_api.post_storageclusters(self.body)
             
@@ -100,11 +101,10 @@ class TestStorageclustersAPI(TestcasesBase):
         label = self.rand_str()
         servers = randint(1, len(free_disks))
         drivetype = 'ssd'
-        slaveNodes = False
         body = {"label": label,
                 "servers": servers,
                 "driveType": drivetype,
-                "slaveNodes":slaveNodes,
+                "clusterType": "storage",
                 "nodes":[self.nodeid]}
 
         response = self.storageclusters_api.post_storageclusters(body)
