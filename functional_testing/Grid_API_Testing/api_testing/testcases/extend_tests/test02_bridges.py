@@ -270,12 +270,8 @@ class TestBridgesAPI(TestcasesBase):
 
         **Test Scenario:**
 
-        #. Create bridge (B0) with dnsmasq network mode, should succeed.
-        #. Check that (B0)bridge took given cidr address, should succeed.
-        #. Create bridge (B1) overlapping with (B0) cidr address,shoud fail.
-        #. Create bridge(B2) with out of range start and end values, shoud fail.
-        #. Create bridge (B3) with dnsmasq network mode and empty setting,should fail.
-        #. Create bridge (B4) with dnsmasq network and empty start and end values, should fail.
+        #. Create bridge (B) with dnsmasq network mode, should succeed.
+        #. Check that (B)bridge took given cidr address, should succeed.
 
         """
 
@@ -285,61 +281,19 @@ class TestBridgesAPI(TestcasesBase):
         self.bridge_body["networkMode"] = "dnsmasq"
         self.bridge_body["setting"] = {"cidr": cidr_address, "start": start, "end": end}
 
-        self.lg.info(" Create bridge (B0) with dnsmasq network mode,cidr value and start and end range in settings, should succeed.")
+        self.lg.info(" Create bridge (B) with dnsmasq network mode,cidr value and start and end range in settings, should succeed.")
         response = self.bridges_api.post_nodes_bridges(self.nodeid, self.bridge_body)
         self.assertEqual(response.status_code, 201, response.content)
         time.sleep(3)
         self.createdbridges.append({"node": self.nodeid, "name": self.bridge_name})
 
-        self.lg.info("Check that (B0) bridge took given cidr address, should succeed.")
+        self.lg.info("Check that (B) bridge took given cidr address, should succeed.")
         response = self.nodes_api.get_nodes_nodeid_nics(self.nodeid)
         self.assertEqual(response.status_code, 200)
         nic = [x for x in response.json() if x["name"] == self.bridge_name][0]
         self.assertIn(cidr_address, nic["addrs"])
 
-        self.lg.info(" Create bridge (B1) overlapping with (B0) address,shoud fail.")
-        B1_name = self.rand_str()
-        cidr_address = "205.103.2.1/8"
-        start = "205.103.3.2"
-        end = "205.103.3.3"
-        self.bridge_body["name"] = B1_name
-        self.bridge_body["networkMode"] = "dnsmasq"
-        self.bridge_body["setting"] = {"cidr": cidr_address, "start": start, "end": end}
-        response = self.bridges_api.post_nodes_bridges(self.nodeid, self.bridge_body)
-        self.createdbridges.append({"node": self.nodeid, "name": B1_name})
-        self.assertEqual(response.status_code, 409, response.content)
-        time.sleep(3)
 
-        self.lg.info("Create bridge(B2) with out of range start and end value, shoud fail.")
-        B2_name = self.rand_str()
-        cidr_address = "192.22.2.1/24"
-        start = "192.22.3.1"
-        end = "192.22.3.2"
-        self.bridge_body["networkMode"] = "dnsmasq"
-        self.bridge_body["setting"] = {"cidr": cidr_address, "start": start, "end": end}
-        self.bridge_body["name"] = B2_name
-        response = self.bridges_api.post_nodes_bridges(self.nodeid, self.bridge_body)
-        self.createdbridges.append({"node": self.nodeid, "name": B2_name})
-        self.assertEqual(response.status_code, 400, response.content)
-
-        self.lg.info(" Create bridge (B3) with dnsmasq network mode and empty setting value,should fail.")
-        B3_name = self.rand_str()
-        self.bridge_body["name"] = B3_name
-        self.bridge_body["networkMode"] = "dnsmasq"
-        self.bridge_body["setting"] = {}
-        response = self.bridges_api.post_nodes_bridges(self.nodeid,self.bridge_body)
-        self.createdbridges.append({"node": self.nodeid, "name": B3_name})
-        self.assertEqual(response.status_code, 400, response.content)
-
-        self.lg.info(" Create bridge (B4) with dnsmasq network and empty start and end values, should fail.")
-        B4_name = self.rand_str()
-        cidr_address = "192.22.3.5/24"
-        self.bridge_body["name"] = B4_name
-        self.bridge_body["networkMode"] = "dnsmasq"
-        self.bridge_body["setting"] = {"cidr": "%s"%cidr_address}
-        response = self.bridges_api.post_nodes_bridges(self.nodeid, self.bridge_body)
-        self.createdbridges.append({"node": self.nodeid, "name": B4_name})
-        self.assertEqual(response.status_code, 400, response.content)
 
     def test009_create_bridges_with_dnsmasq_networkMode_and_opverlapping_cidrs(self):
         """ GAT-109
