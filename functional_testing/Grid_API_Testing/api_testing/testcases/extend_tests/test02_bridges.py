@@ -23,7 +23,7 @@ class TestBridgesAPI(TestcasesBase):
         pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]
         self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
         self.pyclient = Client(pyclient_ip)
-        self.bridge_name = self.rand_str_chars_only()
+        self.bridge_name = self.rand_str()
         self.nat = self.random_item([False, True])
         self.bridge_body = {"name":self.bridge_name,
                             "networkMode": "none",
@@ -32,12 +32,11 @@ class TestBridgesAPI(TestcasesBase):
                             }
 
     def tearDown(self):
-        self.lg.info('TearDown:delete all created container ')
+        self.lg.info('TearDown:delete all created bridges ')
         for bridge in self.createdbridges:
             self.bridges_api.delete_nodes_bridges_bridgeid(bridge['node'],
                                                            bridge['name'])
 
-    @unittest.skip("https://github.com/zero-os/0-rest-api/issues/307")
     def test001_create_bridges_with_same_name(self):
         """ GAT-001
         *Create two bridges with same name *
@@ -47,7 +46,6 @@ class TestBridgesAPI(TestcasesBase):
         #. Create bridge (B1) , should succeed .
         #. Create bridge (B2) with same name for (B1),should fail.
         #. Delete bridge (B1), should succeed.
-        #. Create bridge (B2) with same name for (B1),should succeed.
 
         """
         self.lg.info('Create bridge (B1) , should succeed .')
@@ -64,11 +62,6 @@ class TestBridgesAPI(TestcasesBase):
         response = self.bridges_api.delete_nodes_bridges_bridgeid(self.nodeid, self.bridge_name)
         self.assertEqual(response.status_code, 204, response.content)
 
-        self.lg.info('Create bridge (B2) with same name for (B1),should succeed')
-        response = self.bridges_api.delete_nodes_bridges_bridgeid(self.nodeid, self.bridge_name)
-        self.assertEqual(response.status_code, 201, response.content)
-        self.createdcontainer.append({"node": self.nodeid, "name": self.bridge_name})
-
     def test002_create_bridge_with_nat(self):
         """ GAT-002
         *Create bridge with nat options *
@@ -76,23 +69,24 @@ class TestBridgesAPI(TestcasesBase):
         **Test Scenario:**
 
         #. Create bridge (B0) with false in nat option,should succeed.
-        #. Create (C0) with (B0) bridge,should succeed.
+        #. Create container (C0) with (B0) bridge,should succeed.
         #. Check that C0 can connect to internet ,should fail.
         #. Create bridge (B1) with true in nat option , should succed.
-        #. Create (C1) with (B1) bridge ,should succeed.
-        #. Check that C1 can connect to internet ,should succeed.
+        #. Create container(C1) with (B1) bridge ,should succeed.
+        #. Check that (C1) can connect to internet ,should succeed.
 
         """
         nat_options = [False, True]
         for i, nat in enumerate(nat_options):
-            B_name = self.rand_str_chars_only()
+            B_name = self.rand_str()
+            cidr = "217.102.2.1"
             B_body = {"name": B_name,
                       "hwaddr": self.randomMAC(),
                       "networkMode": "dnsmasq",
                       "nat": nat,
-                      "setting": {"cidr": "217.102.2.0/8",
-                      "start": "217.102.2.1",
-                      "end": "217.102.2.2"}
+                      "setting": {"cidr": "%s/24"%cidr,
+                      "start": "217.102.2.2",
+                      "end": "217.102.2.3"}
                        }
 
             self.lg.info('Create bridge (B{0}) with dnsmasq and {1} in nat option,should succeed.'.format(i, nat))
@@ -108,19 +102,19 @@ class TestBridgesAPI(TestcasesBase):
                       }
             response = self.containers_api.post_containers(self.nodeid, C_body)
             self.assertEqual(response.status_code, 201)
-            self.assertTrue(self.wait_for_container_status("running",
+            self.assertTrue(self.wait_for_status("running",
                                                             self.containers_api.get_containers_containerid,
                                                             nodeid=self.nodeid,
                                                             containername=C_name))
-
+            C_client = self.pyclient.get_container_client(C_name)
+            time.sleep(4)
             if not nat:
                 self.lg.info('Check that C{} can connect to internet ,should fail.'.format(i))
-                C_client = self.pyclient.get_container_client(C_name)
                 response = C_client.bash("ping -c1 8.8.8.8").get()
                 self.assertEqual(response.state, "ERROR", response.stdout)
             else:
+
                 self.lg.info('Check that C{} can connect to internet ,should succeed.'.format(i))
-                C_client = self.pyclient.get_container_client(C_name)
                 response = C_client.bash("ping -c1 8.8.8.8").get()
                 self.assertEqual(response.state, "SUCCESS", response.stdout)
 
@@ -150,7 +144,7 @@ class TestBridgesAPI(TestcasesBase):
         time.sleep(3)
         self.createdbridges.append({"node": self.nodeid, "name": self.bridge_name})
 
-        self.lg.info(" Check that bridge(B0) created with this hardware address from api, should succeed.")
+        self.lg.info(" Check that bridge(B0) created with this hardware address, should succeed.")
         response = self.nodes_api.get_nodes_nodeid_nics(self.nodeid)
         self.assertEqual(response.status_code, 200)
         nic = [x for x in response.json() if x["name"] == self.bridge_name][0]
@@ -158,21 +152,20 @@ class TestBridgesAPI(TestcasesBase):
 
         self.lg.info("Create bridge (B1) with wrong hardware address, should fail.")
         hardwareaddr = self.rand_str()
-        B1_name = self.rand_str_chars_only()
+        B1_name = self.rand_str()
         self.bridge_body["hwaddr"] = hardwareaddr
         self.bridge_body["name"] = B1_name
-        response = self.bridges_api.post_nodes_bridges(self.nodeid,self.bridge_body)
+        response = self.bridges_api.post_nodes_bridges(self.nodeid, self.bridge_body)
         self.createdbridges.append({"node": self.nodeid, "name": self.bridge_name})
         self.assertEqual(response.status_code, 400, response.content)
 
-    @unittest.skip("https://github.com/zero-os/0-orchestrator/issues/321")
     def test004_create_bridge_with_static_networkMode(self):
         """ GAT-004
         *Create bridge with static network mode *
 
         **Test Scenario:**
 
-        #. Create bridge (B0) with static network mode and cidr value in settings, should succeed.
+        #. Create bridge (B0), should succeed.
         #. Check that (B0)bridge took given cidr address, should succeed.
         #. Create bridge(B1)with same cidr as (B0),should fail.
         #. Create bridge (B2) with invalid cidr address, should fail.
@@ -183,7 +176,7 @@ class TestBridgesAPI(TestcasesBase):
         self.bridge_body["networkMode"] = "static"
         self.bridge_body["setting"] = {"cidr": "%s"%cidr_address}
 
-        self.lg.info(" Create bridge (B0) with static network mode and cidr value in settings, should succeed.")
+        self.lg.info(" Create bridge (B0), should succeed.")
         response = self.bridges_api.post_nodes_bridges(self.nodeid, self.bridge_body)
         self.assertEqual(response.status_code, 201, response.content)
         time.sleep(3)
@@ -196,51 +189,51 @@ class TestBridgesAPI(TestcasesBase):
         self.assertIn(cidr_address, nic["addrs"])
 
         self.lg.info("Create bridge(B1)with same cidr as (B0),should fail.")
-        B1_name = self.rand_str_chars_only()
+        B1_name = self.rand_str()
         self.bridge_body["name"] = B1_name
         response = self.bridges_api.post_nodes_bridges(self.nodeid, self.bridge_body)
-        self.createdbridges.append({"node": self.nodeid, "name": self.bridge_name})
-        self.assertEqual(response.status_code, 400, response.content)
+        self.createdbridges.append({"node": self.nodeid, "name": B1_name})
+        self.assertEqual(response.status_code, 409, response.content)
         time.sleep(3)
 
         self.lg.info(" Create bridge (B2) with invalid cidr address, should fail..")
-        B1_name = self.rand_str_chars_only()
+        B2_name = self.rand_str()
         cidr_address = "260.120.3.1/8"
-        self.bridge_body["name"] = B1_name
+        self.bridge_body["name"] = B2_name
         self.bridge_body["networkMode"] = "static"
         self.bridge_body["setting"] = {"cidr": "%s"% cidr_address}
         response = self.bridges_api.post_nodes_bridges(self.nodeid,self.bridge_body)
-        self.createdbridges.append({"node": self.nodeid, "name": self.bridge_name})
+        self.createdbridges.append({"node": self.nodeid, "name": B2_name})
         self.assertEqual(response.status_code, 400, response.content)
 
         self.lg.info(" Create bridge (B3) with static network mode and empty cidr value,should fail.")
-        B2_name = self.rand_str_chars_only()
+        B3_name = self.rand_str()
         self.bridge_body["name"] = B2_name
         self.bridge_body["networkMode"] = "static"
         self.bridge_body["setting"] = {}
         response = self.bridges_api.post_nodes_bridges(self.nodeid,self.bridge_body)
-        self.createdbridges.append({"node": self.nodeid, "name": self.bridge_name})
+        self.createdbridges.append({"node": self.nodeid, "name": B3_name})
         self.assertEqual(response.status_code, 400, response.content)
 
-    @unittest.skip("https://github.com/zero-os/0-orchestrator/issues/321")
+
     def test005_create_bridge_with_dnsmasq_networkMode(self):
-        """ GAT-004
+        """ GAT-005
         *Create bridge with dnsmasq network mode *
 
         **Test Scenario:**
 
-        #. Create bridge (B0) with dnsmasq network mode,cidr value and start and end range in settings, should succeed.
+        #. Create bridge (B0) with dnsmasq network mode, should succeed.
         #. Check that (B0)bridge took given cidr address, should succeed.
         #. Create bridge (B1) overlapping with (B0) cidr address,shoud fail.
-        #. Create bridge(B2)with out of range start and end value, shoud fail.
+        #. Create bridge(B2) with out of range start and end values, shoud fail.
         #. Create bridge (B3) with dnsmasq network mode and empty setting,should fail.
         #. Create bridge (B4) with dnsmasq network and empty start and end values, should fail.
 
         """
 
-        cidr_address = "205.102.2.0/8"
-        start = "205.102.3.1"
-        end = "205.102.3.2"
+        cidr_address = "205.102.2.1/8"
+        start = "205.102.3.2"
+        end = "205.102.3.3"
         self.bridge_body["networkMode"] = "dnsmasq"
         self.bridge_body["setting"] = {"cidr": "%s"%cidr_address, "start": start, "end": end}
 
@@ -257,7 +250,7 @@ class TestBridgesAPI(TestcasesBase):
         self.assertIn(cidr_address, nic["addrs"])
 
         self.lg.info(" Create bridge (B1) overlapping with (B0) address,shoud fail.")
-        B1_name = self.rand_str_chars_only()
+        B1_name = self.rand_str()
         cidr_address = "205.103.2.0/8"
         start = "205.103.3.1"
         end = "205.103.3.1"
@@ -265,37 +258,37 @@ class TestBridgesAPI(TestcasesBase):
         self.bridge_body["networkMode"] = "dnsmasq"
         self.bridge_body["setting"] = {"cidr": "%s"%cidr_address, "start": start, "end": end}
         response = self.bridges_api.post_nodes_bridges(self.nodeid, self.bridge_body)
-        self.createdbridges.append({"node": self.nodeid, "name": self.bridge_name})
-        self.assertEqual(response.status_code, 400, response.content)
+        self.createdbridges.append({"node": self.nodeid, "name": B1_name})
+        self.assertEqual(response.status_code, 409, response.content)
         time.sleep(3)
 
         self.lg.info("Create bridge(B2) with out of range start and end value, shoud fail.")
-        B2_name = self.rand_str_chars_only()
-        cidr_address = "192.22.2.0/24"
+        B2_name = self.rand_str()
+        cidr_address = "192.22.2.1/24"
         start = "192.22.3.1"
-        end = "192.22.3.1"
+        end = "192.22.3.2"
         self.bridge_body["networkMode"] = "dnsmasq"
         self.bridge_body["setting"] = {"cidr": "%s"%cidr_address, "start": start, "end": end}
         self.bridge_body["name"] = B2_name
         response = self.bridges_api.post_nodes_bridges(self.nodeid, self.bridge_body)
-        self.createdbridges.append({"node": self.nodeid, "name": self.bridge_name})
+        self.createdbridges.append({"node": self.nodeid, "name": B2_name})
         self.assertEqual(response.status_code, 400, response.content)
 
         self.lg.info(" Create bridge (B3) with dnsmasq network mode and empty setting value,should fail.")
-        B3_name = self.rand_str_chars_only()
+        B3_name = self.rand_str()
         self.bridge_body["name"] = B3_name
         self.bridge_body["networkMode"] = "dnsmasq"
         self.bridge_body["setting"] = {}
         response = self.bridges_api.post_nodes_bridges(self.nodeid,self.bridge_body)
-        self.createdbridges.append({"node": self.nodeid, "name": self.bridge_name})
+        self.createdbridges.append({"node": self.nodeid, "name": B3_name})
         self.assertEqual(response.status_code, 400, response.content)
 
         self.lg.info(" Create bridge (B4) with dnsmasq network and empty start and end values, should fail.")
-        B4_name = self.rand_str_chars_only()
-        cidr_address = "192.22.3.0/24"
+        B4_name = self.rand_str()
+        cidr_address = "192.22.3.5/24"
         self.bridge_body["name"] = B4_name
         self.bridge_body["networkMode"] = "dnsmasq"
         self.bridge_body["setting"] = {"cidr": "%s"%cidr_address}
         response = self.bridges_api.post_nodes_bridges(self.nodeid, self.bridge_body)
-        self.createdbridges.append({"node": self.nodeid, "name": self.bridge_name})
+        self.createdbridges.append({"node": self.nodeid, "name": B4_name})
         self.assertEqual(response.status_code, 400, response.content)
