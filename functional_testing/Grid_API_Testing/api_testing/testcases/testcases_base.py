@@ -136,9 +136,5 @@ class TestcasesBase(TestCase):
             if 'state' in response.json():
                 if response.json()['state'] == 'ok':
                     return True
-                else:
-                    return False
-            else:
-                return False
-        else:
-            return False
+    
+        return False
