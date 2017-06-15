@@ -646,6 +646,9 @@ class TestcontaineridAPI(TestcasesBase):
         #. Check that C2 can connect to internt, should succeed.
 
         """
+        self.lg.info("create ovs container")
+        self.zeroCore.create_ovs_container()
+        
         self.lg.info('Create bridge with static network and nat true , should succeed')
         bridge_name = self.rand_str()
         hwaddr = self.randomMAC()
