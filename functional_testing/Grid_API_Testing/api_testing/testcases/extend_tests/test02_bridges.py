@@ -51,7 +51,7 @@ class TestBridgesAPI(TestcasesBase):
         """
         self.lg.info('Create bridge (B1) , should succeed .')
         response = self.bridges_api.post_nodes_bridges(self.nodeid, self.bridge_body)
-        self.assertEqual(response.status_code, 202, response.content)
+        self.assertEqual(response.status_code, 201, response.content)
         time.sleep(3)
 
         self.lg.info("Check that created bridge exist in bridges list.")
@@ -301,7 +301,7 @@ class TestBridgesAPI(TestcasesBase):
         B1_name = self.rand_str()
         cidr_address = "205.103.2.1/8"
         start = "205.103.3.2"
-        end = "205.103.3.2"
+        end = "205.103.3.3"
         self.bridge_body["name"] = B1_name
         self.bridge_body["networkMode"] = "dnsmasq"
         self.bridge_body["setting"] = {"cidr": cidr_address, "start": start, "end": end}
@@ -371,11 +371,11 @@ class TestBridgesAPI(TestcasesBase):
         self.assertTrue([x for x in response.json() if x["name"] == self.bridge_name])
 
         self.lg.info(" Create bridge (B1) overlapping with (B0) address,shoud fail.")
-        B_name = self.rand_str()
+        B1_name = self.rand_str()
         cidr_address = "205.103.2.1/8"
         start = "205.103.3.2"
         end = "205.103.3.2"
-        self.bridge_body["name"] = B_name
+        self.bridge_body["name"] = B1_name
         self.bridge_body["networkMode"] = "dnsmasq"
         self.bridge_body["setting"] = {"cidr": cidr_address, "start": start, "end": end}
         response = self.bridges_api.post_nodes_bridges(self.nodeid, self.bridge_body)
