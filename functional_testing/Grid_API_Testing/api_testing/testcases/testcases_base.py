@@ -2,8 +2,8 @@ from random import randint
 import uuid
 from unittest import TestCase
 from api_testing.utiles.utiles import Utiles
-from api_testing.grid_apis.pyclient.nodes_apis import NodesAPI
-from api_testing.grid_apis.pyclient.containers_apis import ContainersAPI
+from api_testing.grid_apis.orchastrator_client.nodes_apis import NodesAPI
+from api_testing.grid_apis.orchastrator_client.containers_apis import ContainersAPI
 import random
 import requests
 import time

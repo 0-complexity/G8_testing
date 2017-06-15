@@ -1,7 +1,7 @@
 from random import randint
 import unittest, time
 from api_testing.testcases.testcases_base import TestcasesBase
-from api_testing.grid_apis.pyclient.bridges_apis import BridgesAPI
+from api_testing.grid_apis.orchastrator_client.bridges_apis import BridgesAPI
 from api_testing.python_client.client import Client
 
 class TestBridgesAPI(TestcasesBase):
@@ -82,7 +82,7 @@ class TestBridgesAPI(TestcasesBase):
 
         #. Get random node (N0).
         #. Create bridge (B1) on node (N0), should succeed with 201.
-        #. Get bridges using pyclient , (B1) should be listed
+        #. Get bridges using orchastrator_client , (B1) should be listed
         #. List node (N0) bridges, (B1) should be listed.
         #. Delete bridge (B1), should succeed with 204.
         """
