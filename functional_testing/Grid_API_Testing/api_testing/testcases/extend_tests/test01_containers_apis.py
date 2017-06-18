@@ -16,6 +16,7 @@ class TestcontaineridAPI(TestcasesBase):
         super().__init__(*args, **kwargs)
         self.bridges_api = BridgesAPI()
         self.storagepool_api = StoragepoolsAPI()
+        self.containers_api = ContainersAPI()
 
         self.createdcontainer=[]
 

@@ -132,9 +132,9 @@ class TestcasesBase(TestCase):
         
     def is_run_succeed(self, runid):
         response = self.runs_api.wait_on_run(runid=runid)
-        if response.status_code == 202:
+]        if response.status_code == 200:
             if 'state' in response.json():
-                if response.json()['state'] == 'ok':
+                if response.json()['state'] not in ['new', 'error']:
                     return True
     
         return False

@@ -56,12 +56,11 @@ class TestVmsAPI(TestcasesBase):
         label = self.rand_str()
         servers = random.randint(1, len(free_disks))
         drivetype = 'ssd'
-        slaveNodes = False
         nodes = [self.nodeid]
         body = {"label": label,
                 "servers": servers,
                 "driveType": drivetype,
-                "slaveNodes": slaveNodes,
+                "clusterType": 'storage',
                 "nodes":nodes}
 
         response = self.storageclusters_api.post_storageclusters(body)
@@ -206,6 +205,7 @@ class TestVmsAPI(TestcasesBase):
                 "vdiskid": "ubuntu-test-vdisk",
                 "maxIOps": 2000
 		    }]
+
         vm_userCloudInit = {}
         vm_systemCloudInit = {}
 
@@ -241,7 +241,6 @@ class TestVmsAPI(TestcasesBase):
         keys_to_check = ['id', 'memory', 'cpu', 'nics', 'disks']
         for key in keys_to_check:
             self.assertEqual(body[key], response.json()[key])
-        self.assertEqual(response.json()['status'], 'deploying')
 
         for _ in range(60):
             response = self.vms_api.get_nodes_vms_vmid(self.nodeid, vm_id)
@@ -532,8 +531,6 @@ class TestVmsAPI(TestcasesBase):
         self.assertNotEqual(vm0, [])
         self.assertEquals(vm0[0]['state'], 'running')
 
-
-    @unittest.skip('https://github.com/g8os/resourcepool/issues/128')
     def test010_post_nodes_vms_vmid_shutdown(self):
         """ GAT-076
         **Test Scenario:**

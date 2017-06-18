@@ -31,7 +31,7 @@ class TestStorageclustersAPI(TestcasesBase):
             self.body = {"label": self.label,
                         "servers": self.servers,
                         "driveType": self.drivetype,
-                        "slaveNodes": self.slaveNodes,
+                        "clusterType": 'storage',
                         "nodes":[self.nodeid]}
 
             self.storageclusters_api.post_storageclusters(self.body)
@@ -100,18 +100,14 @@ class TestStorageclustersAPI(TestcasesBase):
         label = self.rand_str()
         servers = randint(1, len(free_disks))
         drivetype = 'ssd'
-        slaveNodes = False
         body = {"label": label,
                 "servers": servers,
                 "driveType": drivetype,
-                "slaveNodes":slaveNodes,
+                "clusterType": 'storage',
                 "nodes":[self.nodeid]}
 
         response = self.storageclusters_api.post_storageclusters(body)
-        self.assertEqual(response.status_code, 202)
-        
-        runid = response.json()['runid'] 
-        self.assertTrue(self.is_run_succeed(runid))
+        self.assertEqual(response.status_code, 201)
 
         for _ in range(60):
             response = self.storageclusters_api.get_storageclusters_label(label)
