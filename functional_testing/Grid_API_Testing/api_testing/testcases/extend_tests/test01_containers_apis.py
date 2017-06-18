@@ -526,7 +526,6 @@ class TestcontaineridAPI(TestcasesBase):
         self.assertEqual(response.status_code, 202)
         runid = response.json()['runid'] 
         self.assertTrue(self.is_run_succeed(runid))
-        response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertTrue(self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id,
                                                        containername=C1_name))
