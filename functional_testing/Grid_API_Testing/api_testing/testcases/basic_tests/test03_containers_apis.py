@@ -2,10 +2,8 @@ import random
 import time
 import unittest
 from api_testing.testcases.testcases_base import TestcasesBase
-from api_testing.python_client.client import Client
-from api_testing.grid_apis.orchestrator_client.nodes_apis import NodesAPI
+from api_testing.utiles.core0_client import Client
 from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
-import json
 
 
 class TestcontaineridAPI(TestcasesBase):

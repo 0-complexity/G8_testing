@@ -1,7 +1,7 @@
 from api_testing.testcases.testcases_base import TestcasesBase
-from api_testing.grid_apis.pyclient.bridges_apis import BridgesAPI
-from api_testing.grid_apis.pyclient.containers_apis import ContainersAPI
-from api_testing.grid_apis.pyclient.gateways_apis import GatewayAPI
+from api_testing.grid_apis.orchestrator_client.bridges_apis import BridgesAPI
+from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
+from api_testing.grid_apis.orchestrator_client.gateways_apis import GatewayAPI
 from api_testing.utiles.core0_client import Client
 from random import randint
 

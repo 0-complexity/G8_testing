@@ -4,7 +4,7 @@ from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.grid_apis.pyclient.bridges_apis import BridgesAPI
 from api_testing.grid_apis.pyclient.containers_apis import ContainersAPI
 from api_testing.grid_apis.pyclient.nodes_apis import NodesAPI
-from api_testing.python_client.client import Client
+from api_testing.python_client.core0_client import Client
 
 
 class TestBridgesAPI(TestcasesBase):
