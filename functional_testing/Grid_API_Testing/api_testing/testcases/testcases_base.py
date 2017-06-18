@@ -2,10 +2,11 @@ from random import randint
 import uuid
 from unittest import TestCase
 from api_testing.utiles.utiles import Utiles
-from api_testing.grid_apis.pyclient.nodes_apis import NodesAPI
-from api_testing.grid_apis.pyclient.containers_apis import ContainersAPI
-from api_testing.grid_apis.pyclient.runs_apis import RunsAPI
+from api_testing.grid_apis.orchestrator_client.nodes_apis import NodesAPI
+from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
+from api_testing.grid_apis.orchestrator_client.runs_apis import RunsAPI
 import random
+import random, string
 import requests
 import time
 from testconfig import config
@@ -83,7 +84,7 @@ class TestcasesBase(TestCase):
         url = 'https://my.zerotier.com/api/network/{}'.format(nwid)
         self.session.delete(url=url)
 
-    def wait_for_container_status(self, status, func, timeout=100, **kwargs):
+    def wait_for_status(self, status, func, timeout=100, **kwargs):
         resource = func(**kwargs)
         if resource.status_code != 200:
             return False
@@ -92,7 +93,7 @@ class TestcasesBase(TestCase):
             if resource['status'] == status:
                 return True
             time.sleep(1)
-            resource = func(**kwargs)  # get resource
+            resource = func(**kwargs)  
             resource = resource.json()
         return False
 
@@ -123,7 +124,7 @@ class TestcasesBase(TestCase):
             runid = response.json()['runid'] 
             self.assertTrue(self.is_run_succeed(runid))
 
-            if not self.wait_for_container_status('running', self.containers_api.get_containers_containerid,
+            if not self.wait_for_status('running', self.containers_api.get_containers_containerid,
                                                           nodeid=node_id, containername=container_name):
                 return False
             else:

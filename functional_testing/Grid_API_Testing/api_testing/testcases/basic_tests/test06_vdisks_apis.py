@@ -1,7 +1,7 @@
 import random, time
 from api_testing.testcases.testcases_base import TestcasesBase
-from api_testing.grid_apis.pyclient.vdisks_apis import VDisksAPIs
-from api_testing.grid_apis.pyclient.storageclusters_apis import Storageclusters
+from api_testing.grid_apis.orchestrator_client.vdisks_apis import VDisksAPIs
+from api_testing.grid_apis.orchestrator_client.storageclusters_apis import Storageclusters
 from api_testing.python_client.client import Client
 import unittest
 
@@ -32,7 +32,7 @@ class TestVdisks(TestcasesBase):
             sc_body = {"label": sc_label,
                         "servers": sc_servers,
                         "driveType": sc_drivetype,
-                        "clusterType": 'storage',
+                        "clusterType": "storage",
                         "nodes":sc_nodes}
 
             self.storageclusters_api.post_storageclusters(sc_body)
