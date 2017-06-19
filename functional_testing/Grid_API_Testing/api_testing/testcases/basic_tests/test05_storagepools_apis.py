@@ -38,7 +38,6 @@ class TestStoragepoolsAPI(TestcasesBase):
                 "devices":[device]}
 
         response = self.storagepool_api.post_storagepools(self.nodeid, body)
-        self.assertEqual(response.status_code, 201)
 
         for _ in range(60):
             freeDisks = self.pyclient.getFreeDisks()
@@ -65,8 +64,8 @@ class TestStoragepoolsAPI(TestcasesBase):
         name = self.random_string()
         quota = random.randint(0, 10)
         body = {"name":name, "quota":quota}
-        response = self.storagepool_api.post_storagepools_storagepoolname_filesystems(self.nodeid, storagepool, body)
-        self.assertEqual(response.status_code, 201)
+        self.storagepool_api.post_storagepools_storagepoolname_filesystems(self.nodeid, storagepool, body)
+
         for _ in range(60):
             try:
                 data = self.pyclient.client.btrfs.subvol_list('/mnt/storagepools/{}'.format(storagepool))
@@ -188,8 +187,11 @@ class TestStoragepoolsAPI(TestcasesBase):
                 "devices":devices}
 
         response = self.storagepool_api.post_storagepools(self.nodeid, body)
-        self.assertEqual(response.status_code, 201)
-        time.sleep(30)
+        self.assertEqual(response.status_code, 202)
+        
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+        #time.sleep(30)
 
         self.lg.info('Get Storagepool (SP1), should succeed with 200')
         response = self.storagepool_api.get_storagepools_storagepoolname(self.nodeid, name)
@@ -310,7 +312,10 @@ class TestStoragepoolsAPI(TestcasesBase):
         device = random.choice(free_devices)
         body = [device]
         response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'], body)
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 202)
+        
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
         
         for _ in range(30):
             free_devices = self.pyclient.getFreeDisks()
@@ -324,11 +329,10 @@ class TestStoragepoolsAPI(TestcasesBase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(device, [x['deviceName'][:-1] for x in response.json()])
 
-        #issue https://github.com/zero-os/0-orchestrator/issues/398
-        # self.lg.info('Create device with invalid body, should fail with 400')
-        # body = ""
-        # response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'], body)
-        # self.assertEqual(response.status_code, 400)
+        self.lg.info('Create device with invalid body, should fail with 400')
+        body = ""
+        response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'], body)
+        self.assertEqual(response.status_code, 400)
 
     @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/394')
     def test008_delete_storagepool_device(self):
@@ -449,8 +453,10 @@ class TestStoragepoolsAPI(TestcasesBase):
         quota = random.randint(0, 10)
         body = {"name":name, "quota":quota}
         response = self.storagepool_api.post_storagepools_storagepoolname_filesystems(self.nodeid, storagepool['name'], body)
-        self.assertEqual(response.status_code, 201)
-        time.sleep(5)
+        self.assertEqual(response.status_code, 202)
+        
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
 
         self.lg.info('Get filesystem (FS1), should succeed with 200')
         response = self.storagepool_api.get_storagepools_storagepoolname_filesystems_filesystemname(self.nodeid, storagepool['name'], name)
@@ -577,7 +583,10 @@ class TestStoragepoolsAPI(TestcasesBase):
         name = self.random_string()
         body = {"name":name}
         response = self.storagepool_api.post_filesystems_snapshots(self.nodeid, storagepool['name'], filesystem['name'], body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
 
         self.lg.info(' Get snapshot (SS1), should succeed with 200')
         response = self.storagepool_api.get_filesystem_snapshots_snapshotname(self.nodeid, storagepool['name'],

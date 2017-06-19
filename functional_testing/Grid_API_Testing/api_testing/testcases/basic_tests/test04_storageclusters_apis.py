@@ -27,13 +27,11 @@ class TestStorageclustersAPI(TestcasesBase):
             self.servers = randint(1,len(free_disks))
             self.drivetype = 'ssd'
 
-            self.body = {
-                    "label": self.label,
-                    "servers": self.servers,
-                    "driveType": self.drivetype,
-                    "clusterType": "storage",
-                    "nodes":[self.nodeid]
-                }
+            self.body = {"label": self.label,
+                        "servers": self.servers,
+                        "driveType": self.drivetype,
+                        "clusterType": 'storage',
+                        "nodes":[self.nodeid]}
 
             self.storageclusters_api.post_storageclusters(self.body)
             

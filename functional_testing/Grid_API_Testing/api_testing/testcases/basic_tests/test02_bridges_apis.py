@@ -92,8 +92,8 @@ class TestBridgesAPI(TestcasesBase):
         networkMode = self.random_item(["none", "static", "dnsmasq"])
         nat = self.random_item([False, True])
         settings = {"none":{},
-                    "static":{"cidr":"192.100.1.0/16"},
-                    "dnsmasq":{"cidr":"192.100.2.0/16", "start":"192.100.2.1", "end":"192.100.2.5"}}
+                    "static":{"cidr":"192.100.1.1/24"},
+                    "dnsmasq":{"cidr":"192.100.2.1/24", "start":"192.100.2.10", "end":"192.100.2.20"}}
 
         body = {"name":name,
                 "hwaddr":hwaddr,
@@ -102,8 +102,10 @@ class TestBridgesAPI(TestcasesBase):
                 "setting":settings[networkMode]}
 
         response = self.bridges_api.post_nodes_bridges(self.nodeid, body)
-        self.assertEqual(response.status_code, 201, response.content)
-        time.sleep(3)
+        self.assertEqual(response.status_code, 202)
+        
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
 
         bridges = self.pyclient.client.bridge.list()
         self.assertIn(name, bridges)

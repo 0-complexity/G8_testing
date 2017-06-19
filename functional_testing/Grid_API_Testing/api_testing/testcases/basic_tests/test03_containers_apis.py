@@ -84,7 +84,9 @@ class TestcontaineridAPI(TestcasesBase):
 
         self.lg.info('Send post nodes/{nodeid}/containers api request.')
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
 
         self.lg.info('Make sure it created with required values, should succeed.')
         self.assertEqual(response.headers['Location'], "/nodes/%s/containers/%s" % (self.node_id, self.container_name))
@@ -156,7 +158,10 @@ class TestcontaineridAPI(TestcasesBase):
         """
         self.lg.info('Create container ')
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
         container_id = self.wait_for_status("running", self.containers_api.get_containers_containerid,
                                                       nodeid=self.node_id,
@@ -656,7 +661,10 @@ class TestcontaineridAPI(TestcasesBase):
         """
         self.lg.info('create container ')
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+        
         self.assertTrue(self.wait_for_status('running', self.containers_api.get_containers_containerid,
                                                           nodeid=self.node_id, containername=self.container_name))
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
@@ -715,7 +723,10 @@ class TestcontaineridAPI(TestcasesBase):
         file_name = self.rand_str()
         self.lg.info('create container ')
         response = self.containers_api.post_containers(nodeid=self.node_id, data=self.container_body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 202)
+        runid = response.json()['runid'] 
+        self.assertTrue(self.is_run_succeed(runid))
+
         self.assertTrue(self.wait_for_status('running', self.containers_api.get_containers_containerid,
                                                        nodeid=self.node_id, containername=self.container_name))
         self.createdcontainer.append({"node": self.node_id, "container": self.container_name})
