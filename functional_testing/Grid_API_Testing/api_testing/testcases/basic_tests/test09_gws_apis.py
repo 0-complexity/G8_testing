@@ -3,8 +3,7 @@ from api_testing.grid_apis.orchestrator_client.bridges_apis import BridgesAPI
 from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
 from api_testing.grid_apis.orchestrator_client.gateways_apis import GatewayAPI
 from api_testing.utiles.core0_client import Client
-from random import randint
-
+import random
 
 class TestGatewayAPICreation(TestcasesBase):
     def __init__(self, *args, **kwargs):
@@ -181,12 +180,12 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.lg.info('Get random nodeid : %s' % str(self.nodeid))
         core0_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
         self.assertNotEqual(core0_ip, [])
-        self.core0_client = Client(core0_ip[0])
+        self.core0_client = Client(core0_ip[0], password=self.jwt)
         self.gw_name = self.random_string()
         self.gw_domain = self.random_string()
 
-        self.public_vlan_id = randint(1, 4094)
-        self.private_vxlan_id = randint(1, 100000)
+        self.public_vlan_id = str(random.randint(1, 4094))
+        self.private_vxlan_id = str(random.randint(1, 100000))
 
         self.body = {
             "name": self.gw_name,
@@ -208,13 +207,21 @@ class TestGatewayAPIUpdate(TestcasesBase):
                     "id": self.private_vxlan_id,
                     "config": {
                         "cidr": "192.168.2.20/24"
-                    }
+                    },
+                    "dhcpserver": {
+                        "nameservers": ["8.8.8.8"],
+				        "hosts": [
+                            {
+                                "hostname": "aaaa",
+                                "macaddress": "00:00:00:00:00:00",
+                                "ipaddress": "192.168.2.10"
+					        }
+				        ]
+			        }
                 }
-            ],
-            "portforwards": [],
-            "httpproxies": [],
-            "dhcpserver": []
+            ]
         }
+
         self.core0_client.create_ovs_container()
         response = self.gateways_apis.post_nodes_gateway(self.nodeid, self.body)
         self.assertEqual(response.status_code, 201)
@@ -278,7 +285,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
         pass
 
-    def test004_start_gw(self):
+    def test005_start_gw(self):
         """ GAT-xxx
         **Test Scenario:**
 
@@ -288,7 +295,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
         pass
 
-    def test004_update_gw_nics_config(self):
+    def test006_update_gw_nics_config(self):
         """ GAT-xxx
         **Test Scenario:**
 
@@ -297,7 +304,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
         pass
 
-    def test004_update_gw_portforwards_config(self):
+    def test007_update_gw_portforwards_config(self):
         """ GAT-xxx
         **Test Scenario:**
 
@@ -306,7 +313,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
         pass
 
-    def test004_update_gw_dhcpserver_config(self):
+    def test008_update_gw_dhcpserver_config(self):
         """ GAT-xxx
         **Test Scenario:**
 
@@ -315,7 +322,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
         pass
 
-    def test004_update_gw_httpproxies_config(self):
+    def test009_update_gw_httpproxies_config(self):
         """ GAT-xxx
         **Test Scenario:**
 
@@ -324,16 +331,32 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
         pass
 
-    def test_create_new_portforward(self):
+    def test010_create_new_portforward(self):
         """ GAT-xxx
         **Test Scenario:**
 
         #. Create new portforward table using firewall/forwards api
         #. Verify it is working right
         """
-        pass
+        body = {
+            "protocols":['udp', 'tcp'],
+            "srcport":random.randint(1, 2000),
+            "srcip":"192.168.1.1",
+            "dstport":random.randint(1, 2000),
+            "dstip":"192.168.2.5"
+        }
 
-    def test_list_portforward(self):
+        self.lg.info('Create new portforward table using firewall/forwards api')
+        response = self.gateways_apis.post_nodes_gateway_forwards(self.nodeid, self.gw_name, body)
+        self.assertEqual(response.status_code, 201, response.content)
+
+        self.lg.info('Verify it is working right')
+        response = self.gateways_apis.list_nodgetes_gateway_forwards(self.nodeid, self.gw_name)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(body, response.json())
+
+
+    def test011_list_portforward(self):
         """ GAT-xxx
         **Test Scenario:**
 
@@ -341,61 +364,184 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. List portfowards table
         #. Verify it has the right configuration
         """
-        pass
+        body = {
+            "protocols":['udp', 'tcp'],
+            "srcport":random.randint(1, 2000),
+            "srcip":"192.168.1.1",
+            "dstport":random.randint(1, 2000),
+            "dstip":"192.168.2.5"
+        }
 
-    def test_delete_portforward(self):
+        self.lg.info('Create new portforward table using firewall/forwards api')
+        response = self.gateways_apis.post_nodes_gateway_forwards(self.nodeid, self.gw_name, body)
+        self.assertEqual(response.status_code, 201, response.content)
+
+        self.lg.info('Verify it is working right')
+        response = self.gateways_apis.list_nodes_gateway_forwards(self.nodeid, self.gw_name)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(body, response.json())
+
+    def test012_delete_portforward(self):
         """ GAT-xxx
         **Test Scenario:**
 
         #. Create new portforward table using firewall/forwards api
         #. List portfowards table
         #. Delete this portforward config
-        #. List portforwards
-        #. Verify that it has been deleted
+        #. List portforwards and verify that it has been deleted
         """
-        pass
+        body = {
+            "protocols":['udp', 'tcp'],
+            "srcport":random.randint(1, 2000),
+            "srcip":"192.168.1.1",
+            "dstport":random.randint(1, 2000),
+            "dstip":"192.168.2.5"
+        }
 
-    def test_add_dhcp_host(self):
+        self.lg.info('Create new portforward table using firewall/forwards api')
+        response = self.gateways_apis.post_nodes_gateway_forwards(self.nodeid, self.gw_name, body)
+        self.assertEqual(response.status_code, 201, response.content)
+
+        self.lg.info('List portfowards table')
+        response = self.gateways_apis.list_nodes_gateway_forwards(self.nodeid, self.gw_name)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(body, response.json())
+
+        self.lg.info('Delete this portforward config')
+        forwardid = '{}:{}'.format(body['srcip'], body['srcport'])
+        response = self.gateways_apis.delete_nodes_gateway_forward(self.nodeid, self.gw_name, forwardid)
+        self.assertEqual(response.status_code, 204)
+
+        self.lg.info('List portfowards table')
+        response = self.gateways_apis.list_nodes_gateway_forwards(self.nodeid, self.gw_name)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(body, response.json())
+
+    def test013_add_dhcp_host(self):
         """ GAT-xxx
         **Test Scenario:**
-
         #. Add new dhcp host to an interface
         #. List dhcp hosts
         #. Verify that is the list has the config
         """
-        pass
+        self.lg.info('Add new dhcp host to an interface')
+        interface = 'private'
+        hostname = self.random_string()
+        macaddress = self.randomMAC()
+        ipaddress = '192.168.2.3'
+        body = {
+            "hostname": hostname,
+            "macaddress": macaddress,
+            "ipaddress": ipaddress
+        }
+        
+        response = self.gateways_apis.post_nodes_gateway_dhcp_host(self.nodeid, self.gw_name, interface, body)
+        self.assertEqual(response.status_code, 204)
 
-    def test_delete_dhcp_host(self):
+        self.lg.info('List dhcp hosts')
+        response = self.gateways_apis.list_nodes_gateway_dhcp_hosts(self.nodeid, self.gw_name, interface)
+        self.assertEqual(response.status_code, 200)
+
+        self.lg.info('Verify that is the list has the config')
+        dhcp_host = [x for x in response.json() if x['hostname'] == hostname]
+        self.assertNotEqual(dhcp_host, [])
+        for key in body.keys():
+            self.assertTrue(body[key], dhcp_host[0][key])
+
+
+    def test014_delete_dhcp_host(self):
         """ GAT-xxx
         **Test Scenario:**
-
         #. Add new dhcp host to an interface
         #. List dhcp hosts
         #. Delete one host form the dhcp
         #. List dhcp hosts
         #. Verify that the dhcp has been updated
         """
-        pass
+        self.lg.info('Add new dhcp host to an interface')
+        interface = 'private'
+        hostname = self.random_string()
+        macaddress = self.randomMAC()
+        ipaddress = '192.168.2.3'
+        body = {
+            "hostname": hostname,
+            "macaddress": macaddress,
+            "ipaddress": ipaddress
+        }
+
+        response = self.gateways_apis.post_nodes_gateway_dhcp_host(self.nodeid, self.gw_name, interface, body)
+        self.assertEqual(response.status_code, 204)
+
+        time.sleep(10)
+
+        self.lg.info(' Delete one host form the dhcp')
+        response = self.gateways_apis.delete_nodes_gateway_dhcp_host(self.nodeid, self.gw_name, interface, macaddress.replace(':', ''))
+        self.assertEqual(response.status_code, 204)
+
+        self.lg.info('List dhcp hosts')
+        response = self.gateways_apis.list_nodes_gateway_dhcp_hosts(self.nodeid, self.gw_name, interface)
+        self.assertEqual(response.status_code, 200)
+
+        self.lg.info('Verify that the dhcp has been updated')
+        dhcp_host = [x for x in response.json() if x['hostname'] == hostname]
+        self.assertEqual(dhcp_host, [])
 
 
-    def test_create_new_httpproxy(self):
+    def test015_create_new_httpproxy(self):
         """ GAT-xxx
         **Test Scenario:**
-
         #. Create new httpproxy
         #. List httpproxy config
         #. Verify that is the list has the config
         """
-        pass
 
-    def test_delete_httpproxyid(self):
+        self.lg.info('Add new httpproxy host to an interface')
+        body = {
+            "host":self.random_string(),
+            "destinations": ['http://192.168.2.200:500'],
+            "types":['http', 'https']
+        }
+
+        response = self.gateways_apis.post_nodes_gateway_httpproxy(self.nodeid, self.gw_name, body)
+        self.assertEqual(response.status_code, 201)
+
+        self.lg.info('List dhcp httpproxy')
+        response = self.gateways_apis.list_nodes_gateway_httpproxies(self.nodeid, self.gw_name)
+        self.assertEqual(response.status_code, 200)
+
+        self.lg.info('Verify that is the list has the config')
+        httpproxy_host = [x for x in response.json() if x['host'] == body['host']]
+        self.assertNotEqual(httpproxy_host, [])
+        for key in body.keys():
+            self.assertTrue(body[key], httpproxy_host[0][key])
+
+    def test016_delete_httpproxyid(self):
         """ GAT-xxx
         **Test Scenario:**
-
         #. Create new httpproxy
-        #. List httpproxy config
         #. Delete httpproxy id
         #. List dhcp hosts
         #. Verify that the dhcp has been updated
         """
-        pass
+        self.lg.info('Create new httpproxy')
+        body = {
+            "host":self.random_string(),
+            "destinations": ['http://192.168.2.200:500'],
+            "types":['http', 'https']
+        }
+
+        response = self.gateways_apis.post_nodes_gateway_httpproxy(self.nodeid, self.gw_name, body)
+        self.assertEqual(response.status_code, 202)
+        
+        self.lg.info('Delete httpproxy id')
+        proxyid = body['host']
+        response = self.gateways_apis.delete_nodes_gateway_httpproxy(self.nodeid, self.gw_name, proxyid)
+        self.assertEqual(response.status_code, 204)
+
+        self.lg.info('List httpproxies')
+        response = self.gateways_apis.list_nodes_gateway_httpproxies(self.nodeid, self.gw_name)
+        self.assertEqual(response.status_code, 200)
+
+        self.lg.info('Verify that the httpproxies has been updated')
+        httpproxy_host = [x for x in response.json() if x['host'] == body['host']]
+        self.assertEqual(httpproxy_host, [])
