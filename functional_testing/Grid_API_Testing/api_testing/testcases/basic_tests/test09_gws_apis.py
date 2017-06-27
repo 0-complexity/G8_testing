@@ -19,7 +19,7 @@ class TestGatewayAPICreation(TestcasesBase):
         self.lg.info('Get random nodeid : %s' % str(self.nodeid))
         core0_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
         self.assertNotEqual(core0_ip, [])
-        self.core0_client = Client(core0_ip[0])
+        self.core0_client = Client(core0_ip[0], password=self.jwt)
         self.core0_client.create_ovs_container()
 
     def tearDown(self):
@@ -295,6 +295,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. Use put method to update the nics config for the gw
         #. List the gw and make sure that its nics config have been updated
         """
+        pass
 
     def test004_update_gw_portforwards_config(self):
         """ GAT-xxx
@@ -303,6 +304,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. Use put method to update the portforwards config for the gw
         #. List the gw and make sure that its portforwards config have been updated
         """
+        pass
 
     def test004_update_gw_dhcpserver_config(self):
         """ GAT-xxx
@@ -311,6 +313,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. Use put method to update the dhcpserver config for the gw
         #. List the gw and make sure that its dhcpserver config have been updated
         """
+        pass
 
     def test004_update_gw_httpproxies_config(self):
         """ GAT-xxx
@@ -319,6 +322,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. Use put method to update the dhcpserver config for the gw
         #. List the gw and make sure that its dhcpserver config have been updated
         """
+        pass
 
     def test_create_new_portforward(self):
         """ GAT-xxx
@@ -327,6 +331,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. Create new portforward table using firewall/forwards api
         #. Verify it is working right
         """
+        pass
 
     def test_list_portforward(self):
         """ GAT-xxx
@@ -336,6 +341,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. List portfowards table
         #. Verify it has the right configuration
         """
+        pass
 
     def test_delete_portforward(self):
         """ GAT-xxx
@@ -347,6 +353,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. List portforwards
         #. Verify that it has been deleted
         """
+        pass
 
     def test_add_dhcp_host(self):
         """ GAT-xxx
@@ -356,6 +363,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. List dhcp hosts
         #. Verify that is the list has the config
         """
+        pass
 
     def test_delete_dhcp_host(self):
         """ GAT-xxx
@@ -367,6 +375,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. List dhcp hosts
         #. Verify that the dhcp has been updated
         """
+        pass
 
 
     def test_create_new_httpproxy(self):
@@ -377,6 +386,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. List httpproxy config
         #. Verify that is the list has the config
         """
+        pass
 
     def test_delete_httpproxyid(self):
         """ GAT-xxx
@@ -388,3 +398,4 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. List dhcp hosts
         #. Verify that the dhcp has been updated
         """
+        pass

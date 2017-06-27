@@ -15,7 +15,7 @@ class TestBridgesAPI(TestcasesBase):
         self.lg.info('Get random nodid (N0)')
         self.nodeid = self.get_random_node()
         pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]
-        self.pyclient = Client(pyclient_ip)
+        self.pyclient = Client(pyclient_ip, password=self.jwt)
 
         self.lg.info('Create bridge (B0) on node (N0)')
         self.name = self.rand_str()

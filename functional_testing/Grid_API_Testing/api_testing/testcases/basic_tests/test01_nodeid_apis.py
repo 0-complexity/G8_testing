@@ -24,7 +24,7 @@ class TestNodeidAPI(TestcasesBase):
                 self.g8os_ip = node['ip']
                 self.node = node
                 break
-        self.python_client = Client(self.g8os_ip)
+        self.python_client = Client(self.g8os_ip, password=self.jwt)
 
     def test001_list_nodes(self):
         """ GAT-001

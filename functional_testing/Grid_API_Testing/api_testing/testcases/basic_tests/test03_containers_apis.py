@@ -25,7 +25,7 @@ class TestcontaineridAPI(TestcasesBase):
                 self.g8os_ip = node['ip']
                 self.node = node
                 break
-        self.g8core = Client(self.g8os_ip)
+        self.g8core = Client(self.g8os_ip, password=self.jwt)
 
         self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
         self.storage = "ardb://hub.gig.tech:16379"
