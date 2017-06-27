@@ -4,14 +4,13 @@ from unittest import TestCase
 from api_testing.utiles.utiles import Utiles
 from api_testing.grid_apis.orchestrator_client.nodes_apis import NodesAPI
 from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
-import random
 import random, string
 import requests
 import time
+import signal
 from testconfig import config
 from api_testing.grid_apis import JWT
 from api_testing.testcases import NODES_INFO
-import signal
 from nose.tools import TimeExpired
 from zeroos.orchestrator import client as apiclient
 
@@ -27,11 +26,7 @@ class TestcasesBase(TestCase):
         self.session = requests.Session()
         self.zerotier_token = self.config['zerotier_token']
         self.session.headers['Authorization'] = 'Bearer {}'.format(self.zerotier_token)
-        self.createdcontainer=[]
-        self.client_id = self.config['client_id']
-        self.client_secret = self.config['client_secret']
-        self.organization = self.config['organization']
-
+        self.createdcontainer = []
 
     def setUp(self):
         self._testID = self._testMethodName
