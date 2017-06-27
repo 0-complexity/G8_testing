@@ -13,7 +13,7 @@ class TestStoragepoolsAPI(TestcasesBase):
         super(TestStoragepoolsAPI, self).setUp()
         self.nodeid = self.get_random_node()
         self.nodeip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
-        self.pyclient = Client(self.nodeip[0])
+        self.pyclient = Client(self.nodeip[0], password=self.jwt)
         self.CLEANUP = []
 
     def tearDown(self):

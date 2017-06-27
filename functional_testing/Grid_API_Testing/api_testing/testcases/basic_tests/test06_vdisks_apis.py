@@ -16,7 +16,7 @@ class TestVdisks(TestcasesBase):
 
         node = self.get_random_node()
         pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == node][0]
-        self.pyclient = Client(pyclient_ip)
+        self.pyclient = Client(pyclient_ip, password=self.jwt)
 
         free_disks = self.pyclient.getFreeDisks()
         if free_disks == []:

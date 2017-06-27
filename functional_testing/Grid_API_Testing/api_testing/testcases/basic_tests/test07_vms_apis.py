@@ -19,7 +19,7 @@ class TestVmsAPI(TestcasesBase):
         self.lg.info('Get random nodid (N0)')
         self.nodeid = self.get_random_node()
         nodeip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]
-        self.pyclient = Client(nodeip)
+        self.pyclient = Client(nodeip, password=self.jwt)
 
         storageclusters = self.storageclusters_api.get_storageclusters()
         if storageclusters.json() == []:

@@ -19,7 +19,7 @@ class TestGatewayAPICreation(TestcasesBase):
         self.lg.info('Get random nodeid : %s' % str(self.nodeid))
         core0_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
         self.assertNotEqual(core0_ip, [])
-        self.core0_client = Client(core0_ip[0])
+        self.core0_client = Client(core0_ip[0], password=self.jwt)
         self.core0_client.create_ovs_container()
 
     def tearDown(self):

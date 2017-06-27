@@ -15,7 +15,7 @@ class TestZerotiersAPI(TestcasesBase):
         self.nodeid = self.get_random_node()
         pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
         self.assertNotEqual(pyclient_ip, [])
-        self.pyclient = Client(pyclient_ip[0])
+        self.pyclient = Client(pyclient_ip[0], password=self.jwt)
 
         self.lg.info('Join zerotier network (ZT0)')
         self.nwid = self.create_zerotier_network()

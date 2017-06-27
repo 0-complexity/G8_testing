@@ -3,8 +3,8 @@ from zeroos.core0.client import Client as core0_client
 import time
 
 class Client:
-    def __init__(self, ip):
-        self.client = core0_client(ip)
+    def __init__(self, ip, password):
+        self.client = core0_client(ip, password=password)
 
     def stdout(self, resource):
         return resource.get().stdout.replace('\n', '').lower()
