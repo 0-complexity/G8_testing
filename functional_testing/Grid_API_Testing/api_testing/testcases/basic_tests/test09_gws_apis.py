@@ -332,7 +332,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         pass
 
     def test010_create_new_portforward(self):
-        """ GAT-xxx
+        """ GAT-114
         **Test Scenario:**
 
         #. Create new portforward table using firewall/forwards api
@@ -357,7 +357,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
 
 
     def test011_list_portforward(self):
-        """ GAT-xxx
+        """ GAT-115
         **Test Scenario:**
 
         #. Create new portforward table using firewall/forwards api
@@ -382,7 +382,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.assertIn(body, response.json())
 
     def test012_delete_portforward(self):
-        """ GAT-xxx
+        """ GAT-116
         **Test Scenario:**
 
         #. Create new portforward table using firewall/forwards api
@@ -418,7 +418,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.assertNotIn(body, response.json())
 
     def test013_add_dhcp_host(self):
-        """ GAT-xxx
+        """ GAT-117
         **Test Scenario:**
         #. Add new dhcp host to an interface
         #. List dhcp hosts
@@ -450,7 +450,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
 
 
     def test014_delete_dhcp_host(self):
-        """ GAT-xxx
+        """ GAT-118
         **Test Scenario:**
         #. Add new dhcp host to an interface
         #. List dhcp hosts
@@ -472,8 +472,6 @@ class TestGatewayAPIUpdate(TestcasesBase):
         response = self.gateways_apis.post_nodes_gateway_dhcp_host(self.nodeid, self.gw_name, interface, body)
         self.assertEqual(response.status_code, 204)
 
-        time.sleep(10)
-
         self.lg.info(' Delete one host form the dhcp')
         response = self.gateways_apis.delete_nodes_gateway_dhcp_host(self.nodeid, self.gw_name, interface, macaddress.replace(':', ''))
         self.assertEqual(response.status_code, 204)
@@ -488,7 +486,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
 
 
     def test015_create_new_httpproxy(self):
-        """ GAT-xxx
+        """ GAT-119
         **Test Scenario:**
         #. Create new httpproxy
         #. List httpproxy config
@@ -516,7 +514,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
             self.assertTrue(body[key], httpproxy_host[0][key])
 
     def test016_delete_httpproxyid(self):
-        """ GAT-xxx
+        """ GAT-120
         **Test Scenario:**
         #. Create new httpproxy
         #. Delete httpproxy id
@@ -531,7 +529,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         }
 
         response = self.gateways_apis.post_nodes_gateway_httpproxy(self.nodeid, self.gw_name, body)
-        self.assertEqual(response.status_code, 202)
+        self.assertEqual(response.status_code, 201)
         
         self.lg.info('Delete httpproxy id')
         proxyid = body['host']
