@@ -2,7 +2,7 @@ import random, time
 from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.grid_apis.orchestrator_client.vdisks_apis import VDisksAPIs
 from api_testing.grid_apis.orchestrator_client.storageclusters_apis import Storageclusters
-from api_testing.python_client.client import Client
+from api_testing.utiles.core0_client import Client
 import unittest
 
 class TestVdisks(TestcasesBase):
@@ -16,7 +16,7 @@ class TestVdisks(TestcasesBase):
 
         node = self.get_random_node()
         pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == node][0]
-        self.pyclient = Client(pyclient_ip)
+        self.pyclient = Client(pyclient_ip, password=self.jwt)
 
         free_disks = self.pyclient.getFreeDisks()
         if free_disks == []:

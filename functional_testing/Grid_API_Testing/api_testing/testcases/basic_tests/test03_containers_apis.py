@@ -2,10 +2,8 @@ import random
 import time
 import unittest
 from api_testing.testcases.testcases_base import TestcasesBase
-from api_testing.python_client.client import Client
-from api_testing.grid_apis.orchestrator_client.nodes_apis import NodesAPI
+from api_testing.utiles.core0_client import Client
 from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
-import json
 
 
 class TestcontaineridAPI(TestcasesBase):
@@ -27,7 +25,7 @@ class TestcontaineridAPI(TestcasesBase):
                 self.g8os_ip = node['ip']
                 self.node = node
                 break
-        self.g8core = Client(self.g8os_ip)
+        self.g8core = Client(self.g8os_ip, password=self.jwt)
 
         self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
         self.storage = "ardb://hub.gig.tech:16379"

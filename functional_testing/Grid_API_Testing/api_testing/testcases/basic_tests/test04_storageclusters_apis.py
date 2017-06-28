@@ -1,7 +1,7 @@
 from random import randint
 from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.grid_apis.orchestrator_client.storageclusters_apis import Storageclusters
-from api_testing.python_client.client import Client
+from api_testing.utiles.core0_client import Client
 import unittest, time
 
 class TestStorageclustersAPI(TestcasesBase):
@@ -14,7 +14,7 @@ class TestStorageclustersAPI(TestcasesBase):
 
         self.nodeid = self.get_random_node()
         pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]
-        self.pyclient = Client(pyclient_ip)
+        self.pyclient = Client(pyclient_ip, password=self.jwt)
 
         if self._testMethodName != 'test003_deploy_new_storagecluster':
             

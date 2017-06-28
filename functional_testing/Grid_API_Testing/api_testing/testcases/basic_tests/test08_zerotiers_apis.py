@@ -1,8 +1,7 @@
-from random import randint
-import unittest, time
+import time
 from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.grid_apis.orchestrator_client.zerotiers_apis import ZerotiersAPI
-from api_testing.python_client.client import Client
+from api_testing.utiles.core0_client import Client
 
 class TestZerotiersAPI(TestcasesBase):
     def __init__(self, *args, **kwargs):
@@ -16,7 +15,7 @@ class TestZerotiersAPI(TestcasesBase):
         self.nodeid = self.get_random_node()
         pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
         self.assertNotEqual(pyclient_ip, [])
-        self.pyclient = Client(pyclient_ip[0])
+        self.pyclient = Client(pyclient_ip[0], password=self.jwt)
 
         self.lg.info('Join zerotier network (ZT0)')
         self.nwid = self.create_zerotier_network()

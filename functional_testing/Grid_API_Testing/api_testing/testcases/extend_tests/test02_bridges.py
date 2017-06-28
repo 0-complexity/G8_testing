@@ -4,7 +4,7 @@ from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.grid_apis.pyclient.bridges_apis import BridgesAPI
 from api_testing.grid_apis.pyclient.containers_apis import ContainersAPI
 from api_testing.grid_apis.pyclient.nodes_apis import NodesAPI
-from api_testing.python_client.client import Client
+from api_testing.python_client.core0_client import Client
 
 
 class TestBridgesAPI(TestcasesBase):
@@ -22,7 +22,7 @@ class TestBridgesAPI(TestcasesBase):
         self.nodeid = self.get_random_node()
         zeroCore_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]
         self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
-        self.zeroCore = Client(zeroCore_ip)
+        self.zeroCore = Client(zeroCore_ip, password=self.jwt)
         self.bridge_name = self.rand_str()
         self.nat = self.random_item([False, True])
         self.bridge_body = {"name":self.bridge_name,

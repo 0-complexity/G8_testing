@@ -4,14 +4,15 @@ from unittest import TestCase
 from api_testing.utiles.utiles import Utiles
 from api_testing.grid_apis.orchestrator_client.nodes_apis import NodesAPI
 from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
-import random
 import random, string
 import requests
 import time
-from testconfig import config
-from api_testing.testcases import NODES_INFO
 import signal
+from testconfig import config
+from api_testing.grid_apis import JWT
+from api_testing.testcases import NODES_INFO
 from nose.tools import TimeExpired
+from zeroos.orchestrator import client as apiclient
 
 class TestcasesBase(TestCase):
     def __init__(self, *args, **kwargs):
@@ -19,12 +20,13 @@ class TestcasesBase(TestCase):
         self.utiles = Utiles()
         self.nodes_api = NodesAPI()
         self.config = config['main']
+        self.jwt = JWT
         self.nodes = NODES_INFO
         self.lg = self.utiles.logging
         self.session = requests.Session()
         self.zerotier_token = self.config['zerotier_token']
         self.session.headers['Authorization'] = 'Bearer {}'.format(self.zerotier_token)
-        self.createdcontainer=[]
+        self.createdcontainer = []
 
     def setUp(self):
         self._testID = self._testMethodName
@@ -65,11 +67,11 @@ class TestcasesBase(TestCase):
     def random_item(self, array):
         return array[randint(0, len(array)-1)]
 
-    def create_zerotier_network(self):
+    def create_zerotier_network(self, private=False):
         url = 'https://my.zerotier.com/api/network'
         data = {'config': {'ipAssignmentPools': [{'ipRangeEnd': '10.147.17.254',
                                                     'ipRangeStart': '10.147.17.1'}],
-                            'private': False,
+                            'private': private,
                             'routes': [{'target': '10.147.17.0/24', 'via': None}],
                             'v4AssignMode': {'zt': True}}}
 
