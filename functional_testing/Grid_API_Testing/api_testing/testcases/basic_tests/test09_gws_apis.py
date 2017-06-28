@@ -331,7 +331,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
         pass
 
-    def test010_create_new_portforward(self):
+    def test010_create_list_portforward(self):
         """ GAT-114
         **Test Scenario:**
 
@@ -351,38 +351,13 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.assertEqual(response.status_code, 201, response.content)
 
         self.lg.info('Verify it is working right')
-        response = self.gateways_apis.list_nodgetes_gateway_forwards(self.nodeid, self.gw_name)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(body, response.json())
-
-
-    def test011_list_portforward(self):
-        """ GAT-115
-        **Test Scenario:**
-
-        #. Create new portforward table using firewall/forwards api
-        #. List portfowards table
-        #. Verify it has the right configuration
-        """
-        body = {
-            "protocols":['udp', 'tcp'],
-            "srcport":random.randint(1, 2000),
-            "srcip":"192.168.1.1",
-            "dstport":random.randint(1, 2000),
-            "dstip":"192.168.2.5"
-        }
-
-        self.lg.info('Create new portforward table using firewall/forwards api')
-        response = self.gateways_apis.post_nodes_gateway_forwards(self.nodeid, self.gw_name, body)
-        self.assertEqual(response.status_code, 201, response.content)
-
-        self.lg.info('Verify it is working right')
         response = self.gateways_apis.list_nodes_gateway_forwards(self.nodeid, self.gw_name)
         self.assertEqual(response.status_code, 200)
         self.assertIn(body, response.json())
 
+
     def test012_delete_portforward(self):
-        """ GAT-116
+        """ GAT-115
         **Test Scenario:**
 
         #. Create new portforward table using firewall/forwards api
@@ -417,8 +392,9 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(body, response.json())
 
+
     def test013_add_dhcp_host(self):
-        """ GAT-117
+        """ GAT-116
         **Test Scenario:**
         #. Add new dhcp host to an interface
         #. List dhcp hosts
@@ -450,7 +426,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
 
 
     def test014_delete_dhcp_host(self):
-        """ GAT-118
+        """ GAT-117
         **Test Scenario:**
         #. Add new dhcp host to an interface
         #. List dhcp hosts
@@ -486,7 +462,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
 
 
     def test015_create_new_httpproxy(self):
-        """ GAT-119
+        """ GAT-118
         **Test Scenario:**
         #. Create new httpproxy
         #. List httpproxy config
@@ -514,7 +490,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
             self.assertTrue(body[key], httpproxy_host[0][key])
 
     def test016_delete_httpproxyid(self):
-        """ GAT-120
+        """ GAT-119
         **Test Scenario:**
         #. Create new httpproxy
         #. Delete httpproxy id
