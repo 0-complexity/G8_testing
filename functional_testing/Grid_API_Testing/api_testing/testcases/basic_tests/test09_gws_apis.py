@@ -161,9 +161,6 @@ class TestGatewayAPICreation(TestcasesBase):
                                          "config": {"dhcp": True}}]
                                }
         self.containers_apis.post_containers(self.nodeid, self.container_body)
-        self.assertTrue(self.wait_for_status("running", self.containers_apis.get_containers_containerid,
-                                             nodeid=self.nodeid,
-                                             containername=self.container_name))
         container = self.core0_client.get_container_client(self.container_name)
         self.assertTrue(container)
         response = container.bash('ping -c 5 google.com').get()
@@ -255,9 +252,6 @@ class TestGatewayAPICreation(TestcasesBase):
                                          "config": {"dhcp": True}}]
                                }
         self.containers_apis.post_containers(self.nodeid, self.container_body)
-        self.assertTrue(self.wait_for_status("running", self.containers_apis.get_containers_containerid,
-                                             nodeid=self.nodeid,
-                                             containername=self.container_name))
         container = self.core0_client.get_container_client(self.container_name)
         self.assertTrue(container)
         response = container.bash('ping -c 5 google.com').get()
