@@ -2,7 +2,7 @@ import random
 import time
 import unittest
 from api_testing.testcases.testcases_base import TestcasesBase
-from api_testing.python_client.client import Client
+from api_testing.utiles.core0_client import Client
 from api_testing.grid_apis.apis.nodes_apis import NodesAPI
 from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
 import json
@@ -25,7 +25,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.node_id = self.get_random_node()
         self.zeroCore_ip= [x['ip'] for x in self.nodes if x['id'] == self.node_id]
         self.assertTrue(self.zeroCore_ip,'No node match the random node')
-        self.zeroCore = Client(self.zeroCore_ip[0])
+        self.zeroCore = Client(self.zeroCore_ip[0], password=self.jwt)
         self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
         self.storage = "ardb://hub.gig.tech:16379"
         self.container_name = self.rand_str()
@@ -652,15 +652,14 @@ class TestcontaineridAPI(TestcasesBase):
         self.lg.info('Create bridge with static network and nat true , should succeed')
         bridge_name = self.rand_str()
         hwaddr = self.randomMAC()
-        bridge_cidr = "190.122.2.5"
+        bridge_cidr = "192.122.2.5"
         body = {"name": bridge_name,
                 "hwaddr": hwaddr,
                 "networkMode": "static",
                 "nat": True,
                 "setting": {"cidr": "%s/24"%bridge_cidr}}
-
         response = self.bridges_api.post_nodes_bridges(self.node_id, body)
-        self.assertEqual(response.status_code, 202, response.content)
+        self.assertEqual(response.status_code, 201, response.content)
         time.sleep(3)
 
         self.lg.info("Create container (C1) with (B0) without gateway.")
@@ -669,29 +668,29 @@ class TestcontaineridAPI(TestcasesBase):
         C1_name = self.rand_str()
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 202)
+        self.assertEqual(response.status_code, 201)
 
-        self.assertTrue(self.wait_for_container_status("running",
-                                                       self.containers_api.get_containers_containerid,
-                                                       nodeid=self.node_id,
-                                                       containername=C1_name))
+        self.assertTrue(self.wait_for_status("running",
+                                             self.containers_api.get_containers_containerid,
+                                             nodeid=self.node_id,
+                                             containername=C1_name))
         self.createdcontainer.append({"node": self.node_id, "container": C1_name})
 
         self.lg.info("Create container (C2) with (B0) with gateway same ip of bridge.")
-        nics = [{"type": "bridge", "id": bridge_name, "config": {"cidr":"190.122.2.3/24","gateway": bridge_cidr}, "status": "up" }]
+        nics = [{"type": "bridge", "id": bridge_name, "config": {"cidr":"192.122.2.3/24","gateway": bridge_cidr}, "status": "up" }]
         C2_name = self.rand_str()
         self.container_body["nics"] = nics
         self.container_body["name"] = C2_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
-        self.assertEqual(response.status_code, 202)
-        self.assertTrue(self.wait_for_container_status("running",
-                                                       self.containers_api.get_containers_containerid,
-                                                       nodeid=self.node_id,
-                                                       containername=C2_name))
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(self.wait_for_status("running",
+                                             self.containers_api.get_containers_containerid,
+                                             nodeid=self.node_id,
+                                             containername=C2_name))
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
 
-        C1_client = self.zeroos.get_container_client(C1_name)
-        C2_client = self.zeroos.get_container_client(C2_name)
+        C1_client = self.zeroCore.get_container_client(C1_name)
+        C2_client = self.zeroCore.get_container_client(C2_name)
 
         self.lg.info("Check that C1 can connect to internet, should fail.")
         response = C1_client.bash("ping -w 5  8.8.8.8").get()
@@ -946,7 +945,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.assertEqual(response.state, "SUCCESS", "job didn't get Env varaible  correctly")
 
     def test017_Create_containers_with_common_vlan(self):
-        """ GAT-112
+        """ GAT-098
 
         *Test case for test creation of containers with cmmon vlan  network*
 
