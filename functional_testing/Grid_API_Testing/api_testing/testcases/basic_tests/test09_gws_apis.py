@@ -20,12 +20,18 @@ class TestGatewayAPICreation(TestcasesBase):
         self.assertNotEqual(core0_ip, [])
         self.core0_client = Client(core0_ip[0], password=self.jwt)
         self.core0_client.create_ovs_container()
+        self.flist = 'https://hub.gig.tech/gig-official-apps/ubuntu1604.flist'
 
     def tearDown(self):
         self.lg.info('Delete all node {} gateways'.format(self.nodeid))
         response = self.gateways_apis.list_nodes_gateways(self.nodeid)
         for gw in response.json():
             self.gateways_apis.delete_nodes_gateway(self.nodeid, gw['name'])
+        
+        response = self.core0_client.client.container.list()
+        for cid in response:
+            self.core0_client.client.container.terminate(int(cid))
+        
         super().tearDown()
 
     def test004_create_gateway_with_vlan_vlan_container(self):
@@ -38,7 +44,60 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Bind a new container to vlan(2).
         #. Make sure that those two containers can ping each others.
         """
-        pass
+
+        self.lg.info('Create gateway with vlan and vlan as nics on node (N0), should succeed')
+
+        gw_name = self.random_string()
+        gw_domain = self.random_string()
+        vlan_gw_id = str(random.randint(1, 4094))
+        vlan_1_id = str(random.randint(1, 4094))
+        vlan_2_id = str(random.randint(1, 4094))
+
+        body = {
+            "name": gw_name,
+            "domain": gw_domain,
+            "nics": [
+                {
+                    "name": 'vlan_gw',
+                    "type": 'vlan',
+                    "id": vlan_gw_id,
+                    "config": {"cidr": '192.168.10.1/24', "gateway": '192.168.10.2'}
+                },
+
+                {
+                    "name": 'vlan_1',
+                    "type": 'vlan',
+                    "id": vlan_1_id,
+                    "config": {"cidr": '192.168.20.1/24'}
+                },
+                {
+                    "name": 'vlan_2',
+                    "type": "vlan",
+                    "id": vlan_2_id,
+                    "config": {"cidr": '192.168.30.1/24'}
+                }
+            ]
+        }
+
+        response = self.gateways_apis.post_nodes_gateway(self.nodeid, body)
+        self.assertEqual(response.status_code, 201)
+
+        self.lg.info('Bind a new container to vlan(1)')
+        nics = [{'type': 'vlan', 'id': vlan_1_id, 'config':{'dhcp':False, 'gateway':'192.168.20.1', 'cidr':'192.168.20.2/24'}}]
+        uid = self.core0_client.client.container.create(self.flist, nics=nics).get().data
+        container_1 = self.core0_client.client.container.client(int(uid))
+
+        self.lg.info('Bind a new container to vlan(2)')
+        nics = [{'type': 'vlan', 'id': vlan_2_id, 'config':{'dhcp':False, 'gateway':'192.168.30.1', 'cidr':'192.168.30.2/24'}}]
+        uid = self.core0_client.client.container.create(self.flist, nics=nics).get().data
+        container_2 = self.core0_client.client.container.client(int(uid))
+
+        self.lg.info('Make sure that those two containers can ping each others')
+        response = container_1.bash('ping -w5 192.168.30.2').get()
+        self.assertEqual(response.state, 'SUCCESS')
+        response = container_2.bash('ping -w5 192.168.20.2').get()
+        self.assertEqual(response.state, 'SUCCESS')
+        
 
     def test005_create_gateway_with_vxlan_vxlan_container(self):
         """ GAT-xxx
@@ -50,7 +109,59 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Bind a new container to vxlan(2).
         #. Make sure that those two containers can ping each others.
         """
-        pass
+        self.lg.info('Create gateway with vlan and vlan as nics on node (N0), should succeed')
+
+        gw_name = self.random_string()
+        gw_domain = self.random_string()
+        vxlan_gw_id = str(random.randint(1, 100000))
+        vxlan_1_id = str(random.randint(1, 100000))
+        vxlan_2_id = str(random.randint(1, 100000))
+
+        body = {
+            "name": gw_name,
+            "domain": gw_domain,
+            "nics": [
+                {
+                    "name": 'vxlan_gw',
+                    "type": 'vxlan',
+                    "id": vxlan_gw_id,
+                    "config": {"cidr": '192.168.10.1/24', "gateway": '192.168.10.2'}
+                },
+
+                {
+                    "name": 'vxlan_1',
+                    "type": 'vxlan',
+                    "id": vxlan_1_id,
+                    "config": {"cidr": '192.168.20.1/24'}
+                },
+                {
+                    "name": 'vxlan_2',
+                    "type": "vxlan",
+                    "id": vxlan_2_id,
+                    "config": {"cidr": '192.168.30.1/24'}
+                }
+            ]
+        }
+
+        response = self.gateways_apis.post_nodes_gateway(self.nodeid, body)
+        self.assertEqual(response.status_code, 201)
+
+        self.lg.info('Bind a new container to vxlan(1)')
+        nics = [{'type': 'vxlan', 'id': vxlan_1_id, 'config':{'dhcp':False, 'gateway':'192.168.20.1', 'cidr':'192.168.20.2/24'}}]
+        uid = self.core0_client.client.container.create(self.flist, nics=nics).get().data
+        container_1 = self.core0_client.client.container.client(int(uid))
+
+        self.lg.info('Bind a new container to vxlan(2)')
+        nics = [{'type': 'vxlan', 'id': vxlan_2_id, 'config':{'dhcp':False, 'gateway':'192.168.30.1', 'cidr':'192.168.30.2/24'}}]
+        uid = self.core0_client.client.container.create(self.flist, nics=nics).get().data
+        container_2 = self.core0_client.client.container.client(int(uid))
+
+        self.lg.info('Make sure that those two containers can ping each others')
+        response = container_1.bash('ping -w5 192.168.30.2').get()
+        self.assertEqual(response.state, 'SUCCESS')
+        response = container_2.bash('ping -w5 192.168.20.2').get()
+        self.assertEqual(response.state, 'SUCCESS')
+
 
     def test006_create_gateway_with_vlan_vlan_vm(self):
         """ GAT-xxx
