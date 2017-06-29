@@ -3,7 +3,8 @@ from api_testing.grid_apis.orchestrator_client.bridges_apis import BridgesAPI
 from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
 from api_testing.grid_apis.orchestrator_client.gateways_apis import GatewayAPI
 from api_testing.utiles.core0_client import Client
-import random
+import random, time
+
 
 class TestGatewayAPICreation(TestcasesBase):
     def __init__(self, *args, **kwargs):
@@ -196,7 +197,87 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Bind a new container to vlan(1).
         #. Verify that this container has public access.
         """
-        pass
+        self.lg.info('Get random nodeid : %s' % str(self.nodeid))
+        self.nodeid = self.get_random_node()
+        core0_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
+        self.assertNotEqual(core0_ip, [])
+        self.core0_client = Client(core0_ip[0], password=self.jwt)
+        self.gw_name = self.random_string()
+        self.gw_domain = self.random_string()
+
+        self.container_name = self.rand_str()
+        self.container_hw = self.randomMAC()
+
+        self.lg.info('Create bridge (B1) on node (N0), should succeed with 201')
+        bridge_name = self.rand_str()
+
+        body = {"name": bridge_name,
+                "hwaddr": self.randomMAC(),
+                "networkMode": "static",
+                "nat": True,
+                "setting": {"cidr": "192.168.1.1/16"}}
+
+        response = self.bridges_apis.post_nodes_bridges(self.nodeid, body)
+        self.assertEqual(response.status_code, 201, response.content)
+        time.sleep(3)
+
+        self.private_vlan_id = str(random.randint(1, 4094))
+
+        self.body = {
+            "name": self.gw_name,
+            "domain": self.gw_domain,
+            "nics": [
+                {
+                    "name": "public",
+                    "type": "bridge",
+                    "id": bridge_name,
+                    "config": {
+                        "cidr": "192.168.1.2/24",
+                        "gateway": "192.168.1.1"
+                    }
+                },
+
+                {
+                    "name": "private",
+                    "type": "vlan",
+                    "id": self.private_vlan_id,
+                    "config": {
+                        "cidr": "192.168.2.1/24"
+                    },
+                    "dhcpserver": {
+                        "nameservers": ["8.8.8.8"],
+                        "hosts": [
+                            {
+                                "hostname": self.rand_str(),
+                                "macaddress": self.container_hw,
+                                "ipaddress": "192.168.2.10"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+
+        self.core0_client.create_ovs_container()
+        response = self.gateways_apis.post_nodes_gateway(self.nodeid, self.body)
+        self.assertEqual(response.status_code, 201)
+
+        self.lg('Create container')
+        self.container_body = {"name": self.container_name,
+                               "hostname": self.rand_str(),
+                               "flist": "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist",
+                               "nics": [{"type": "vlan",
+                                         "id": self.private_vlan_id,
+                                         "hwaddr": self.container_hw,
+                                         "config": {"dhcp": True}}]
+                               }
+        self.containers_apis.post_containers(self.nodeid, self.container_body)
+        container = self.core0_client.get_container_client(self.container_name)
+        self.assertTrue(container)
+        response = container.bash('ping -c 5 google.com').get()
+        self.assertEqual(response.state, 'SUCCESS')
+        self.assertNotIn("unreachable", response.stdout)
+
 
     def test010_create_gateway_with_bridge_vxlan_container(self):
         """ GAT-xxx
@@ -207,7 +288,86 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Bind a new container to vxlan(1).
         #. Verify that this container has public access.
         """
-        pass
+        self.lg.info('Get random nodeid : %s' % str(self.nodeid))
+        self.nodeid = self.get_random_node()
+        core0_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
+        self.assertNotEqual(core0_ip, [])
+        self.core0_client = Client(core0_ip[0], password=self.jwt)
+        self.gw_name = self.random_string()
+        self.gw_domain = self.random_string()
+
+        self.container_name = self.rand_str()
+        self.container_hw = self.randomMAC()
+
+        self.lg.info('Create bridge (B1) on node (N0), should succeed with 201')
+        bridge_name = self.rand_str()
+
+        body = {"name": bridge_name,
+                "hwaddr": self.randomMAC(),
+                "networkMode": "static",
+                "nat": True,
+                "setting": {"cidr": "192.168.1.1/16"}}
+
+        response = self.bridges_apis.post_nodes_bridges(self.nodeid, body)
+        self.assertEqual(response.status_code, 201, response.content)
+        time.sleep(3)
+
+        self.private_vxlan_id = str(random.randint(1, 100000))
+
+        self.body = {
+            "name": self.gw_name,
+            "domain": self.gw_domain,
+            "nics": [
+                {
+                    "name": "public",
+                    "type": "bridge",
+                    "id": bridge_name,
+                    "config": {
+                        "cidr": "192.168.1.2/24",
+                        "gateway": "192.168.1.1"
+                    }
+                },
+
+                {
+                    "name": "private",
+                    "type": "vxlan",
+                    "id": self.private_vxlan_id,
+                    "config": {
+                        "cidr": "192.168.2.1/24"
+                    },
+                    "dhcpserver": {
+                        "nameservers": ["8.8.8.8"],
+                        "hosts": [
+                            {
+                                "hostname": self.rand_str(),
+                                "macaddress": self.container_hw,
+                                "ipaddress": "192.168.2.10"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+
+        self.core0_client.create_ovs_container()
+        response = self.gateways_apis.post_nodes_gateway(self.nodeid, self.body)
+        self.assertEqual(response.status_code, 201)
+
+        self.lg('Create container')
+        self.container_body = {"name": self.container_name,
+                               "hostname": self.rand_str(),
+                               "flist": "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist",
+                               "nics": [{"type": "vlan",
+                                         "id": self.private_vlan_id,
+                                         "hwaddr": self.container_hw,
+                                         "config": {"dhcp": True}}]
+                               }
+        self.containers_apis.post_containers(self.nodeid, self.container_body)
+        container = self.core0_client.get_container_client(self.container_name)
+        self.assertTrue(container)
+        response = container.bash('ping -c 5 google.com').get()
+        self.assertEqual(response.state, 'SUCCESS')
+        self.assertNotIn("unreachable", response.stdout)
 
     def test011_create_gateway_with_bridge_vlan_vm(self):
         """ GAT-xxx
@@ -321,14 +481,14 @@ class TestGatewayAPIUpdate(TestcasesBase):
                     },
                     "dhcpserver": {
                         "nameservers": ["8.8.8.8"],
-				        "hosts": [
+                        "hosts": [
                             {
                                 "hostname": "aaaa",
                                 "macaddress": "00:00:00:00:00:00",
                                 "ipaddress": "192.168.2.10"
-					        }
-				        ]
-			        }
+                            }
+                        ]
+                    }
                 }
             ]
         }
@@ -450,11 +610,11 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. Verify it is working right
         """
         body = {
-            "protocols":['udp', 'tcp'],
-            "srcport":random.randint(1, 2000),
-            "srcip":"192.168.1.1",
-            "dstport":random.randint(1, 2000),
-            "dstip":"192.168.2.5"
+            "protocols": ['udp', 'tcp'],
+            "srcport": random.randint(1, 2000),
+            "srcip": "192.168.1.1",
+            "dstport": random.randint(1, 2000),
+            "dstip": "192.168.2.5"
         }
 
         self.lg.info('Create new portforward table using firewall/forwards api')
@@ -466,7 +626,6 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(body, response.json())
 
-
     def test012_delete_portforward(self):
         """ GAT-115
         **Test Scenario:**
@@ -477,11 +636,11 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. List portforwards and verify that it has been deleted
         """
         body = {
-            "protocols":['udp', 'tcp'],
-            "srcport":random.randint(1, 2000),
-            "srcip":"192.168.1.1",
-            "dstport":random.randint(1, 2000),
-            "dstip":"192.168.2.5"
+            "protocols": ['udp', 'tcp'],
+            "srcport": random.randint(1, 2000),
+            "srcip": "192.168.1.1",
+            "dstport": random.randint(1, 2000),
+            "dstip": "192.168.2.5"
         }
 
         self.lg.info('Create new portforward table using firewall/forwards api')
@@ -503,7 +662,6 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.assertEqual(response.status_code, 200)
         self.assertNotIn(body, response.json())
 
-
     def test013_add_dhcp_host(self):
         """ GAT-116
         **Test Scenario:**
@@ -521,7 +679,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
             "macaddress": macaddress,
             "ipaddress": ipaddress
         }
-        
+
         response = self.gateways_apis.post_nodes_gateway_dhcp_host(self.nodeid, self.gw_name, interface, body)
         self.assertEqual(response.status_code, 204)
 
@@ -534,7 +692,6 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.assertNotEqual(dhcp_host, [])
         for key in body.keys():
             self.assertTrue(body[key], dhcp_host[0][key])
-
 
     def test014_delete_dhcp_host(self):
         """ GAT-117
@@ -560,7 +717,8 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.assertEqual(response.status_code, 204)
 
         self.lg.info(' Delete one host form the dhcp')
-        response = self.gateways_apis.delete_nodes_gateway_dhcp_host(self.nodeid, self.gw_name, interface, macaddress.replace(':', ''))
+        response = self.gateways_apis.delete_nodes_gateway_dhcp_host(self.nodeid, self.gw_name, interface,
+                                                                     macaddress.replace(':', ''))
         self.assertEqual(response.status_code, 204)
 
         self.lg.info('List dhcp hosts')
@@ -570,7 +728,6 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.lg.info('Verify that the dhcp has been updated')
         dhcp_host = [x for x in response.json() if x['hostname'] == hostname]
         self.assertEqual(dhcp_host, [])
-
 
     def test015_create_new_httpproxy(self):
         """ GAT-118
@@ -582,9 +739,9 @@ class TestGatewayAPIUpdate(TestcasesBase):
 
         self.lg.info('Add new httpproxy host to an interface')
         body = {
-            "host":self.random_string(),
+            "host": self.random_string(),
             "destinations": ['http://192.168.2.200:500'],
-            "types":['http', 'https']
+            "types": ['http', 'https']
         }
 
         response = self.gateways_apis.post_nodes_gateway_httpproxy(self.nodeid, self.gw_name, body)
@@ -610,14 +767,14 @@ class TestGatewayAPIUpdate(TestcasesBase):
         """
         self.lg.info('Create new httpproxy')
         body = {
-            "host":self.random_string(),
+            "host": self.random_string(),
             "destinations": ['http://192.168.2.200:500'],
-            "types":['http', 'https']
+            "types": ['http', 'https']
         }
 
         response = self.gateways_apis.post_nodes_gateway_httpproxy(self.nodeid, self.gw_name, body)
         self.assertEqual(response.status_code, 201)
-        
+
         self.lg.info('Delete httpproxy id')
         proxyid = body['host']
         response = self.gateways_apis.delete_nodes_gateway_httpproxy(self.nodeid, self.gw_name, proxyid)
