@@ -554,17 +554,46 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. Stop the running gatway
         #. Verify its status
         """
-        pass
+        response = self.containers_apis.get_containers(nodeid=self.nodeid)
+        for container in response.json():
+            if self.gw_name == container['name']:
+                self.assertEqual(container['status'], 'running')
+
+        response = self.gateways_apis.post_nodes_gateway_stop(nodeid=self.nodeid, gwname=self.gw_name)
+        self.assertEqual(response.status_code, 204, response.content)
+
+        response = self.containers_apis.get_containers(nodeid=self.nodeid)
+        for container in response.json():
+            if self.gw_name == container['name']:
+                self.assertEqual(container['status'], 'halted')
+
+        response = self.gateways_apis.post_nodes_gateway_start(nodeid=self.nodeid, gwname=self.gw_name)
+        self.assertEqual(response.status_code, 201, response.content)
+
 
     def test005_start_gw(self):
         """ GAT-xxx
         **Test Scenario:**
 
-        #. Stop the running gatway and make sure that its status has been changed
-        #. Start the gatway
+        #. Stop the running gateway and make sure that its status has been changed
+        #. Start the gateway
         #. Verify its status
         """
-        pass
+        response = self.gateways_apis.post_nodes_gateway_stop(nodeid=self.nodeid, gwname=self.gw_name)
+        self.assertEqual(response.status_code, 204, response.content)
+
+        response = self.containers_apis.get_containers(nodeid=self.nodeid)
+        for container in response.json():
+            if self.gw_name == container['name']:
+                self.assertEqual(container['status'], 'halted')
+
+        response = self.gateways_apis.post_nodes_gateway_start(nodeid=self.nodeid, gwname=self.gw_name)
+        self.assertEqual(response.status_code, 201, response.content)
+
+        response = self.containers_apis.get_containers(nodeid=self.nodeid)
+        for container in response.json():
+            if self.gw_name == container['name']:
+                self.assertEqual(container['status'], 'running')
 
     def test006_update_gw_nics_config(self):
         """ GAT-xxx
