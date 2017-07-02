@@ -28,14 +28,20 @@ class TestGatewayAPICreation(TestcasesBase):
         response = self.gateways_apis.list_nodes_gateways(self.nodeid)
         for gw in response.json():
             self.gateways_apis.delete_nodes_gateway(self.nodeid, gw['name'])
+
+        response = self.bridges_apis.get_nodes_bridges(self.nodeid)
+        for bridge in response.json():
+            self.bridges_apis.delete_nodes_bridges_bridgeid(self.nodeid, bridge['name'])
         
         response = self.core0_client.client.container.list()
         for cid in response:
             self.core0_client.client.container.terminate(int(cid))
+
         
         super().tearDown()
 
     def test004_create_gateway_with_vlan_vlan_container(self):
+        
         """ GAT-xxx
         **Test Scenario:**
 
@@ -401,7 +407,72 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Create a container and vm to match the dhcpserver specs
         #. Verify that container and vm ips are matching with the dhcpserver specs.
         """
-        pass
+
+        bridge_body = {
+            "name": self.random_string(),
+            "hwaddr": self.randomMAC(),
+            "nat": True,
+            "setting": {"cidr":"192.168.10.2/24"},
+            "networkMode": "static"
+        }
+
+        response = self.bridges_apis.post_nodes_bridges(self.nodeid, bridge_body)
+        self.assertEqual(response.status_code, 201)
+
+        gw_name = self.random_string()
+        gw_domain = self.random_string()
+        vlan_1_id = str(random.randint(1, 4094))
+        container_mac_addr = '00:00:00:00:00:01'
+        container_ip_addr = '192.168.20.10'
+        vm_mac_addr = '00:00:00:00:00:02'
+        vm_ip_addr = '192.168.20.20' 
+
+        body = {
+            "name": gw_name,
+            "domain": gw_domain,
+            "nics": [
+                {
+                    "name":"test",
+                    "type": 'bridge',
+                    "id": bridge_body['name'],
+                    "config": {"cidr": bridge_body['setting']['cidr'], "gateway": '192.168.10.2'}
+                },
+                {
+                    "name": 'vlan_1',
+                    "type": 'vlan',
+                    "id": vlan_1_id,
+                    "config": {"cidr": '192.168.20.1/24'},
+                    "dhcpserver":{
+                        "nameservers" : ['8.8.8.8'],
+                        "hosts":[
+                            {
+                                "hostname" : "hostname1",
+                                "ipaddress" : container_ip_addr, 
+                                "macaddress" : container_mac_addr
+                            },
+                            {
+                                "hostname" : "hostname2",
+                                "ipaddress" : vm_ip_addr, 
+                                "macaddress" : vm_mac_addr
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+
+        response = self.gateways_apis.post_nodes_gateway(self.nodeid, body)
+        self.assertEqual(response.status_code, 201, response.content)
+
+        nics = [{'type': 'vlan', 'id': vlan_1_id, 'hwaddr':container_mac_addr, 'config':{'dhcp':True}}]
+        uid = self.core0_client.client.container.create(self.flist, nics=nics).get().data
+        container_1 = self.core0_client.client.container.client(int(uid))
+        container_1_nics = container_1.info.nic()
+        interface = [x for x in container_1_nics if x['name'] == 'eth0']
+        self.assertNotEqual(interface, [])
+        self.assertIn(container_ip_addr, [x['addr'][:-3] for x in interface[0]['addrs']])
+        self.assertEqual(container_mac_addr, interface[0]['hardwareaddr'])
+
 
     def test014_create_gateway_httpproxy(self):
         """ GAT-xxx
@@ -413,6 +484,78 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Verify that the httprxoy's configuration is working right
         """
         pass
+        bridge_body = {
+            "name": self.random_string(),
+            "hwaddr": self.randomMAC(),
+            "nat": True,
+            "setting": {"cidr":"192.168.10.2/24"},
+            "networkMode": "static"
+        }
+
+        response = self.bridges_apis.post_nodes_bridges(self.nodeid, bridge_body)
+        self.assertEqual(response.status_code, 201)
+
+        gw_name = self.random_string()
+        gw_domain = self.random_string()
+        vlan_id = str(random.randint(1, 4094))
+        container_1_ip_addr = '192.168.20.10'
+        container_2_ip_addr = '192.168.20.20'
+
+        body = {
+            "name": gw_name,
+            "domain": gw_domain,
+            "nics": [
+                {
+                    "name":"test",
+                    "type": 'bridge',
+                    "id": bridge_body['name'],
+                    "config": {"cidr": '192.168.10.1/24', "gateway": '192.168.10.2'}
+                },
+                {
+                    "name": 'vlan_1',
+                    "type": 'vlan',
+                    "id": vlan_id,
+                    "config": {"cidr": '192.168.20.1/24'},
+                }
+            ],
+            "httpproxies":[
+                {
+                    "host":"container1",
+                    "destinations":['http://{}:1000'.format(container_1_ip_addr)],
+                    "types":['http', 'https']
+                },
+                {
+                    "host":"container2",
+                    "destinations":['http://{}:2000'.format(container_2_ip_addr)],
+                    "types":['http', 'https']
+                }
+            ]
+        }
+
+        response = self.gateways_apis.post_nodes_gateway(self.nodeid, body)
+        self.assertEqual(response.status_code, 201, response.content)
+
+        nics = [{'type': 'vlan', 'id': vlan_id, 'config':{'dhcp':False, 'gateway':'192.168.20.1', 'cidr':'{}/24'.format(container_1_ip_addr)}}]
+        uid = self.core0_client.client.container.create(self.flist, nics=nics).get().data
+        container_1 = self.core0_client.client.container.client(int(uid))
+
+        nics = [{'type': 'vlan', 'id': vlan_id, 'config':{'dhcp':False, 'gateway':'192.168.20.1', 'cidr':'{}/24'.format(container_2_ip_addr)}}]
+        uid = self.core0_client.client.container.create(self.flist, nics=nics).get().data
+        container_2 = self.core0_client.client.container.client(int(uid))
+
+        self.lg.info('Make sure that those two containers can ping each others')
+        container_1.bash('python3 -m http.server 1000')
+        container_2.bash('python3 -m http.server 2000')
+
+        time.sleep(2)
+
+        response = container_1.bash('python3 -c "from urllib.request import urlopen; urlopen(\'{}\')"'.format('container2')).get()
+        self.assertEqual(response.state, 'SUCCESS')
+
+        response = container_2.bash('python3 -c "from urllib.request import urlopen; urlopen(\'{}\')"'.format('container1')).get()
+        self.assertEqual(response.state, 'SUCCESS')
+
+
 
     def test015_create_gateway_portforwards(self):
         """ GAT-xxx
