@@ -2,14 +2,13 @@ import random
 import time
 import unittest
 from api_testing.testcases.testcases_base import TestcasesBase
-from api_testing.python_client.core0_client import Client
+from api_testing.utiles.core0_client import Client
 from api_testing.grid_apis.apis.nodes_apis import NodesAPI
-from api_testing.grid_apis.pyclient.containers_apis import ContainersAPI
+from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
 import json
-from api_testing.grid_apis.apis.bridges_apis import BridgesAPI
-from api_testing.grid_apis.apis.storagepools_apis import StoragepoolsAPI
+from api_testing.grid_apis.orchestrator_client.bridges_apis import BridgesAPI
+from api_testing.grid_apis.orchestrator_client.storagepools_apis import StoragepoolsAPI
 from urllib.request import urlopen
-
 
 class TestcontaineridAPI(TestcasesBase):
     def __init__(self, *args, **kwargs):
@@ -564,7 +563,6 @@ class TestcontaineridAPI(TestcasesBase):
         response = C3_client.bash('ping -w 5 %s'%C2_ip).get()
         self.assertEqual(response.state, 'ERROR')
 
-    @unittest.skip("https://github.com/g8os/resourcepool/pull/293")
     def test011_create_containers_with_gateway_network_in_config(self):
         """ GAT-092
 
@@ -572,47 +570,60 @@ class TestcontaineridAPI(TestcasesBase):
 
         **Test Scenario:**
 
-        #. create container (C1) with type default in nic , should succeed
-        #. create container (C2) with type vlan and gateway in nic, should succeed
-        #. Check that C1  can ping second container C2 , should fail.
-        #. Check that C1  can ping second container C2 through its gateway, should succeed.
+        #. Create bridge (B0) with nat true and  with static network mode .
+        #. Create container (C1) with (B0) without gateway.
+        #. Create container (C2) with (B0) with gateway same ip of bridge.
+        #. Check that (C1) can connect to internet, should fail.
+        #. Check that (C2) can connect to internt, should succeed.
 
         """
-
         self.lg.info("create ovs container")
         self.zeroCore.create_ovs_container()
 
-        self.lg.info("create container (C1) with type default in nic, should succeed")
+        self.lg.info('Create bridge with static network and nat true , should succeed')
+        bridge_name = self.rand_str()
+        hwaddr = self.randomMAC()
+        bridge_cidr = "192.122.2.5"
+        body = {"name": bridge_name,
+                "hwaddr": hwaddr,
+                "networkMode": "static",
+                "nat": True,
+                "setting": {"cidr": "%s/24"%bridge_cidr}}
+        response = self.bridges_api.post_nodes_bridges(self.node_id, body)
+        self.assertEqual(response.status_code, 201, response.content)
+        time.sleep(3)
+
+        self.lg.info("Create container (C1) with (B0) without gateway.")
+        nics = [{"type": "bridge", "id": bridge_name, "config": {"cidr": "190.122.2.4/24"}, "status": "up" }]
+        self.container_body["nics"] = nics
         C1_name = self.rand_str()
-        nic = [{'type': 'default'}]
-        dns = ['8.8.8.8']
-        self.container_body["nics"] = nic
         self.container_body["name"] = C1_name
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
         self.createdcontainer.append({"node": self.node_id, "container": C1_name})
 
-        self.lg.info("create container (C2) with type vlan and gatway in nic, should succeed")
-        C_ip = "201.100.2.1"
-        vlan_Id = random.randint(1,4096)
+        self.lg.info("Create container (C2) with (B0) with gateway same ip of bridge.")
+        nics = [{"type": "bridge", "id": bridge_name, "config": {"cidr":"192.122.2.3/24","gateway": bridge_cidr}, "status": "up" }]
         C2_name = self.rand_str()
+        self.container_body["nics"] = nics
         self.container_body["name"] = C2_name
-        nic = [{'type': 'default'},
-               {'type': 'vlan', 'id': "%s"%vlan_Id, 'config': {'cidr':'%s/24'%C_ip,'gateway':'%s'%gateway}}]
-        self.container_body["nics"] = nic
         response = self.containers_api.post_containers(self.node_id, self.container_body)
         self.assertEqual(response.status_code, 201)
         self.createdcontainer.append({"node": self.node_id, "container": C2_name})
+
         C1_client = self.zeroCore.get_container_client(C1_name)
         C2_client = self.zeroCore.get_container_client(C2_name)
 
-        self.lg.info("Check that C1  can ping second container C2 , should fail.")
-        response = C1_client.bash("ping -w2 %s "%C_ip).get()
-        self.assertEqual(response.state, "ERROR")
+        self.lg.info("Check that C1 can connect to internet, should fail.")
+        response = C1_client.bash("ping -w 5  8.8.8.8").get()
+        self.assertEqual(response.state, "ERROR", response.stdout)
 
-        self.lg.info("Check that C1  can ping second container C2 through its gateway, should succeed.")
-        response = C1_client.bash("ping -w2 %s "%gateway).get()
-        self.assertEqual(response.state, "SUCCESS")
+        self.lg.info("Check that C2 can connect to internet, should fail.")
+        response = C2_client.bash("ping -w 5 8.8.8.8").get()
+        self.assertEqual(response.state, "SUCCESS", response.stdout)
+
+        self.lg.info("Delete created bridge ")
+        self.bridges_api.delete_nodes_bridges_bridgeid(self.node_id, bridge_name)
 
     def test012_create_container_with_dns_in_config(self):
         """ GAT-093
