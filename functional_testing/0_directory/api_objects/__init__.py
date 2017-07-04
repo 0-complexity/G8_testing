@@ -10,10 +10,9 @@ def get_jwt():
                                                                   )
     return response.content.decode('utf-8')
 
-
-DIRECTORY_BASE_URL = config['main']['DIRECTORY_BASE_URL']
-CLIENT_ID = config['main']['CLIENT_ID']
-CLIENT_SECRET = config['main']['CLIENT_SECRET']
-ORGANIZATION = config['main']['ORGANIZATION']
+DIRECTORY_BASE_URL = config['main']['zero_directory_url']
+CLIENT_ID = config['main']['client_id']
+CLIENT_SECRET = config['main']['client_secret']
+ORGANIZATION = config['main']['organization']
 CLIENT = Client(DIRECTORY_BASE_URL)
 JWT = get_jwt()

@@ -3,18 +3,22 @@ from api_objects.base_api import *
 
 
 class Providers(BaseAPI):
+    def __init__(self):
+        super().__init__()
+        self.data = ''
+
     @catch_exception_decoration
     def list_providers(self, **kwargs):
-        data = {
+        self.data = {
             "page": randint(1, 100),
             "per_page": randint(1, 100)
         }
-        data = self.update_default_data(data, kwargs=kwargs)
-        return self.client.api.providers.ListProviders(query_params=data, headers=self.headers).json()
+        self.data = self.update_default_data(data=self.data, kwargs=kwargs)
+        return self.client.api.providers.ListProviders(query_params=self.data, headers=self.headers).json()
 
     @catch_exception_decoration
     def list_resource_pools(self, **kwargs):
-        data = {
+        self.data = {
             "page": randint(1, 100),
             "per_page": randint(1, 100),
             "longitute": None,
@@ -27,14 +31,14 @@ class Providers(BaseAPI):
             "network_speed": None,
             "network_redundant": None,
             "currency": None,
-            "datacenter_tier": None
+            "self.datacenter_tier": None
         }
-        data = self.update_default_data(data, kwargs=kwargs)
-        return self.client.api.providers.ListResourcePools(query_params=data, headers=self.headers).json()
+        self.data = self.update_default_data(data=self.data, kwargs=kwargs)
+        return self.client.api.providers.ListResourcePools(query_params=self.data, headers=self.headers).json()
 
     @catch_exception_decoration
     def create_resource_pool(self, **kwargs):
-        data = {
+        self.data = {
             "network_speed": randint(50, 100),
             "network_redundant": False,
             "ipv4_nr_pub": randint(20, 199),
@@ -48,8 +52,8 @@ class Providers(BaseAPI):
             "cu_max": randint(100, 2000),
             "su_max": randint(100, 2000),
             "tu_max": randint(100, 2000),
-            "datacenter_tier": randint(1, 4),
-            "datacenter_uptime_sla_min": 99.95,
+            "self.datacenter_tier": randint(1, 4),
+            "self.datacenter_uptime_sla_min": 99.95,
             "pricing": [{
                 "min_nr_months": 1,
                 "cu": randint(1, 50),
@@ -108,8 +112,8 @@ class Providers(BaseAPI):
                 "nr_tu": randint(5, 250)
             }]
         }
-        data = self.update_default_data(data=data, kwargs=kwargs)
-        return self.client.api.providers.CreateResourcePool(data=data, headers=self.headers).json()
+        self.data = self.update_default_data(data=self.data, kwargs=kwargs)
+        return self.client.api.providers.CreateResourcePool(data=self.data, headers=self.headers).json()
 
     @catch_exception_decoration
     def get_resource_pool_details(self, poolid):
@@ -125,9 +129,9 @@ class Providers(BaseAPI):
 
     @catch_exception_decoration
     def list_nodes(self, **kwargs):
-        data = {
+        self.data = {
             "page": randint(1, 100),
             "per_page": randint(1, 100)
         }
-        data = self.update_default_data(data, kwargs=kwargs)
-        return self.client.api.providers.ListNodes(headers=self.headers, query_params=data).json()
+        self.data = self.update_default_data(self.data, kwargs=kwargs)
+        return self.client.api.providers.ListNodes(headers=self.headers, query_params=self.data).json()
