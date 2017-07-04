@@ -4,6 +4,7 @@ from requests import HTTPError
 class GatewayAPI(GridPyclientBase):
     def __init__(self):
         super().__init__()
+        self.createdGw = []
 
     def list_nodes_gateways(self, nodeid):
         try:
@@ -27,6 +28,9 @@ class GatewayAPI(GridPyclientBase):
         except HTTPError as e:
             response = e.response
         finally:
+            if response.status_code == 201:
+                self.createdGw.append({"node": nodeid, "name": data["name"]})
+
             return response
 
     def update_nodes_gateway(self, nodeid, gwname, data):
@@ -76,7 +80,7 @@ class GatewayAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-    
+
     def post_nodes_gateway_dhcp_host(self, nodeid, gwname, interface, data):
         try:
             response = self.api_client.nodes.AddGWDHCPHost(nodeid=nodeid, gwname=gwname, interface=interface, data=data)
@@ -100,7 +104,7 @@ class GatewayAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-    
+
     def post_nodes_gateway_advanced_http(self, nodeid, gwname, data):
         try:
             response = self.api_client.nodes.SetGWHTTPConfig(nodeid=nodeid, gwname=gwname, data=data)
@@ -116,7 +120,7 @@ class GatewayAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-    
+
     def post_nodes_gateway_advanced_firewall(self, nodeid, gwname, data):
         try:
             response = self.api_client.nodes.SetGWFWConfig(nodeid=nodeid, gwname=gwname, data=data)
@@ -158,7 +162,7 @@ class GatewayAPI(GridPyclientBase):
         finally:
             return response
 
-    
+
     def get_nodes_gateway_httpproxy(self, nodeid, gwname, proxyid):
         try:
             response = self.api_client.nodes.GetHTTPProxy(nodeid=nodeid, gwname=gwname, proxyid=proxyid)
@@ -182,7 +186,3 @@ class GatewayAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
-    
-        
-        

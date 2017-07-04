@@ -5,6 +5,7 @@ from requests import HTTPError
 class ContainersAPI(GridPyclientBase):
     def __init__(self):
         super().__init__()
+        self.createdcontainer=[]
 
     def get_containers(self, nodeid):
         try:
@@ -20,6 +21,9 @@ class ContainersAPI(GridPyclientBase):
         except HTTPError as e:
             response = e.response
         finally:
+            if response.status_code == 201:
+                self.createdcontainer.append({"node": nodeid, "name": data["name"]})
+
             return response
 
     def delete_containers_containerid(self, nodeid, containername):

@@ -4,6 +4,7 @@ from requests import HTTPError
 class BridgesAPI(GridPyclientBase):
     def __init__(self):
         super().__init__()
+        self.createdbridges = []
 
     def get_nodes_bridges(self, nodeid):
         try:
@@ -27,6 +28,8 @@ class BridgesAPI(GridPyclientBase):
         except HTTPError as e:
             response = e.response
         finally:
+            if response.status_code == 201:
+                self.createdbridges.append({"node": nodeid, "name": data["name"]})
             return response
 
     def delete_nodes_bridges_bridgeid(self, nodeid, bridgeid):
@@ -36,4 +39,3 @@ class BridgesAPI(GridPyclientBase):
             response = e.response
         finally:
             return response
-        
