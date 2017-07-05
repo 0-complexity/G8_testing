@@ -455,67 +455,68 @@ class TestGatewayAPICreation(TestcasesBase):
         self.assertEqual(response.status_code, 201, response.content)
 
         self.lg.info("Create gateway with bridge and vlan as nics should succeed.")
+        self.lg.info(" & Set a portforward form srcip:80 to destination:80")
         vxlan_id = random.randint(1, 10000)
         vxlan_cidr = "200.201.2.1/24"
-        C_HW = self.randomMAC()
+        C_hw = self.randomMAC()
         Gw_name = self.rand_str()
         srcport = 80
         dstport = 80
         srcip = "190.192.4.2"
         C_ip = "200.201.2.2"
-        GW_nic = [
-                    {
-                    "name": "public",
-                    "type": "bridge",
-                    "id": B0_name,
-                    "config": {
-                                "cidr": "190.192.4.2/24",
-                                "gateway": B0_ip
-                                }
-                    },
-                    {
-                    "name": "private",
-                    "type": "vxlan",
-                    "id": str(vxlan_id),
-                    "config": {
-                                "cidr": vxlan_cidr
-                              },
-                    "dhcpserver": {
-                                "nameservers": [
-                                                "8.8.8.8"
-                                                ],
-                                "hosts": [
-                                            {
-                                            "macaddress": C_HW,
-                                            "hostname": "test",
-                                                "ipaddress": "200.201.2.2"
-                                            }
-                                            ]
-                                }
-                    }
-                    ]
-        self.lg.info("Set a portforward form srcip:80 to destination:80")
-        Gw_portforwards = [{
-                        "srcport": srcport,
-                        "srcip": srcip,
-                        "dstport": dstport,
-                        "dstip": C_ip,
-                        "protocols": [
-                                    "tcp"
-                                     ]
-                        }]
         Gw_body = {
-                "name": Gw_name,
-                "domain": "test",
-                "nics": GW_nic,
-                "portforwards": Gw_portforwards
+                    "name": Gw_name,
+                    "domain": "test",
+                    "nics": [
+                            {
+                                "name": "public",
+                                "type": "bridge",
+                                "id": B0_name,
+                                "config": {
+                                            "cidr": "190.192.4.2/24",
+                                            "gateway": B0_ip
+                                          }
+                            },
+                            {
+                                "name": "private",
+                                "type": "vxlan",
+                                "id": str(vxlan_id),
+                                "config": {
+                                            "cidr": vxlan_cidr
+                                          },
+                                "dhcpserver": {
+                                                "nameservers": [
+                                                                "8.8.8.8"
+                                                               ],
+                                                "hosts": [
+                                                        {
+                                                        "macaddress": C_hw,
+                                                        "hostname": "test",
+                                                        "ipaddress": "200.201.2.2"
+                                                        }
+                                                        ]
+                                               }
+                            }
+                            ],
+                    "portforwards": [
+                                    {
+                                    "srcport": srcport,
+                                    "srcip": srcip,
+                                    "dstport": dstport,
+                                    "dstip": C_ip,
+                                    "protocols": [
+                                                "tcp"
+                                                 ]
+                                    }
+                                    ]
                   }
-        response =  self.gateways_apis.post_nodes_gateway(self.nodeid, Gw_body)
+
+        response = self.gateways_apis.post_nodes_gateway(self.nodeid, Gw_body)
         self.assertEqual(response.status_code, 201, response.content)
 
         self.lg.info("Create one container as a destination host")
         C_name = self.rand_str()
-        C_nics = [{'type': 'vxlan', 'id': str(vxlan_id), "hwaddr":C_HW,'config':{"dhcp": True}}]
+        C_nics = [{'type': 'vxlan', 'id': str(vxlan_id), "hwaddr":C_hw,'config':{"dhcp": True}}]
         self.container_body["nics"] = C_nics
         self.container_body["name"] = C_name
         response = self.containers_apis.post_containers(self.nodeid, self.container_body)

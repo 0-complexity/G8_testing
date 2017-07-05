@@ -18,12 +18,11 @@ class ContainersAPI(GridPyclientBase):
     def post_containers(self, nodeid, data):
         try:
             response = self.api_client.nodes.CreateContainer(nodeid=nodeid, data=data)
+            if response.status_code == 201:
+                self.createdcontainer.append({"node": nodeid, "name": data["name"]})
         except HTTPError as e:
             response = e.response
         finally:
-            if response.status_code == 201:
-                self.createdcontainer.append({"node": nodeid, "name": data["name"]})
-
             return response
 
     def delete_containers_containerid(self, nodeid, containername):

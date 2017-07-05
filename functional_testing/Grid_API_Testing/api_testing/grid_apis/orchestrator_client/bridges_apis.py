@@ -25,11 +25,11 @@ class BridgesAPI(GridPyclientBase):
     def post_nodes_bridges(self, nodeid, data):
         try:
             response = self.api_client.nodes.CreateBridge(nodeid=nodeid, data=data)
+            if response.status_code == 201:
+                self.createdbridges.append({"node": nodeid, "name": data["name"]})
         except HTTPError as e:
             response = e.response
         finally:
-            if response.status_code == 201:
-                self.createdbridges.append({"node": nodeid, "name": data["name"]})
             return response
 
     def delete_nodes_bridges_bridgeid(self, nodeid, bridgeid):

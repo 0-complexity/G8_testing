@@ -25,12 +25,11 @@ class GatewayAPI(GridPyclientBase):
     def post_nodes_gateway(self, nodeid, data):
         try:
             response = self.api_client.nodes.CreateGW(nodeid=nodeid, data=data)
+            if response.status_code == 201:
+                self.createdGw.append({"node": nodeid, "name": data["name"]})
         except HTTPError as e:
             response = e.response
         finally:
-            if response.status_code == 201:
-                self.createdGw.append({"node": nodeid, "name": data["name"]})
-
             return response
 
     def update_nodes_gateway(self, nodeid, gwname, data):
