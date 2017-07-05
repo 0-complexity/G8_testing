@@ -4,7 +4,7 @@ from api_objects import *
 def catch_exception_decoration(func):
     def wrapper(self, *args, **kwargs):
         try:
-            func(self, *args, **kwargs)
+            return func(self, *args, **kwargs)
         except Exception as e:
             return e
 
