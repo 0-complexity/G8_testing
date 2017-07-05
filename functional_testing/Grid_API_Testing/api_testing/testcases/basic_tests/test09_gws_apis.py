@@ -435,7 +435,7 @@ class TestGatewayAPICreation(TestcasesBase):
                     "name":"test",
                     "type": 'bridge',
                     "id": bridge_body['name'],
-                    "config": {"cidr": bridge_body['setting']['cidr'], "gateway": '192.168.10.2'}
+                    "config": {"cidr": '192.168.10.1', "gateway": '192.168.10.2'}
                 },
                 {
                     "name": 'vlan_1',
@@ -481,9 +481,7 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Get random node (N0), should succeed.
         #. Create gateway with bridge and vlan as nics and httpproxy with two containers on node (N0), should succeed.
         #. Create two containers to for test the httpproxy's configuration
-        #. Verify that the httprxoy's configuration is working right
         """
-        pass
         bridge_body = {
             "name": self.random_string(),
             "hwaddr": self.randomMAC(),
