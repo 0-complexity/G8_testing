@@ -14,7 +14,7 @@ class Providers(BaseAPI):
             "per_page": randint(1, 100)
         }
         self.data = self.update_default_data(data=self.data, kwargs=kwargs)
-        return self.client.api.providers.ListProviders(query_params=self.data, headers=self.headers).json()
+        return self.client.api.providers.ListProviders(query_params=self.data, headers=self.headers)
 
     @catch_exception_decoration
     def list_resource_pools(self, **kwargs):
@@ -34,7 +34,7 @@ class Providers(BaseAPI):
             "self.datacenter_tier": None
         }
         self.data = self.update_default_data(data=self.data, kwargs=kwargs)
-        return self.client.api.providers.ListResourcePools(query_params=self.data, headers=self.headers).json()
+        return self.client.api.providers.ListResourcePools(query_params=self.data, headers=self.headers)
 
     @catch_exception_decoration
     def create_resource_pool(self, **kwargs):
@@ -80,7 +80,6 @@ class Providers(BaseAPI):
             },
             "nodes": [{
                 "uid": "0cc47a740636",
-                "location": "be-scale-2",
                 "description": "...",
                 "remarks": "...",
                 "nr_cu": randint(5, 50),
@@ -88,7 +87,6 @@ class Providers(BaseAPI):
                 "nr_tu": randint(5, 250)
             }, {
                 "uid": "0cc47a740632",
-                "location": "be-scale-2",
                 "description": "...",
                 "remarks": "...",
                 "nr_cu": randint(5, 50),
@@ -96,7 +94,6 @@ class Providers(BaseAPI):
                 "nr_tu": randint(5, 250)
             }, {
                 "uid": "0cc47a740646",
-                "location": "be-scale-2",
                 "description": "...",
                 "remarks": "...",
                 "nr_cu": randint(5, 50),
@@ -104,7 +101,6 @@ class Providers(BaseAPI):
                 "nr_tu": randint(5, 250)
             }, {
                 "uid": "0cc47a740610",
-                "location": "be-scale-2",
                 "description": "...",
                 "remarks": "...",
                 "nr_cu": randint(5, 50),
@@ -113,15 +109,15 @@ class Providers(BaseAPI):
             }]
         }
         self.data = self.update_default_data(data=self.data, kwargs=kwargs)
-        return self.client.api.providers.CreateResourcePool(data=self.data, headers=self.headers).json()
+        return self.client.api.providers.CreateResourcePool(data=self.data, headers=self.headers)
 
     @catch_exception_decoration
     def get_resource_pool_details(self, poolid):
-        return self.client.api.providers.GetResourcePool(poolid=poolid, headers=self.headers).json()
+        return self.client.api.providers.GetResourcePool(poolid=poolid, headers=self.headers)
 
     @catch_exception_decoration
     def delete_resource_pool(self, poolid):
-        return self.client.api.providers.DeleteResourcePool(poolid=poolid).status_code
+        return self.client.api.providers.DeleteResourcePool(poolid=poolid, headers=self.headers).status_code
 
     @catch_exception_decoration
     def update_resource_pool(self):
@@ -134,4 +130,4 @@ class Providers(BaseAPI):
             "per_page": randint(1, 100)
         }
         self.data = self.update_default_data(self.data, kwargs=kwargs)
-        return self.client.api.providers.ListNodes(headers=self.headers, query_params=self.data).json()
+        return self.client.api.providers.ListNodes(headers=self.headers, query_params=self.data)
