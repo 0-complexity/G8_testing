@@ -21,4 +21,4 @@ class Search(BaseAPI):
             "datacenter_tier": None
         }
         data = self.update_default_data(data, kwargs=kwargs)
-        return self.client.api.search.search_get(query_params=data, headers=self.headers).json()
+        return self.client.api.search.search_get(query_params=data, headers=self.headers)
