@@ -60,22 +60,66 @@ class TestProviders(BaseTest):
             if resource_pool_response.json()['UID'] == rp['UID']:
                 self.fail("Resource pools list still has the deleted resource pool!")
 
-    @skip('Under implementation')
+    @skip('https://github.com/zero-os/0-directory/issues/22')
     def test04_update_resource_pool(self):
-        pass
+        """ ZDT-004
+        *PUT:/providers/resource_pools/{poolid}*
 
-    @skip('Under implementation')
+        **Test Scenario:**
+
+        #. Create a new resource pool
+        #. Update one of its properties
+        #. Get this resource pool details, should be updated
+        """
+
+    @skip('https://github.com/zero-os/0-directory/issues/24')
     def test05_get_resource_pool_details(self):
-        pass
+        """ ZDT-005
+        *GET:/providers/resource_pools/{poolid}*
 
-    @skip('Under implementation')
+        **Test Scenario:**
+
+        #. Create new resource pool with default parameters
+        #. Get this resource pool details, should be identical
+        """
+        resource_pool_response = self.providers.create_resource_pool()
+        self.assertEqual(resource_pool_response.status_code, 201, resource_pool_response.content)
+        resource_pool_details_response = self.providers.get_resource_pool_details(poolid=resource_pool_response.json()['UID'])
+        self.assertEqual(resource_pool_response.status_code, 200)
+        self.assertTrue(resource_pool_response.josn(), resource_pool_details_response.json())
+
+    @skip('https://github.com/zero-os/0-directory/issues/25')
     def test06_list_all_nodes(self):
-        pass
+        """ ZDT-006
+        *GET:/providers/resource_pools/nodes*
 
-    @skip('Under implementation')
+        **Test Scenario:**
+
+        #.
+        """
+
     def test07_search_for_resource_pool(self):
-        pass
+        """ ZDT-007
+        *GET:/providers/resource_pools/{poolid}*
+
+        **Test Scenario:**
+
+        #. Create new resource pool with default parameters
+        #. Get this resource pool details, should be identical
+        """
+        resource_pool_response = self.providers.create_resource_pool()
+        self.assertEqual(resource_pool_response.status_code, 201, resource_pool_response.content)
+
+        resource_pool_details_response = self.search.list_resource_pools(poolid=resource_pool_response.json()['UID'])
+        self.assertEqual(resource_pool_details_response.status_code, 200)
+        self.assertTrue(resource_pool_details_response.json(), resource_pool_response.json())
 
     @skip('Under implementation')
     def test08_delete_none_exist_resource_pool(self):
-        pass
+        """ ZDT-008
+
+
+        **Test Scenario:**
+
+        #. Try to delete non existing resource pool, should return 404
+        """
