@@ -1,0 +1,71 @@
+[1mdiff --git a/functional_testing/G8os/testsuite/a_basic/tests_01_system.py b/functional_testing/G8os/testsuite/a_basic/tests_01_system.py[m
+[1mindex c4d1685..c6f2ca5 100644[m
+[1m--- a/functional_testing/G8os/testsuite/a_basic/tests_01_system.py[m
+[1m+++ b/functional_testing/G8os/testsuite/a_basic/tests_01_system.py[m
+[36m@@ -453,10 +453,10 @@[m [mclass SystemTests(BaseTest):[m
+ [m
+         open_modes = ['r', 'w', 'a', 'w+', 'r+', 'a+', 'x'][m
+         for mode in open_modes:[m
+[31m-[m
+[31m-            txt = 'line1\nline2\nline3'[m
+[31m-            client.bash('echo "{}" > {}'.format(txt, file_name))[m
+[31m-            f = client.filesystem.open(file_name, mode=mode)[m
+[32m+[m[32m            if mode != 'x':[m
+[32m+[m[32m                txt = 'line1\nline2\nline3'[m
+[32m+[m[32m                client.bash('echo "{}" > {}'.format(txt, file_name))[m
+[32m+[m[32m                f = client.filesystem.open(file_name, mode=mode)[m
+ [m
+             if mode == 'r':[m
+ [m
+[36m@@ -470,6 +470,8 @@[m [mclass SystemTests(BaseTest):[m
+                 txt = new_txt = str.encode(self.rand_str())[m
+                 with self.assertRaises(RuntimeError):[m
+                     client.filesystem.write(f, txt)[m
+[32m+[m[32m                with self.assertRaises(RuntimeError):[m
+[32m+[m[32m                    client.filesystem.open(self.rand_str(), mode=mode)[m
+ [m
+             if mode  == 'w': #issue[m
+ [m
+[36m@@ -505,13 +507,16 @@[m [mclass SystemTests(BaseTest):[m
+ [m
+                 self.lg('Write text to file (F1), should success')[m
+                 new_txt = str.encode(self.rand_str())[m
+[32m+[m[32m                l = len(new_txt)[m
+                 client.filesystem.write(f, new_txt)[m
+ [m
+                 self.lg('Check file (F1) content, should success')[m
+                 file_text = client.bash('cat {}'.format(file_name)).get().stdout[m
+[31m-                self.assertEqual(file_text, '{}\n{}\n'.format(new_txt.decode('utf-8'), txt))[m
+[32m+[m[32m                self.assertEqual(file_text, '{}{}\n'.format(new_txt.decode('utf-8'), txt[l:]))[m
+                 file_text = client.filesystem.read(f).decode('utf-8')[m
+[31m-                self.assertEqual(file_text, '{}\n'.format(txt))[m
+[32m+[m[32m                self.assertEqual(file_text, '{}\n'.format(txt[l:]))[m
+[32m+[m[32m                with self.assertRaises(RuntimeError):[m
+[32m+[m[32m                    client.filesystem.open(self.rand_str(), mode=mode)[m
+ [m
+             if mode == 'a':[m
+ [m
+[36m@@ -523,11 +528,9 @@[m [mclass SystemTests(BaseTest):[m
+                 file_text = client.bash('cat {}'.format(file_name)).get().stdout[m
+ [m
+                 self.lg('Check file (F1) text , should succeed')[m
+[31m-                self.assertEqual(file_text.decode('utf-8'), '{}\n{}\n'.format(txt, new_txt))[m
+[31m-[m
+[32m+[m[32m                self.assertEqual(file_text, '{}\n{}\n'.format(txt, new_txt.decode('utf-8')))[m
+ [m
+             if mode == 'x':[m
+[31m-[m
+                 self.lg('Create file (F2) using open in (x) mode, should succeed')[m
+                 file_name_2 = '{}.txt'.format(self.rand_str())[m
+                 client.filesystem.open(file_name_2, mode=mode)[m
+[36m@@ -536,10 +539,6 @@[m [mclass SystemTests(BaseTest):[m
+                 ls = client.bash('ls').get().stdout.splitlines()[m
+                 self.assertIn(file_name_2, ls)[m
+ [m
+[31m-            else:[m
+[31m-                with self.assertRaises(RuntimeError):[m
+[31m-                    client.filesystem.open(self.rand_str(), mode=mode)[m
+[31m-[m
+             client.filesystem.close(f)[m
+ [m
+         if client_type == 'container':[m
