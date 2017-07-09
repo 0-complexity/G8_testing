@@ -4,6 +4,7 @@ from api_testing.grid_apis.orchestrator_client.storagepools_apis import Storagep
 from api_testing.utiles.core0_client import Client
 import unittest, time
 
+
 class TestStoragepoolsAPI(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -310,7 +311,7 @@ class TestStoragepoolsAPI(TestcasesBase):
         device = random.choice(free_devices)
         body = [device]
         response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'], body)
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 201)
         
         for _ in range(30):
             free_devices = self.pyclient.getFreeDisks()
@@ -330,7 +331,6 @@ class TestStoragepoolsAPI(TestcasesBase):
         # response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'], body)
         # self.assertEqual(response.status_code, 400)
 
-    @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/394')
     def test008_delete_storagepool_device(self):
         """ GAT-052
         **Test Scenario:**
@@ -351,7 +351,7 @@ class TestStoragepoolsAPI(TestcasesBase):
         device = random.choice(free_devices)
         body = [device]
         response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'], body)
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 201)
         
         for _ in range(30):
             free_devices = self.pyclient.getFreeDisks()
@@ -386,6 +386,7 @@ class TestStoragepoolsAPI(TestcasesBase):
         response = self.storagepool_api.delete_storagepools_storagepoolname_devices_deviceid(self.nodeid, storagepool['name'], 'fake_device')
         self.assertEqual(response.status_code, 404)
 
+    @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/658')
     def test009_get_storagepool_filessystem(self):
         """ GAT-053
         **Test Scenario:**
@@ -411,6 +412,7 @@ class TestStoragepoolsAPI(TestcasesBase):
         response = self.storagepool_api.get_storagepools_storagepoolname_filesystems_filesystemname(self.nodeid, storagepool['name'], 'fake_filesystem')
         self.assertEqual(response.status_code, 404)
 
+    @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/658')
     def test010_list_storagepool_filesystems(self):
         """ GAT-054
         **Test Scenario:**
@@ -430,6 +432,7 @@ class TestStoragepoolsAPI(TestcasesBase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(filesystem['name'], response.json())
 
+    @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/658')
     def test011_post_storagepool_filesystem(self):
         """ GAT-055
         **Test Scenario:**
@@ -467,6 +470,7 @@ class TestStoragepoolsAPI(TestcasesBase):
         response = self.storagepool_api.post_storagepools_storagepoolname_filesystems(self.nodeid, storagepool['name'], body)
         self.assertEqual(response.status_code, 400)
 
+    @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/658')
     def test012_delete_storagepool_filesystem(self):
         """ GAT-056
         **Test Scenario:**
@@ -496,7 +500,7 @@ class TestStoragepoolsAPI(TestcasesBase):
         response = self.storagepool_api.delete_storagepools_storagepoolname_filesystems_filesystemname(self.nodeid, storagepool['name'], 'fake_filesystem')
         self.assertEqual(response.status_code, 404)
 
-
+    @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/658')
     def test013_get_storagepool_filessystem_snapshot(self):
         """ GAT-057
         **Test Scenario:**
@@ -531,7 +535,7 @@ class TestStoragepoolsAPI(TestcasesBase):
                                                                                            'fake_snapshot')
         self.assertEqual(response.status_code, 404)
 
-
+    @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/658')
     def test014_list_storagepool_filesystems_snapshots(self):
         """ GAT-058
         **Test Scenario:**
@@ -555,7 +559,7 @@ class TestStoragepoolsAPI(TestcasesBase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(snapshot['name'], response.json())
 
-
+    @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/658')
     def test015_post_storagepool_filesystem_snapshot(self):
         """ GAT-059
         **Test Scenario:**
@@ -598,7 +602,7 @@ class TestStoragepoolsAPI(TestcasesBase):
         response = self.storagepool_api.post_filesystems_snapshots(self.nodeid, storagepool['name'], filesystem['name'], body)
         self.assertEqual(response.status_code, 400)
 
-
+    @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/658')
     def test016_delete_storagepool_filesystem_snapshot(self):
         """ GAT-060
         **Test Scenario:**

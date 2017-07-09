@@ -4,8 +4,9 @@ from api_testing.grid_apis.orchestrator_client.containers_apis import Containers
 from api_testing.grid_apis.orchestrator_client.gateways_apis import GatewayAPI
 from api_testing.utiles.core0_client import Client
 import random, time
+import unittest
 
-
+@unittest.skip(' ')
 class TestGatewayAPICreation(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
