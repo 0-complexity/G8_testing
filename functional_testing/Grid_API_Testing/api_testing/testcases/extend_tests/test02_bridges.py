@@ -108,10 +108,6 @@ class TestBridgesAPI(TestcasesBase):
                       }
             response = self.containers_api.post_containers(self.nodeid, C_body)
             self.assertEqual(response.status_code, 201)
-            self.assertTrue(self.wait_for_status("running",
-                                                            self.containers_api.get_containers_containerid,
-                                                            nodeid=self.nodeid,
-                                                            containername=C_name))
             C_client = self.zeroCore.get_container_client(C_name)
             time.sleep(4)
             if not nat:
