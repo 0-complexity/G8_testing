@@ -6,7 +6,7 @@ from api_testing.utiles.core0_client import Client
 import random, time
 import unittest
 
-@unittest.skip(' ')
+# @unittest.skip(' ')
 class TestGatewayAPICreation(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -263,7 +263,7 @@ class TestGatewayAPICreation(TestcasesBase):
         response = self.gateways_apis.post_nodes_gateway(self.nodeid, self.body)
         self.assertEqual(response.status_code, 201)
 
-        self.lg('Create container')
+        self.lg.info('Create container')
         self.container_body = {"name": self.container_name,
                                "hostname": self.rand_str(),
                                "flist": "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist",

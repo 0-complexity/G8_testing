@@ -22,7 +22,6 @@ class TestStoragepoolsAPI(TestcasesBase):
             self.storagepool_api.delete_storagepools_storagepoolname(self.nodeid, storagepool)
         super(TestStoragepoolsAPI, self).tearDown()
 
-    
     def create_storagepool(self):
         freeDisks = self.pyclient.getFreeDisks()
         if freeDisks == []:
@@ -245,6 +244,7 @@ class TestStoragepoolsAPI(TestcasesBase):
         response = self.storagepool_api.delete_storagepools_storagepoolname(self.nodeid, 'fake_storagepool')
         self.assertEqual(response.status_code, 404)
 
+    @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/209')
     def test005_get_storagepool_device(self):
         """ GAT-049
         **Test Scenario:**
@@ -262,6 +262,8 @@ class TestStoragepoolsAPI(TestcasesBase):
         self.assertEqual(response.status_code, 200)
         self.assertNotEqual(response.json(), [])
         device_uuid = response.json()[0]['uuid']
+        import ipdb; ipdb.set_trace()
+        print('devieid', response.json())
 
         response = self.storagepool_api.get_storagepools_storagepoolname_devices_deviceid(self.nodeid, storagepool['name'], device_uuid)
         self.assertEqual(response.status_code, 200)
@@ -330,7 +332,8 @@ class TestStoragepoolsAPI(TestcasesBase):
         # body = ""
         # response = self.storagepool_api.post_storagepools_storagepoolname_devices(self.nodeid, storagepool['name'], body)
         # self.assertEqual(response.status_code, 400)
-
+    
+    @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/209')
     def test008_delete_storagepool_device(self):
         """ GAT-052
         **Test Scenario:**
