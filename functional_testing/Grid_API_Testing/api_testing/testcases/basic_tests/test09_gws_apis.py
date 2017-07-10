@@ -5,8 +5,9 @@ from api_testing.grid_apis.orchestrator_client.gateways_apis import GatewayAPI
 from api_testing.utiles.core0_client import Client
 from urllib.request import urlopen
 import random, time
+import unittest
 
-
+# @unittest.skip(' ')
 class TestGatewayAPICreation(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -274,7 +275,7 @@ class TestGatewayAPICreation(TestcasesBase):
         response = self.gateways_apis.post_nodes_gateway(self.nodeid, self.body)
         self.assertEqual(response.status_code, 201)
 
-        self.lg('Create container')
+        self.lg.info('Create container')
         self.container_body = {"name": self.container_name,
                                "hostname": self.rand_str(),
                                "flist": "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist",
