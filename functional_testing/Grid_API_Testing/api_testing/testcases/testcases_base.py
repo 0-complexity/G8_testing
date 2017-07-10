@@ -93,7 +93,7 @@ class TestcasesBase(TestCase):
             if resource['status'] == status:
                 return True
             time.sleep(1)
-            resource = func(**kwargs)  
+            resource = func(**kwargs)
             resource = resource.json()
         return False
 
@@ -111,3 +111,4 @@ class TestcasesBase(TestCase):
         self.assertEqual(response.json()['status'], 'running')
 
         return name
+
