@@ -6,7 +6,7 @@ from api_testing.grid_apis.orchestrator_client.vdisks_apis import VDisksAPIs
 from api_testing.utiles.core0_client import Client
 import time, unittest
 
-@unittest.skip('https://github.com/g8os/resourcepool/issues/298')
+@unittest.skip('https://github.com/zero-os/0-orchestrator/issues/662')
 class TestVmsAPI(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

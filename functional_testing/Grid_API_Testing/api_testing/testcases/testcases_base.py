@@ -97,34 +97,18 @@ class TestcasesBase(TestCase):
             resource = resource.json()
         return False
 
-    def get_random_container(self, node_id):
-        container_name = self.rand_str()
-        hostname = self.rand_str()
-        container_body = {"name": container_name, "hostname": hostname, "flist": self.root_url,
-                          "hostNetworking": False, "initProcesses": [], "filesystems": [],
-                          "ports": [], "storage": "ardb://hub.gig.tech:16379"
-                          }
-        response = self.containers_api.get_containers(node_id)
-        self.assertEqual(response.status_code, 200)
-        container_list = response.json()
-        counter = len(container_list)
-        while (counter != 0) and (len(container_list) != 0):
-            container_name = container_list[random.randint(0, len(container_list)-1)]['name']
-            response = self.containers_api.get_containers_containerid(nodeid=node_id,containername=container_name)
-            container=response.json()
-            if container['status']=='running':
-                return container_name
+    def create_contaienr(self, node_id):
+        name = self.random_string()
+        hostname = self.random_string()
+        body = {"name": name, "hostname": hostname, "flist": self.root_url,
+                "hostNetworking": False, "initProcesses": [], "filesystems": [],
+                "ports": [], "storage": "ardb://hub.gig.tech:16379"}
 
-            else:
-                counter = counter-1
-        else:
-            container_name = container_body["name"]
-            response = self.containers_api.post_containers(nodeid=node_id, data=container_body)
-            self.assertEqual(response.status_code, 201)
+        response = self.containers_api.post_containers(nodeid=node_id, data=body)
+        self.assertEqual(response.status_code, 201)
+        self.createdcontainer.append({"node": node_id, "container": name})
+        response = self.containers_api.get_containers_containerid(node_id, name)
+        self.assertEqual(response.json()['status'], 'running')
 
-            if not self.wait_for_status('running', self.containers_api.get_containers_containerid,
-                                                          nodeid=node_id, containername=container_name):
-                return False
-            else:
-                self.createdcontainer.append({"node": node_id, "container": container_name})
-                return container_name
+        return name
+

@@ -789,7 +789,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.lg.info("Check that portforward work,should succeed")
         response = C1_client.bash("netstat -nlapt | grep %s"%containerport).get()
         self.assertEqual(response.state, 'SUCCESS')
-        url=' http://{0}:{1}/{2}.text'.format(self.g8os_ip,hostport,file_name)
+        url=' http://{0}:{1}/{2}.text'.format(self.zeroCore_ip, hostport, file_name)
         response = urlopen(url)
         html = response.read()
         self.assertIn("test",html.decode('utf-8'))

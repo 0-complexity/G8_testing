@@ -5,8 +5,9 @@ from api_testing.grid_apis.orchestrator_client.gateways_apis import GatewayAPI
 from api_testing.utiles.core0_client import Client
 from urllib.request import urlopen
 import random, time
+import unittest
 
-
+# @unittest.skip(' ')
 class TestGatewayAPICreation(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -32,19 +33,18 @@ class TestGatewayAPICreation(TestcasesBase):
         self.lg.info('Delete all created {} gateways'.format(self.nodeid))
         for gw in self.gateways_apis.createdGw:
             self.gateways_apis.delete_nodes_gateway(gw['node'], gw['name'])
-            self.gateways_apis.createdGw.remove(gw)
-
+    
         self.lg.info('TearDown:delete all created container ')
         for container in self.containers_apis.createdcontainer:
             self.containers_apis.delete_containers_containerid(container['node'],
                                                               container['name'])
-            self.containers_apis.createdcontainer.remove(container)
 
         self.lg.info('TearDown:delete all created bridges ')
         for bridge in self.bridges_apis.createdbridges:
             self.bridges_apis.delete_nodes_bridges_bridgeid(bridge['node'],
                                                             bridge['name'])
-            self.bridges_apis.createdbridges.remove(bridge)
+
+
         super().tearDown()
 
     def test004_create_gateway_with_vlan_vlan_container(self):
@@ -274,7 +274,7 @@ class TestGatewayAPICreation(TestcasesBase):
         response = self.gateways_apis.post_nodes_gateway(self.nodeid, self.body)
         self.assertEqual(response.status_code, 201)
 
-        self.lg('Create container')
+        self.lg.info('Create container')
         self.container_body = {"name": self.container_name,
                                "hostname": self.rand_str(),
                                "flist": "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist",
@@ -365,7 +365,7 @@ class TestGatewayAPICreation(TestcasesBase):
         response = self.gateways_apis.post_nodes_gateway(self.nodeid, self.body)
         self.assertEqual(response.status_code, 201)
 
-        self.lg('Create container')
+        self.lg.info('Create container')
         self.container_body = {"name": self.container_name,
                                "hostname": self.rand_str(),
                                "flist": "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist",
@@ -680,6 +680,7 @@ class TestGatewayAPICreation(TestcasesBase):
         self.assertEqual(response.state, 'SUCCESS')
         self.assertNotIn("unreachable", response.stdout)
 
+@unittest.skip(' ')
 class TestGatewayAPIUpdate(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

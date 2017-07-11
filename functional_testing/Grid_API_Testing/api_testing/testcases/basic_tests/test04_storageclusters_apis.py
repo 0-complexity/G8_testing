@@ -4,6 +4,7 @@ from api_testing.grid_apis.orchestrator_client.storageclusters_apis import Stora
 from api_testing.utiles.core0_client import Client
 import unittest, time
 
+# @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/644')
 class TestStorageclustersAPI(TestcasesBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
