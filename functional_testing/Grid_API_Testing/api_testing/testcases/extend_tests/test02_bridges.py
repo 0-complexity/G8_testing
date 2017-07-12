@@ -1,9 +1,9 @@
 from random import randint
 import unittest, time
 from api_testing.testcases.testcases_base import TestcasesBase
-from api_testing.grid_apis.orchestrator_client.bridges_apis import BridgesAPI
-from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
-from api_testing.grid_apis.orchestrator_client.nodes_apis import NodesAPI
+from api_testing.orchestrator_api.orchestrator_client.bridges_apis import BridgesAPI
+from api_testing.orchestrator_api.orchestrator_client.containers_apis import ContainersAPI
+from api_testing.orchestrator_api.orchestrator_client.nodes_apis import NodesAPI
 from api_testing.utiles.core0_client import Client
 
 

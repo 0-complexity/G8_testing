@@ -3,11 +3,11 @@ import time
 import unittest
 from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.utiles.core0_client import Client
-from api_testing.grid_apis.apis.nodes_apis import NodesAPI
-from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
+from api_testing.orchestrator_api.apis.nodes_apis import NodesAPI
+from api_testing.orchestrator_api.orchestrator_client.containers_apis import ContainersAPI
 import json
-from api_testing.grid_apis.orchestrator_client.bridges_apis import BridgesAPI
-from api_testing.grid_apis.orchestrator_client.storagepools_apis import StoragepoolsAPI
+from api_testing.orchestrator_api.orchestrator_client.bridges_apis import BridgesAPI
+from api_testing.orchestrator_api.orchestrator_client.storagepools_apis import StoragepoolsAPI
 from urllib.request import urlopen
 
 class TestcontaineridAPI(TestcasesBase):

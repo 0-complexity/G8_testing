@@ -1,7 +1,7 @@
 import random, time
 from api_testing.testcases.testcases_base import TestcasesBase
-from api_testing.grid_apis.orchestrator_client.vdisks_apis import VDisksAPIs
-from api_testing.grid_apis.orchestrator_client.storageclusters_apis import Storageclusters
+from api_testing.orchestrator_api.orchestrator_client.vdisks_apis import VDisksAPIs
+from api_testing.orchestrator_api.orchestrator_client.storageclusters_apis import Storageclusters
 from api_testing.utiles.core0_client import Client
 import unittest
 
