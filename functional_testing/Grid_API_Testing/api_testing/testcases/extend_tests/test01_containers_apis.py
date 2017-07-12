@@ -11,19 +11,18 @@ from api_testing.grid_apis.orchestrator_client.storagepools_apis import Storagep
 from urllib.request import urlopen
 
 class TestcontaineridAPI(TestcasesBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+
+    def setUp(self):
         self.containers_api = ContainersAPI()
         self.bridges_api = BridgesAPI()
         self.storagepool_api = StoragepoolsAPI()
-
         self.createdcontainer=[]
 
-    def setUp(self):
         self.lg.info('Choose one random node of list of running nodes.')
         self.node_id = self.get_random_node()
         self.zeroCore_ip= [x['ip'] for x in self.nodes if x['id'] == self.node_id]
         self.assertTrue(self.zeroCore_ip,'No node match the random node')
+        self.jwt = self.nodes_api.jwt
         self.zeroCore = Client(self.zeroCore_ip[0], password=self.jwt)
         self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
         self.storage = "ardb://hub.gig.tech:16379"

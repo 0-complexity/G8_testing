@@ -7,13 +7,9 @@ from api_testing.grid_apis.orchestrator_client.containers_apis import Containers
 
 
 class TestcontaineridAPI(TestcasesBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.containers_api = ContainersAPI()
-
     def setUp(self):
-        super(TestcontaineridAPI,  self).setUp()
-
+        super().setUp()
+        self.containers_api = ContainersAPI()
         self.lg.info('Choose one random node of list of running nodes.')
         self.node_id = self.get_random_node()
         if self.node_id is None:
@@ -25,6 +21,8 @@ class TestcontaineridAPI(TestcasesBase):
                 self.g8os_ip = node['ip']
                 self.node = node
                 break
+        
+        self.jwt = self.nodes_api.jwt
         self.g8core = Client(self.g8os_ip, password=self.jwt)
 
         self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
@@ -305,7 +303,6 @@ class TestcontaineridAPI(TestcasesBase):
         self.assertEqual(response.status_code, 204)
         self.assertTrue(self.g8core.wait_on_container_job_update(container_name, job_id, 100, True))
     
-    @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/637')
     def test009_post_signal_job_in_container_details(self):
         """ GAT-030
         *get:/node/{nodeid}/containers/containerid/jobs/jobid Expected: get container details *
@@ -586,7 +583,6 @@ class TestcontaineridAPI(TestcasesBase):
         for process in golden_value:
             self.assertNotEqual(process['pid'], process_id)
         
-    @unittest.skip('https://github.com/Jumpscale/go-raml/issues/642')
     def test017_post_signal_to_process_in_container(self):
         """ GAT-038
         *get:/node/{nodeid}/containers/containerid/processes/processid Expected: get container details *
@@ -625,7 +621,6 @@ class TestcontaineridAPI(TestcasesBase):
                                                                                        str(process_id), body)
         self.assertEqual(response.status_code, 204)
 
-    @unittest.skip('https://github.com/Jumpscale/go-raml/issues/297')
     def test018_upload_file_to_container(self):
         """ GAT-039
         *post:/node/{nodeid}/containers/containerid/filesystem  *

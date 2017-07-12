@@ -5,7 +5,7 @@ from requests import HTTPError
 class ContainersAPI(GridPyclientBase):
     def __init__(self):
         super().__init__()
-        self.createdcontainer=[]
+        self.createdcontainer = []
 
     def get_containers(self, nodeid):
         try:

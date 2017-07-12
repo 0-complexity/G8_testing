@@ -8,20 +8,19 @@ from api_testing.utiles.core0_client import Client
 
 
 class TestBridgesAPI(TestcasesBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+
+    def setUp(self):
+        super(TestBridgesAPI, self).setUp()
         self.bridges_api = BridgesAPI()
         self.containers_api = ContainersAPI()
         self.nodes_api = NodesAPI()
         self.createdbridges = []
 
-    def setUp(self):
-        super(TestBridgesAPI, self).setUp()
-
         self.lg.info('Get random nodid (N0)')
         self.nodeid = self.get_random_node()
         zeroCore_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]
         self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
+        self.jwt = self.nodes_api.jwt
         self.zeroCore = Client(zeroCore_ip, password=self.jwt)
         self.bridge_name = self.rand_str()
         self.nat = self.random_item([False, True])

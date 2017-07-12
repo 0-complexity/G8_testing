@@ -7,20 +7,18 @@ from urllib.request import urlopen
 import random, time
 import unittest
 
-# @unittest.skip(' ')
 class TestGatewayAPICreation(TestcasesBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.bridges_apis = BridgesAPI()
-        self.containers_apis = ContainersAPI()
-        self.gateways_apis = GatewayAPI()
 
     def setUp(self):
         super().setUp()
+        self.bridges_apis = BridgesAPI()
+        self.containers_apis = ContainersAPI()
+        self.gateways_apis = GatewayAPI()
         self.nodeid = self.get_random_node()
         self.lg.info('Get random nodeid : %s' % str(self.nodeid))
         core0_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
         self.assertNotEqual(core0_ip, [])
+        self.jwt = self.nodes_api.jwt
         self.core0_client = Client(core0_ip[0], password=self.jwt)
         self.core0_client.create_ovs_container()
         self.flist = 'https://hub.gig.tech/gig-official-apps/ubuntu1604.flist'
@@ -47,8 +45,8 @@ class TestGatewayAPICreation(TestcasesBase):
 
         super().tearDown()
 
-    def test004_create_gateway_with_vlan_vlan_container(self):
-        """ GAT-xxx
+    def test001_create_gateway_with_vlan_vlan_container(self):
+        """ GAT-123
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -112,8 +110,8 @@ class TestGatewayAPICreation(TestcasesBase):
         self.assertEqual(response.state, 'SUCCESS')
 
 
-    def test005_create_gateway_with_vxlan_vxlan_container(self):
-        """ GAT-xxx
+    def test002_create_gateway_with_vxlan_vxlan_container(self):
+        """ GAT-124
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -175,9 +173,9 @@ class TestGatewayAPICreation(TestcasesBase):
         response = container_2.bash('ping -w5 192.168.20.2').get()
         self.assertEqual(response.state, 'SUCCESS')
 
-
-    def test006_create_gateway_with_vlan_vlan_vm(self):
-        """ GAT-xxx
+    @unittest.skip('Testcase is not implemented')
+    def test003_create_gateway_with_vlan_vlan_vm(self):
+        """ GAT-125
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -188,8 +186,9 @@ class TestGatewayAPICreation(TestcasesBase):
         """
         pass
 
-    def test007_create_gateway_with_vxlan_vxlan_vm(self):
-        """ GAT-xxx
+    @unittest.skip('Testcase is not implemented')
+    def test004_create_gateway_with_vxlan_vxlan_vm(self):
+        """ GAT-126
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -200,8 +199,8 @@ class TestGatewayAPICreation(TestcasesBase):
         """
         pass
 
-    def test008_create_gateway_with_bridge_vlan_container(self):
-        """ GAT-xxx
+    def test005_create_gateway_with_bridge_vlan_container(self):
+        """ GAT-127
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -291,8 +290,8 @@ class TestGatewayAPICreation(TestcasesBase):
         self.assertNotIn("unreachable", response.stdout)
 
 
-    def test010_create_gateway_with_bridge_vxlan_container(self):
-        """ GAT-xxx
+    def test006_create_gateway_with_bridge_vxlan_container(self):
+        """ GAT-128
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -370,7 +369,7 @@ class TestGatewayAPICreation(TestcasesBase):
                                "hostname": self.rand_str(),
                                "flist": "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist",
                                "nics": [{"type": "vlan",
-                                         "id": self.private_vlan_id,
+                                         "id": self.private_vxlan_id,
                                          "hwaddr": self.container_hw,
                                          "config": {"dhcp": True}}]
                                }
@@ -383,8 +382,9 @@ class TestGatewayAPICreation(TestcasesBase):
         self.assertEqual(response.state, 'SUCCESS')
         self.assertNotIn("unreachable", response.stdout)
 
-    def test011_create_gateway_with_bridge_vlan_vm(self):
-        """ GAT-xxx
+    @unittest.skip('Testcase is not implemented')
+    def test007_create_gateway_with_bridge_vlan_vm(self):
+        """ GAT-129
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -394,8 +394,9 @@ class TestGatewayAPICreation(TestcasesBase):
         """
         pass
 
-    def test012_create_gateway_with_bridge_vxlan_vm(self):
-        """ GAT-xxx
+    @unittest.skip('Testcase Not implemented')
+    def test008_create_gateway_with_bridge_vxlan_vm(self):
+        """ GAT-130
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -405,8 +406,9 @@ class TestGatewayAPICreation(TestcasesBase):
         """
         pass
 
-    def test013_create_gateway_dhcpserver(self):
-        """ GAT-xxx
+    @unittest.skip('Testcase is not implemented')
+    def test009_create_gateway_dhcpserver(self):
+        """ GAT-131
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -417,8 +419,9 @@ class TestGatewayAPICreation(TestcasesBase):
         """
         pass
 
-    def test014_create_gateway_httpproxy(self):
-        """ GAT-xxx
+    @unittest.skip('Testcase is not implemented')    
+    def test010_create_gateway_httpproxy(self):
+        """ GAT-132
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -428,8 +431,8 @@ class TestGatewayAPICreation(TestcasesBase):
         """
         pass
 
-    def test015_create_gateway_portforwards(self):
-        """ GAT-121
+    def test011_create_gateway_portforwards(self):
+        """ GAT-133
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -527,7 +530,9 @@ class TestGatewayAPICreation(TestcasesBase):
         file_name = self.rand_str()
         response = C_client.bash("mkdir {0} && cd {0}&& touch {0}.text ".format(file_name)).get()
         self.assertEqual(response.state, "SUCCESS")
+
         C_client.bash("cd %s &&  python3 -m http.server %s & "%(file_name, dstport))
+        time.sleep(3)
 
         self.lg.info("Using core0_client try to request this service and make sure that u can reach the container")
         response = C_client.bash("netstat -nlapt | grep %s"%dstport).get()
@@ -543,8 +548,8 @@ class TestGatewayAPICreation(TestcasesBase):
         response = self.core0_client.client.bash('rm %s.text'%file_name).get()
         self.assertEqual(response.state, "SUCCESS")
 
-    def test016_create_two_gateways_zerotierbridge(self):
-        """ GAT-122
+    def test012_create_two_gateways_zerotierbridge(self):
+        """ GAT-134
         **Test Scenario:**
 
         #. Get random node (N0), should succeed.
@@ -680,20 +685,18 @@ class TestGatewayAPICreation(TestcasesBase):
         self.assertEqual(response.state, 'SUCCESS')
         self.assertNotIn("unreachable", response.stdout)
 
-@unittest.skip(' ')
 class TestGatewayAPIUpdate(TestcasesBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.bridges_apis = BridgesAPI()
-        self.containers_apis = ContainersAPI()
-        self.gateways_apis = GatewayAPI()
 
     def setUp(self):
         super().setUp()
+        self.bridges_apis = BridgesAPI()
+        self.containers_apis = ContainersAPI()
+        self.gateways_apis = GatewayAPI()
         self.nodeid = self.get_random_node()
         self.lg.info('Get random nodeid : %s' % str(self.nodeid))
         core0_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
         self.assertNotEqual(core0_ip, [])
+        self.jwt = self.nodes_api.jwt
         self.core0_client = Client(core0_ip[0], password=self.jwt)
         self.gw_name = self.random_string()
         self.gw_domain = self.random_string()
@@ -743,6 +746,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
     def tearDown(self):
         self.lg.info('Delete all node {} gateways'.format(self.nodeid))
         response = self.gateways_apis.list_nodes_gateways(self.nodeid)
+        self.assertEqual(response.status_code, 200)
         for gw in response.json():
             self.gateways_apis.delete_nodes_gateway(self.nodeid, gw['name'])
         super().tearDown()
@@ -791,7 +795,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.assertNotIn(self.gw_name, [x['name'] for x in response.json()])
 
     def test004_stop_gw(self):
-        """ GAT-xxx
+        """ GAT-135
         **Test Scenario:**
 
         #. Stop the running gatway
@@ -811,11 +815,11 @@ class TestGatewayAPIUpdate(TestcasesBase):
                 self.assertEqual(container['status'], 'halted')
 
         response = self.gateways_apis.post_nodes_gateway_start(nodeid=self.nodeid, gwname=self.gw_name)
-        self.assertEqual(response.status_code, 201, response.content)
+        self.assertEqual(response.status_code, 204, response.content)
 
 
     def test005_start_gw(self):
-        """ GAT-xxx
+        """ GAT-136
         **Test Scenario:**
 
         #. Stop the running gateway and make sure that its status has been changed
@@ -831,7 +835,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
                 self.assertEqual(container['status'], 'halted')
 
         response = self.gateways_apis.post_nodes_gateway_start(nodeid=self.nodeid, gwname=self.gw_name)
-        self.assertEqual(response.status_code, 201, response.content)
+        self.assertEqual(response.status_code, 204, response.content)
 
         response = self.containers_apis.get_containers(nodeid=self.nodeid)
         for container in response.json():
@@ -839,40 +843,124 @@ class TestGatewayAPIUpdate(TestcasesBase):
                 self.assertEqual(container['status'], 'running')
 
     def test006_update_gw_nics_config(self):
-        """ GAT-xxx
+        """ GAT-137
         **Test Scenario:**
 
         #. Use put method to update the nics config for the gw
         #. List the gw and make sure that its nics config have been updated
         """
-        pass
+        self.body['nics'] = [{
+                "name": "public",
+                "type": "vlan",
+                "id": self.public_vlan_id,
+                "config": {
+                    "cidr": "192.168.10.10/24",
+                    "gateway": "192.168.10.1"
+                }
+            },
+            {
+                "name": "private",
+                "type": "vxlan",
+                "id": self.private_vxlan_id,
+                "config": {
+                    "cidr": "192.168.20.2/24"
+                }
+            }]
+
+        del self.body['name']
+        
+        self.lg.info('Use put method to update the nics config for the gw')
+        response = self.gateways_apis.update_nodes_gateway(self.nodeid, self.gw_name, self.body)
+        self.assertEqual(response.status_code, 204)
+
+        self.lg.info('List the gw and make sure that its nics config have been updated')        
+        response = self.gateways_apis.get_nodes_gateway(self.nodeid, self.gw_name)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.body['nics'], response.json()['nics'])
+
 
     def test007_update_gw_portforwards_config(self):
-        """ GAT-xxx
+        """ GAT-138
         **Test Scenario:**
 
         #. Use put method to update the portforwards config for the gw
         #. List the gw and make sure that its portforwards config have been updated
         """
-        pass
+        self.body['portforwards'] = [
+            {
+                "protocols": ['udp', 'tcp'],
+                "srcport": random.randint(100, 1000),
+                "srcip": "192.168.1.1",
+                "dstport": random.randint(100, 1000),
+                "dstip": "192.168.2.100"
+            }
+        ]
+
+        del self.body['name']
+
+        self.lg.info('Use put method to update the portforwards config for the gw')
+        response = self.gateways_apis.update_nodes_gateway(self.nodeid, self.gw_name, self.body)
+        self.assertEqual(response.status_code, 204)
+
+        self.lg.info('List the gw and make sure that its portforwards config have been updated')        
+        response = self.gateways_apis.get_nodes_gateway(self.nodeid, self.gw_name)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.body['portforwards'], response.json()['portforwards'])
 
     def test008_update_gw_dhcpserver_config(self):
-        """ GAT-xxx
+        """ GAT-139
         **Test Scenario:**
 
         #. Use put method to update the dhcpserver config for the gw
         #. List the gw and make sure that its dhcpserver config have been updated
         """
-        pass
+        self.body['nics'][1]['dhcpserver'] = {
+                "nameservers": ["8.8.8.8"],
+                "hosts": [
+					{
+						"macaddress": self.randomMAC(),
+						"hostname": self.random_string(),
+						"ipaddress": "192.168.2.100"
+					}
+                ]
+            }
+
+        del self.body['name']
+
+        self.lg.info('Use put method to update the dhcpserver config for the gw')
+        response = self.gateways_apis.update_nodes_gateway(self.nodeid, self.gw_name, self.body)
+        self.assertEqual(response.status_code, 204, response.content)
+
+        self.lg.info('List the gw and make sure that its dhcpserver config have been updated')        
+        response = self.gateways_apis.get_nodes_gateway(self.nodeid, self.gw_name)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.body['nics'][1]['dhcpserver'], response.json()['nics'][1]['dhcpserver'])
 
     def test009_update_gw_httpproxies_config(self):
-        """ GAT-xxx
+        """ GAT-140
         **Test Scenario:**
 
         #. Use put method to update the dhcpserver config for the gw
-        #. List the gw and make sure that its dhcpserver config have been updated
+        #. List the gw and make sure that its httpproxies config have been updated
         """
-        pass
+        self.body['httpproxies'] = [
+            {
+                "host": self.random_string(),
+                "destinations": ["192.168.200.10:1101"],
+                "types": ['https', 'http']
+		    }
+        ]
+
+        del self.body['name']
+
+        self.lg.info('Use put method to update the dhcpserver config for the gw')
+        response = self.gateways_apis.update_nodes_gateway(self.nodeid, self.gw_name, self.body)
+        self.assertEqual(response.status_code, 204)
+
+        self.lg.info('List the gw and make sure that its dhcpserver config have been updated')        
+        response = self.gateways_apis.get_nodes_gateway(self.nodeid, self.gw_name)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.body['httpproxies'], response.json()['httpproxies'])
 
     def test010_create_list_portforward(self):
         """ GAT-114

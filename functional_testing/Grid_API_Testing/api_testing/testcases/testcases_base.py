@@ -9,22 +9,21 @@ import requests
 import time
 import signal
 from testconfig import config
-from api_testing.grid_apis import JWT
 from api_testing.testcases import NODES_INFO
 from nose.tools import TimeExpired
 from zeroos.orchestrator import client as apiclient
 
+log = Utiles().logging
+zerotier_token = config['main']['zerotier_token']
+
 class TestcasesBase(TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.utiles = Utiles()
-        self.nodes_api = NodesAPI()
-        self.config = config['main']
-        self.jwt = JWT
         self.nodes = NODES_INFO
-        self.lg = self.utiles.logging
+        self.lg = log
+        self.nodes_api = NodesAPI()
         self.session = requests.Session()
-        self.zerotier_token = self.config['zerotier_token']
+        self.zerotier_token = zerotier_token
         self.session.headers['Authorization'] = 'Bearer {}'.format(self.zerotier_token)
         self.createdcontainer = []
 
@@ -111,4 +110,3 @@ class TestcasesBase(TestCase):
         self.assertEqual(response.json()['status'], 'running')
 
         return name
-
