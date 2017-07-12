@@ -259,8 +259,6 @@ class TestStoragepoolsAPI(TestcasesBase):
         self.assertEqual(response.status_code, 200)
         self.assertNotEqual(response.json(), [])
         device_uuid = response.json()[0]['uuid']
-        import ipdb; ipdb.set_trace()
-        print('devieid', response.json())
 
         response = self.storagepool_api.get_storagepools_storagepoolname_devices_deviceid(self.nodeid, storagepool['name'], device_uuid)
         self.assertEqual(response.status_code, 200)
