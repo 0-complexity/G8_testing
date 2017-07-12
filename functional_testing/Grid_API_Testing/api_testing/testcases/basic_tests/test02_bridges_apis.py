@@ -5,13 +5,9 @@ from api_testing.grid_apis.orchestrator_client.bridges_apis import BridgesAPI
 from api_testing.utiles.core0_client import Client
 
 class TestBridgesAPI(TestcasesBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.bridges_api = BridgesAPI()
-
     def setUp(self):
         super(TestBridgesAPI, self).setUp()
-
+        self.bridges_api = BridgesAPI()
         self.lg.info('Get random nodid (N0)')
         self.nodeid = self.get_random_node()
         pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]

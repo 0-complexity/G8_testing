@@ -6,13 +6,10 @@ import unittest
 
 
 class TestNodeidAPI(TestcasesBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.nodes_api = NodesAPI()
-
     def setUp(self):
-        super(TestNodeidAPI,  self).setUp()
-
+        super().setUp()
+        self.nodes_api = NodesAPI()
+        self.jwt = self.nodes_api.jwt
         self.lg.info('Choose one random node of list of running nodes.')
         self.node_id = self.get_random_node()
         if self.node_id is None:

@@ -6,16 +6,14 @@ from api_testing.grid_apis.orchestrator_client.vdisks_apis import VDisksAPIs
 from api_testing.utiles.core0_client import Client
 import time, unittest
 
-@unittest.skip('https://github.com/zero-os/0-orchestrator/issues/662')
 class TestVmsAPI(TestcasesBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+
+    
+    def setUp(self):
+        super(TestVmsAPI, self).setUp()
         self.vms_api = VmsAPI()
         self.storageclusters_api = Storageclusters()
         self.vdisks_apis = VDisksAPIs()
-
-    def setUp(self):
-        super(TestVmsAPI, self).setUp()
         self.lg.info('Get random nodid (N0)')
         self.nodeid = self.get_random_node()
         nodeip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]
@@ -63,7 +61,8 @@ class TestVmsAPI(TestcasesBase):
                 "clusterType": "storage",
                 "nodes":nodes}
 
-        self.storageclusters_api.post_storageclusters(body)
+        response = self.storageclusters_api.post_storageclusters(body)
+        self.assertEqual(response.status_code, 201)
 
         for _ in range(60):
             response = self.storageclusters_api.get_storageclusters_label(label)
@@ -88,8 +87,8 @@ class TestVmsAPI(TestcasesBase):
                 "storagecluster": storagecluster,
                 "templatevdisk":"ardb://hub.gig.tech:16379/template:ubuntu-1604"}
 
-        self.vdisks_apis.post_vdisks(body)
-        time.sleep(30)
+        response = self.vdisks_apis.post_vdisks(body)
+        self.assertEqual(response.status_code, 201)
         return body
 
     def create_vm(self):
@@ -113,7 +112,8 @@ class TestVmsAPI(TestcasesBase):
                 "userCloudInit":userCloudInit,
                 "systemCloudInit":systemCloudInit}
 
-        self.vms_api.post_nodes_vms(self.nodeid, body)
+        response = self.vms_api.post_nodes_vms(self.nodeid, body)
+        self.assertEqual(response.status_code, 201)
 
         for _ in range(60):
             response = self.vms_api.get_nodes_vms_vmid(self.nodeid, vmid)

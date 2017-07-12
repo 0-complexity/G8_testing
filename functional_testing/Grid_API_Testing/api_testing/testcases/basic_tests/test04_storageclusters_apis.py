@@ -6,12 +6,10 @@ import unittest, time
 
 # @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/644')
 class TestStorageclustersAPI(TestcasesBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.storageclusters_api = Storageclusters()
 
     def setUp(self):
         super(TestStorageclustersAPI, self).setUp()
+        self.storageclusters_api = Storageclusters()
 
         self.nodeid = self.get_random_node()
         pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]
@@ -36,7 +34,8 @@ class TestStorageclustersAPI(TestcasesBase):
                     "nodes":[self.nodeid]
                 }
 
-            self.storageclusters_api.post_storageclusters(self.body)
+            response = self.storageclusters_api.post_storageclusters(self.body)
+            self.assertEqual(response.status_code, 201)
             
             for _ in range(60):
                 response = self.storageclusters_api.get_storageclusters_label(self.label)

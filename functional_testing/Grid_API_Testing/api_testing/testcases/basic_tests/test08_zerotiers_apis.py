@@ -3,14 +3,14 @@ from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.grid_apis.orchestrator_client.zerotiers_apis import ZerotiersAPI
 from api_testing.utiles.core0_client import Client
 
-@unittest.skip('https://github.com/zero-os/0-orchestrator/issues/510')
+@unittest.skip(' ')
 class TestZerotiersAPI(TestcasesBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.zerotier_api = ZerotiersAPI()
 
     def setUp(self):
         super(TestZerotiersAPI, self).setUp()
+        self.vms_api = VmsAPI()
+        self.storageclusters_api = Storageclusters()
+        self.vdisks_apis = VDisksAPIs()
 
         self.lg.info('Get random nodid (N0)')
         self.nodeid = self.get_random_node()

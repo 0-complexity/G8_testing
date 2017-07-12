@@ -8,15 +8,13 @@ from api_testing.utiles.core0_client import Client
 
 
 class TestBridgesAPI(TestcasesBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+
+    def setUp(self):
+        super(TestBridgesAPI, self).setUp()
         self.bridges_api = BridgesAPI()
         self.containers_api = ContainersAPI()
         self.nodes_api = NodesAPI()
         self.createdbridges = []
-
-    def setUp(self):
-        super(TestBridgesAPI, self).setUp()
 
         self.lg.info('Get random nodid (N0)')
         self.nodeid = self.get_random_node()
