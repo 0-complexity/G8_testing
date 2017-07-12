@@ -7,10 +7,11 @@ import unittest, time
 
 class TestStoragepoolsAPI(TestcasesBase):
     def setUp(self):
-        super(TestStoragepoolsAPI, self).setUp()
+        super().setUp()
         self.storagepool_api = StoragepoolsAPI()
         self.nodeid = self.get_random_node()
         self.nodeip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
+        self.jwt = self.nodes_api.jwt
         self.pyclient = Client(self.nodeip[0], password=self.jwt)
         self.CLEANUP = []
 

@@ -8,11 +8,12 @@ import unittest, time
 class TestStorageclustersAPI(TestcasesBase):
 
     def setUp(self):
-        super(TestStorageclustersAPI, self).setUp()
+        super().setUp()
         self.storageclusters_api = Storageclusters()
 
         self.nodeid = self.get_random_node()
         pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]
+        self.jwt = self.nodes_api.jwt
         self.pyclient = Client(pyclient_ip, password=self.jwt)
 
         if self._testMethodName != 'test003_deploy_new_storagecluster':

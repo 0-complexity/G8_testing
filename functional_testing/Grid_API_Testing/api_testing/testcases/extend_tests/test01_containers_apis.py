@@ -22,6 +22,7 @@ class TestcontaineridAPI(TestcasesBase):
         self.node_id = self.get_random_node()
         self.zeroCore_ip= [x['ip'] for x in self.nodes if x['id'] == self.node_id]
         self.assertTrue(self.zeroCore_ip,'No node match the random node')
+        self.jwt = self.nodes_api.jwt
         self.zeroCore = Client(self.zeroCore_ip[0], password=self.jwt)
         self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
         self.storage = "ardb://hub.gig.tech:16379"

@@ -10,13 +10,14 @@ class TestVmsAPI(TestcasesBase):
 
     
     def setUp(self):
-        super(TestVmsAPI, self).setUp()
+        super().setUp()
         self.vms_api = VmsAPI()
         self.storageclusters_api = Storageclusters()
         self.vdisks_apis = VDisksAPIs()
         self.lg.info('Get random nodid (N0)')
         self.nodeid = self.get_random_node()
         nodeip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]
+        self.jwt = self.nodes_api.jwt
         self.pyclient = Client(nodeip, password=self.jwt)
 
         storageclusters = self.storageclusters_api.get_storageclusters()

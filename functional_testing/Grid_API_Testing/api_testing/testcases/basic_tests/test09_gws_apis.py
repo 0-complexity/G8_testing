@@ -18,6 +18,7 @@ class TestGatewayAPICreation(TestcasesBase):
         self.lg.info('Get random nodeid : %s' % str(self.nodeid))
         core0_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
         self.assertNotEqual(core0_ip, [])
+        self.jwt = self.nodes_api.jwt
         self.core0_client = Client(core0_ip[0], password=self.jwt)
         self.core0_client.create_ovs_container()
         self.flist = 'https://hub.gig.tech/gig-official-apps/ubuntu1604.flist'
@@ -695,6 +696,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         self.lg.info('Get random nodeid : %s' % str(self.nodeid))
         core0_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
         self.assertNotEqual(core0_ip, [])
+        self.jwt = self.nodes_api.jwt
         self.core0_client = Client(core0_ip[0], password=self.jwt)
         self.gw_name = self.random_string()
         self.gw_domain = self.random_string()

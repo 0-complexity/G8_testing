@@ -9,12 +9,13 @@ import unittest
 class TestVdisks(TestcasesBase):
 
     def setUp(self):
-        super(TestVdisks, self).setUp()
+        super().setUp()
         self.vdisks_apis = VDisksAPIs()
         self.storageclusters_api = Storageclusters()
 
         node = self.get_random_node()
         pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == node][0]
+        self.jwt = self.nodes_api.jwt
         self.pyclient = Client(pyclient_ip, password=self.jwt)
 
         free_disks = self.pyclient.getFreeDisks()

@@ -8,7 +8,7 @@ from api_testing.grid_apis.orchestrator_client.containers_apis import Containers
 
 class TestcontaineridAPI(TestcasesBase):
     def setUp(self):
-        super(TestcontaineridAPI,  self).setUp()
+        super().setUp()
         self.containers_api = ContainersAPI()
         self.lg.info('Choose one random node of list of running nodes.')
         self.node_id = self.get_random_node()
@@ -21,6 +21,8 @@ class TestcontaineridAPI(TestcasesBase):
                 self.g8os_ip = node['ip']
                 self.node = node
                 break
+        
+        self.jwt = self.nodes_api.jwt
         self.g8core = Client(self.g8os_ip, password=self.jwt)
 
         self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"

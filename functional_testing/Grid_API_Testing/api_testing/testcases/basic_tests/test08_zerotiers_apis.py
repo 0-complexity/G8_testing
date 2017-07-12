@@ -7,7 +7,7 @@ from api_testing.utiles.core0_client import Client
 class TestZerotiersAPI(TestcasesBase):
 
     def setUp(self):
-        super(TestZerotiersAPI, self).setUp()
+        super().setUp()
         self.vms_api = VmsAPI()
         self.storageclusters_api = Storageclusters()
         self.vdisks_apis = VDisksAPIs()
@@ -16,6 +16,7 @@ class TestZerotiersAPI(TestcasesBase):
         self.nodeid = self.get_random_node()
         pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid]
         self.assertNotEqual(pyclient_ip, [])
+        self.jwt = self.nodes_api.jwt
         self.pyclient = Client(pyclient_ip[0], password=self.jwt)
 
         self.lg.info('Join zerotier network (ZT0)')

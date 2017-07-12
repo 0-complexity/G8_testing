@@ -21,6 +21,7 @@ class TestcasesBase(TestCase):
         super().__init__(*args, **kwargs)
         self.nodes = NODES_INFO
         self.lg = log
+        self.nodes_api = NodesAPI()
         self.session = requests.Session()
         self.zerotier_token = zerotier_token
         self.session.headers['Authorization'] = 'Bearer {}'.format(self.zerotier_token)
