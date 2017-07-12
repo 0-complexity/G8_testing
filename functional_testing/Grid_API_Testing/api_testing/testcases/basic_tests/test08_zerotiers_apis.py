@@ -1,6 +1,6 @@
 import time, unittest
 from api_testing.testcases.testcases_base import TestcasesBase
-from api_testing.grid_apis.orchestrator_client.zerotiers_apis import ZerotiersAPI
+from api_testing.orchestrator_api.orchestrator_client.zerotiers_apis import ZerotiersAPI
 from api_testing.utiles.core0_client import Client
 
 @unittest.skip(' ')

@@ -3,7 +3,7 @@ import time
 import unittest
 from api_testing.testcases.testcases_base import TestcasesBase
 from api_testing.utiles.core0_client import Client
-from api_testing.grid_apis.orchestrator_client.containers_apis import ContainersAPI
+from api_testing.orchestrator_api.orchestrator_client.containers_apis import ContainersAPI
 
 
 class TestcontaineridAPI(TestcasesBase):
