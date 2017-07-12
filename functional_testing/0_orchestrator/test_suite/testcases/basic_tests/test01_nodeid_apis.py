@@ -23,9 +23,9 @@ class TestNodeidAPI(TestcasesBase):
         for node in Nodes_result:
             if node['status'] == 'running':
                 Running_nodes.append(node)
-        self.assertEqual(len(Running_nodes), len(self.nodes))
+        self.assertEqual(len(Running_nodes), len(self.nodes_info))
         for node in Running_nodes:
-            node_info = [item for item in self.nodes if item["id"] == node["id"]]
+            node_info = [item for item in self.nodes_info if item["id"] == node["id"]]
             self.assertEqual(len(node_info), 1)
             for key in node.keys():
                 if key in node_info[0].keys():
