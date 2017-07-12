@@ -47,9 +47,9 @@ class TestNodeidAPI(TestcasesBase):
 
         self.lg.info('Compare results with golden value.')
         node_details = response.json()
-        for key in self.node.keys():
+        for key in self.nodes_info.keys():
             if key in node_details.keys():
-                self.assertEqual(self.node[key], node_details[key])
+                self.assertEqual(self.nodes_info[key], node_details[key])
 
     def test003_list_jobs(self):
         """ GAT-003
