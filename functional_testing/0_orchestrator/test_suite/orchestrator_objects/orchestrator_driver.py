@@ -1,12 +1,12 @@
-from test_suite.orchestrator_objects.orchestrator_apis.bridges_apis import BridgesAPI
-from test_suite.orchestrator_objects.orchestrator_apis.containers_apis import ContainersAPI
-from test_suite.orchestrator_objects.orchestrator_apis.gateways_apis import GatewayAPI
-from test_suite.orchestrator_objects.orchestrator_apis.nodes_apis import NodesAPI
-from test_suite.orchestrator_objects.orchestrator_apis.storageclusters_apis import Storageclusters
-from test_suite.orchestrator_objects.orchestrator_apis.storagepools_apis import StoragepoolsAPI
-from test_suite.orchestrator_objects.orchestrator_apis.vms_apis import VmsAPI
-from test_suite.orchestrator_objects.orchestrator_apis.vdisks_apis import VDisksAPIs
-from test_suite.orchestrator_objects.orchestrator_apis.zerotiers_apis import ZerotiersAPI
+from orchestrator_objects.orchestrator_apis.bridges_apis import BridgesAPI
+from orchestrator_objects.orchestrator_apis.containers_apis import ContainersAPI
+from orchestrator_objects.orchestrator_apis.gateways_apis import GatewayAPI
+from orchestrator_objects.orchestrator_apis.nodes_apis import NodesAPI
+from orchestrator_objects.orchestrator_apis.storageclusters_apis import Storageclusters
+from orchestrator_objects.orchestrator_apis.storagepools_apis import StoragepoolsAPI
+from orchestrator_objects.orchestrator_apis.vms_apis import VmsAPI
+from orchestrator_objects.orchestrator_apis.vdisks_apis import VDisksAPIs
+from orchestrator_objects.orchestrator_apis.zerotiers_apis import ZerotiersAPI
 from zeroos.orchestrator import client
 from testconfig import config
 
@@ -16,22 +16,22 @@ class OrchasteratorDriver:
     client_id = config['main']['client_id']
     client_secret = config['main']['client_secret']
     organization = config['main']['organization']
-    zerotier_token = config['zerotier_token']
+    zerotier_token = config['main']['zerotier_token']
 
     def __init__(self):
-        self.JWT = self.get_jwt()
+        self.JWT = None
         self.orchestrator_client = client.APIClient(self.api_base_url)
-        self.orchestrator_client.set_auth_header("Bearer %s" % self.JWT)
+        self.refresh_jwt()
 
-        self.bridges_api = BridgesAPI(self.orchestrator_client)
-        self.container_api = ContainersAPI(self.orchestrator_client)
-        self.gateway_api = GatewayAPI(self.orchestrator_client)
-        self.nodes_api = NodesAPI(self.orchestrator_client)
-        self.storagepools_api = StoragepoolsAPI(self.orchestrator_client)
-        self.storageclusters_api = Storageclusters(self.orchestrator_client)
-        self.vdisks_api = VDisksAPIs(self.orchestrator_client)
-        self.vms_api = VmsAPI(self.orchestrator_client)
-        self.zerotiers_api = ZerotiersAPI(self.orchestrator_client)
+        self.bridges_api = BridgesAPI(self)
+        self.container_api = ContainersAPI(self)
+        self.gateway_api = GatewayAPI(self)
+        self.nodes_api = NodesAPI(self)
+        self.storagepools_api = StoragepoolsAPI(self)
+        self.storageclusters_api = Storageclusters(self)
+        self.vdisks_api = VDisksAPIs(self)
+        self.vms_api = VmsAPI(self)
+        self.zerotiers_api = ZerotiersAPI(self)
 
         self.nodes_info = self.get_node_info()
 
@@ -42,9 +42,13 @@ class OrchasteratorDriver:
                                          audiences=[])
         return response.content.decode('utf-8')
 
+    def refresh_jwt(self):
+        self.JWT = self.get_jwt()
+        self.orchestrator_client.set_auth_header("Bearer %s" % self.JWT)
+
     def get_node_info(self):
         nodes_info = []
-        response = self.node_api.get_nodes()
+        response = self.nodes_api.get_nodes()
         for node in response.json():
             if node['status'] == 'halted':
                 continue

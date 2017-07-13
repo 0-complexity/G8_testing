@@ -1,5 +1,5 @@
 import random
-from test_suite.testcases.testcases_base import TestcasesBase
+from testcases.testcases_base import TestcasesBase
 import unittest
 
 
@@ -13,6 +13,7 @@ class TestNodeidAPI(TestcasesBase):
         #. Send get nodes api request.
         #. Compare results with golden value.
         """
+
         self.lg.info('send get nodes api request ')
         response = self.nodes_api.get_nodes()
         self.assertEqual(response.status_code, 200)

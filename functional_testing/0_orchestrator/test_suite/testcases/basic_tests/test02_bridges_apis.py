@@ -1,5 +1,5 @@
 import time
-from test_suite.testcases.testcases_base import TestcasesBase
+from testcases.testcases_base import TestcasesBase
 
 
 class TestBridgesAPI(TestcasesBase):

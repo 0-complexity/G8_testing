@@ -1,9 +1,11 @@
-from test_suite.orchestrator_objects.orchestrator_apis import *
+from orchestrator_objects.orchestrator_apis import *
 
 
 class VDisksAPIs:
-    def __init__(self, orchestrator_client):
-        self.orchestrator_client = orchestrator_client
+    def __init__(self, orchestrator_driver):
+        self.orchestrator_driver = orchestrator_driver
+        self.orchestrator_client = self.orchestrator_driver.orchestrator_client
+
 
     @catch_exception_decoration
     def get_vdisks(self):

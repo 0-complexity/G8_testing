@@ -1,7 +1,7 @@
 import random
 import time
 import unittest
-from test_suite.testcases.testcases_base import TestcasesBase
+from testcases.testcases_base import TestcasesBase
 
 
 class TestcontaineridAPI(TestcasesBase):

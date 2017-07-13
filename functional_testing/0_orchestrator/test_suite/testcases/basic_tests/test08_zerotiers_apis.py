@@ -1,5 +1,5 @@
 import time, unittest
-from test_suite.testcases.testcases_base import TestcasesBase
+from testcases.testcases_base import TestcasesBase
 
 @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/510')
 class TestZerotiersAPI(TestcasesBase):

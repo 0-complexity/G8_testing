@@ -1,8 +1,8 @@
 import uuid, random, requests, time, signal, logging
 from unittest import TestCase
-from test_suite.orchestrator_objects.orchestrator_driver import OrchasteratorDriver
+from orchestrator_objects.orchestrator_driver import OrchasteratorDriver
 from nose.tools import TimeExpired
-from test_suite.testcases.core0_client import Client
+from testcases.core0_client import Client
 
 
 class TestcasesBase(TestCase):
@@ -111,7 +111,7 @@ class TestcasesBase(TestCase):
         hostname = self.random_string()
         body = {"name": name, "hostname": hostname, "flist": self.root_url,
                 "hostNetworking": False, "initProcesses": [], "filesystems": [],
-                "ports": [], "storage": "ardb://hub.gig.tech:16379"}
+                "p orts": [], "storage": "ardb://hub.gig.tech:16379"}
 
         response = self.containers_api.post_containers(nodeid=node_id, data=body)
         self.assertEqual(response.status_code, 201)
@@ -126,7 +126,7 @@ class Utiles:
     def __init__(self):
         self.config = {}
         self.logging = logging
-        self.log('test_suite/test_suite.log')
+        self.log('test_suite.log')
 
     def log(self, log_file_name='log.log'):
         log = self.logging.getLogger()

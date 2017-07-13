@@ -1,5 +1,5 @@
 import random
-from test_suite.testcases.testcases_base import TestcasesBase
+from testcases.testcases_base import TestcasesBase
 import unittest, time
 
 
