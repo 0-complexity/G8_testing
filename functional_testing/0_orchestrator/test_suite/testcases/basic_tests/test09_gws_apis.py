@@ -3,11 +3,7 @@ from testcases.testcases_base import TestcasesBase
 import unittest
 
 
-class TestGatewayAPICreation(TestcasesBase):
-
-
-    
-        
+class TestGatewayAPICreation(TestcasesBase):  
     def setUp(self):
         super().setUp()
         self.core0_client.create_ovs_container()
