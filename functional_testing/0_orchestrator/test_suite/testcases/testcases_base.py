@@ -22,6 +22,7 @@ class TestcasesBase(TestCase):
         self.vdisks_api = self.orchasterator_driver.vdisks_api
         self.vms_api = self.orchasterator_driver.vms_api
         self.zerotiers_api = self.orchasterator_driver.zerotiers_api
+        self.healthcheck_api = self.orchasterator_driver.healthcheck_api
 
         self.zerotier_token = self.orchasterator_driver.zerotier_token
         self.jwt = self.orchasterator_driver.JWT

@@ -7,6 +7,7 @@ from orchestrator_objects.orchestrator_apis.storagepools_apis import Storagepool
 from orchestrator_objects.orchestrator_apis.vms_apis import VmsAPI
 from orchestrator_objects.orchestrator_apis.vdisks_apis import VDisksAPIs
 from orchestrator_objects.orchestrator_apis.zerotiers_apis import ZerotiersAPI
+from orchestrator_objects.orchestrator_apis.healthcheck_apis import HealthcheckAPI
 from zeroos.orchestrator import client
 from testconfig import config
 
@@ -32,7 +33,7 @@ class OrchasteratorDriver:
         self.vdisks_api = VDisksAPIs(self)
         self.vms_api = VmsAPI(self)
         self.zerotiers_api = ZerotiersAPI(self)
-
+        self.healthcheck_api = HealthcheckAPI(self)
         self.nodes_info = self.get_node_info()
 
     def get_jwt(self):
