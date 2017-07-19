@@ -3,15 +3,14 @@ from testcases.testcases_base import TestcasesBase
 import unittest
 
 
-class TestGatewayAPICreation(TestcasesBase):
+class TestGatewayAPICreation(TestcasesBase):  
     def setUp(self):
         super().setUp()
         self.core0_client.create_ovs_container()
         self.flist = 'https://hub.gig.tech/gig-official-apps/ubuntu1604.flist'
         self.container_body = {"name": self.rand_str(),
                                "hostname": self.rand_str(),
-                               "flist": self.flist
-                               }
+                               "flist": self.flist}
 
     def tearDown(self):
         self.lg.info('Delete all created {} gateways'.format(self.nodeid))
@@ -27,9 +26,69 @@ class TestGatewayAPICreation(TestcasesBase):
         for bridge in self.bridges_api.createdbridges:
             self.bridges_api.delete_nodes_bridges_bridgeid(bridge['node'],
                                                             bridge['name'])
-
         super().tearDown()
 
+   
+    def create_sotragecluster(self):
+        free_disks = self.core0_client.getFreeDisks()
+        if free_disks == []:
+            self.skipTest('no free disks to create storagecluster')
+
+        self.lg.info('Deploy new storage cluster (SC0)')
+        label = self.rand_str()
+        drivetype = 'ssd'
+        nodes = [self.nodeid]
+        body = {"label": label,
+                "servers": 1,
+                "driveType": drivetype,
+                "clusterType": "storage",
+                "nodes": nodes}
+
+        response = self.storageclusters_api.post_storageclusters(body)
+        self.assertEqual(response.status_code, 201)
+        return body
+
+    def create_boot_vdisk(self, storagecluster):
+        body = {"id": self.random_string(),
+                "size": 15,
+                "blocksize": 4096,
+                "type": 'boot',
+                "storagecluster": storagecluster,
+                "templatevdisk": "ardb://hub.gig.tech:16379/template:ubuntu-1604"}
+
+        response = self.vdisks_api.post_vdisks(body)
+        self.assertEqual(response.status_code, 201)
+        return body
+
+
+
+    def create_vm(self, nics):
+        storagecluster = None
+        response = self.storageclusters_api.get_storageclusters()
+        self.assertEqual(response.status_code, 200)
+        storageclusters = response.json()
+        if storageclusters:
+            storagecluster = storageclusters[-1]
+        else:
+            storagecluster = self.create_sotragecluster()['name']
+        
+        boot_disk = self.create_boot_vdisk(storagecluster)['name']
+
+        self.lg.info('Create virtual machine (VM0) on node (N0)')
+        body = {
+            "id": self.random_string(),
+            "memory": 1024,
+            "cpu": 1,
+            "nics": nics,
+            "disks": [{"vdiskid": boot_disk, "maxIOps": 2000}]
+            }
+
+        response = self.vms_api.post_nodes_vms(self.nodeid, body)
+        self.assertEqual(response.status_code, 201)
+        
+        return body
+   
+   
     def test001_create_gateway_with_vlan_vlan_container(self):
         """ GAT-123
         **Test Scenario:**
@@ -161,7 +220,7 @@ class TestGatewayAPICreation(TestcasesBase):
         response = container_2.bash('ping -w5 192.168.20.2').get()
         self.assertEqual(response.state, 'SUCCESS')
 
-    @unittest.skip('Testcase is not implemented')
+    @unittest.skip('testcase untested')
     def test003_create_gateway_with_vlan_vlan_vm(self):
         """ GAT-125
         **Test Scenario:**
@@ -172,9 +231,102 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Bind a new vm to vlan(2).
         #. Make sure that those two containers can ping each others.
         """
-        pass
+        vm1_mac_addr = self.randomMAC()
+        vm2_mac_addr = self.randomMAC()
+        test_container_mac_addr = self.randomMAC()
 
-    @unittest.skip('Testcase is not implemented')
+        body = {
+                "name": "vm_gw_2",
+                "domain": "vm_gw_2",
+                "nics": [
+                    {
+                        "name": "public",
+                        "type": "vlan",
+                        "id": "0",
+                        "config": {
+                            "cidr": "192.168.10.1/24",
+                            "gateway": "192.168.10.2"
+                        }
+                    },
+                    {
+                        "name": "private_1",
+                        "type": "vlan",
+                        "id": "1",
+                        "config": {
+                            "cidr": "192.168.20.1/24"
+                        },
+                        "dhcpserver": {
+                            "nameservers": [
+                                "8.8.8.8"
+                            ],
+                            "hosts": [
+                                {
+                                    "macaddress": test_container_mac_addr,
+                                    "hostname": "test-container",
+                                    "ipaddress": "192.168.20.5"
+                                },
+                                {
+                                    "macaddress": vm1_mac_addr,
+                                    "hostname": "vm1",
+                                    "ipaddress": "192.168.20.2"
+                                }
+                            ]
+                        }  
+                    },
+                    {
+                        "name": "private_2",
+                        "type": "vlan",
+                        "id": "2",
+                        "config": {
+                            "cidr": "192.168.30.1/24"
+                        },
+                        "dhcpserver": {
+                            "nameservers": [
+                                "8.8.8.8"
+                            ],
+                            "hosts": [
+                                {
+                                    "macaddress": test_container_mac_addr,
+                                    "hostname": "test-container",
+                                    "ipaddress": "192.168.30.5"
+                                },
+                                {
+                                    "macaddress": vm2_mac_addr,
+                                    "hostname": "vm2",
+                                    "ipaddress": "192.168.30.2"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        
+        nics = [{'id':'1', 'type':'vlan', 'macaddress':vm1_mac_addr}]
+        vm1 = self.create_vm(nics=nics)
+
+        nics = [{'id':'2', 'type':'vlan', 'macaddress':vm2_mac_addr}]
+        vm2 = self.create_vm(nics=nics)
+
+        self.lg.info('create test container')
+
+        nics = [{'type': 'vlan', 'id': "1", 'config': {'dhcp': True}, 'hwaddr':test_container_mac_addr},
+                {'type': 'vlan', 'id': "2", 'config': {'dhcp': True}, 'hwaddr':test_container_mac_addr}]
+
+        uid = self.core0_client.client.container.create(self.flist, nics=nics).get()
+        test_container = self.core0_client.client.container.client(uid)
+
+        test_container.bash('apt install ssh -y; apt install sshpass -y')
+        sleep(60)
+
+        response = test_container_client.bash('ssh gig@192.168.20.2 -oStrictHostKeyChecking=no ping 192.168.30.2').get()
+        self.assertEqual(response.state, 'SUCCESS')
+
+        response = test_container_client.bash('ssh gig@192.168.30.2 -oStrictHostKeyChecking=no ping 192.168.20.2').get()
+        self.assertEqual(response.state, 'SUCCESS')
+
+
+
+    @unittest.skip('testcase untested')
     def test004_create_gateway_with_vxlan_vxlan_vm(self):
         """ GAT-126
         **Test Scenario:**
@@ -185,7 +337,99 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Bind a new vm to vxlan(2).
         #. Make sure that those two containers can ping each others.
         """
-        pass
+        vm1_mac_addr = self.randomMAC()
+        vm2_mac_addr = self.randomMAC()
+        test_container_mac_addr = self.randomMAC()
+
+        body = {
+                "name": "vm_gw_2",
+                "domain": "vm_gw_2",
+                "nics": [
+                    {
+                        "name": "public",
+                        "type": "vlan",
+                        "id": "0",
+                        "config": {
+                            "cidr": "192.168.10.1/24",
+                            "gateway": "192.168.10.2"
+                        }
+                    },
+                    {
+                        "name": "private_1",
+                        "type": "vxlan",
+                        "id": "1",
+                        "config": {
+                            "cidr": "192.168.20.1/24"
+                        },
+                        "dhcpserver": {
+                            "nameservers": [
+                                "8.8.8.8"
+                            ],
+                            "hosts": [
+                                {
+                                    "macaddress": test_container_mac_addr,
+                                    "hostname": "test-container",
+                                    "ipaddress": "192.168.20.5"
+                                },
+                                {
+                                    "macaddress": vm1_mac_addr,
+                                    "hostname": "vm1",
+                                    "ipaddress": "192.168.20.2"
+                                }
+                            ]
+                        }  
+                    },
+                    {
+                        "name": "private_2",
+                        "type": "vxlan",
+                        "id": "2",
+                        "config": {
+                            "cidr": "192.168.30.1/24"
+                        },
+                        "dhcpserver": {
+                            "nameservers": [
+                                "8.8.8.8"
+                            ],
+                            "hosts": [
+                                {
+                                    "macaddress": test_container_mac_addr,
+                                    "hostname": "test-container",
+                                    "ipaddress": "192.168.30.5"
+                                },
+                                {
+                                    "macaddress": vm2_mac_addr,
+                                    "hostname": "vm2",
+                                    "ipaddress": "192.168.30.2"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        
+        nics = [{'id':'1', 'type':'vxlan', 'macaddress':vm1_mac_addr}]
+        vm1 = self.create_vm(nics=nics)
+
+        nics = [{'id':'2', 'type':'vxlan', 'macaddress':vm2_mac_addr}]
+        vm2 = self.create_vm(nics=nics)
+
+        self.lg.info('create test container')
+
+        nics = [{'type': 'vxlan', 'id': "1", 'config': {'dhcp': True}, 'hwaddr':test_container_mac_addr},
+                {'type': 'vxlan', 'id': "2", 'config': {'dhcp': True}, 'hwaddr':test_container_mac_addr}]
+
+        uid = self.core0_client.client.container.create(self.flist, nics=nics).get()
+        test_container = self.core0_client.client.container.client(uid)
+
+        test_container.bash('apt install ssh -y; apt install sshpass -y')
+        sleep(60)
+
+        response = test_container_client.bash('ssh gig@192.168.20.2 -oStrictHostKeyChecking=no ping 192.168.30.2').get()
+        self.assertEqual(response.state, 'SUCCESS')
+
+        response = test_container_client.bash('ssh gig@192.168.30.2 -oStrictHostKeyChecking=no ping 192.168.20.2').get()
+        self.assertEqual(response.state, 'SUCCESS')
+
 
     def test005_create_gateway_with_bridge_vlan_container(self):
         """ GAT-127
@@ -358,7 +602,7 @@ class TestGatewayAPICreation(TestcasesBase):
         self.assertEqual(response.state, 'SUCCESS')
         self.assertNotIn("unreachable", response.stdout)
 
-    @unittest.skip('Testcase is not implemented')
+    @unittest.skip('testcase untested')
     def test007_create_gateway_with_bridge_vlan_vm(self):
         """ GAT-129
         **Test Scenario:**
@@ -366,11 +610,69 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Get random node (N0), should succeed.
         #. Create gateway with bridge and vlan as nics on node (N0), should succeed.
         #. Bind a new vm to vlan(1).
-        #. Verify that this container has public access.
+        #. Verify that this vm has public access.
         """
-        pass
+        vm1_mac_addr = self.randomMAC()
+        vm2_mac_addr = self.randomMAC()
+        test_container_mac_addr = self.randomMAC()
 
-    @unittest.skip('Testcase Not implemented')
+        body = {
+                "name": "vm_gw_2",
+                "domain": "vm_gw_2",
+                "nics": [
+                    {
+                        "name": "public",
+                        "type": "vlan",
+                        "id": "0",
+                        "config": {
+                            "cidr": "192.168.10.1/24",
+                            "gateway": "192.168.10.2"
+                        }
+                    },
+                    {
+                        "name": "private_1",
+                        "type": "vlan",
+                        "id": "1",
+                        "config": {
+                            "cidr": "192.168.20.1/24"
+                        },
+                        "dhcpserver": {
+                            "nameservers": [
+                                "8.8.8.8"
+                            ],
+                            "hosts": [
+                                {
+                                    "macaddress": test_container_mac_addr,
+                                    "hostname": "test-container",
+                                    "ipaddress": "192.168.20.5"
+                                },
+                                {
+                                    "macaddress": vm1_mac_addr,
+                                    "hostname": "vm1",
+                                    "ipaddress": "192.168.20.2"
+                                }
+                            ]
+                        }  
+                    }
+                ]
+            }
+        
+        nics = [{'id':'1', 'type':'vlan', 'macaddress':vm1_mac_addr}]
+        vm1 = self.create_vm(nics=nics)
+
+        self.lg.info('create test container')
+        nics = [{'type': 'vlan', 'id': "1", 'config': {'dhcp': True}, 'hwaddr':test_container_mac_addr}]
+        uid = self.core0_client.client.container.create(self.flist, nics=nics).get()
+        test_container = self.core0_client.client.container.client(uid)
+
+        test_container.bash('apt install ssh -y; apt install sshpass -y')
+        sleep(60)
+
+        response = test_container_client.bash('ssh gig@192.168.20.2 -oStrictHostKeyChecking=no ping -w3 8.8.8.8').get()
+        self.assertEqual(response.state, 'SUCCESS')
+
+
+    @unittest.skip('testcase untested')
     def test008_create_gateway_with_bridge_vxlan_vm(self):
         """ GAT-130
         **Test Scenario:**
@@ -380,7 +682,65 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Bind a new vm to vxlan(1).
         #. Verify that this vm has public access.
         """
-        pass
+        vm1_mac_addr = self.randomMAC()
+        vm2_mac_addr = self.randomMAC()
+        test_container_mac_addr = self.randomMAC()
+
+        body = {
+                "name": "vm_gw_2",
+                "domain": "vm_gw_2",
+                "nics": [
+                    {
+                        "name": "public",
+                        "type": "vxlan",
+                        "id": "0",
+                        "config": {
+                            "cidr": "192.168.10.1/24",
+                            "gateway": "192.168.10.2"
+                        }
+                    },
+                    {
+                        "name": "private_1",
+                        "type": "vxlan",
+                        "id": "1",
+                        "config": {
+                            "cidr": "192.168.20.1/24"
+                        },
+                        "dhcpserver": {
+                            "nameservers": [
+                                "8.8.8.8"
+                            ],
+                            "hosts": [
+                                {
+                                    "macaddress": test_container_mac_addr,
+                                    "hostname": "test-container",
+                                    "ipaddress": "192.168.20.5"
+                                },
+                                {
+                                    "macaddress": vm1_mac_addr,
+                                    "hostname": "vm1",
+                                    "ipaddress": "192.168.20.2"
+                                }
+                            ]
+                        }  
+                    }
+                ]
+            }
+        
+        nics = [{'id':'1', 'type':'vxlan', 'macaddress':vm1_mac_addr}]
+        vm1 = self.create_vm(nics=nics)
+
+        self.lg.info('create test container')
+        nics = [{'type': 'vxlan', 'id': "1", 'config': {'dhcp': True}, 'hwaddr':test_container_mac_addr}]
+        uid = self.core0_client.client.container.create(self.flist, nics=nics).get()
+        test_container = self.core0_client.client.container.client(uid)
+
+        test_container.bash('apt install ssh -y; apt install sshpass -y')
+        sleep(60)
+
+        response = test_container_client.bash('ssh gig@192.168.20.2 -oStrictHostKeyChecking=no ping -w3 8.8.8.8').get()
+        self.assertEqual(response.state, 'SUCCESS')
+
 
     @unittest.skip('Testcase is not implemented')
     def test009_create_gateway_dhcpserver(self):

@@ -29,6 +29,7 @@ class TestcasesBase(TestCase):
 
         self.session = requests.Session()
         self.session.headers['Authorization'] = 'Bearer {}'.format(self.zerotier_token)
+        self.root_url = 'https://hub.gig.tech/gig-official-apps/ubuntu1604.flist'
 
     def setUp(self):
         self._testID = self._testMethodName
