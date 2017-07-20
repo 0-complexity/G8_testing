@@ -1,5 +1,6 @@
 from requests import HTTPError
 
+
 def catch_exception_decoration(func):
     def wrapper(self, *args, **kwargs):
         try:

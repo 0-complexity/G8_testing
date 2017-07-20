@@ -1,19 +1,30 @@
 from orchestrator_objects.orchestrator_apis import *
+from orchestrator_objects.orchestrator_base import OrchestratorBase
+import random
 
 
-class VDisksAPIs:
+class VDisksAPIs(OrchestratorBase):
     def __init__(self, orchestrator_driver):
         self.orchestrator_driver = orchestrator_driver
         self.orchestrator_client = self.orchestrator_driver.orchestrator_client
-
 
     @catch_exception_decoration
     def get_vdisks(self):
         return self.orchestrator_client.vdisks.ListVdisks()
 
     @catch_exception_decoration
-    def post_vdisks(self, data):
-        return self.orchestrator_client.vdisks.CreateNewVdisk(data=data)
+    def post_vdisks(self, storagecluster, **kwargs):
+        size = random.randint(1, 50)
+        block_size = random.randint(1, size) * 512
+        data = {"id": self.random_string(),
+                "size": size,
+                "blocksize": block_size,
+                "type": random.choice(['boot', 'db', 'cache', 'tmp']),
+                "storagecluster": storagecluster,
+                "readOnly": random.choice([False, True])}
+        data = self.update_default_data(default_data=data, new_data=kwargs)
+        response = self.orchestrator_client.vdisks.CreateNewVdisk(data=data)
+        return response, data
 
     @catch_exception_decoration
     def get_vdisks_vdiskid(self, vdiskid):

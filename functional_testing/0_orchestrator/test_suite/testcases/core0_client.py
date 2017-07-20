@@ -140,7 +140,7 @@ class Client:
         freeDisks = []
         disks = self.client.disk.list()['blockdevices']
         for disk in disks:
-            if not disk['mountpoint'] and disk['kname'] != 'sda':
+            if not disk['mountpoint']:
                 if 'children' not in disk.keys():
                     freeDisks.append('/dev/{}'.format(disk['kname']))
                 else:

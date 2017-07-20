@@ -1,7 +1,9 @@
 from orchestrator_objects.orchestrator_apis import *
+from orchestrator_objects.orchestrator_base import OrchestratorBase
+import random
 
 
-class VmsAPI:
+class VmsAPI(OrchestratorBase):
     def __init__(self, orchestrator_driver):
         self.orchestrator_driver = orchestrator_driver
         self.orchestrator_client = self.orchestrator_driver.orchestrator_client
@@ -20,8 +22,20 @@ class VmsAPI:
         return self.orchestrator_client.nodes.GetVMInfo(nodeid=nodeid, vmid=vmid)
 
     @catch_exception_decoration
-    def post_nodes_vms(self, nodeid, data):
-        return self.orchestrator_client.nodes.CreateVM(nodeid=nodeid, data=data)
+    def post_nodes_vms(self, node_id, **kwargs):
+        data = {"id": self.random_string(),
+                "memory": random.randint(1, 16) * 1024,
+                "cpu": random.randint(1, 16),
+                "nics": [],
+                "disks": [{
+                    "vdiskid": "ubuntu-test-vdisk",
+                    "maxIOps": 2000
+                }],
+                "userCloudInit": {},
+                "systemCloudInit": {}}
+        data = self.update_default_data(default_data=data, new_data=kwargs)
+        response = self.orchestrator_client.nodes.CreateVM(nodeid=node_id, data=data)
+        return response, data
 
     @catch_exception_decoration
     def put_nodes_vms_vmid(self, nodeid, vmid, data):

@@ -1,31 +1,18 @@
 import time, unittest
 from testcases.testcases_base import TestcasesBase
 
-@unittest.skip('https://github.com/zero-os/0-orchestrator/issues/510')
+@unittest.skip('https://github.com/gig-projects/org_quality/issues/686')
 class TestZerotiersAPI(TestcasesBase):
     def setUp(self):
         super().setUp()
-        self.lg.info('Join zerotier network (ZT0)')
-        self.nwid = self.create_zerotier_network()
-        self.body = {"nwid": self.nwid}
-        self.zerotiers_api.post_nodes_zerotiers(self.nodeid, self.body)
-
-        for _ in range(50):
-            response = self.zerotiers_api.get_nodes_zerotiers_zerotierid(self.nodeid, self.nwid)
-            if response.status_code == 200:
-                if response.json()['status'] == 'OK':
-                    break
-                else:
-                    time.sleep(3)
-            else:
-                self.lg.info('can\'t list node zerotier networks')
-        else:
-            self.lg.info('can\'t join zerotier network after 150 seconds')
+        self.lg.info(' [*] Join zerotier network (ZT0)')
+        self.nw_id = self.create_zerotier_network()
+        self.response, self.data = self.zerotiers_api.post_nodes_zerotiers(self.nodeid, nwid=self.nw_id)
 
     def tearDown(self):
-        self.lg.info('Exit zerotier network (ZT0)')
-        self.zerotiers_api.delete_nodes_zerotiers_zerotierid(self.nodeid, self.nwid)
-        self.delete_zerotier_network(self.nwid)
+        self.lg.info(' [*] Exit zerotier network (ZT0)')
+        self.zerotiers_api.delete_nodes_zerotiers_zerotierid(self.nodeid, nwid=self.nw_id)
+        self.delete_zerotier_network(nwid=self.nw_id)
         super(TestZerotiersAPI, self).tearDown()
 
     def test001_get_nodes_zerotiers_zerotierid(self):
@@ -38,11 +25,11 @@ class TestZerotiersAPI(TestcasesBase):
         #. Get non-existing zerotier network, should fail with 404.
         """
         self.lg.info(
-            'Get zerotier (ZT0) details and compare it with results from python client, should succeed with 200')
-        response = self.zerotiers_api.get_nodes_zerotiers_zerotierid(self.nodeid, self.nwid)
+            ' [*] Get zerotier (ZT0) details and compare it with results from python client, should succeed with 200')
+        response = self.zerotiers_api.get_nodes_zerotiers_zerotierid(self.nodeid, nwid=self.nw_id)
         self.assertEqual(response.status_code, 200)
         zerotiers = self.core0_client.client.zerotier.list()
-        zerotier_ZT0 = [x for x in zerotiers if x['nwid'] == self.nwid]
+        zerotier_ZT0 = [x for x in zerotiers if x['nwid'] == self.nw_id]
         self.assertNotEqual(zerotier_ZT0, [])
         for key in zerotier_ZT0[0].keys():
             expected_result = zerotier_ZT0[0][key]
@@ -52,7 +39,7 @@ class TestZerotiersAPI(TestcasesBase):
                 continue
             self.assertEqual(response.json()[key], expected_result, expected_result)
 
-        self.lg.info('Get non-existing zerotier network, should fail with 404')
+        self.lg.info(' [*] Get non-existing zerotier network, should fail with 404')
         response = self.zerotiers_api.get_nodes_zerotiers_zerotierid(self.nodeid, self.rand_str())
         self.assertEqual(response.status_code, 404)
 
@@ -65,60 +52,40 @@ class TestZerotiersAPI(TestcasesBase):
         #. List node (N0) zerotiers networks, should succeed with 200.
         #. List zerotier networks using python client, (ZT0) should be listed
         """
-        self.lg.info('Get node (N0) zerotiers networks, should succeed with 200')
+        self.lg.info(' [*] Get node (N0) zerotiers networks, should succeed with 200')
         response = self.zerotiers_api.get_nodes_zerotiers(self.nodeid)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(self.nwid, [x['nwid'] for x in response.json()])
+        self.assertIn(self.nw_id, [x['nwid'] for x in response.json()])
 
-        self.lg.info('List zerotier networks using python client, (ZT0) should be listed')
+        self.lg.info(' [*] List zerotier networks using python client, (ZT0) should be listed')
         zerotiers = self.core0_client.client.zerotier.list()
-        self.assertIn(self.nwid, [x['nwid'] for x in zerotiers])
+        self.assertIn(self.nw_id, [x['nwid'] for x in zerotiers])
 
     def test003_post_zerotier(self):
         """ GAT-080
         **Test Scenario:**
 
-        #. Get random nodid (N0).
-        #. Join zerotier network (ZT1).
         #. List node (N0) zerotier networks, (ZT1) should be listed.
         #. List zerotier networks using python client, (ZT1) should be listed
         #. Leave zerotier network (ZT1), should succeed with 204.
         #. Join zerotier with invalid body, should fail with 400.
         """
-        self.lg.info('Join zerotier network (ZT1)')
-        nwid = self.create_zerotier_network()
-        body = {"nwid": nwid}
-        response = self.zerotiers_api.post_nodes_zerotiers(self.nodeid, body)
-        self.assertEqual(response.status_code, 201)
-
-        for _ in range(50):
-            response = self.zerotiers_api.get_nodes_zerotiers_zerotierid(self.nodeid, nwid)
-            if response.status_code == 200:
-                if response.json()['status'] == 'OK':
-                    break
-                else:
-                    time.sleep(3)
-            else:
-                self.lg.info('can\'t list node zerotier networks')
-        else:
-            self.lg.info('can\'t join zerotier network after 150 seconds')
-
-        self.lg.info('List node (N0) zerotier networks, (ZT1) should be listed')
+        self.lg.info(' [*] List node (N0) zerotier networks, (ZT1) should be listed')
         response = self.zerotiers_api.get_nodes_zerotiers(self.nodeid)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(nwid, [x['nwid'] for x in response.json()])
+        self.assertIn(self.nw_id, [x['nwid'] for x in response.json()])
 
-        self.lg.info('List zerotier networks using python client, (ZT1) should be listed')
+        self.lg.info(' [*] List zerotier networks using python client, (ZT1) should be listed')
         zerotiers = self.core0_client.client.zerotier.list()
-        self.assertIn(nwid, [x['id'] for x in zerotiers])
+        self.assertIn(self.nw_id, [x['id'] for x in zerotiers])
 
-        self.lg.info('Leave zerotier network (ZT1), should succeed with 204')
-        response = self.zerotiers_api.delete_nodes_zerotiers_zerotierid(self.nodeid, nwid)
+        self.lg.info(' [*] Leave zerotier network (ZT1), should succeed with 204')
+        response = self.zerotiers_api.delete_nodes_zerotiers_zerotierid(self.nodeid, self.nw_id)
         self.assertEqual(response.status_code, 204)
 
-        self.delete_zerotier_network(nwid)
+        self.delete_zerotier_network(self.nw_id)
 
-        self.lg.info('Join zerotier with invalid body, should fail with 400')
+        self.lg.info(' [*] Join zerotier with invalid body, should fail with 400')
         body = {"worngparameter": self.rand_str()}
         response = self.zerotiers_api.post_nodes_zerotiers(self.nodeid, body)
         self.assertEqual(response.status_code, 400)
@@ -127,26 +94,24 @@ class TestZerotiersAPI(TestcasesBase):
         """ GAT-081
         **Test Scenario:**
 
-        #. Get random nodid (N0), should succeed.
-        #. Join zerotier network (ZT0).
         #. Leave zerotier network (ZT0), should succeed with 204.
         #. List node (N0) zerotier networks, (ZT0) should be gone.
         #. List zerotier networks using python client, (ZT0) should be gone.
         #. Leave nonexisting zerotier network, should fail with 404
         """
-        self.lg.info('Leave zerotier network (ZT0), should succeed with 204')
-        response = self.zerotiers_api.delete_nodes_zerotiers_zerotierid(self.nodeid, self.nwid)
+        self.lg.info(' [*] Leave zerotier network (ZT0), should succeed with 204')
+        response = self.zerotiers_api.delete_nodes_zerotiers_zerotierid(self.nodeid, nwid=self.nw_id)
         self.assertEqual(response.status_code, 204)
 
-        self.lg.info('List node (N0) zerotier networks, (ZT0) should be gone')
+        self.lg.info(' [*] List node (N0) zerotier networks, (ZT0) should be gone')
         response = self.zerotiers_api.get_nodes_zerotiers(self.nodeid)
         self.assertEqual(response.status_code, 200)
-        self.assertNotIn(self.nwid, [x['nwid'] for x in response.json()])
+        self.assertNotIn(self.nw_id, [x['nwid'] for x in response.json()])
 
-        self.lg.info('List zerotier networks using python client, (ZT0) should be gone')
+        self.lg.info(' [*] List zerotier networks using python client, (ZT0) should be gone')
         zerotiers = self.core0_client.client.zerotier.list()
-        self.assertNotIn(self.nwid, [x['nwid'] for x in zerotiers])
+        self.assertNotIn(self.nw_id, [x['nwid'] for x in zerotiers])
 
-        self.lg.info('Leave nonexisting zerotier network, should fail with 404')
+        self.lg.info(' [*] Leave nonexisting zerotier network, should fail with 404')
         response = self.zerotiers_api.delete_nodes_zerotiers_zerotierid(self.nodeid, 'fake_zerotier')
         self.assertEqual(response.status_code, 404)

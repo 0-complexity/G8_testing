@@ -8,60 +8,25 @@ class TestVdisks(TestcasesBase):
         super().setUp()
         free_disks = self.core0_client.getFreeDisks()
         if free_disks == []:
-            self.skipTest('no free disks to create storagecluster')
+            self.skipTest(' [*] No free disks to create storagecluster')
 
         storageclusters = self.storageclusters_api.get_storageclusters()
         if storageclusters.json() == []:
-            self.lg.info('Deploy new storage cluster (SC0)')
-            sc_label = self.rand_str()
-            sc_servers = random.randint(1, len(free_disks))
-            sc_drivetype = 'ssd'
-            sc_nodes = [self.nodeid]
-            sc_body = {"label": sc_label,
-                       "servers": sc_servers,
-                       "driveType": sc_drivetype,
-                       "clusterType": "storage",
-                       "nodes": sc_nodes}
-
-            self.storageclusters_api.post_storageclusters(sc_body)
-
-            for _ in range(60):
-                response = self.storageclusters_api.get_storageclusters_label(sc_label)
-                if response.status_code == 200:
-                    if response.json()['status'] == 'ready':
-                        break
-                    else:
-                        time.sleep(3)
-                else:
-                    time.sleep(10)
-            else:
-                self.lg.error('storagecluster status is not ready after 180 sec')
-
+            self.lg.info(' [*] Deploy new storage cluster (SC0)')
+            response, data = self.storageclusters_api.post_storageclusters(node_id=self.nodeid,
+                                                                           servers=random.randint(1, len(free_disks)))
+            self.assertEqual(response.status_code, 201)
+            self.storagecluster = data['label']
         else:
-            sc_label = storageclusters.json()[0]
+            self.storagecluster = storageclusters.json()[0]
 
-        self.lg.info('Create vdisk (VD0)')
-        self.vd_creation_time = time.time()
-        self.vdisk_id = self.rand_str()
-        self.size = random.randint(1, 50)
-        self.types = ['boot', 'db', 'cache', 'tmp']
-        self.type = random.choice(self.types)
-        self.block_size = random.randint(1, self.size) * 512
-        self.storagecluster = sc_label
-        self.readOnly = random.choice([False, True])
-
-        self.body = {"id": self.vdisk_id,
-                     "size": self.size,
-                     "blocksize": self.block_size,
-                     "type": self.type,
-                     "storagecluster": self.storagecluster,
-                     "readOnly": self.readOnly}
-
-        self.vdisks_api.post_vdisks(self.body)
+        self.lg.info(' [*] Create vdisk (VD0)')
+        self.response, self.data = self.vdisks_api.post_vdisks(storagecluster=self.storagecluster)
+        self.assertEqual(self.response.status_code, 201)
 
     def tearDown(self):
-        self.lg.info('Delete vdisk (VD0)')
-        self.vdisks_api.delete_vdisks_vdiskid(self.vdisk_id)
+        self.lg.info(' [*] Delete vdisk (VD0)')
+        self.vdisks_api.delete_vdisks_vdiskid(self.data['id'])
         super(TestVdisks, self).tearDown()
 
     def test001_get_vdisk_details(self):
@@ -75,17 +40,17 @@ class TestVdisks(TestcasesBase):
         #. Get nonexisting vdisk, should fail with 404.
 
         """
-        self.lg.info('Get vdisk (VD0), should succeed with 200')
-        response = self.vdisks_api.get_vdisks_vdiskid(self.vdisk_id)
+        self.lg.info(' [*] Get vdisk (VD0), should succeed with 200')
+        response = self.vdisks_api.get_vdisks_vdiskid(self.data['id'])
         self.assertEqual(response.status_code, 200)
-        for key in self.body.keys():
-            if not self.readOnly and key == "readOnly":
+        for key in self.data.keys():
+            if not self.data['readOnly']:
                 continue
-            self.assertEqual(self.body[key], response.json()[key])
+            self.assertEqual(self.data[key], response.json()[key])
         self.assertEqual(response.json()['status'], 'halted')
 
-        self.lg.info('Get nonexisting vdisk, should fail with 404')
-        response = self.vdisks_api.get_vdisks_vdiskid('fake_vdisk')
+        self.lg.info(' [*] Get nonexisting vdisk, should fail with 404')
+        response = self.vdisks_api.get_vdisks_vdiskid(self.rand_str())
         self.assertEqual(response.status_code, 404)
 
     def test002_list_vdisks(self):
@@ -98,12 +63,12 @@ class TestVdisks(TestcasesBase):
         #. List vdisks, should succeed with 200.
 
         """
-        self.lg.info('List vdisks, should succeed with 200')
+        self.lg.info(' [*] List vdisks, should succeed with 200')
         response = self.vdisks_api.get_vdisks()
         self.assertEqual(response.status_code, 200)
-        vd0_data = {"id": self.vdisk_id,
-                    "storageCluster": self.storagecluster,
-                    "type": self.type}
+        vd0_data = {"id": self.data['id'],
+                    "storageCluster": self.data['storagecluster'],
+                    "type": self.data['type']}
         self.assertIn(vd0_data, response.json())
 
     def test003_create_vdisk(self):
@@ -117,33 +82,16 @@ class TestVdisks(TestcasesBase):
         #. Delete vdisk (VD0), should succeed with 204.
         #. Create vdisk with invalid body, should fail with 400.
         """
-        self.lg.info('Create vdisk (VD1). should succeed with 201')
-        vdisk_id = self.rand_str()
-        size = random.randint(1, 50)
-        vdisk_type = random.choice(self.types)
-        block_size = random.randint(1, self.size) * 512
-        readOnly = random.choice([False, True])
-
-        body = {"id": vdisk_id,
-                "size": size,
-                "blocksize": block_size,
-                "type": vdisk_type,
-                "storagecluster": self.storagecluster,
-                "readOnly": readOnly}
-
-        response = self.vdisks_api.post_vdisks(body)
-        self.assertEqual(response.status_code, 201)
-
-        self.lg.info('List vdisks, (VD1) should be listed')
+        self.lg.info(' [*] List vdisks, (VD1) should be listed')
         response = self.vdisks_api.get_vdisks()
         self.assertEqual(response.status_code, 200)
-        self.assertIn(vdisk_id, [x['id'] for x in response.json()])
+        self.assertIn(self.data['id'], [x['id'] for x in response.json()])
 
-        self.lg.info('Delete vdisk (VD0), should succeed with 204')
-        response = self.vdisks_api.delete_vdisks_vdiskid(self.vdisk_id)
+        self.lg.info(' [*] Delete vdisk (VD0), should succeed with 204')
+        response = self.vdisks_api.delete_vdisks_vdiskid(self.data['id'])
         self.assertEqual(response.status_code, 204)
 
-        self.lg.info('Create vdisk with invalid body, should fail with 400')
+        self.lg.info(' [*] Create vdisk with invalid body, should fail with 400')
         body = {"id": self.rand_str()}
         response = self.vdisks_api.post_vdisks(body)
         self.assertEqual(response.status_code, 400)
@@ -159,16 +107,16 @@ class TestVdisks(TestcasesBase):
         #. List vdisks, (VD0) should be gone.
         #. Delete nonexisting vdisk, should fail with 404.
         """
-        self.lg.info('Delete vdisk (VD0), should succeed with 204')
-        response = self.vdisks_api.delete_vdisks_vdiskid(self.vdisk_id)
+        self.lg.info(' [*] Delete vdisk (VD0), should succeed with 204')
+        response = self.vdisks_api.delete_vdisks_vdiskid(self.data['id'])
         self.assertEqual(response.status_code, 204)
 
-        self.lg.info('List vdisks, (VD0) should be gone')
+        self.lg.info(' [*] List vdisks, (VD0) should be gone')
         response = self.vdisks_api.get_vdisks()
         self.assertEqual(response.status_code, 200)
-        self.assertNotIn(self.vdisk_id, [x['id'] for x in response.json()])
+        self.assertNotIn(self.data['id'], [x['id'] for x in response.json()])
 
-        self.lg.info('Delete nonexisting vdisk, should fail with 404')
+        self.lg.info(' [*] Delete nonexisting vdisk, should fail with 404')
         response = self.vdisks_api.delete_vdisks_vdiskid('fake_vdisk')
         self.assertEqual(response.status_code, 404)
 
@@ -185,26 +133,26 @@ class TestVdisks(TestcasesBase):
         #. Check vdisk (VD0) size, shouldn't be changed.
 
         """
-        self.lg.info('Resize vdisk (VD0), should succeed with 204')
-        new_size = self.size + random.randint(1, 10)
+        self.lg.info(' [*] Resize vdisk (VD0), should succeed with 204')
+        new_size = self.data['size'] + random.randint(1, 10)
         body = {"newSize": new_size}
-        response = self.vdisks_api.post_vdisks_vdiskid_resize(self.vdisk_id, body)
+        response = self.vdisks_api.post_vdisks_vdiskid_resize(self.data['id'], body)
         self.assertEqual(response.status_code, 204)
 
-        self.lg.info('Check that size of volume changed, should succeed')
-        response = self.vdisks_api.get_vdisks_vdiskid(self.vdisk_id)
+        self.lg.info(' [*] Check that size of volume changed, should succeed')
+        response = self.vdisks_api.get_vdisks_vdiskid(self.data['id'])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(new_size, response.json()['size'])
         self.size = new_size
 
-        self.lg.info('Resize vdisk (VD0) with value less than the current vdisk size, should fail with 400')
+        self.lg.info(' [*] Resize vdisk (VD0) with value less than the current vdisk size, should fail with 400')
         new_size = self.size - random.randint(1, self.size - 1)
         body = {"newSize": new_size}
-        response = self.vdisks_api.post_vdisks_vdiskid_resize(self.vdisk_id, body)
+        response = self.vdisks_api.post_vdisks_vdiskid_resize(self.data['id'], body)
         self.assertEqual(response.status_code, 400)
 
-        self.lg.info('Check vdisk (VD0) size, shouldn\'t be changed')
-        response = self.vdisks_api.get_vdisks_vdiskid(self.vdisk_id)
+        self.lg.info(' [*] Check vdisk (VD0) size, shouldn\'t be changed')
+        response = self.vdisks_api.get_vdisks_vdiskid(self.data['id'])
         self.assertEqual(response.status_code, 200)
         self.assertNotEqual(new_size, response.json()['size'])
 
@@ -222,23 +170,23 @@ class TestVdisks(TestcasesBase):
         #. Check that vdisk (VD0) size is changed to the initial size, should succeed.
         """
 
-        self.lg.info(' Resize  created volume.')
+        self.lg.info(' [*]  Resize  created volume.')
         new_size = self.size + random.randint(1, 10)
         body = {"newSize": new_size}
-        response = self.vdisks_api.post_volumes_volumeid_resize(self.vdisk_id, body)
+        response = self.vdisks_api.post_volumes_volumeid_resize(self.data['id'], body)
         self.assertEqual(response.status_code, 204)
 
-        self.lg.info('Check that size of volume changed, should succeed')
-        response = self.vdisks_api.get_vdisks_vdiskid(self.vdisk_id)
+        self.lg.info(' [*] Check that size of volume changed, should succeed')
+        response = self.vdisks_api.get_vdisks_vdiskid(self.data['id'])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(new_size, response.json()['size'])
 
-        self.lg.info('Rollback vdisk (VD0), should succeed')
+        self.lg.info(' [*] Rollback vdisk (VD0), should succeed')
         body = {"epoch": self.vd_creation_time}
-        response = self.vdisks_api.post_vdisks_vdiskid_rollback(self.vdisk_id, body)
+        response = self.vdisks_api.post_vdisks_vdiskid_rollback(self.data['id'], body)
         self.assertEqual(response.status_code, 204)
 
-        self.lg.info('Check that vdisk (VD0) size is changed to the initial size, should succeed')
-        response = self.vdisks_api.get_vdisks_vdiskid(self.vdisk_id)
+        self.lg.info(' [*] Check that vdisk (VD0) size is changed to the initial size, should succeed')
+        response = self.vdisks_api.get_vdisks_vdiskid(self.data['id'])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.size, response.json()['size'])

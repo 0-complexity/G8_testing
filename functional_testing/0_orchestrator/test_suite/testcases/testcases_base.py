@@ -111,7 +111,7 @@ class TestcasesBase(TestCase):
         hostname = self.random_string()
         body = {"name": name, "hostname": hostname, "flist": self.root_url,
                 "hostNetworking": False, "initProcesses": [], "filesystems": [],
-                "p orts": [], "storage": "ardb://hub.gig.tech:16379"}
+                "ports": [], "storage": "ardb://hub.gig.tech:16379"}
 
         response = self.containers_api.post_containers(nodeid=node_id, data=body)
         self.assertEqual(response.status_code, 201)
@@ -121,6 +121,60 @@ class TestcasesBase(TestCase):
 
         return name
 
+    def get_gateway_nic(self, nics_types):
+        nics = []
+        for nic in nics_types:
+            ip = '192.168.%i.2/24' % random.randint(1, 254)
+            if nic['type'] == 'vlan':
+                nic_data = {
+                    "name": self.random_string(),
+                    "type": 'vlan',
+                    "id": str(random.randint(1, 4094)),
+                    "config": {"cidr": ip}
+                }
+            elif nic['type'] == 'vxlan':
+                nic_data = {
+                    "name": self.random_string(),
+                    "type": 'vxlan',
+                    "id": str(random.randint(1, 100000)),
+                    "config": {"cidr": ip}
+                }
+            elif nic['type'] == 'bridge':
+                nic_data = {
+                    "name": self.random_string(),
+                    "type": 'bridge',
+                    "id": nic['bridge_name'],
+                    "config": {"cidr": ip}
+                }
+
+            if nic['gateway']:
+                nic_data['config']["gateway"] = '192.168.%i.1' % ip
+
+            if nic['dhcp']:
+                nic_data['dhcpserver'] = {
+                    "nameservers": ['8.8.8.8'],
+                    "hosts": [
+                        {
+                            "hostname": "hostname1",
+                            "ipaddress": ip[:-4]+'10',
+                            "macaddress": self.get_random_mac()
+                        },
+                        {
+                            "hostname": "hostname2",
+                            "ipaddress": ip[:-4]+'20',
+                            "macaddress": self.get_random_mac()
+                        }
+                    ]
+                }
+
+            nics.append(nic)
+        return nics
+
+    def get_random_mac(self):
+        random_mac = [0x00, 0x16, 0x3e, random.randint(0x00, 0x7f), random.randint(0x00, 0xff),
+                      random.randint(0x00, 0xff)]
+        mac_address = ':'.join(map(lambda x: "%02x" % x, random_mac))
+        return mac_address
 
 class Utiles:
     def __init__(self):

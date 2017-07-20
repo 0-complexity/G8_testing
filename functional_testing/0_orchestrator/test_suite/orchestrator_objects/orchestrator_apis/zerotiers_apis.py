@@ -1,7 +1,8 @@
 from orchestrator_objects.orchestrator_apis import *
+from orchestrator_objects.orchestrator_base import OrchestratorBase
 
 
-class ZerotiersAPI:
+class ZerotiersAPI(OrchestratorBase):
     def __init__(self, orchestrator_driver):
         self.orchestrator_driver = orchestrator_driver
         self.orchestrator_client = self.orchestrator_driver.orchestrator_client
@@ -15,8 +16,11 @@ class ZerotiersAPI:
         return self.orchestrator_client.nodes.GetZerotier(nodeid=nodeid, zerotierid=zerotierid)
 
     @catch_exception_decoration
-    def post_nodes_zerotiers(self, nodeid, data):
-        return self.orchestrator_client.nodes.JoinZerotier(nodeid=nodeid, data=data)
+    def post_nodes_zerotiers(self, nodeid, **kwargs):
+        data = {'nwid': ''}
+        data = self.update_default_data(default_data=data, new_data=kwargs)
+        response = self.orchestrator_client.nodes.JoinZerotier(nodeid=nodeid, data=data)
+        return response, data
 
     @catch_exception_decoration
     def delete_nodes_zerotiers_zerotierid(self, nodeid, zerotierid):

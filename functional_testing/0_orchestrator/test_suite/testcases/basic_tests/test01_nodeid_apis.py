@@ -48,7 +48,8 @@ class TestNodeidAPI(TestcasesBase):
 
         self.lg.info('Compare results with golden value.')
         node_details = response.json()
-        for key in self.nodes_info.keys():
+        node_info = [x for x in self.nodes_info if x["id"] == self.nodeid][0]
+        for key in node_info.keys():
             if key in node_details.keys():
                 self.assertEqual(self.nodes_info[key], node_details[key])
 

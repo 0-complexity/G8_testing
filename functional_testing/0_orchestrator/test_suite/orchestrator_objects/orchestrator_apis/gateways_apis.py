@@ -1,11 +1,11 @@
 from orchestrator_objects.orchestrator_apis import *
+from orchestrator_objects.orchestrator_base import OrchestratorBase
 
 
-class GatewayAPI:
+class GatewayAPI(OrchestratorBase):
     def __init__(self, orchestrator_driver):
         self.orchestrator_driver = orchestrator_driver
         self.orchestrator_client = self.orchestrator_driver.orchestrator_client
-        self.createdGw = []
 
     @catch_exception_decoration
     def list_nodes_gateways(self, nodeid):
@@ -16,11 +16,18 @@ class GatewayAPI:
         return self.orchestrator_client.nodes.GetGateway(nodeid=nodeid, gwname=gwname)
 
     @catch_exception_decoration
-    def post_nodes_gateway(self, nodeid, data):
-        response = self.orchestrator_client.nodes.CreateGW(nodeid=nodeid, data=data)
-        if response.status_code == 201:
-            self.createdGw.append({"node": nodeid, "name": data["name"]})
-        return response
+    def post_nodes_gateway(self, node_id, **kwargs):
+        data = {
+            "name": self.random_string(),
+            "domain": self.random_string(),
+            "nics": [],
+            "portforwards": [],
+            "httpproxies": []
+
+        }
+        data = self.update_default_data(default_data=data, new_data=kwargs)
+        response = self.orchestrator_client.nodes.CreateGW(nodeid=node_id, data=data)
+        return response, data
 
     @catch_exception_decoration
     def update_nodes_gateway(self, nodeid, gwname, data):
@@ -29,8 +36,6 @@ class GatewayAPI:
     @catch_exception_decoration
     def delete_nodes_gateway(self, nodeid, gwname):
         response = self.orchestrator_client.nodes.DeleteGateway(nodeid=nodeid, gwname=gwname)
-        if response.status_code == 204:
-            self.createdGw.remove({"node": nodeid, "name": gwname})
         return response
 
     @catch_exception_decoration

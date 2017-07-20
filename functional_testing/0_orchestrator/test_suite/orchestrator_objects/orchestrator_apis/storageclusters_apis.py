@@ -1,14 +1,24 @@
 from orchestrator_objects.orchestrator_apis import *
+from orchestrator_objects.orchestrator_base import OrchestratorBase
 
 
-class Storageclusters:
+class Storageclusters(OrchestratorBase):
     def __init__(self, orchestrator_driver):
         self.orchestrator_driver = orchestrator_driver
         self.orchestrator_client = self.orchestrator_driver.orchestrator_client
 
     @catch_exception_decoration
-    def post_storageclusters(self, data):
-        return self.orchestrator_client.storageclusters.DeployNewCluster(data=data)
+    def post_storageclusters(self, node_id, **kwargs):
+        data = {
+            "label": self.random_string(),
+            "servers": 1,
+            "driveType": 'ssd',
+            "clusterType": "storage",
+            "nodes": [node_id]
+        }
+        data = self.update_default_data(default_data=data, new_data=kwargs)
+        response = self.orchestrator_client.storageclusters.DeployNewCluster(data=data)
+        return response, data
 
     @catch_exception_decoration
     def get_storageclusters(self):

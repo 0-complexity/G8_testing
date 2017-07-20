@@ -1,28 +1,35 @@
 from orchestrator_objects.orchestrator_apis import *
+from orchestrator_objects.orchestrator_base import OrchestratorBase
 
 
-class ContainersAPI:
+class ContainersAPI(OrchestratorBase):
     def __init__(self, orchestrator_driver):
         self.orchestrator_driver = orchestrator_driver
         self.orchestrator_client = self.orchestrator_driver.orchestrator_client
-        self.createdcontainer = []
 
     @catch_exception_decoration
     def get_containers(self, nodeid):
         return self.orchestrator_client.nodes.ListContainers(nodeid=nodeid)
 
     @catch_exception_decoration
-    def post_containers(self, nodeid, data):
+    def post_containers(self, nodeid, **kwargs):
+        data = {"name": self.random_string(),
+                "hostname": self.random_string(),
+                "flist": "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist",
+                "hostNetworking": False,
+                "initProcesses": [],
+                "filesystems": [],
+                "ports": [],
+                "nics": [],
+                "storage": "ardb://hub.gig.tech:16379"
+                }
+        data = self.update_default_data(default_data=data, new_data=kwargs)
         response = self.orchestrator_client.nodes.CreateContainer(nodeid=nodeid, data=data)
-        if response.status_code == 201:
-            self.createdcontainer.append({"node": nodeid, "name": data["name"]})
-        return response
+        return response, data
 
     @catch_exception_decoration
     def delete_containers_containerid(self, nodeid, containername):
         response = self.orchestrator_client.nodes.DeleteContainer(nodeid=nodeid, containername=containername)
-        if response.status_code == 204:
-            self.createdcontainer.remove({"node": nodeid, "name": containername})
         return response
 
     @catch_exception_decoration
@@ -47,7 +54,6 @@ class ContainersAPI:
         return self.orchestrator_client.nodes.FileDownload(nodeid=nodeid, containername=containername,
                                                            query_params=params)
 
-    ### https://github.com/Jumpscale/go-raml/issues/280
     @catch_exception_decoration
     def delete_containers_containerid_filesystem(self, nodeid, containername, data):
         return self.orchestrator_client.nodes.FileDelete(nodeid=nodeid, containername=containername, data=data)

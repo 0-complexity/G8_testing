@@ -1,7 +1,9 @@
 from orchestrator_objects.orchestrator_apis import *
+from orchestrator_objects.orchestrator_base import OrchestratorBase
+import random
 
 
-class StoragepoolsAPI:
+class StoragepoolsAPI(OrchestratorBase):
     def __init__(self, orchestrator_driver):
         self.orchestrator_driver = orchestrator_driver
         self.orchestrator_client = self.orchestrator_driver.orchestrator_client
@@ -11,8 +13,20 @@ class StoragepoolsAPI:
         return self.orchestrator_client.nodes.ListStoragePools(nodeid=nodeid)
 
     @catch_exception_decoration
-    def post_storagepools(self, nodeid, data):
-        return self.orchestrator_client.nodes.CreateStoragePool(nodeid=nodeid, data=data)
+    def post_storagepools(self, node_id, free_devices, **kwargs):
+        data = {"name": self.random_string(),
+                "metadataProfile": 'single',
+                "dataProfile": 'single',
+                "devices": [random.choice(free_devices)]}
+
+        if len(free_devices) > 4:
+            data['metadataProfile'] = random.choice(['raid0', 'raid1', 'raid5', 'raid6', 'raid10', 'dup', 'single'])
+            data['dataProfile'] = random.choice(['raid0', 'raid1', 'raid5', 'raid6', 'raid10', 'dup', 'single'])
+            data['devices'] = free_devices[:4]
+
+        data = self.update_default_data(default_data=data, new_data=kwargs)
+        response = self.orchestrator_client.nodes.CreateStoragePool(nodeid=node_id, data=data)
+        return response, data
 
     @catch_exception_decoration
     def get_storagepools_storagepoolname(self, nodeid, storagepoolname):
@@ -46,9 +60,13 @@ class StoragepoolsAPI:
         return self.orchestrator_client.nodes.ListFilesystems(nodeid=nodeid, storagepoolname=storagepoolname)
 
     @catch_exception_decoration
-    def post_storagepools_storagepoolname_filesystems(self, nodeid, storagepoolname, data):
-        return self.orchestrator_client.nodes.CreateFilesystem(nodeid=nodeid, storagepoolname=storagepoolname,
-                                                               data=data)
+    def post_storagepools_storagepoolname_filesystems(self, node_id, storagepoolname, **kwargs):
+        data = {"name": self.random_string(),
+                "quota": random.randint(0, 10)}
+        data = self.update_default_data(default_data=data, new_data=kwargs)
+        response = self.orchestrator_client.nodes.CreateFilesystem(nodeid=node_id, storagepoolname=storagepoolname,
+                                                                   data=data)
+        return response, data
 
     @catch_exception_decoration
     def get_storagepools_storagepoolname_filesystems_filesystemname(self, nodeid, storagepoolname, filesystemname):
@@ -66,10 +84,13 @@ class StoragepoolsAPI:
                                                                       filesystemname=filesystemname)
 
     @catch_exception_decoration
-    def post_filesystems_snapshots(self, nodeid, storagepoolname, filesystemname, data):
-        return self.orchestrator_client.nodes.CreateSnapshot(nodeid=nodeid, storagepoolname=storagepoolname,
-                                                             filesystemname=filesystemname,
-                                                             data=data)
+    def post_filesystems_snapshots(self, nodeid, storagepoolname, filesystemname, **kwargs):
+        data = {'name': self.random_string()}
+        data = self.update_default_data(default_data=data, new_data=kwargs)
+        response = self.orchestrator_client.nodes.CreateSnapshot(nodeid=nodeid, storagepoolname=storagepoolname,
+                                                                 filesystemname=filesystemname,
+                                                                 data=data)
+        return response, data
 
     @catch_exception_decoration
     def get_filesystem_snapshots_snapshotname(self, nodeid, storagepoolname, filesystemname, snapshotname):
