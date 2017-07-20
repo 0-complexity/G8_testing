@@ -657,7 +657,7 @@ class TestGatewayAPICreation(TestcasesBase):
         response, data = self.bridges_api.post_nodes_bridges(self.nodeid, networkMode='static', nat=True)
         self.assertEqual(response.status_code, 201, response.content)
         time.sleep(3)
-        
+
         self.lg.info(" [*] Create gateway with bridge and vlan as nics should succeed.")
         self.lg.info(" [*]  & Set a portforward form srcip:80 to destination:80")
         nics_type = [{
@@ -676,18 +676,17 @@ class TestGatewayAPICreation(TestcasesBase):
             }
         ]
         nics = self.get_gateway_nic(nics_types=nics_type)
-        C_hw = self.randomMAC()
         portforwards = [
-                {
-                    "srcport": 80,
-                    "srcip": nics[0]['config']['cidr'][-3],
-                    "dstport": 80,
-                    "dstip": nics[1]['dhcpserver']['hosts']['ipaddress'],
-                    "protocols": [
-                        "tcp"
-                    ]
-                }
-            ]
+            {
+                "srcport": 80,
+                "srcip": nics[0]['config']['cidr'][-3],
+                "dstport": 80,
+                "dstip": nics[1]['dhcpserver']['hosts']['ipaddress'],
+                "protocols": [
+                    "tcp"
+                ]
+            }
+        ]
 
         response, data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics, portforwards=portforwards)
         self.assertEqual(response.status_code, 201, response.content)
@@ -738,128 +737,94 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Verify that each created 'GW containers' hosts can reach each others.
 
         """
-        self.lg.info(" [*]  Create bridge(B0) with true nat, should succeed. ")
-        B0_name = self.rand_str()
-        B0_ip = "192.168.5.1"
-        body = {"name": B0_name,
-                "hwaddr": self.randomMAC(),
-                "networkMode": "static",
-                "nat": True,
-                "setting": {"cidr": "%s/24" % B0_ip}
-                }
-        response = self.bridges_api.post_nodes_bridges(self.nodeid, body)
-        self.assertEqual(response.status_code, 201, response.content)
+        self.lg.info(' [*] Create bridge (B1) on node (N0), should succeed with 201')
+        response_bridge, data_bridge = self.bridges_api.post_nodes_bridges(node_id=self.nodeid, networkMode='static',
+                                                                           nat=True)
+        self.assertEqual(response_bridge.status_code, 201, response_bridge.content)
+        time.sleep(3)
 
         self.lg.info(" [*] Create zerotier network.")
         nwid = self.create_zerotier_network()
 
-        self.lg.info(" [*]  Create two Gws and link them with zerotier bridge.")
+        self.lg.info(" [*] Create two Gws and link them with zerotier bridge.")
         vlan1_id, vlan2_id = random.sample(range(1, 4096), 2)
-        gw_domain = self.random_string()
 
-        Gw1_name = self.rand_str()
-        vlan1_cidr = "202.200.2.1/24"
-        C1_ip = "202.200.2.2"
-        C1_HW = self.randomMAC()
-        Gw1_body = {
-            "name": Gw1_name,
-            "domain": gw_domain,
-            "nics": [
-                {
-                    "name": 'public',
-                    "type": 'bridge',
-                    "id": B0_name,
-                    "config": {"cidr": "192.168.5.2/24", "gateway": B0_ip}
-                },
-                {
-                    "name": "vlan_1",
-                    "type": "vlan",
-                    "id": str(vlan1_id),
-                    "config": {"cidr": vlan1_cidr},
-                    "dhcpserver": {
-                        "nameservers": [
-                            "8.8.8.8"
-                        ],
-                        "hosts": [
-                            {
-                                "hostname": "test",
-                                "macaddress": C1_HW,
-                                "ipaddress": C1_ip
-                            }
-                        ]
-                    },
-                    "zerotierbridge": {"id": nwid, "token": self.zerotier_token}
-                }
-            ]
-        }
-        response = self.gateways_api.post_nodes_gateway(self.nodeid, Gw1_body)
+        nics_type = [
+            {
+                'type': 'bridge',
+                'gateway': True,
+                'dhcp': False,
+                'bridge_name': data_bridge['name'],
+                'zerotierbridge': False
+            },
+            {
+                'type': random.choice(['vlan', 'vxlan']),
+                'gateway': False,
+                'dhcp': True,
+                'bridge_name': '',
+                'zerotierbridge': nwid
+
+            }
+        ]
+
+        nics = self.get_gateway_nic(nics_types=nics_type)
+        c1_ip = nics[1]["dhcpserver"]["hosts"][0]["ipaddress"]
+
+        response, data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics)
         self.assertEqual(response.status_code, 201, response.content)
 
-        C2_HW = self.randomMAC()
-        Gw2_name = self.rand_str()
-        vlan2_cidr = "202.200.2.3/24"
-        C2_ip = "202.200.2.4"
-        Gw2_body = {
-            "name": Gw2_name,
-            "domain": gw_domain,
-            "nics": [
-                {
-                    "name": 'public',
-                    "type": 'bridge',
-                    "id": B0_name,
-                    "config": {"cidr": '192.168.5.3/24', "gateway": B0_ip}
-                },
-                {
-                    "name": 'vlan_2',
-                    "type": 'vlan',
-                    "id": str(vlan2_id),
-                    "config": {"cidr": vlan2_cidr},
-                    "dhcpserver": {
-                        "nameservers": [
-                            "8.8.8.8"
-                        ],
-                        "hosts": [
-                            {
-                                "hostname": "test",
-                                "macaddress": C2_HW,
-                                "ipaddress": C2_ip
-                            }
-                        ]
-                    },
-                    "zerotierbridge": {"id": nwid, "token": self.zerotier_token}
-                }
-            ]
-        }
+        self.lg.info(" [*] create (c1) containers for each Gw. ")
+        c1_nics = [{'type': nics[1]['type'],
+                    'id': nics[1]['id'],
+                    "hwaddr": nics[1]["dhcpserver"]["hosts"][0]["macaddress"],
+                    'config': {"dhcp": True}}]
+        response, data = self.containers_api.post_containers(nodeid=self.nodeid, nics=c1_nics)
 
-        response = self.gateways_api.post_nodes_gateway(self.nodeid, Gw2_body)
         self.assertEqual(response.status_code, 201)
+        c1_client = self.core0_client.get_container_client(data['name'])
+        self.assertTrue(c1_client)
 
-        self.lg.info(" [*]  create (c1),(c2) containers for each Gw. ")
-        C1_name = self.rand_str()
-        C1_nics = [{'type': 'vlan', 'id': str(vlan1_id), "hwaddr": C1_HW, 'config': {"dhcp": True}}]
-        self.container_body["nics"] = C1_nics
-        self.container_body["name"] = C1_name
-        response = self.containers_api.post_containers(self.nodeid, self.container_body)
+
+        nics_type = [
+            {
+                'type': 'bridge',
+                'gateway': True,
+                'dhcp': False,
+                'bridge_name': data_bridge['name'],
+                'zerotierbridge': False
+            },
+            {
+                'type': random.choice(['vlan', 'vxlan']),
+                'gateway': False,
+                'dhcp': True,
+                'bridge_name': '',
+                'zerotierbridge': nwid
+
+            }
+        ]
+
+        nics = self.get_gateway_nic(nics_types=nics_type)
+        c2_ip = nics[1]["dhcpserver"]["hosts"][0]["ipaddress"]
+
+        response, data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics)
+        self.assertEqual(response.status_code, 201, response.content)
+
+        self.lg.info(" [*] create (c2) containers for each Gw. ")
+        c2_nics = [{'type': nics[1]['type'],
+                    'id': nics[1]['id'],
+                    "hwaddr": nics[1]["dhcpserver"]["hosts"][0]["macaddress"],
+                    'config': {"dhcp": True}}]
+        response, data = self.containers_api.post_containers(nodeid=self.nodeid, nics=c2_nics)
+
         self.assertEqual(response.status_code, 201)
-        C1_client = self.core0_client.get_container_client(C1_name)
+        c2_client = self.core0_client.get_container_client(data['name'])
+        self.assertTrue(c2_client)
 
-        C2_name = self.rand_str()
-        C2_nics = [{'type': 'vlan', 'id': str(vlan2_id), "hwaddr": C2_HW, 'config': {"dhcp": True}}]
-        self.container_body["nics"] = C2_nics
-        self.container_body["name"] = C2_name
-        response = self.containers_api.post_containers(self.nodeid, self.container_body)
-        self.assertEqual(response.status_code, 201)
-
-        C1_client = self.core0_client.get_container_client(C1_name)
-        C2_client = self.core0_client.get_container_client(C2_name)
-        self.assertTrue(C1_client)
-        self.assertTrue(C2_client)
-
-        response = C1_client.bash('ping -c 5 %s' % C2_ip).get()
+        response = c1_client.bash('ping -c 5 %s' % c2_ip).get()
         self.assertEqual(response.state, 'SUCCESS')
         self.assertNotIn("unreachable", response.stdout)
 
-        response = C2_client.bash('ping -c 5 %s' % C1_ip).get()
+        response = c2_client.bash('ping -c 5 %s' % c1_ip).get()
         self.assertEqual(response.state, 'SUCCESS')
         self.assertNotIn("unreachable", response.stdout)
 

@@ -167,6 +167,12 @@ class TestcasesBase(TestCase):
                     ]
                 }
 
+            if nic['zerotierbridge']:
+                nic_data['zerotierbridge'] = {
+                    "id": nic['zerotierbridge'],
+                    "token": self.zerotier_token
+                }
+
             nics.append(nic)
         return nics
 
