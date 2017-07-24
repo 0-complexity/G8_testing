@@ -11,7 +11,7 @@ class ContainersAPI(OrchestratorBase):
     def get_containers(self, nodeid):
         return self.orchestrator_client.nodes.ListContainers(nodeid=nodeid)
 
-    @catch_exception_decoration
+    @catch_exception_decoration_return
     def post_containers(self, nodeid, **kwargs):
         data = {"name": self.random_string(),
                 "hostname": self.random_string(),

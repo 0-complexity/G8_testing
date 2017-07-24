@@ -15,7 +15,7 @@ class ZerotiersAPI(OrchestratorBase):
     def get_nodes_zerotiers_zerotierid(self, nodeid, zerotierid):
         return self.orchestrator_client.nodes.GetZerotier(nodeid=nodeid, zerotierid=zerotierid)
 
-    @catch_exception_decoration
+    @catch_exception_decoration_return
     def post_nodes_zerotiers(self, nodeid, **kwargs):
         data = {'nwid': ''}
         data = self.update_default_data(default_data=data, new_data=kwargs)

@@ -15,7 +15,7 @@ class GatewayAPI(OrchestratorBase):
     def get_nodes_gateway(self, nodeid, gwname):
         return self.orchestrator_client.nodes.GetGateway(nodeid=nodeid, gwname=gwname)
 
-    @catch_exception_decoration
+    @catch_exception_decoration_return
     def post_nodes_gateway(self, node_id, **kwargs):
         data = {
             "name": self.random_string(),

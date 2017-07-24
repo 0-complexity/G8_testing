@@ -12,7 +12,7 @@ class StoragepoolsAPI(OrchestratorBase):
     def get_storagepools(self, nodeid):
         return self.orchestrator_client.nodes.ListStoragePools(nodeid=nodeid)
 
-    @catch_exception_decoration
+    @catch_exception_decoration_return
     def post_storagepools(self, node_id, free_devices, **kwargs):
         data = {"name": self.random_string(),
                 "metadataProfile": 'single',

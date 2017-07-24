@@ -12,7 +12,7 @@ class VDisksAPIs(OrchestratorBase):
     def get_vdisks(self):
         return self.orchestrator_client.vdisks.ListVdisks()
 
-    @catch_exception_decoration
+    @catch_exception_decoration_return
     def post_vdisks(self, storagecluster, **kwargs):
         size = random.randint(1, 50)
         block_size = random.randint(1, size) * 512

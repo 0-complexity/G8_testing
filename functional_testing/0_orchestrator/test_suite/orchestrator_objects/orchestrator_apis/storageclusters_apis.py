@@ -7,7 +7,7 @@ class Storageclusters(OrchestratorBase):
         self.orchestrator_driver = orchestrator_driver
         self.orchestrator_client = self.orchestrator_driver.orchestrator_client
 
-    @catch_exception_decoration
+    @catch_exception_decoration_return
     def post_storageclusters(self, node_id, **kwargs):
         data = {
             "label": self.random_string(),

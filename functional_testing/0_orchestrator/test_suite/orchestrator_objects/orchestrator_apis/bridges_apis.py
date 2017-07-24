@@ -17,7 +17,7 @@ class BridgesAPI(OrchestratorBase):
     def get_nodes_bridges_bridgeid(self, nodeid, bridgeid):
         return self.orchestrator_client.nodes.GetBridge(nodeid=nodeid, bridgeid=bridgeid)
 
-    @catch_exception_decoration
+    @catch_exception_decoration_return
     def post_nodes_bridges(self, node_id, **kwargs):
         temp = random.randint(1, 254)
         if 'networkMode' not in kwargs.keys():

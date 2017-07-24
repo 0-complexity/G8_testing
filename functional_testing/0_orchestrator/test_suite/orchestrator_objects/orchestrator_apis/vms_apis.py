@@ -21,7 +21,7 @@ class VmsAPI(OrchestratorBase):
     def get_nodes_vms_vmid_info(self, nodeid, vmid):
         return self.orchestrator_client.nodes.GetVMInfo(nodeid=nodeid, vmid=vmid)
 
-    @catch_exception_decoration
+    @catch_exception_decoration_return
     def post_nodes_vms(self, node_id, **kwargs):
         data = {"id": self.random_string(),
                 "memory": random.randint(1, 16) * 1024,
