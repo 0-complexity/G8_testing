@@ -10,6 +10,6 @@ def catch_exception_decoration(func):
                 self.orchasterator_driver.refresh_jwt()
                 wrapper(self, *args, **kwargs)
             else:
-                return e.response
+                return e.response, e.response.content
 
     return wrapper

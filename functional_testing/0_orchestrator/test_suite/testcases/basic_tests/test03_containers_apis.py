@@ -1,5 +1,4 @@
 import random, time, unittest
-from nose.tools import with_setup
 from testcases.testcases_base import TestcasesBase
 
 
@@ -9,16 +8,16 @@ class TestcontaineridAPI(TestcasesBase):
 
     def setUp(self):
         super().setUp()
-        self.job_body = {'name': 'yes'}
-        self.lg.info(' [*] Create new container. ')
-        self.response, self.data = self.containers_api.post_containers(nodeid=self.nodeid)
-        self.assertEqual(self.response.status_code, 201, " [*] Can't create new container.")
+        if 'test001_list_containers' != self.id().split('.')[2]:
+            self.job_body = {'name': 'yes'}
+            self.lg.info(' [*] Create new container. ')
+            self.response, self.data = self.containers_api.post_containers(nodeid=self.nodeid)
+            self.assertEqual(self.response.status_code, 201, " [*] Can't create new container.")
 
     def tearDown(self):
         self.lg.info(' [*] TearDown: Delete all created container ')
         self.containers_api.delete_containers_containerid(self.nodeid, self.data['name'])
 
-    @with_setup(setup=super().setUp())
     def test001_list_containers(self):
         """ GAT-022
         *GET:/node/{nodeid}/containers Expected: List of all running containers *
