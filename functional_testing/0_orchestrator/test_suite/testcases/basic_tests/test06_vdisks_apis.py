@@ -93,7 +93,7 @@ class TestVdisks(TestcasesBase):
 
         self.lg.info(' [*] Create vdisk with invalid body, should fail with 400')
         body = {"id": self.rand_str()}
-        response = self.vdisks_api.post_vdisks(body)
+        response, data = self.vdisks_api.post_vdisks(body)
         self.assertEqual(response.status_code, 400)
 
     def test004_delete_vdisk(self):
