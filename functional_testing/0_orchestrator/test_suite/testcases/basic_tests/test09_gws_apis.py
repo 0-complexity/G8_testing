@@ -66,26 +66,29 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Bind a new container to Xlan(2).
         #. Make sure that those two containers can ping each others.
         """
-        self.lg.info(' [*] Create gateway with vlan and vlan as nics on node (N0), should succeed')
+        self.lg.info(' [*] Create gateway with xlan as nics on node (N0), should succeed')
         nics_type = [{
             'type': random.choice['vlan', 'vxlan'],
             'gateway': True,
             'dhcp': False,
-            'bridge_name': ''
+            'bridge_name': '',
+            'zerotierbridge': False
 
         },
             {
                 'type': random.choice['vlan', 'vxlan'],
                 'gateway': False,
                 'dhcp': False,
-                'bridge_name': ''
+                'bridge_name': '',
+                'zerotierbridge': ''
 
             },
             {
                 'type': random.choice['vlan', 'vxlan'],
                 'gateway': False,
                 'dhcp': False,
-                'bridge_name': ''
+                'bridge_name': '',
+                'zerotierbridge': ''
 
             }
         ]
@@ -131,84 +134,50 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Bind a new vm to vlan(2).
         #. Make sure that those two containers can ping each others.
         """
-        vm1_mac_addr = self.randomMAC()
-        vm2_mac_addr = self.randomMAC()
-        test_container_mac_addr = self.randomMAC()
+        nics_type = [{
+            'type': random.choice['vlan', 'vxlan'],
+            'gateway': True,
+            'dhcp': False,
+            'bridge_name': '',
+            'zerotierbridge': False
 
-        body = {
-            "name": "vm_gw_2",
-            "domain": "vm_gw_2",
-            "nics": [
-                {
-                    "name": "public",
-                    "type": "vlan",
-                    "id": "0",
-                    "config": {
-                        "cidr": "192.168.10.1/24",
-                        "gateway": "192.168.10.2"
-                    }
-                },
-                {
-                    "name": "private_1",
-                    "type": "vlan",
-                    "id": "1",
-                    "config": {
-                        "cidr": "192.168.20.1/24"
-                    },
-                    "dhcpserver": {
-                        "nameservers": [
-                            "8.8.8.8"
-                        ],
-                        "hosts": [
-                            {
-                                "macaddress": test_container_mac_addr,
-                                "hostname": "test-container",
-                                "ipaddress": "192.168.20.5"
-                            },
-                            {
-                                "macaddress": vm1_mac_addr,
-                                "hostname": "vm1",
-                                "ipaddress": "192.168.20.2"
-                            }
-                        ]
-                    }
-                },
-                {
-                    "name": "private_2",
-                    "type": "vlan",
-                    "id": "2",
-                    "config": {
-                        "cidr": "192.168.30.1/24"
-                    },
-                    "dhcpserver": {
-                        "nameservers": [
-                            "8.8.8.8"
-                        ],
-                        "hosts": [
-                            {
-                                "macaddress": test_container_mac_addr,
-                                "hostname": "test-container",
-                                "ipaddress": "192.168.30.5"
-                            },
-                            {
-                                "macaddress": vm2_mac_addr,
-                                "hostname": "vm2",
-                                "ipaddress": "192.168.30.2"
-                            }
-                        ]
-                    }
-                }
-            ]
-        }
+        },
+            {
+                'type': random.choice['vlan', 'vxlan'],
+                'gateway': False,
+                'dhcp': True,
+                'bridge_name': '',
+                'zerotierbridge': ''
+
+            },
+            {
+                'type': random.choice['vlan', 'vxlan'],
+                'gateway': False,
+                'dhcp': True,
+                'bridge_name': '',
+                'zerotierbridge': ''
+
+            }
+        ]
+
+        nics = self.get_gateway_nic(nics_types=nics_type)
+        vm1_mac_addr = nics_type[1]['dhcpserver']['hosts'][1]['macaddress']
+        vm1_ip_addr = nics_type[1]['dhcpserver']['hosts'][1]['ipaddress']
+        vm2_mac_addr = nics_type[2]['dhcpserver']['hosts'][1]['macaddress']
+        vm2_ip_addr = nics_type[2]['dhcpserver']['hosts'][1]['ipaddress']
+        test_container_mac_addr = nics_type[1]['dhcpserver']['hosts'][0]['macaddress']
+        nics_type[2]['dhcpserver']['hosts'][0]['macaddress'] = test_container_mac_addr
+
+        response, data = self.gateways_api.post_nodes_gateway(self.nodeid, nics=nics)
+        self.assertEqual(response.status_code, 201)
 
         nics = [{'id': '1', 'type': 'vlan', 'macaddress': vm1_mac_addr}]
-        vm1 = self.create_vm(nics=nics)
+        self.create_vm(nics=nics)
 
         nics = [{'id': '2', 'type': 'vlan', 'macaddress': vm2_mac_addr}]
-        vm2 = self.create_vm(nics=nics)
+        self.create_vm(nics=nics)
 
         self.lg.info(' [*] create test container')
-
         nics = [{'type': 'vlan', 'id': "1", 'config': {'dhcp': True}, 'hwaddr': test_container_mac_addr},
                 {'type': 'vlan', 'id': "2", 'config': {'dhcp': True}, 'hwaddr': test_container_mac_addr}]
 
@@ -216,116 +185,14 @@ class TestGatewayAPICreation(TestcasesBase):
         test_container = self.core0_client.client.container.client(uid)
 
         test_container.bash('apt install ssh -y; apt install sshpass -y')
-        sleep(60)
+        time.sleep(60)
 
-        response = test_container_client.bash('ssh gig@192.168.20.2 -oStrictHostKeyChecking=no ping 192.168.30.2').get()
+        response = test_container.bash(
+            'ssh gig@%s -oStrictHostKeyChecking=no ping %s' % (vm1_ip_addr, vm2_ip_addr)).get()
         self.assertEqual(response.state, 'SUCCESS')
 
-        response = test_container_client.bash('ssh gig@192.168.30.2 -oStrictHostKeyChecking=no ping 192.168.20.2').get()
-        self.assertEqual(response.state, 'SUCCESS')
-
-    @unittest.skip('testcase untested')
-    def test004_create_gateway_with_vxlan_vxlan_vm(self):
-        """ GAT-126
-        **Test Scenario:**
-
-        #. Get random node (N0), should succeed.
-        #. Create gateway with vxlan and vxlan as nics on node (N0), should succeed.
-        #. Bind a new vm to vxlan(1).
-        #. Bind a new vm to vxlan(2).
-        #. Make sure that those two containers can ping each others.
-        """
-        vm1_mac_addr = self.randomMAC()
-        vm2_mac_addr = self.randomMAC()
-        test_container_mac_addr = self.randomMAC()
-
-        body = {
-            "name": "vm_gw_2",
-            "domain": "vm_gw_2",
-            "nics": [
-                {
-                    "name": "public",
-                    "type": "vlan",
-                    "id": "0",
-                    "config": {
-                        "cidr": "192.168.10.1/24",
-                        "gateway": "192.168.10.2"
-                    }
-                },
-                {
-                    "name": "private_1",
-                    "type": "vxlan",
-                    "id": "1",
-                    "config": {
-                        "cidr": "192.168.20.1/24"
-                    },
-                    "dhcpserver": {
-                        "nameservers": [
-                            "8.8.8.8"
-                        ],
-                        "hosts": [
-                            {
-                                "macaddress": test_container_mac_addr,
-                                "hostname": "test-container",
-                                "ipaddress": "192.168.20.5"
-                            },
-                            {
-                                "macaddress": vm1_mac_addr,
-                                "hostname": "vm1",
-                                "ipaddress": "192.168.20.2"
-                            }
-                        ]
-                    }
-                },
-                {
-                    "name": "private_2",
-                    "type": "vxlan",
-                    "id": "2",
-                    "config": {
-                        "cidr": "192.168.30.1/24"
-                    },
-                    "dhcpserver": {
-                        "nameservers": [
-                            "8.8.8.8"
-                        ],
-                        "hosts": [
-                            {
-                                "macaddress": test_container_mac_addr,
-                                "hostname": "test-container",
-                                "ipaddress": "192.168.30.5"
-                            },
-                            {
-                                "macaddress": vm2_mac_addr,
-                                "hostname": "vm2",
-                                "ipaddress": "192.168.30.2"
-                            }
-                        ]
-                    }
-                }
-            ]
-        }
-
-        nics = [{'id': '1', 'type': 'vxlan', 'macaddress': vm1_mac_addr}]
-        vm1 = self.create_vm(nics=nics)
-
-        nics = [{'id': '2', 'type': 'vxlan', 'macaddress': vm2_mac_addr}]
-        vm2 = self.create_vm(nics=nics)
-
-        self.lg.info(' [*] create test container')
-
-        nics = [{'type': 'vxlan', 'id': "1", 'config': {'dhcp': True}, 'hwaddr': test_container_mac_addr},
-                {'type': 'vxlan', 'id': "2", 'config': {'dhcp': True}, 'hwaddr': test_container_mac_addr}]
-
-        uid = self.core0_client.client.container.create(self.flist, nics=nics).get()
-        test_container = self.core0_client.client.container.client(uid)
-
-        test_container.bash('apt install ssh -y; apt install sshpass -y')
-        sleep(60)
-
-        response = test_container_client.bash('ssh gig@192.168.20.2 -oStrictHostKeyChecking=no ping 192.168.30.2').get()
-        self.assertEqual(response.state, 'SUCCESS')
-
-        response = test_container_client.bash('ssh gig@192.168.30.2 -oStrictHostKeyChecking=no ping 192.168.20.2').get()
+        response = test_container.bash(
+            'ssh gig@%s -oStrictHostKeyChecking=no ping %s' % (vm2_ip_addr, vm1_ip_addr)).get()
         self.assertEqual(response.state, 'SUCCESS')
 
     def test005_create_gateway_with_bridge_Xlan_container(self):
@@ -346,14 +213,16 @@ class TestGatewayAPICreation(TestcasesBase):
             'type': 'bridge',
             'gateway': True,
             'dhcp': False,
-            'bridge_name': data['name']
+            'bridge_name': data['name'],
+            'zerotierbridge': ''
 
         },
             {
                 'type': random.choice['vlan', 'vxlan'],
                 'gateway': False,
                 'dhcp': True,
-                'bridge_name': ''
+                'bridge_name': '',
+                'zerotierbridge': ''
 
             }
         ]
@@ -387,53 +256,39 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Bind a new vm to vlan(1).
         #. Verify that this vm has public access.
         """
-        vm1_mac_addr = self.randomMAC()
-        vm2_mac_addr = self.randomMAC()
-        test_container_mac_addr = self.randomMAC()
+        self.lg.info(' [*] Create bridge (B1) on node (N0), should succeed with 201')
+        response, data = self.bridges_api.post_nodes_bridges(self.nodeid, networkMode='static', nat=True)
+        self.assertEqual(response.status_code, 201, response.content)
+        time.sleep(3)
 
-        body = {
-            "name": "vm_gw_2",
-            "domain": "vm_gw_2",
-            "nics": [
-                {
-                    "name": "public",
-                    "type": "vlan",
-                    "id": "0",
-                    "config": {
-                        "cidr": "192.168.10.1/24",
-                        "gateway": "192.168.10.2"
-                    }
-                },
-                {
-                    "name": "private_1",
-                    "type": "vlan",
-                    "id": "1",
-                    "config": {
-                        "cidr": "192.168.20.1/24"
-                    },
-                    "dhcpserver": {
-                        "nameservers": [
-                            "8.8.8.8"
-                        ],
-                        "hosts": [
-                            {
-                                "macaddress": test_container_mac_addr,
-                                "hostname": "test-container",
-                                "ipaddress": "192.168.20.5"
-                            },
-                            {
-                                "macaddress": vm1_mac_addr,
-                                "hostname": "vm1",
-                                "ipaddress": "192.168.20.2"
-                            }
-                        ]
-                    }
-                }
-            ]
-        }
+        nics_type = [{
+            'type': 'bridge',
+            'gateway': True,
+            'dhcp': False,
+            'bridge_name': data['name'],
+            'zerotierbridge': ''
+
+        },
+            {
+                'type': random.choice['vlan', 'vxlan'],
+                'gateway': False,
+                'dhcp': True,
+                'bridge_name': '',
+                'zerotierbridge': ''
+
+            }
+        ]
+
+        nics = self.get_gateway_nic(nics_types=nics_type)
+        response, data = self.gateways_api.post_nodes_gateway(self.nodeid, nics=nics)
+        self.assertEqual(response.status_code, 201)
+
+        vm1_mac_addr = nics_type[1]['dhcpserver']['hosts'][0]['macaddress']
+        vm1_ip_addr = nics_type[1]['dhcpserver']['hosts'][0]['ipaddress']
+        test_container_mac_addr = nics_type[1]['dhcpserver']['hosts'][1]['macaddress']
 
         nics = [{'id': '1', 'type': 'vlan', 'macaddress': vm1_mac_addr}]
-        vm1 = self.create_vm(nics=nics)
+        self.create_vm(nics=nics)
 
         self.lg.info(' [*] create test container')
         nics = [{'type': 'vlan', 'id': "1", 'config': {'dhcp': True}, 'hwaddr': test_container_mac_addr}]
@@ -441,78 +296,9 @@ class TestGatewayAPICreation(TestcasesBase):
         test_container = self.core0_client.client.container.client(uid)
 
         test_container.bash('apt install ssh -y; apt install sshpass -y')
-        sleep(60)
+        time.sleep(60)
 
-        response = test_container_client.bash('ssh gig@192.168.20.2 -oStrictHostKeyChecking=no ping -w3 8.8.8.8').get()
-        self.assertEqual(response.state, 'SUCCESS')
-
-    @unittest.skip('testcase untested')
-    def test008_create_gateway_with_bridge_vxlan_vm(self):
-        """ GAT-130
-        **Test Scenario:**
-
-        #. Get random node (N0), should succeed.
-        #. Create gateway with bridge and vlan as nics on node (N0), should succeed.
-        #. Bind a new vm to vxlan(1).
-        #. Verify that this vm has public access.
-        """
-        vm1_mac_addr = self.randomMAC()
-        vm2_mac_addr = self.randomMAC()
-        test_container_mac_addr = self.randomMAC()
-
-        body = {
-            "name": "vm_gw_2",
-            "domain": "vm_gw_2",
-            "nics": [
-                {
-                    "name": "public",
-                    "type": "vxlan",
-                    "id": "0",
-                    "config": {
-                        "cidr": "192.168.10.1/24",
-                        "gateway": "192.168.10.2"
-                    }
-                },
-                {
-                    "name": "private_1",
-                    "type": "vxlan",
-                    "id": "1",
-                    "config": {
-                        "cidr": "192.168.20.1/24"
-                    },
-                    "dhcpserver": {
-                        "nameservers": [
-                            "8.8.8.8"
-                        ],
-                        "hosts": [
-                            {
-                                "macaddress": test_container_mac_addr,
-                                "hostname": "test-container",
-                                "ipaddress": "192.168.20.5"
-                            },
-                            {
-                                "macaddress": vm1_mac_addr,
-                                "hostname": "vm1",
-                                "ipaddress": "192.168.20.2"
-                            }
-                        ]
-                    }
-                }
-            ]
-        }
-
-        nics = [{'id': '1', 'type': 'vxlan', 'macaddress': vm1_mac_addr}]
-        vm1 = self.create_vm(nics=nics)
-
-        self.lg.info(' [*] create test container')
-        nics = [{'type': 'vxlan', 'id': "1", 'config': {'dhcp': True}, 'hwaddr': test_container_mac_addr}]
-        uid = self.core0_client.client.container.create(self.flist, nics=nics).get()
-        test_container = self.core0_client.client.container.client(uid)
-
-        test_container.bash('apt install ssh -y; apt install sshpass -y')
-        sleep(60)
-
-        response = test_container_client.bash('ssh gig@192.168.20.2 -oStrictHostKeyChecking=no ping -w3 8.8.8.8').get()
+        response = test_container.bash('ssh gig@%s -oStrictHostKeyChecking=no ping -w3 8.8.8.8' % vm1_ip_addr).get()
         self.assertEqual(response.state, 'SUCCESS')
 
     def test009_create_gateway_dhcpserver(self):
@@ -534,14 +320,16 @@ class TestGatewayAPICreation(TestcasesBase):
             'type': 'bridge',
             'gateway': True,
             'dhcp': False,
-            'bridge_name': data['name']
+            'bridge_name': data['name'],
+            'zerotierbridge': ''
 
         },
             {
                 'type': random.choice(['vlan', 'vxlan']),
                 'gateway': False,
                 'dhcp': True,
-                'bridge_name': ''
+                'bridge_name': '',
+                'zerotierbridge': ''
 
             }
         ]
@@ -582,14 +370,16 @@ class TestGatewayAPICreation(TestcasesBase):
             'type': 'bridge',
             'gateway': True,
             'dhcp': False,
-            'bridge_name': data['name']
+            'bridge_name': data['name'],
+            'zerotierbridge': ''
 
         },
             {
                 'type': random.choice(['vlan', 'vxlan']),
                 'gateway': False,
                 'dhcp': True,
-                'bridge_name': ''
+                'bridge_name': '',
+                'zerotierbridge': ''
 
             }
         ]
@@ -664,14 +454,16 @@ class TestGatewayAPICreation(TestcasesBase):
             'type': 'bridge',
             'gateway': True,
             'dhcp': False,
-            'bridge_name': data['name']
+            'bridge_name': data['name'],
+            'zerotierbridge': ''
 
         },
             {
                 'type': random.choice(['vlan', 'vxlan']),
                 'gateway': False,
                 'dhcp': True,
-                'bridge_name': ''
+                'bridge_name': '',
+                'zerotierbridge': ''
 
             }
         ]
@@ -783,7 +575,6 @@ class TestGatewayAPICreation(TestcasesBase):
         self.assertEqual(response.status_code, 201)
         c1_client = self.core0_client.get_container_client(data['name'])
         self.assertTrue(c1_client)
-
 
         nics_type = [
             {
