@@ -148,7 +148,7 @@ class TestcasesBase(TestCase):
                 }
 
             if nic['gateway']:
-                nic_data['config']["gateway"] = '192.168.%i.1' % ip
+                nic_data['config']["gateway"] = ip[:-4] + '1'
 
             if nic['dhcp']:
                 nic_data['dhcpserver'] = {
