@@ -580,7 +580,7 @@ class TestGatewayAPICreation(TestcasesBase):
         response, self.container_data = self.containers_api.post_containers(nodeid=self.nodeid, nics=c1_nics)
 
         self.assertEqual(response.status_code, 201)
-        c1_client = self.core0_client.get_container_client(data['name'])
+        c1_client = self.core0_client.get_container_client(self.container_data['name'])
         self.assertTrue(c1_client)
 
         nics_type = [
@@ -630,50 +630,29 @@ class TestGatewayAPICreation(TestcasesBase):
 class TestGatewayAPIUpdate(TestcasesBase):
     def setUp(self):
         super().setUp()
-        self.gw_name = self.random_string()
-        self.gw_domain = self.random_string()
+        nics_type = [
+            {
+                'type': random.choice(['vlan', 'vxlan']),
+                'gateway': True,
+                'dhcp': False,
+                'bridge_name': '',
+                'zerotierbridge': False
+            },
+            {
+                'type': random.choice(['vlan', 'vxlan']),
+                'gateway': False,
+                'dhcp': True,
+                'bridge_name': '',
+                'zerotierbridge': False
 
-        self.public_vlan_id = str(random.randint(1, 4094))
-        self.private_vxlan_id = str(random.randint(1, 100000))
-
-        self.body = {
-            "name": self.gw_name,
-            "domain": self.gw_domain,
-            "nics": [
-                {
-                    "name": "public",
-                    "type": "vlan",
-                    "id": self.public_vlan_id,
-                    "config": {
-                        "cidr": "192.168.1.10/24",
-                        "gateway": "192.168.1.1"
-                    }
-                },
-
-                {
-                    "name": "private",
-                    "type": "vxlan",
-                    "id": self.private_vxlan_id,
-                    "config": {
-                        "cidr": "192.168.2.20/24"
-                    },
-                    "dhcpserver": {
-                        "nameservers": ["8.8.8.8"],
-                        "hosts": [
-                            {
-                                "hostname": "aaaa",
-                                "macaddress": "00:00:00:00:00:00",
-                                "ipaddress": "192.168.2.10"
-                            }
-                        ]
-                    }
-                }
-            ]
-        }
-
+            }
+        ]
+        self.nics = self.get_gateway_nic(nics_types=nics_type)
         self.core0_client.create_ovs_container()
-        self.response, self.data = self.gateways_api.post_nodes_gateway(self.nodeid, self.body)
+        self.response, self.data = self.gateways_api.post_nodes_gateway(self.nodeid, nics=self.nics)
         self.assertEqual(self.response.status_code, 201)
+        self.gw_name = self.data['name']
+        self.gw_domain = self.data['domain']
 
     def tearDown(self):
         self.lg.info(' [*] Delete all node {} gateways'.format(self.nodeid))
@@ -778,34 +757,22 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. Use put method to update the nics config for the gw
         #. List the gw and make sure that its nics config have been updated
         """
-        self.body['nics'] = [{
-            "name": "public",
-            "type": "vlan",
-            "id": self.public_vlan_id,
-            "config": {
-                "cidr": "192.168.10.10/24",
-                "gateway": "192.168.10.1"
-            }
-        },
-            {
-                "name": "private",
-                "type": "vxlan",
-                "id": self.private_vxlan_id,
-                "config": {
-                    "cidr": "192.168.20.2/24"
-                }
-            }]
-
-        del self.body['name']
+        nics = list(self.nics)
+        nics[0]['config']['cidr'] = "192.168.10.10/24"
+        nics[0]['config']['gateway'] = "192.168.10.1"
+        nics[1]['config']['cidr'] = "192.168.20.2/24"
+        del nics[1]['dhcpserver']
+        data = dict(self.data)
+        data['nics'] = nics
 
         self.lg.info(' [*] Use put method to update the nics config for the gw')
-        response = self.gateways_api.update_nodes_gateway(self.nodeid, self.gw_name, self.body)
+        response = self.gateways_api.update_nodes_gateway(self.nodeid, self.gw_name, data)
         self.assertEqual(response.status_code, 204)
 
         self.lg.info(' [*] List the gw and make sure that its nics config have been updated')
         response = self.gateways_api.get_nodes_gateway(self.nodeid, self.gw_name)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.body['nics'], response.json()['nics'])
+        self.assertEqual(nics, response.json()['nics'])
 
     def test007_update_gw_portforwards_config(self):
         """ GAT-138
@@ -814,7 +781,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. Use put method to update the portforwards config for the gw
         #. List the gw and make sure that its portforwards config have been updated
         """
-        self.body['portforwards'] = [
+        self.data['portforwards'] = [
             {
                 "protocols": ['udp', 'tcp'],
                 "srcport": random.randint(100, 1000),
@@ -824,16 +791,16 @@ class TestGatewayAPIUpdate(TestcasesBase):
             }
         ]
 
-        del self.body['name']
+        del self.data['name']
 
         self.lg.info(' [*] Use put method to update the portforwards config for the gw')
-        response = self.gateways_api.update_nodes_gateway(self.nodeid, self.gw_name, self.body)
+        response = self.gateways_api.update_nodes_gateway(self.nodeid, self.gw_name, self.data)
         self.assertEqual(response.status_code, 204)
 
         self.lg.info(' [*] List the gw and make sure that its portforwards config have been updated')
         response = self.gateways_api.get_nodes_gateway(self.nodeid, self.gw_name)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.body['portforwards'], response.json()['portforwards'])
+        self.assertEqual(self.data['portforwards'], response.json()['portforwards'])
 
     def test008_update_gw_dhcpserver_config(self):
         """ GAT-139
@@ -842,7 +809,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. Use put method to update the dhcpserver config for the gw
         #. List the gw and make sure that its dhcpserver config have been updated
         """
-        self.body['nics'][1]['dhcpserver'] = {
+        self.data['nics'][1]['dhcpserver'] = {
             "nameservers": ["8.8.8.8"],
             "hosts": [
                 {
@@ -853,16 +820,16 @@ class TestGatewayAPIUpdate(TestcasesBase):
             ]
         }
 
-        del self.body['name']
+        del self.data['name']
 
         self.lg.info(' [*] Use put method to update the dhcpserver config for the gw')
-        response = self.gateways_api.update_nodes_gateway(self.nodeid, self.gw_name, self.body)
+        response = self.gateways_api.update_nodes_gateway(self.nodeid, self.gw_name, self.data)
         self.assertEqual(response.status_code, 204, response.content)
 
         self.lg.info(' [*] List the gw and make sure that its dhcpserver config have been updated')
         response = self.gateways_api.get_nodes_gateway(self.nodeid, self.gw_name)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.body['nics'][1]['dhcpserver'], response.json()['nics'][1]['dhcpserver'])
+        self.assertEqual(self.data['nics'][1]['dhcpserver'], response.json()['nics'][1]['dhcpserver'])
 
     def test009_update_gw_httpproxies_config(self):
         """ GAT-140
@@ -871,7 +838,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
         #. Use put method to update the dhcpserver config for the gw
         #. List the gw and make sure that its httpproxies config have been updated
         """
-        self.body['httpproxies'] = [
+        self.data['httpproxies'] = [
             {
                 "host": self.random_string(),
                 "destinations": ["192.168.200.10:1101"],
@@ -879,16 +846,16 @@ class TestGatewayAPIUpdate(TestcasesBase):
             }
         ]
 
-        del self.body['name']
+        del self.data['name']
 
         self.lg.info(' [*] Use put method to update the dhcpserver config for the gw')
-        response = self.gateways_api.update_nodes_gateway(self.nodeid, self.gw_name, self.body)
+        response = self.gateways_api.update_nodes_gateway(self.nodeid, self.gw_name, self.data)
         self.assertEqual(response.status_code, 204)
 
         self.lg.info(' [*] List the gw and make sure that its dhcpserver config have been updated')
         response = self.gateways_api.get_nodes_gateway(self.nodeid, self.gw_name)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.body['httpproxies'], response.json()['httpproxies'])
+        self.assertEqual(self.data['httpproxies'], response.json()['httpproxies'])
 
     def test010_create_list_portforward(self):
         """ GAT-114
