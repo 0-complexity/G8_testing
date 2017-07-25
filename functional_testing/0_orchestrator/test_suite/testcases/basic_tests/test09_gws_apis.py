@@ -6,9 +6,6 @@ import unittest
 class TestGatewayAPICreation(TestcasesBase):
     def setUp(self):
         super().setUp()
-        self.data = False
-        self.container_data = False
-        self.bridge_data = False
         self.core0_client.create_ovs_container()
         self.flist = 'https://hub.gig.tech/gig-official-apps/ubuntu1604.flist'
         self.container_body = {"name": self.rand_str(),
