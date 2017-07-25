@@ -173,7 +173,7 @@ class TestcasesBase(TestCase):
                     "token": self.zerotier_token
                 }
 
-            nics.append(nic)
+            nics.append(nic_data)
         return nics
 
     def get_random_mac(self):
