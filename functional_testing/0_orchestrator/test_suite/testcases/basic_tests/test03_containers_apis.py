@@ -3,6 +3,7 @@ from testcases.testcases_base import TestcasesBase
 
 
 class TestcontaineridAPI(TestcasesBase):
+<<<<<<< HEAD:functional_testing/0_orchestrator/test_suite/testcases/basic_tests/test03_containers_apis.py
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -13,6 +14,35 @@ class TestcontaineridAPI(TestcasesBase):
             self.lg.info(' [*] Create new container. ')
             self.response, self.data = self.containers_api.post_containers(nodeid=self.nodeid)
             self.assertEqual(self.response.status_code, 201, " [*] Can't create new container.")
+=======
+    def setUp(self):
+        super().setUp()
+        self.containers_api = ContainersAPI()
+        self.lg.info('Choose one random node of list of running nodes.')
+        self.node_id = self.get_random_node()
+        if self.node_id is None:
+            self.lg.info(' No node found')
+            return
+        self.node = {}
+        for node in self.nodes:
+            if node['id'] == self.node_id:
+                self.g8os_ip = node['ip']
+                self.node = node
+                break
+        
+        self.jwt = self.nodes_api.jwt
+        self.g8core = Client(self.g8os_ip, password=self.jwt)
+
+        self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
+        self.storage = "ardb://hub.gig.tech:16379"
+        self.container_name = self.rand_str()
+        self.hostname = self.rand_str()
+        self.job_body = {'name': 'yes'}
+        self.container_body = {"name": self.container_name, "hostname": self.hostname, "flist": self.root_url,
+                               "hostNetworking": False, "initProcesses": [], "filesystems": [],
+                               "ports": [], "storage": self.storage
+                               }
+>>>>>>> master:functional_testing/Grid_API_Testing/api_testing/testcases/basic_tests/test03_containers_apis.py
 
     def tearDown(self):
         self.lg.info(' [*] TearDown: Delete all created container ')
@@ -232,9 +262,14 @@ class TestcontaineridAPI(TestcasesBase):
 
         response = self.containers_api.delete_containers_containerid_jobs_jobid(self.nodeid, self.data['name'], job_id)
         self.assertEqual(response.status_code, 204)
+<<<<<<< HEAD:functional_testing/0_orchestrator/test_suite/testcases/basic_tests/test03_containers_apis.py
         self.assertTrue(self.core0_client.wait_on_container_job_update(self.data['name'], job_id, 100, True))
 
     @unittest.skip('https://github.com/zero-os/0-orchestrator/issues/637')
+=======
+        self.assertTrue(self.g8core.wait_on_container_job_update(container_name, job_id, 100, True))
+    
+>>>>>>> master:functional_testing/Grid_API_Testing/api_testing/testcases/basic_tests/test03_containers_apis.py
     def test009_post_signal_job_in_container_details(self):
         """ GAT-030
         *get:/node/{nodeid}/containers/containerid/jobs/jobid Expected: get container details *
@@ -465,8 +500,12 @@ class TestcontaineridAPI(TestcasesBase):
         golden_value = container.process.list()
         for process in golden_value:
             self.assertNotEqual(process['pid'], process_id)
+<<<<<<< HEAD:functional_testing/0_orchestrator/test_suite/testcases/basic_tests/test03_containers_apis.py
 
     @unittest.skip('https://github.com/Jumpscale/go-raml/issues/642')
+=======
+        
+>>>>>>> master:functional_testing/Grid_API_Testing/api_testing/testcases/basic_tests/test03_containers_apis.py
     def test017_post_signal_to_process_in_container(self):
         """ GAT-038
         *get:/node/{nodeid}/containers/containerid/processes/processid Expected: get container details *
@@ -500,7 +539,6 @@ class TestcontaineridAPI(TestcasesBase):
                                                                                        str(process_id), body)
         self.assertEqual(response.status_code, 204)
 
-    @unittest.skip('https://github.com/Jumpscale/go-raml/issues/297')
     def test018_upload_file_to_container(self):
         """ GAT-039
         *post:/node/{nodeid}/containers/containerid/filesystem  *

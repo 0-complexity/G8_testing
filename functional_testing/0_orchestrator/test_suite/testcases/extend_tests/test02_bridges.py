@@ -6,15 +6,25 @@ from test_suite.orchestrator_objects.orchestrator_apis.nodes_apis import NodesAP
 
 
 class TestBridgesAPI(TestcasesBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+
+    def setUp(self):
+        super(TestBridgesAPI, self).setUp()
         self.bridges_api = BridgesAPI()
         self.containers_api = ContainersAPI()
         self.nodes_api = NodesAPI()
         self.createdbridges = []
 
+<<<<<<< HEAD:functional_testing/0_orchestrator/test_suite/testcases/extend_tests/test02_bridges.py
     def setUp(self):
         super().setUp()
+=======
+        self.lg.info('Get random nodid (N0)')
+        self.nodeid = self.get_random_node()
+        zeroCore_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]
+        self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
+        self.jwt = self.nodes_api.jwt
+        self.zeroCore = Client(zeroCore_ip, password=self.jwt)
+>>>>>>> master:functional_testing/Grid_API_Testing/api_testing/testcases/extend_tests/test02_bridges.py
         self.bridge_name = self.rand_str()
         self.nat = self.random_item([False, True])
         self.bridge_body = {"name": self.bridge_name,

@@ -1,10 +1,24 @@
 import time
 from testcases.testcases_base import TestcasesBase
 
+<<<<<<< HEAD:functional_testing/0_orchestrator/test_suite/testcases/basic_tests/test02_bridges_apis.py
 
 class TestBridgesAPI(TestcasesBase):
     def setUp(self):
         super().setUp()
+=======
+class TestBridgesAPI(TestcasesBase):
+    def setUp(self):
+        super().setUp()
+        self.bridges_api = BridgesAPI()
+        
+        self.lg.info('Get random nodid (N0)')
+        self.nodeid = self.get_random_node()
+        pyclient_ip = [x['ip'] for x in self.nodes if x['id'] == self.nodeid][0]
+        self.jwt = self.nodes_api.jwt
+        self.pyclient = Client(pyclient_ip, password=self.jwt)
+
+>>>>>>> master:functional_testing/Grid_API_Testing/api_testing/testcases/basic_tests/test02_bridges_apis.py
         self.lg.info('Create bridge (B0) on node (N0)')
         self.response, self.data = self.bridges_api.post_nodes_bridges(node_id=self.nodeid)
         self.assertEqual(self.response.status_code, 201, " [*] Can't create new bridge.")
