@@ -14,16 +14,18 @@ class TestGatewayAPICreation(TestcasesBase):
 
     def tearDown(self):
         self.lg.info(' [*] Delete all created {} gateways'.format(self.nodeid))
-        if self.data:
-            self.gateways_api.delete_nodes_gateway(self.nodeid, self.data['name'])   
+        attributes = self.__dict__.keys()
+        if 'data' in attributes:
+            if self.data:
+                self.gateways_api.delete_nodes_gateway(self.nodeid, self.data['name'])
 
         self.lg.info(' [*] TearDown:delete all created container ')
-        if self.container_data:
+        if 'container_data' in attributes:
             self.containers_api.delete_containers_containerid(self.nodeid,
                                                               self.container_data['name'])
 
         self.lg.info(' [*] TearDown:delete all created bridges ')
-        if self.bridge_data:
+        if 'bridge_data' in attributes:
             self.bridges_api.delete_nodes_bridges_bridgeid(self.nodeid,
                                                            self.bridge_data['name'])
         super().tearDown()
@@ -95,14 +97,15 @@ class TestGatewayAPICreation(TestcasesBase):
 
         nics = self.get_gateway_nic(nics_types=nics_type)
         self.response, self.data = self.gateways_api.post_nodes_gateway(self.nodeid, nics=nics)
+
         self.assertEqual(self.response.status_code, 201)
 
         self.lg.info(' [*] Bind a new container to vlan(1)')
         nics_container = [{'type': nics[1]['type'],
                            'id': nics[1]['id'],
                            'config': {'dhcp': False,
-                                      'gateway': nics[1]['config']['cidr'][-3],
-                                      'cidr': nics[1]['config']['cidr'][-4] + '10/24'}
+                                      'gateway': nics[1]['config']['cidr'][:-3],
+                                      'cidr': nics[1]['config']['cidr'][:-4] + '10/24'}
                            }]
         uid_1 = self.core0_client.client.container.create(self.flist, nics=nics_container).get()
         container_1 = self.core0_client.client.container.client(int(uid_1))
@@ -111,20 +114,20 @@ class TestGatewayAPICreation(TestcasesBase):
         nics_container = [{'type': nics[2]['type'],
                            'id': nics[2]['id'],
                            'config': {'dhcp': False,
-                                      'gateway': nics[2]['config']['cidr'][-3],
-                                      'cidr': nics[2]['config']['cidr'][-4] + '10/24'}
+                                      'gateway': nics[2]['config']['cidr'][:-3],
+                                      'cidr': nics[2]['config']['cidr'][:-4] + '10/24'}
                            }]
         uid = self.core0_client.client.container.create(self.flist, nics=nics_container).get()
         container_2 = self.core0_client.client.container.client(int(uid))
 
         self.lg.info(' [*] Make sure that those two containers can ping each others')
-        response = container_1.bash('ping -w5 %s' % nics[2]['config']['cidr'][-4] + '10').get()
+        response = container_1.bash('ping -w5 %s' % nics[2]['config']['cidr'][:-4] + '10').get()
         self.assertEqual(response.state, 'SUCCESS')
-        response = container_2.bash('ping -w5 %s' % nics[1]['config']['cidr'][-4] + '10').get()
+        response = container_2.bash('ping -w5 %s' % nics[1]['config']['cidr'][:-4] + '10').get()
         self.assertEqual(response.state, 'SUCCESS')
-        
-        self.core0_client.client.container.delete(int(uid_1))
-        self.core0_client.client.container.delete(int(uid))
+
+        self.core0_client.client.container.terminate(int(uid_1))
+        self.core0_client.client.container.terminate(int(uid))
 
     @unittest.skip('testcase untested')
     def test003_create_gateway_with_vlan_vlan_vm(self):
@@ -303,7 +306,7 @@ class TestGatewayAPICreation(TestcasesBase):
 
         response = test_container.bash('ssh gig@%s -oStrictHostKeyChecking=no ping -w3 8.8.8.8' % vm1_ip_addr).get()
         self.assertEqual(response.state, 'SUCCESS')
-        self.core0_client.client.container.delete(int(uid))
+        self.core0_client.client.container.terminate(int(uid))
 
     def test009_create_gateway_dhcpserver(self):
         """ GAT-131
@@ -355,7 +358,7 @@ class TestGatewayAPICreation(TestcasesBase):
         self.assertNotEqual(interface, [])
         self.assertIn(nics[1]['dhcpserver'][0]['ipaddress'], [x['addr'][:-3] for x in interface[0]['addrs']])
         self.assertEqual(nics[1]['dhcpserver'][0]['macaddress'], interface[0]['hardwareaddr'])
-        self.core0_client.client.container.delete(int(uid))
+        self.core0_client.client.container.terminate(int(uid))
 
     def test010_create_gateway_httpproxy(self):
         """ GAT-132
@@ -392,12 +395,12 @@ class TestGatewayAPICreation(TestcasesBase):
         httpproxies = [
             {
                 "host": "container1",
-                "destinations": ['http://{}:1000'.format(nics[1]['config']['cidr'][-4] + '10/24')],
+                "destinations": ['http://{}:1000'.format(nics[1]['config']['cidr'][:-4] + '10/24')],
                 "types": ['http', 'https']
             },
             {
                 "host": "container2",
-                "destinations": ['http://{}:2000'.format(nics[1]['config']['cidr'][-4] + '20/24')],
+                "destinations": ['http://{}:2000'.format(nics[1]['config']['cidr'][:-4] + '20/24')],
                 "types": ['http', 'https']
             }
         ]
@@ -408,16 +411,16 @@ class TestGatewayAPICreation(TestcasesBase):
         nics = [{'type': nics_type[1]['type'],
                  'id': nics['1']['id'],
                  'config': {'dhcp': False,
-                            'gateway': nics[1]['config']['cidr'][-3],
-                            'cidr': nics[1]['config']['cidr'][-4] + '10/24'}}]
+                            'gateway': nics[1]['config']['cidr'][:-3],
+                            'cidr': nics[1]['config']['cidr'][:-4] + '10/24'}}]
         uid_1 = self.core0_client.client.container.create(self.flist, nics=nics).get()
         container_1 = self.core0_client.client.container.client(int(uid_1))
 
         nics = [{'type': nics_type[1]['type'],
                  'id': nics[1]['id'],
                  'config': {'dhcp': False,
-                            'gateway': nics[1]['config']['cidr'][-3],
-                            'cidr': nics[1]['config']['cidr'][-4] + '20/24'}}]
+                            'gateway': nics[1]['config']['cidr'][:-3],
+                            'cidr': nics[1]['config']['cidr'][:-4] + '20/24'}}]
         uid = self.core0_client.client.container.create(self.flist, nics=nics).get()
         container_2 = self.core0_client.client.container.client(int(uid))
 
@@ -434,8 +437,8 @@ class TestGatewayAPICreation(TestcasesBase):
         response = container_2.bash(
             'python3 -c "from urllib.request import urlopen; urlopen(\'{}\')"'.format('container1')).get()
         self.assertEqual(response.state, 'SUCCESS')
-        self.core0_client.client.container.delete(int(uid_1))
-        self.core0_client.client.container.delete(int(uid))
+        self.core0_client.client.container.terminate(int(uid_1))
+        self.core0_client.client.container.terminate(int(uid))
 
     def test011_create_gateway_portforwards(self):
         """ GAT-133
@@ -478,7 +481,7 @@ class TestGatewayAPICreation(TestcasesBase):
         portforwards = [
             {
                 "srcport": 80,
-                "srcip": nics[0]['config']['cidr'][-3],
+                "srcip": nics[0]['config']['cidr'][:-3],
                 "dstport": 80,
                 "dstip": nics[1]['dhcpserver']['hosts']['ipaddress'],
                 "protocols": [
@@ -513,7 +516,7 @@ class TestGatewayAPICreation(TestcasesBase):
         self.lg.info(" [*] Using core0_client try to request this service and make sure that u can reach the container")
         response = container.bash("netstat -nlapt | grep %s" % 80).get()
         self.assertEqual(response.state, 'SUCCESS')
-        url = ' http://{0}:{1}/{2}.text'.format(nics[0]['config']['cidr'][-3], 80, file_name)
+        url = ' http://{0}:{1}/{2}.text'.format(nics[0]['config']['cidr'][:-3], 80, file_name)
 
         response = self.core0_client.client.bash('wget %s' % url).get()
         self.assertEqual(response.state, "SUCCESS")
