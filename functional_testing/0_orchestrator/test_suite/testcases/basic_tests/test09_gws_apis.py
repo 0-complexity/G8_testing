@@ -14,18 +14,18 @@ class TestGatewayAPICreation(TestcasesBase):
 
     def tearDown(self):
         self.lg.info(' [*] Delete all created {} gateways'.format(self.nodeid))
-        for gw in self.gateways_api.createdGw:
-            self.gateways_api.delete_nodes_gateway(gw['node'], gw['name'])
+        if self.data:
+            self.gateways_api.delete_nodes_gateway(self.nodeid, self.data['name'])   
 
         self.lg.info(' [*] TearDown:delete all created container ')
-        for container in self.containers_api.createdcontainer:
-            self.containers_api.delete_containers_containerid(container['node'],
-                                                              container['name'])
+        if self.container_data:
+            self.containers_api.delete_containers_containerid(self.nodeid,
+                                                              self.container_data['name'])
 
         self.lg.info(' [*] TearDown:delete all created bridges ')
-        for bridge in self.bridges_api.createdbridges:
-            self.bridges_api.delete_nodes_bridges_bridgeid(bridge['node'],
-                                                           bridge['name'])
+        if self.bridge_data:
+            self.bridges_api.delete_nodes_bridges_bridgeid(self.nodeid,
+                                                           self.bridge_data['name'])
         super().tearDown()
 
     def create_vm(self, nics):
@@ -68,7 +68,7 @@ class TestGatewayAPICreation(TestcasesBase):
         """
         self.lg.info(' [*] Create gateway with xlan as nics on node (N0), should succeed')
         nics_type = [{
-            'type': random.choice['vlan', 'vxlan'],
+            'type': random.choice(['vlan', 'vxlan']),
             'gateway': True,
             'dhcp': False,
             'bridge_name': '',
@@ -76,7 +76,7 @@ class TestGatewayAPICreation(TestcasesBase):
 
         },
             {
-                'type': random.choice['vlan', 'vxlan'],
+                'type': random.choice(['vlan', 'vxlan']),
                 'gateway': False,
                 'dhcp': False,
                 'bridge_name': '',
@@ -84,7 +84,7 @@ class TestGatewayAPICreation(TestcasesBase):
 
             },
             {
-                'type': random.choice['vlan', 'vxlan'],
+                'type': random.choice(['vlan', 'vxlan']),
                 'gateway': False,
                 'dhcp': False,
                 'bridge_name': '',
@@ -94,8 +94,8 @@ class TestGatewayAPICreation(TestcasesBase):
         ]
 
         nics = self.get_gateway_nic(nics_types=nics_type)
-        response, data = self.gateways_api.post_nodes_gateway(self.nodeid, nics=nics)
-        self.assertEqual(response.status_code, 201)
+        self.response, self.data = self.gateways_api.post_nodes_gateway(self.nodeid, nics=nics)
+        self.assertEqual(self.response.status_code, 201)
 
         self.lg.info(' [*] Bind a new container to vlan(1)')
         nics_container = [{'type': nics[1]['type'],
@@ -104,8 +104,8 @@ class TestGatewayAPICreation(TestcasesBase):
                                       'gateway': nics[1]['config']['cidr'][-3],
                                       'cidr': nics[1]['config']['cidr'][-4] + '10/24'}
                            }]
-        uid = self.core0_client.client.container.create(self.flist, nics=nics_container).get().data
-        container_1 = self.core0_client.client.container.client(int(uid))
+        uid_1 = self.core0_client.client.container.create(self.flist, nics=nics_container).get()
+        container_1 = self.core0_client.client.container.client(int(uid_1))
 
         self.lg.info(' [*] Bind a new container to vlan(2)')
         nics_container = [{'type': nics[2]['type'],
@@ -114,7 +114,7 @@ class TestGatewayAPICreation(TestcasesBase):
                                       'gateway': nics[2]['config']['cidr'][-3],
                                       'cidr': nics[2]['config']['cidr'][-4] + '10/24'}
                            }]
-        uid = self.core0_client.client.container.create(self.flist, nics=nics_container).get().data
+        uid = self.core0_client.client.container.create(self.flist, nics=nics_container).get()
         container_2 = self.core0_client.client.container.client(int(uid))
 
         self.lg.info(' [*] Make sure that those two containers can ping each others')
@@ -122,6 +122,9 @@ class TestGatewayAPICreation(TestcasesBase):
         self.assertEqual(response.state, 'SUCCESS')
         response = container_2.bash('ping -w5 %s' % nics[1]['config']['cidr'][-4] + '10').get()
         self.assertEqual(response.state, 'SUCCESS')
+        
+        self.core0_client.client.container.delete(int(uid_1))
+        self.core0_client.client.container.delete(int(uid))
 
     @unittest.skip('testcase untested')
     def test003_create_gateway_with_vlan_vlan_vm(self):
@@ -135,7 +138,7 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Make sure that those two containers can ping each others.
         """
         nics_type = [{
-            'type': random.choice['vlan', 'vxlan'],
+            'type': random.choice(['vlan', 'vxlan']),
             'gateway': True,
             'dhcp': False,
             'bridge_name': '',
@@ -143,7 +146,7 @@ class TestGatewayAPICreation(TestcasesBase):
 
         },
             {
-                'type': random.choice['vlan', 'vxlan'],
+                'type': random.choice(['vlan', 'vxlan']),
                 'gateway': False,
                 'dhcp': True,
                 'bridge_name': '',
@@ -151,7 +154,7 @@ class TestGatewayAPICreation(TestcasesBase):
 
             },
             {
-                'type': random.choice['vlan', 'vxlan'],
+                'type': random.choice(['vlan', 'vxlan']),
                 'gateway': False,
                 'dhcp': True,
                 'bridge_name': '',
@@ -168,8 +171,8 @@ class TestGatewayAPICreation(TestcasesBase):
         test_container_mac_addr = nics_type[1]['dhcpserver']['hosts'][0]['macaddress']
         nics_type[2]['dhcpserver']['hosts'][0]['macaddress'] = test_container_mac_addr
 
-        response, data = self.gateways_api.post_nodes_gateway(self.nodeid, nics=nics)
-        self.assertEqual(response.status_code, 201)
+        self.response, self.data = self.gateways_api.post_nodes_gateway(self.nodeid, nics=nics)
+        self.assertEqual(self.response.status_code, 201)
 
         nics = [{'id': '1', 'type': 'vlan', 'macaddress': vm1_mac_addr}]
         self.create_vm(nics=nics)
@@ -205,7 +208,7 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Verify that this container has public access.
         """
         self.lg.info(' [*] Create bridge (B1) on node (N0), should succeed with 201')
-        response, data = self.bridges_api.post_nodes_bridges(self.nodeid, networkMode='static', nat=True)
+        response, self.bridge_data = self.bridges_api.post_nodes_bridges(self.nodeid, networkMode='static', nat=True)
         self.assertEqual(response.status_code, 201, response.content)
         time.sleep(3)
 
@@ -213,12 +216,12 @@ class TestGatewayAPICreation(TestcasesBase):
             'type': 'bridge',
             'gateway': True,
             'dhcp': False,
-            'bridge_name': data['name'],
+            'bridge_name': self.bridge_data['name'],
             'zerotierbridge': ''
 
         },
             {
-                'type': random.choice['vlan', 'vxlan'],
+                'type': random.choice(['vlan', 'vxlan']),
                 'gateway': False,
                 'dhcp': True,
                 'bridge_name': '',
@@ -228,8 +231,8 @@ class TestGatewayAPICreation(TestcasesBase):
         ]
 
         nics = self.get_gateway_nic(nics_types=nics_type)
-        response, data = self.gateways_api.post_nodes_gateway(self.nodeid, nics=nics)
-        self.assertEqual(response.status_code, 201)
+        self.response, self.data = self.gateways_api.post_nodes_gateway(self.nodeid, nics=nics)
+        self.assertEqual(self.response.status_code, 201)
 
         self.lg.info(' [*] Create container')
         self.core0_client.create_ovs_container()
@@ -238,9 +241,9 @@ class TestGatewayAPICreation(TestcasesBase):
                            "hwaddr": nics[1]['dhcpserver']['hosts'][0]['macaddress'],
                            "config": {"dhcp": True}}]
 
-        response, data = self.containers_api.post_containers(self.nodeid, nics=nics_container)
+        response, self.container_data = self.containers_api.post_containers(self.nodeid, nics=nics_container)
         self.assertEqual(response.status_code, 201, " [*] Can't create container.")
-        container = self.core0_client.get_container_client(data['name'])
+        container = self.core0_client.get_container_client(self.container_data['name'])
         self.assertTrue(container)
         response = container.bash('ping -c 5 google.com').get()
         self.assertEqual(response.state, 'SUCCESS')
@@ -257,7 +260,7 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Verify that this vm has public access.
         """
         self.lg.info(' [*] Create bridge (B1) on node (N0), should succeed with 201')
-        response, data = self.bridges_api.post_nodes_bridges(self.nodeid, networkMode='static', nat=True)
+        response, self.bridge_data = self.bridges_api.post_nodes_bridges(self.nodeid, networkMode='static', nat=True)
         self.assertEqual(response.status_code, 201, response.content)
         time.sleep(3)
 
@@ -265,12 +268,12 @@ class TestGatewayAPICreation(TestcasesBase):
             'type': 'bridge',
             'gateway': True,
             'dhcp': False,
-            'bridge_name': data['name'],
+            'bridge_name': self.bridge_data['name'],
             'zerotierbridge': ''
 
         },
             {
-                'type': random.choice['vlan', 'vxlan'],
+                'type': random.choice(['vlan', 'vxlan']),
                 'gateway': False,
                 'dhcp': True,
                 'bridge_name': '',
@@ -280,8 +283,8 @@ class TestGatewayAPICreation(TestcasesBase):
         ]
 
         nics = self.get_gateway_nic(nics_types=nics_type)
-        response, data = self.gateways_api.post_nodes_gateway(self.nodeid, nics=nics)
-        self.assertEqual(response.status_code, 201)
+        self.response, self.data = self.gateways_api.post_nodes_gateway(self.nodeid, nics=nics)
+        self.assertEqual(self.response.status_code, 201)
 
         vm1_mac_addr = nics_type[1]['dhcpserver']['hosts'][0]['macaddress']
         vm1_ip_addr = nics_type[1]['dhcpserver']['hosts'][0]['ipaddress']
@@ -300,6 +303,7 @@ class TestGatewayAPICreation(TestcasesBase):
 
         response = test_container.bash('ssh gig@%s -oStrictHostKeyChecking=no ping -w3 8.8.8.8' % vm1_ip_addr).get()
         self.assertEqual(response.state, 'SUCCESS')
+        self.core0_client.client.container.delete(int(uid))
 
     def test009_create_gateway_dhcpserver(self):
         """ GAT-131
@@ -312,7 +316,7 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Verify that container and vm ips are matching with the dhcpserver specs.
         """
         self.lg.info(' [*] Create bridge (B1) on node (N0), should succeed with 201')
-        response, data = self.bridges_api.post_nodes_bridges(self.nodeid, networkMode='static', nat=True)
+        response, self.bridge_data = self.bridges_api.post_nodes_bridges(self.nodeid, networkMode='static', nat=True)
         self.assertEqual(response.status_code, 201, response.content)
         time.sleep(3)
 
@@ -320,7 +324,7 @@ class TestGatewayAPICreation(TestcasesBase):
             'type': 'bridge',
             'gateway': True,
             'dhcp': False,
-            'bridge_name': data['name'],
+            'bridge_name': self.bridge_data['name'],
             'zerotierbridge': ''
 
         },
@@ -334,8 +338,8 @@ class TestGatewayAPICreation(TestcasesBase):
             }
         ]
         nics = self.get_gateway_nic(nics_types=nics_type)
-        response, data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics)
-        self.assertEqual(response.status_code, 201, response.content)
+        self.response, self.data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics)
+        self.assertEqual(self.response.status_code, 201, response.content)
 
         nics_container = [{
             'type': 'vlan',
@@ -344,13 +348,14 @@ class TestGatewayAPICreation(TestcasesBase):
             'config': {'dhcp': True}
         }]
 
-        uid = self.core0_client.client.container.create(self.flist, nics=nics_container).get().data
+        uid = self.core0_client.client.container.create(self.flist, nics=nics_container).get()
         container_1 = self.core0_client.client.container.client(int(uid))
         container_1_nics = container_1.info.nic()
         interface = [x for x in container_1_nics if x['name'] == 'eth0']
         self.assertNotEqual(interface, [])
         self.assertIn(nics[1]['dhcpserver'][0]['ipaddress'], [x['addr'][:-3] for x in interface[0]['addrs']])
         self.assertEqual(nics[1]['dhcpserver'][0]['macaddress'], interface[0]['hardwareaddr'])
+        self.core0_client.client.container.delete(int(uid))
 
     def test010_create_gateway_httpproxy(self):
         """ GAT-132
@@ -362,7 +367,7 @@ class TestGatewayAPICreation(TestcasesBase):
         #. Verify that the httprxoy's configuration is working right
         """
         self.lg.info(' [*] Create bridge (B1) on node (N0), should succeed with 201')
-        response, data = self.bridges_api.post_nodes_bridges(self.nodeid, networkMode='static', nat=True)
+        response, self.bridge_data = self.bridges_api.post_nodes_bridges(self.nodeid, networkMode='static', nat=True)
         self.assertEqual(response.status_code, 201, response.content)
         time.sleep(3)
 
@@ -370,7 +375,7 @@ class TestGatewayAPICreation(TestcasesBase):
             'type': 'bridge',
             'gateway': True,
             'dhcp': False,
-            'bridge_name': data['name'],
+            'bridge_name': self.bridge_data['name'],
             'zerotierbridge': ''
 
         },
@@ -397,7 +402,7 @@ class TestGatewayAPICreation(TestcasesBase):
             }
         ]
 
-        response, data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics, httpproxies=httpproxies)
+        self.response, self.data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics, httpproxies=httpproxies)
         self.assertEqual(response.status_code, 201, response.content)
 
         nics = [{'type': nics_type[1]['type'],
@@ -405,15 +410,15 @@ class TestGatewayAPICreation(TestcasesBase):
                  'config': {'dhcp': False,
                             'gateway': nics[1]['config']['cidr'][-3],
                             'cidr': nics[1]['config']['cidr'][-4] + '10/24'}}]
-        uid = self.core0_client.client.container.create(self.flist, nics=nics).get().data
-        container_1 = self.core0_client.client.container.client(int(uid))
+        uid_1 = self.core0_client.client.container.create(self.flist, nics=nics).get()
+        container_1 = self.core0_client.client.container.client(int(uid_1))
 
         nics = [{'type': nics_type[1]['type'],
                  'id': nics[1]['id'],
                  'config': {'dhcp': False,
                             'gateway': nics[1]['config']['cidr'][-3],
                             'cidr': nics[1]['config']['cidr'][-4] + '20/24'}}]
-        uid = self.core0_client.client.container.create(self.flist, nics=nics).get().data
+        uid = self.core0_client.client.container.create(self.flist, nics=nics).get()
         container_2 = self.core0_client.client.container.client(int(uid))
 
         self.lg.info('Make sure that those two containers can ping each others')
@@ -429,6 +434,8 @@ class TestGatewayAPICreation(TestcasesBase):
         response = container_2.bash(
             'python3 -c "from urllib.request import urlopen; urlopen(\'{}\')"'.format('container1')).get()
         self.assertEqual(response.state, 'SUCCESS')
+        self.core0_client.client.container.delete(int(uid_1))
+        self.core0_client.client.container.delete(int(uid))
 
     def test011_create_gateway_portforwards(self):
         """ GAT-133
@@ -444,7 +451,7 @@ class TestGatewayAPICreation(TestcasesBase):
 
         """
         self.lg.info(' [*] Create bridge (B1) on node (N0), should succeed with 201')
-        response, data = self.bridges_api.post_nodes_bridges(self.nodeid, networkMode='static', nat=True)
+        response, self.bridge_data = self.bridges_api.post_nodes_bridges(self.nodeid, networkMode='static', nat=True)
         self.assertEqual(response.status_code, 201, response.content)
         time.sleep(3)
 
@@ -454,7 +461,7 @@ class TestGatewayAPICreation(TestcasesBase):
             'type': 'bridge',
             'gateway': True,
             'dhcp': False,
-            'bridge_name': data['name'],
+            'bridge_name': self.bridge_data['name'],
             'zerotierbridge': ''
 
         },
@@ -480,8 +487,8 @@ class TestGatewayAPICreation(TestcasesBase):
             }
         ]
 
-        response, data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics, portforwards=portforwards)
-        self.assertEqual(response.status_code, 201, response.content)
+        self.response, self.data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics, portforwards=portforwards)
+        self.assertEqual(self.response.status_code, 201, response.content)
 
         self.lg.info(' [*] Create container')
         self.core0_client.create_ovs_container()
@@ -490,9 +497,9 @@ class TestGatewayAPICreation(TestcasesBase):
                            "hwaddr": nics[1]['dhcpserver']['hosts'][0]['macaddress'],
                            "config": {"dhcp": True}}]
 
-        response, data = self.containers_api.post_containers(self.nodeid, nics=nics_container)
+        response, self.container_data = self.containers_api.post_containers(self.nodeid, nics=nics_container)
         self.assertEqual(response.status_code, 201, " [*] Can't create container.")
-        container = self.core0_client.get_container_client(data['name'])
+        container = self.core0_client.get_container_client(self.container_data['name'])
         self.assertTrue(container)
 
         self.lg.info(" [*] Start any service in this container")
@@ -562,15 +569,15 @@ class TestGatewayAPICreation(TestcasesBase):
         nics = self.get_gateway_nic(nics_types=nics_type)
         c1_ip = nics[1]["dhcpserver"]["hosts"][0]["ipaddress"]
 
-        response, data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics)
-        self.assertEqual(response.status_code, 201, response.content)
+        self.response, self.data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics)
+        self.assertEqual(self.response.status_code, 201, self.response.content)
 
         self.lg.info(" [*] create (c1) containers for each Gw. ")
         c1_nics = [{'type': nics[1]['type'],
                     'id': nics[1]['id'],
                     "hwaddr": nics[1]["dhcpserver"]["hosts"][0]["macaddress"],
                     'config': {"dhcp": True}}]
-        response, data = self.containers_api.post_containers(nodeid=self.nodeid, nics=c1_nics)
+        response, self.container_data = self.containers_api.post_containers(nodeid=self.nodeid, nics=c1_nics)
 
         self.assertEqual(response.status_code, 201)
         c1_client = self.core0_client.get_container_client(data['name'])
@@ -597,18 +604,18 @@ class TestGatewayAPICreation(TestcasesBase):
         nics = self.get_gateway_nic(nics_types=nics_type)
         c2_ip = nics[1]["dhcpserver"]["hosts"][0]["ipaddress"]
 
-        response, data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics)
-        self.assertEqual(response.status_code, 201, response.content)
+        self.response, self.data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics)
+        self.assertEqual(self.response.status_code, 201, self.response.content)
 
         self.lg.info(" [*] create (c2) containers for each Gw. ")
         c2_nics = [{'type': nics[1]['type'],
                     'id': nics[1]['id'],
                     "hwaddr": nics[1]["dhcpserver"]["hosts"][0]["macaddress"],
                     'config': {"dhcp": True}}]
-        response, data = self.containers_api.post_containers(nodeid=self.nodeid, nics=c2_nics)
+        response, self.container_data = self.containers_api.post_containers(nodeid=self.nodeid, nics=c2_nics)
 
         self.assertEqual(response.status_code, 201)
-        c2_client = self.core0_client.get_container_client(data['name'])
+        c2_client = self.core0_client.get_container_client(self.container_data['name'])
         self.assertTrue(c2_client)
 
         response = c1_client.bash('ping -c 5 %s' % c2_ip).get()
@@ -665,15 +672,13 @@ class TestGatewayAPIUpdate(TestcasesBase):
         }
 
         self.core0_client.create_ovs_container()
-        response = self.gateways_api.post_nodes_gateway(self.nodeid, self.body)
-        self.assertEqual(response.status_code, 201)
+        self.response, self.data = self.gateways_api.post_nodes_gateway(self.nodeid, self.body)
+        self.assertEqual(self.response.status_code, 201)
 
     def tearDown(self):
         self.lg.info(' [*] Delete all node {} gateways'.format(self.nodeid))
-        response = self.gateways_api.list_nodes_gateways(self.nodeid)
-        self.assertEqual(response.status_code, 200)
-        for gw in response.json():
-            self.gateways_api.delete_nodes_gateway(self.nodeid, gw['name'])
+        if self.data:
+            self.gateways_api.delete_nodes_gateway(self.nodeid, self.data['name'])
         super().tearDown()
 
     def test001_list_gateways(self):
