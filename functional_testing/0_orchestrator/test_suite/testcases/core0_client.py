@@ -255,7 +255,7 @@ class Client:
         ovs_exist = [key for key, value in containers.items()]
         if not ovs_exist:
             ovs_flist = "https://hub.gig.tech/gig-official-apps/ovs.flist"
-            ovs = int(self.client.container.create(ovs_flist, host_network=True, tags=['ovs']).get().data)
+            ovs = int(self.client.container.create(ovs_flist, host_network=True, tags=['ovs'], privileged=True).get())
             ovs_client = self.client.container.client(ovs)
             time.sleep(2)
             ovs_client.json('ovs.bridge-add', {"bridge": "backplane"})
