@@ -1,5 +1,5 @@
-from orchestrator_objects.orchestrator_apis import *
-from orchestrator_objects.orchestrator_base import OrchestratorBase
+from framework.orchestrator_apis import *
+from framework.orchestrator_base import OrchestratorBase
 
 
 class ZerotiersAPI(OrchestratorBase):

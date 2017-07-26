@@ -1,4 +1,4 @@
-from orchestrator_objects.orchestrator_apis import *
+from framework.orchestrator_apis import *
 
 
 class NodesAPI:

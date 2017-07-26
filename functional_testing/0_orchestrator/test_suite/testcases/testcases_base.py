@@ -1,6 +1,6 @@
 import uuid, random, requests, time, signal, logging
 from unittest import TestCase
-from orchestrator_objects.orchestrator_driver import OrchasteratorDriver
+from framework.orchestrator_driver import OrchasteratorDriver
 from nose.tools import TimeExpired
 from testcases.core0_client import Client
 
