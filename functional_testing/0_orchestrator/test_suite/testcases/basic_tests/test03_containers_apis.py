@@ -3,7 +3,6 @@ from testcases.testcases_base import TestcasesBase
 
 
 class TestcontaineridAPI(TestcasesBase):
-<<<<<<< HEAD:functional_testing/0_orchestrator/test_suite/testcases/basic_tests/test03_containers_apis.py
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -14,35 +13,6 @@ class TestcontaineridAPI(TestcasesBase):
             self.lg.info(' [*] Create new container. ')
             self.response, self.data = self.containers_api.post_containers(nodeid=self.nodeid)
             self.assertEqual(self.response.status_code, 201, " [*] Can't create new container.")
-=======
-    def setUp(self):
-        super().setUp()
-        self.containers_api = ContainersAPI()
-        self.lg.info('Choose one random node of list of running nodes.')
-        self.node_id = self.get_random_node()
-        if self.node_id is None:
-            self.lg.info(' No node found')
-            return
-        self.node = {}
-        for node in self.nodes:
-            if node['id'] == self.node_id:
-                self.g8os_ip = node['ip']
-                self.node = node
-                break
-        
-        self.jwt = self.nodes_api.jwt
-        self.g8core = Client(self.g8os_ip, password=self.jwt)
-
-        self.root_url = "https://hub.gig.tech/gig-official-apps/ubuntu1604.flist"
-        self.storage = "ardb://hub.gig.tech:16379"
-        self.container_name = self.rand_str()
-        self.hostname = self.rand_str()
-        self.job_body = {'name': 'yes'}
-        self.container_body = {"name": self.container_name, "hostname": self.hostname, "flist": self.root_url,
-                               "hostNetworking": False, "initProcesses": [], "filesystems": [],
-                               "ports": [], "storage": self.storage
-                               }
->>>>>>> master:functional_testing/Grid_API_Testing/api_testing/testcases/basic_tests/test03_containers_apis.py
 
     def tearDown(self):
         self.lg.info(' [*] TearDown: Delete all created container ')
