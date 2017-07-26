@@ -1,6 +1,6 @@
-
 from zeroos.core0.client import Client as core0_client
 import time
+
 
 class Client:
     def __init__(self, ip, password):
@@ -28,10 +28,10 @@ class Client:
             mtu = int(self.stdout(self.client.bash('cat /sys/class/net/{}/mtu'.format(nic))))
             hardwareaddr = self.stdout(self.client.bash('cat /sys/class/net/{}/address'.format(nic)))
             if hardwareaddr == '00:00:00:00:00:00':
-                    hardwareaddr = ''
-            addrs = [ x for x in addrs]
-            if addrs == [] :
-                addrs= None
+                hardwareaddr = ''
+            addrs = [x for x in addrs]
+            if addrs == []:
+                addrs = None
             tmp = {"name": nic, "hardwareaddr": hardwareaddr, "mtu": mtu, "addrs": addrs}
             nicInfo.append(tmp)
 
@@ -42,7 +42,7 @@ class Client:
         nics = self.client.bash('ls /sys/class/net').get().stdout.splitlines()
         for nic in nics:
             status = self.client.bash('cat /sys/class/net/{}/operstate'.format(nic)).get().stdout.strip()
-            bridge = {"name":nic, "status":status}
+            bridge = {"name": nic, "status": status}
             bridgesInfo.append(bridge)
 
         return bridgesInfo
@@ -50,22 +50,21 @@ class Client:
     def get_nodes_mem(self):
         lines = self.client.bash('cat /proc/meminfo').get().stdout.splitlines()
         memInfo = {'available': 0, 'buffers': 0, 'cached': 0,
-                    'inactive': 0, 'total': 0}
+                   'inactive': 0, 'total': 0}
         for line in lines:
             line = line.replace('\t', '').strip()
             key = line[:line.find(':')].lower()
-            value = line[line.find(':')+2:line.find('kB')].strip()
+            value = line[line.find(':') + 2:line.find('kB')].strip()
             if 'mem' == key[:3]:
                 key = key[3:]
             if key in memInfo.keys():
-
-                memInfo[key] = int(value)*1024
+                memInfo[key] = int(value) * 1024
         return memInfo
 
     def get_nodes_info(self):
         hostname = self.client.system('uname -n').get().stdout.strip()
         krn_name = self.client.system('uname -s').get().stdout.strip().lower()
-        return {"hostname":hostname, "os":krn_name}
+        return {"hostname": hostname, "os": krn_name}
 
     def get_nodes_disks(self):
         disks_info = []
@@ -77,14 +76,14 @@ class Client:
                 for part in disk['children']:
                     disk_parts.append({
                         "name": '/dev/{}'.format(part['name']),
-                        "size": int(int(part['size'])/1073741824),
+                        "size": int(int(part['size']) / 1073741824),
                         "partuuid": part['partuuid'] or '',
                         "label": part['label'] or '',
                         "fstype": part['fstype'] or ''
                     })
 
             if int(disk['rota']):
-                if int(disk['size']) > (1073741824**1024*7):
+                if int(disk['size']) > (1073741824 ** 1024 * 7):
                     disk_type = 'archive'
                 else:
                     disk_type = 'hdd'
@@ -93,16 +92,15 @@ class Client:
                     disk_type = 'nvme'
                 else:
                     disk_type = 'ssd'
-            
+
             disks_info.append({
                 "device": '/dev/{}'.format(disk['name']),
-                "size": int(int(disk['size'])/1073741824),
+                "size": int(int(disk['size']) / 1073741824),
                 "type": disk_type,
                 "partitions": disk_parts
             })
 
         return disks_info
-
 
     def get_jobs_list(self):
         jobs = self.client.job.list()
@@ -142,7 +140,7 @@ class Client:
         freeDisks = []
         disks = self.client.disk.list()['blockdevices']
         for disk in disks:
-            if not disk['mountpoint'] and disk['kname'] != 'sda':
+            if not disk['mountpoint']:
                 if 'children' not in disk.keys():
                     freeDisks.append('/dev/{}'.format(disk['kname']))
                 else:
@@ -158,7 +156,7 @@ class Client:
         processes = self.client.process.list()
         return processes
 
-    def get_container_client(self,container_name):
+    def get_container_client(self, container_name):
         container = self.client.container.find(container_name)
         if not container:
             return False
@@ -170,13 +168,14 @@ class Client:
         container = (self.client.container.find(container_id))
         if not container:
             return False
-        container_id=list(container.keys())[0]
+        container_id = list(container.keys())[0]
         container_info = {}
         golden_data = self.client.container.list().get(str(container_id), None)
         if not golden_data:
             return False
         golden_value = golden_data['container']
-        container_info['nics'] = ([{i: nic[i] for i in nic if i != 'hwaddr'} for nic in golden_value['arguments']['nics']])
+        container_info['nics'] = (
+            [{i: nic[i] for i in nic if i != 'hwaddr'} for nic in golden_value['arguments']['nics']])
         container_info['ports'] = (['%s:%s' % (key, value) for key, value in golden_value['arguments']['port'].items()])
         container_info['hostNetworking'] = golden_value['arguments']['host_network']
         container_info['hostname'] = golden_value['arguments']['hostname']
@@ -213,10 +212,10 @@ class Client:
         container = self.client.container.client(container_id)
         for _ in range(timeout):
             if removed:
-                if job_id not in [item['cmd']['id']for item in container.job.list()]:
+                if job_id not in [item['cmd']['id'] for item in container.job.list()]:
                     return True
             else:
-                if job_id in [item['cmd']['id']for item in container.job.list()]:
+                if job_id in [item['cmd']['id'] for item in container.job.list()]:
                     return True
             time.sleep(1)
         return False
@@ -224,7 +223,7 @@ class Client:
     def get_client_zt_ip(self, client):
         nics = client.info.nic()
         nic = [nic for nic in nics if 'zt' in nic['name']]
-        if not nic :
+        if not nic:
             return False
         address = nic[0]['addrs'][0]['addr']
         if not address:
@@ -235,7 +234,7 @@ class Client:
     def get_container_bridge_ip(self, client, ip_range):
         nics = client.info.nic()
         for nic in nics:
-            addresses = [x['addr'] for x in nic['addrs'] if x['addr'][:x['addr'].find('/')] in  ip_range]
+            addresses = [x['addr'] for x in nic['addrs'] if x['addr'][:x['addr'].find('/')] in ip_range]
             if addresses:
                 address = addresses[0]
                 return address[:address.find('/')]
@@ -256,7 +255,7 @@ class Client:
         ovs_exist = [key for key, value in containers.items()]
         if not ovs_exist:
             ovs_flist = "https://hub.gig.tech/gig-official-apps/ovs.flist"
-            ovs = int(self.client.container.create(ovs_flist, host_network=True , tags=['ovs']).get().data)
+            ovs = int(self.client.container.create(ovs_flist, host_network=True, tags=['ovs'], privileged=True).get())
             ovs_client = self.client.container.client(ovs)
             time.sleep(2)
             ovs_client.json('ovs.bridge-add', {"bridge": "backplane"})

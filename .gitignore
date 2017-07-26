@@ -2,3 +2,4 @@ auto_generated_docs/_build/*
 *.log
 *.pyc
 *.xml
+*.idea
