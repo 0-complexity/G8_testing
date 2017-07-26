@@ -349,7 +349,7 @@ class TestGatewayAPICreation(TestcasesBase):
         nics_container = [{
             'type': 'vlan',
             'id': nics[1]['id'],
-            'hwaddr': nics[1]['dhcpserver'][0]['macaddress'],
+            'hwaddr': nics[1]['dhcpserver']['hosts'][0]['macaddress'],
             'config': {'dhcp': True}
         }]
 
@@ -358,8 +358,8 @@ class TestGatewayAPICreation(TestcasesBase):
         container_1_nics = container_1.info.nic()
         interface = [x for x in container_1_nics if x['name'] == 'eth0']
         self.assertNotEqual(interface, [])
-        self.assertIn(nics[1]['dhcpserver'][0]['ipaddress'], [x['addr'][:-3] for x in interface[0]['addrs']])
-        self.assertEqual(nics[1]['dhcpserver'][0]['macaddress'], interface[0]['hardwareaddr'])
+        self.assertIn(nics[1]['dhcpserver']['hosts'][0]['ipaddress'], [x['addr'][:-3] for x in interface[0]['addrs']])
+        self.assertEqual(nics[1]['dhcpserver']['hosts'][0]['macaddress'], interface[0]['hardwareaddr'])
         self.core0_client.client.container.terminate(int(uid))
 
     def test010_create_gateway_httpproxy(self):
@@ -393,36 +393,36 @@ class TestGatewayAPICreation(TestcasesBase):
 
             }
         ]
-        nics = self.get_gateway_nic(nics_types=nics_type)
+        nics_data = self.get_gateway_nic(nics_types=nics_type)
         httpproxies = [
             {
                 "host": "container1",
-                "destinations": ['http://{}:1000'.format(nics[1]['config']['cidr'][:-4] + '10/24')],
+                "destinations": ['http://{}:1000'.format(nics_data[1]['config']['cidr'][:-4] + '10/24')],
                 "types": ['http', 'https']
             },
             {
                 "host": "container2",
-                "destinations": ['http://{}:2000'.format(nics[1]['config']['cidr'][:-4] + '20/24')],
+                "destinations": ['http://{}:2000'.format(nics_data[1]['config']['cidr'][:-4] + '20/24')],
                 "types": ['http', 'https']
             }
         ]
 
-        self.response, self.data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics, httpproxies=httpproxies)
+        self.response, self.data = self.gateways_api.post_nodes_gateway(node_id=self.nodeid, nics=nics_data, httpproxies=httpproxies)
         self.assertEqual(response.status_code, 201, response.content)
 
         nics = [{'type': nics_type[1]['type'],
-                 'id': nics['1']['id'],
+                 'id': nics_data[1]['id'],
                  'config': {'dhcp': False,
-                            'gateway': nics[1]['config']['cidr'][:-3],
-                            'cidr': nics[1]['config']['cidr'][:-4] + '10/24'}}]
+                            'gateway': nics_data[1]['config']['cidr'][:-3],
+                            'cidr': nics_data[1]['config']['cidr'][:-4] + '10/24'}}]
         uid_1 = self.core0_client.client.container.create(self.flist, nics=nics).get()
         container_1 = self.core0_client.client.container.client(int(uid_1))
 
         nics = [{'type': nics_type[1]['type'],
-                 'id': nics[1]['id'],
+                 'id': nics_data[1]['id'],
                  'config': {'dhcp': False,
-                            'gateway': nics[1]['config']['cidr'][:-3],
-                            'cidr': nics[1]['config']['cidr'][:-4] + '20/24'}}]
+                            'gateway': nics_data[1]['config']['cidr'][:-3],
+                            'cidr': nics_data[1]['config']['cidr'][:-4] + '20/24'}}]
         uid = self.core0_client.client.container.create(self.flist, nics=nics).get()
         container_2 = self.core0_client.client.container.client(int(uid))
 
@@ -433,11 +433,11 @@ class TestGatewayAPICreation(TestcasesBase):
         time.sleep(2)
 
         response = container_1.bash(
-            'python3 -c "from urllib.request import urlopen; urlopen(\'{}\')"'.format('container2')).get()
+            'python3 -c "from urllib.request import urlopen; urlopen(\'{}\')"'.format('http://container2')).get()
         self.assertEqual(response.state, 'SUCCESS')
 
         response = container_2.bash(
-            'python3 -c "from urllib.request import urlopen; urlopen(\'{}\')"'.format('container1')).get()
+            'python3 -c "from urllib.request import urlopen; urlopen(\'{}\')"'.format('http://container1')).get()
         self.assertEqual(response.state, 'SUCCESS')
         self.core0_client.client.container.terminate(int(uid_1))
         self.core0_client.client.container.terminate(int(uid))
@@ -485,7 +485,7 @@ class TestGatewayAPICreation(TestcasesBase):
                 "srcport": 80,
                 "srcip": nics[0]['config']['cidr'][:-3],
                 "dstport": 80,
-                "dstip": nics[1]['dhcpserver']['hosts']['ipaddress'],
+                "dstip": nics[1]['dhcpserver']['hosts'][0]['ipaddress'],
                 "protocols": [
                     "tcp"
                 ]
