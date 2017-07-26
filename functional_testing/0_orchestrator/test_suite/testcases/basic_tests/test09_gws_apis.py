@@ -21,13 +21,15 @@ class TestGatewayAPICreation(TestcasesBase):
 
         self.lg.info(' [*] TearDown:delete all created container ')
         if 'container_data' in attributes:
-            self.containers_api.delete_containers_containerid(self.nodeid,
-                                                              self.container_data['name'])
+            if self.container_data:
+                self.containers_api.delete_containers_containerid(self.nodeid,
+                                                                  self.container_data['name'])
 
         self.lg.info(' [*] TearDown:delete all created bridges ')
         if 'bridge_data' in attributes:
-            self.bridges_api.delete_nodes_bridges_bridgeid(self.nodeid,
-                                                           self.bridge_data['name'])
+            if self.bridge_data:
+                self.bridges_api.delete_nodes_bridges_bridgeid(self.nodeid,
+                                                               self.bridge_data['name'])
         super().tearDown()
 
     def create_vm(self, nics):
@@ -659,7 +661,7 @@ class TestGatewayAPIUpdate(TestcasesBase):
 
     def tearDown(self):
         self.lg.info(' [*] Delete all node {} gateways'.format(self.nodeid))
-        if self.data:
+        if 'data' in self.__dict__.keys():
             self.gateways_api.delete_nodes_gateway(self.nodeid, self.data['name'])
         super().tearDown()
 
