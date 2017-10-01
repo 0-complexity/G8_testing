@@ -3,15 +3,12 @@ from time import sleep
 from random import randint
 import uuid
 import unittest
-
 from ....utils.utils import BasicACLTest
-from JumpScale import j
-from JumpScale.portal.portal.PortalClient2 import ApiError
-from JumpScale.baselib.http_client.HttpClient import HTTPError
-
+from js9 import j
+from JumpScale9.clients.http.HttpClient import HTTPError
+from JumpScale9Lib.clients.portal.PortalClient import ApiError
 
 class ACLCLOUDSPACE(BasicACLTest):
-
     def setUp(self):
         super(ACLCLOUDSPACE, self).setUp()
 
@@ -20,8 +17,8 @@ class ACLCLOUDSPACE(BasicACLTest):
 
 class Read(ACLCLOUDSPACE):
 
-    def test003_cloudspace_get_with_readonly_user(self):
-        """ ACL-18
+    def test001_cloudspace_get_with_readonly_user(self):
+        """ ACL-06
         *Test case for cloudspace get api with user has read only access.*
 
         **Test Scenario:**
@@ -38,7 +35,7 @@ class Read(ACLCLOUDSPACE):
         self.lg('- create cloudspace with user1')
         self._cloudspaces = []
         cloudspace_id = self.cloudapi_cloudspace_create(self.account_id,
-                                                        self.location,
+                                                        self.location_id,
                                                         self.account_owner)
         self.lg('1- get cloudspace with user1')
         cloudspace1 = self.account_owner_api.cloudapi.cloudspaces.get(cloudspaceId=cloudspace_id)
@@ -48,9 +45,8 @@ class Read(ACLCLOUDSPACE):
         try:
             self.user_api.cloudapi.cloudspaces.get(cloudspaceId=cloudspace_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
-
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
         self.lg('3- add user1 to the cloudspace owned by user2')
         self.api.cloudapi.cloudspaces.addUser(cloudspaceId=cloudspace_id,
                                               userId=self.user,
@@ -70,13 +66,13 @@ class Read(ACLCLOUDSPACE):
         try:
             self.user_api.cloudapi.cloudspaces.get(cloudspaceId=cloudspace_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
 
         self.lg('%s ENDED' % self._testID)
 
-    def test006_cloudspace_list_with_another_cloudspace(self):
-        """ ACL-14
+    def test002_cloudspace_list_with_another_cloudspace(self):
+        """ ACL-07
         *Test case for cloud space list API with user has read only access.*
 
         **Test Scenario:**
@@ -92,7 +88,7 @@ class Read(ACLCLOUDSPACE):
         """
         self.lg('%s STARTED' % self._testID)
         self.lg('1- Create new cloud space')
-        cloudspace_id = self.cloudapi_cloudspace_create(self.account_id, self.location,
+        cloudspace_id = self.cloudapi_cloudspace_create(self.account_id, self.location_id,
                                                         self.account_owner)
         self.lg('2- List account owner cloud spaces')
         cloudspaces = self.account_owner_api.cloudapi.cloudspaces.list()
@@ -117,7 +113,7 @@ class Read(ACLCLOUDSPACE):
         self.assertTrue(filter(lambda e: e['userGroupId'] == self.user and e['right'] == 'R', acl))
 
         self.lg('7- Create another cloud space')
-        self.cloudapi_cloudspace_create(self.account_id, self.location, self.account_owner)
+        self.cloudapi_cloudspace_create(self.account_id, self.location_id, self.account_owner)
 
         self.lg('8- Try list user\'s cloud spaces,')
         cloudspaces = self.user_api.cloudapi.cloudspaces.list()
@@ -125,8 +121,8 @@ class Read(ACLCLOUDSPACE):
 
         self.lg('%s ENDED' % self._testID)
 
-    def test007_cloudspace_list_deleted_cloudspace(self):
-        """ ACL-15
+    def test003_cloudspace_list_deleted_cloudspace(self):
+        """ ACL-08
         *Test case for cloud space list API with user has read only access.*
 
         **Test Scenario:**
@@ -139,7 +135,7 @@ class Read(ACLCLOUDSPACE):
         """
         self.lg('%s STARTED' % self._testID)
         self.lg('1- Create new cloud space')
-        cloudspace_id = self.cloudapi_cloudspace_create(self.account_id, self.location,
+        cloudspace_id = self.cloudapi_cloudspace_create(self.account_id, self.location_id,
                                                         self.account_owner)
 
         self.lg('2- Give the user read access to 1 cloud space')
@@ -158,8 +154,9 @@ class Read(ACLCLOUDSPACE):
 
         self.lg('%s ENDED' % self._testID)
 
-    def test008_cloudspace_disabled_deleted_account(self):
-        """ ACL-16
+    @unittest.skip("https://docs.greenitglobe.com/openvcloud/openvcloud/issues/49")
+    def test004_cloudspace_disabled_deleted_account(self):
+        """ ACL-09
         *Test case for cloud space list API with user has read only access.*
 
         **Test Scenario:**
@@ -197,8 +194,8 @@ class Read(ACLCLOUDSPACE):
 
         self.lg('%s ENDED' % self._testID)
 
-    def test009_machine_list_deleted_machine(self):
-        """ ACL-17
+    def test005_machine_list_deleted_machine(self):
+        """ ACL-10
         *Test case for machine list API with user has read only access.*
 
         **Test Scenario:**
@@ -235,8 +232,8 @@ class Read(ACLCLOUDSPACE):
 
         self.lg('%s ENDED' % self._testID)
 
-    def test010_machine_list_deleted_cloudspace(self):
-        """ ACL-19
+    def test006_machine_list_deleted_cloudspace(self):
+        """ ACL-11
         *Test case for machine list API with user has read only access.*
 
         **Test Scenario:**
@@ -256,18 +253,19 @@ class Read(ACLCLOUDSPACE):
 
         self.wait_for_status('DESTROYED', self.api.cloudapi.cloudspaces.get,
                              cloudspaceId=self.cloudspace_id)
-        # This is a temp fix to workaround CB-855
-        for _ in xrange(10):
-            if not self.user_api.cloudapi.machines.list(cloudspaceId=self.cloudspace_id):
-                break
-            sleep(1)
+        # # This is a temp fix to workaround CB-855
+        # for _ in xrange(10):
+        #     if not self.user_api.cloudapi.machines.list(cloudspaceId=self.cloudspace_id):
+        #         break
+        #     sleep(1)
 
         self.assertFalse(self.user_api.cloudapi.machines.list(cloudspaceId=self.cloudspace_id))
 
         self.lg('%s ENDED' % self._testID)
 
-    def test011_machine_list_disabled_deleted_account(self):
-        """ ACL-20
+    @unittest.skip("https://docs.greenitglobe.com/openvcloud/openvcloud/issues/49")
+    def test07_machine_list_disabled_deleted_account(self):
+        """ ACL-12
         *Test case for machine list API with user has read only access.*
 
         **Test Scenario:**
@@ -302,16 +300,16 @@ class Read(ACLCLOUDSPACE):
                              accountId=self.account_id)
         self.CLEANUP['accountId'].remove(self.account_id)
         # This is a temp fix to workaround CB-855
-        for _ in xrange(10):
-            if not self.user_api.cloudapi.machines.list(cloudspaceId=self.cloudspace_id):
-                break
-            sleep(1)
+        # for _ in xrange(10):
+        #     if not self.user_api.cloudapi.machines.list(cloudspaceId=self.cloudspace_id):
+        #         break
+        #     sleep(1)
 
         self.assertFalse(self.user_api.cloudapi.machines.list(cloudspaceId=self.cloudspace_id))
         self.lg('%s ENDED' % self._testID)
 
-    def test012_portforwarding_list(self):
-        """ ACL-30
+    def test08_portforwarding_list(self):
+        """ ACL-13
         *Test case for portforwaring list API with user has read access.*
 
         **Test Scenario:**
@@ -337,9 +335,8 @@ class Read(ACLCLOUDSPACE):
             self.user_api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id,
                                                        machineId=machine_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
-
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
         self.lg('3- Give the user read access to the newly created machine')
         self.account_owner_api.cloudapi.machines.addUser(machineId=machine_id,
                                                          userId=self.user,
@@ -372,8 +369,8 @@ class Read(ACLCLOUDSPACE):
 
 class Write(ACLCLOUDSPACE):
 
-    def test003_cloudspace_deploy_getDefenseShield(self):
-        """ ACL-31
+    def test001_cloudspace_deploy_getDefenseShield(self):
+        """ ACL-14
         *Test case for deploy/getDefenseShield cloudspace api with user has write access on cloud space level.*
 
         **Test Scenario:**
@@ -392,9 +389,8 @@ class Write(ACLCLOUDSPACE):
         try:
             self.user_api.cloudapi.cloudspaces.deploy(cloudspaceId=self.cloudspace_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
-
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
         self.lg('2- add user to the cloudspace created by user1 with write access')
         self.add_user_to_cloudspace(cloudspace_id=self.cloudspace_id, user=self.user, accesstype='CRX')
 
@@ -411,9 +407,8 @@ class Write(ACLCLOUDSPACE):
         try:
             new_user_api.cloudapi.cloudspaces.getDefenseShield(cloudspaceId=self.cloudspace_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
-
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
         self.lg('6- add new_user to the cloudspace created by user1 with write access')
         self.add_user_to_cloudspace(cloudspace_id=self.cloudspace_id, user=new_user, accesstype='CRX')
 
@@ -424,8 +419,8 @@ class Write(ACLCLOUDSPACE):
 
         self.lg('%s ENDED' % self._testID)
 
-    def test004_cloudspace_portforwarding_add_update_delete(self):
-        """ ACL-32
+    def test002_cloudspace_portforwarding_add_update_delete(self):
+        """ ACL-15
         *Test case for add/update/delete portforwarding api with user has write access on cloud space level.*
 
         **Test Scenario:**
@@ -484,8 +479,8 @@ class Write(ACLCLOUDSPACE):
         #                                                  localPort=1000000,
         #                                                  protocol=protocol)
         # except ApiError as e:
-        #     self.lg('- expected error raised %s' % e.message)
-        #     self.assertEqual(e.message, '400 Bad Request')
+        #     self.lg('- expected error raised %s ' % e.response.content)
+        #     self.assertEqual(e.response.status_code, 400 ,e.response.content)
 
         self.lg('6- Delete portforwarding')
         self.user_api.cloudapi.portforwarding.delete(cloudspaceId=self.cloudspace_id,
@@ -500,13 +495,14 @@ class Write(ACLCLOUDSPACE):
             self.user_api.cloudapi.portforwarding.delete(cloudspaceId=self.cloudspace_id,
                                                          id=portforwarding_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
 
         self.lg('%s ENDED' % self._testID)
+
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/745')
-    def test005_cloudspace_create_clone_delete_machine(self):
-        """ ACL-33
+    def test003_cloudspace_create_clone_delete_machine(self):
+        """ ACL-16
         *Test case for create/clone/delete machine api with user has write access on cloud space level.*
 
         **Test Scenario:**
@@ -531,9 +527,8 @@ class Write(ACLCLOUDSPACE):
             self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id,
                                          api=self.user_api)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
-
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
         self.lg('3- try to clone created machine with new user [user], should return 403')
         name = str(uuid.uuid4()).replace('-', '')[0:10]
         try:
@@ -541,16 +536,14 @@ class Write(ACLCLOUDSPACE):
                                                   name=name)
 
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
-
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
         self.lg('4- try to delete created machine with new user [user], should return 403')
         try:
             self.user_api.cloudapi.machines.delete(machineId=owner_machine_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
-
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
         self.lg('5- add user to the cloudspace created by user1 with write access')
         self.add_user_to_cloudspace(cloudspace_id=self.cloudspace_id, user=self.user, accesstype='CRX')
 
@@ -580,7 +573,7 @@ class Write(ACLCLOUDSPACE):
         try:
             self.api.cloudapi.machines.get(machineId=cloned_machine_id)
         except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
+            self.lg('- expected error raised %s ' % e.response.content)
             self.assertEqual(e.status_code, 404)
 
         self.lg('%s ENDED' % self._testID)
@@ -590,8 +583,8 @@ class Write(ACLCLOUDSPACE):
 #     def test012_machine_importToNewMachine_wrong(self):
 #         pass
 
-    def test023_machine_addUser(self):
-        """ ACL-22
+    def test04_machine_addUser(self):
+        """ ACL-17
         *Test case for to check cloud space user APIs with write access.*
 
         **Test Scenario:**
@@ -628,8 +621,8 @@ class Write(ACLCLOUDSPACE):
             self.user_api.cloudapi.machines.addUser(machineId=machine['id'],
                                                     userId=self.not_user, accesstype='CRX')
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
         # to do .. should check if you pass wrong access type.
 
     def test025_machine_deleteUser(self):
@@ -673,8 +666,8 @@ class Write(ACLCLOUDSPACE):
             self.user_api.cloudapi.machines.deleteUser(machineId=machine['id'],
                                                        userId=self.not_user)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
 
         machine_after_deleteuser = self.api.cloudapi.machines.get(machine['id'])
         self.assertEqual(machine_after_deleteuser['acl'], machine['acl'])
@@ -725,15 +718,15 @@ class Write(ACLCLOUDSPACE):
             self.user_api.cloudapi.machines.addUser(machineId=machine['id'],
                                                     userId=self.user2, accesstype='ZYT')
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '400 Bad Request')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 400 ,e.response.content)
 
         self.lg('6- Giving user2 read access to the created machine, should return 412 ')
         try:
             self.user_api.cloudapi.machines.updateUser(machineId=machine['id'],
                                                        userId=self.user2, accesstype='R')
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
+            self.lg('- expected error raised %s ' % e.response.content)
             self.assertEqual(e.message, '412 Precondition Failed')
 
         self.lg('7- Giving user2 write access to the created machine, should return 412 ')
@@ -741,7 +734,7 @@ class Write(ACLCLOUDSPACE):
             self.user_api.cloudapi.machines.updateUser(machineId=machine['id'],
                                                        userId=self.user2, accesstype='CRX')
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
+            self.lg('- expected error raised %s ' % e.response.content)
             self.assertEqual(e.message, '412 Precondition Failed')
 
         self.lg('8- Giving user2 wrong access to the newly created machine, should return 400 Bad Request')
@@ -749,8 +742,8 @@ class Write(ACLCLOUDSPACE):
             self.user_api.cloudapi.machines.updateUser(machineId=machine['id'],
                                                        userId=self.user2, accesstype='ZYT')
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '400 Bad Request')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 400 ,e.response.content)
 
         self.not_user = str(uuid.uuid4()).replace('-', '')[0:10]  # non registered user
         self.lg('9- Updating non_registered_user\'s access type, should return 404 Not Found')
@@ -758,8 +751,8 @@ class Write(ACLCLOUDSPACE):
             self.user_api.cloudapi.machines.updateUser(machineId=machine['id'],
                                                        userId=self.not_user, accesstype='R')
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
 
         self.lg('10- Updating registered_user\'s access type who is not added to the machine,'
                 ' should return 404 Not Found ')
@@ -769,8 +762,8 @@ class Write(ACLCLOUDSPACE):
             self.user_api.cloudapi.machines.updateUser(machineId=machine['id'],
                                                        userId=self.reg_user, accesstype='R')
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
 
         machine_after_updateuser = self.api.cloudapi.machines.get(machine['id'])
         self.assertEqual(machine_after_updateuser['acl'], machine['acl'])
@@ -829,6 +822,7 @@ class Admin(ACLCLOUDSPACE):
         **Test Scenario:**
 
         #. add user2 to the cloudspace created by user1 as admin
+
         #. get cloudspace with user2
         #. create account for user3
         #. add user3 to the cloudspace by user2 with read access, should succeed
@@ -843,7 +837,7 @@ class Admin(ACLCLOUDSPACE):
                                               userId=self.user,
                                               accesstype='ACDRUX')
 
-        cloudspace = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)
+        cloudspace = self.api.cloudapi.cloudspaces.get(cloudspaceId=self.cloudspace_id)
         self.assertIn(self.user, [acl['userGroupId'] for acl in cloudspace['acl']])
         acl_user = [acl for acl in cloudspace['acl'] if acl['userGroupId'] == self.user][0]
         self.assertEqual(acl_user['right'], 'ACDRUX')
@@ -859,7 +853,7 @@ class Admin(ACLCLOUDSPACE):
         self.user_api.cloudapi.cloudspaces.addUser(cloudspaceId=self.cloudspace_id,
                                                    userId=user3,
                                                    accesstype='R')
-        cloudspace = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)
+        cloudspace = self.api.cloudapi.cloudspaces.get(cloudspaceId=self.cloudspace_id)
         self.assertIn(user3, [acl['userGroupId'] for acl in cloudspace['acl']])
         acl_user3 = [acl for acl in cloudspace['acl'] if acl['userGroupId'] == user3][0]
         self.assertEqual(acl_user3['right'], 'R')
@@ -868,7 +862,7 @@ class Admin(ACLCLOUDSPACE):
         self.user_api.cloudapi.cloudspaces.updateUser(cloudspaceId=self.cloudspace_id,
                                                       userId=user3,
                                                       accesstype='RCX')
-        cloudspace = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)
+        cloudspace = self.api.cloudapi.cloudspaces.get(cloudspaceId=self.cloudspace_id)
         acl_user3 = [acl for acl in cloudspace['acl'] if acl['userGroupId'] == user3][0]
         self.assertEqual(acl_user3['right'], 'CRX')
 
@@ -880,9 +874,8 @@ class Admin(ACLCLOUDSPACE):
         try:
             self.user_api.cloudapi.cloudspaces.get(cloudspaceId=self.cloudspace_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
-
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
         cloudspace = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)
         self.assertEqual(cloudspace['id'], self.cloudspace_id)
 
@@ -910,7 +903,7 @@ class Admin(ACLCLOUDSPACE):
                                               userId=self.user,
                                               accesstype='ACDRUX')
 
-        cloudspace = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)
+        cloudspace = self.api.cloudapi.cloudspaces.get(cloudspaceId=self.cloudspace_id)
         self.assertIn(self.user, [acl['userGroupId'] for acl in cloudspace['acl']])
         acl_user = [acl for acl in cloudspace['acl'] if acl['userGroupId'] == self.user][0]
         self.assertEqual(acl_user['right'], 'ACDRUX')
@@ -927,8 +920,8 @@ class Admin(ACLCLOUDSPACE):
                                                        userId=not_registered_user,
                                                        accesstype='R')
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
 
         self.lg('5- try update not_registered_user access on cloudspace by admin user with write access')
         try:
@@ -936,8 +929,8 @@ class Admin(ACLCLOUDSPACE):
                                                           userId=not_registered_user,
                                                           accesstype='RCX')
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
 
         self.lg('6- try update user3 access on cloudspace by admin user with write access')
         try:
@@ -945,24 +938,24 @@ class Admin(ACLCLOUDSPACE):
                                                           userId=user3,
                                                           accesstype='RCX')
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
 
         self.lg('7- try delete cloudspace not_registered_user with admin user')
         try:
             self.user_api.cloudapi.cloudspaces.deleteUser(cloudspaceId=self.cloudspace_id,
                                                           userId=not_registered_user)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
 
         self.lg('8- try to delete user3 from the cloudspace using admin user api')
         try:
             self.user_api.cloudapi.cloudspaces.deleteUser(cloudspaceId=self.cloudspace_id,
                                                           userId=user3)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
 
         self.lg('%s ENDED' % self._testID)
 
@@ -991,7 +984,7 @@ class Admin(ACLCLOUDSPACE):
 
         self.lg('1- create new cloudspace and deploy machine with 4G memory and 10G disksize')
         newcloudspaceId = self.cloudapi_cloudspace_create(account_id=self.account_id,
-                                                          location=self.location,
+                                                          location=self.location_id,
                                                           access=self.account_owner,
                                                           api=self.account_owner_api,
                                                           maxMemoryCapacity=5,
@@ -1037,8 +1030,8 @@ class Admin(ACLCLOUDSPACE):
             self.user_api.cloudapi.cloudspaces.update(cloudspaceId=newcloudspaceId,
                                                       maxMemoryCapacity=3)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '400 Bad Request')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 400 ,e.response.content)
 
         self.lg('- get and verify cloudspace memory')
         cloudspace = scl.cloudspace.get(newcloudspaceId)
@@ -1058,8 +1051,8 @@ class Admin(ACLCLOUDSPACE):
             self.user_api.cloudapi.cloudspaces.update(cloudspaceId=newcloudspaceId,
                                                       maxVDiskCapacity=5)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '400 Bad Request')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 400 ,e.response.content)
 
         self.lg('- get and verify cloudspace disk capacity')
         cloudspace = scl.cloudspace.get(newcloudspaceId)
@@ -1073,7 +1066,7 @@ class Admin(ACLCLOUDSPACE):
         try:
             scl.cloudspace.get(newcloudspaceId)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
 
         self.lg('%s ENDED' % self._testID)

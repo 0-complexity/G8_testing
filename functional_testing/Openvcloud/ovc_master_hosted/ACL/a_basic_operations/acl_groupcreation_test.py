@@ -74,8 +74,8 @@ class group_creation(ACLACCOUNT):
             self.assertFalse(response)
 
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
     def test_3_group_creation(self):
         """ ACL-57
         *Test case for create user with created group *

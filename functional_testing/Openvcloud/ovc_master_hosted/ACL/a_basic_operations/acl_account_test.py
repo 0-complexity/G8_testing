@@ -2,10 +2,8 @@
 import uuid
 import time
 import unittest
-
 from ....utils.utils import BasicACLTest
-from JumpScale.portal.portal.PortalClient2 import ApiError
-
+from JumpScale9Lib.clients.portal.PortalClient import ApiError
 
 class ACLACCOUNT(BasicACLTest):
     def setUp(self):
@@ -14,8 +12,8 @@ class ACLACCOUNT(BasicACLTest):
 
 
 class Read(ACLACCOUNT):
-    def test003_account_get_with_readonly_user(self):
-        """ ACL-3
+    def test001_account_get_with_readonly_user(self):
+        """ ACL-01
         *Test case for account get api with user has read only access.*
 
         **Test Scenario:**
@@ -36,8 +34,8 @@ class Read(ACLACCOUNT):
         try:
             self.user_api.cloudapi.accounts.get(accountId=self.account_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('3- add user2 to the account created by user1')
         self.api.cloudapi.accounts.addUser(accountId=self.account_id,
@@ -49,22 +47,27 @@ class Read(ACLACCOUNT):
         self.assertEqual(user2_account['id'], self.account_id)
 
         self.lg('5- delete user1 account: %s' % self.account_id)
-        self.api.cloudbroker.account.delete(accountId=self.account_id, reason='testing')
-        self.wait_for_status('DESTROYED', self.api.cloudapi.accounts.get,
-                             accountId=self.account_id)
+        try:
+            self.api.cloudbroker.account.delete(accountId=self.account_id, reason='testing')
+            self.wait_for_status('DESTROYED', self.api.cloudapi.accounts.get,
+                                accountId=self.account_id)
+        except ApiError as e:
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 200 ,e.response.content)
+
         self.CLEANUP['accountId'].remove(self.account_id)
 
         self.lg('6- get account with user1')
         try:
             self.user_api.cloudapi.accounts.get(accountId=self.account_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
 
         self.lg('%s ENDED' % self._testID)
 
-    def test004_account_list_with_readonly_user(self):
-        """ ACL-4
+    def test002_account_list_with_readonly_user(self):
+        """ ACL-02
         *Test case for account list api with user has read only access.*
 
         **Test Scenario:**
@@ -119,8 +122,9 @@ class Read(ACLACCOUNT):
 
 
 class Write(ACLACCOUNT):
+
     def test003_cloudspace_create(self):
-        """ ACL-9
+        """ ACL-03
         *Test case for cloudspace_create api with user has write access.*
 
         **Test Scenario:**
@@ -136,7 +140,7 @@ class Write(ACLACCOUNT):
         self._cloudspaces = []
         self.lg('1- create cloudspace with user1')
         self.cloudspaceId1 = self.cloudapi_cloudspace_create(account_id=self.account_id,
-                                                             location=self.location,
+                                                             location_id=self.location_id,
                                                              access=self.account_owner,
                                                              api=self.account_owner_api)
         self._cloudspaces.append(self.cloudspaceId1)
@@ -145,13 +149,14 @@ class Write(ACLACCOUNT):
 
         self.lg('2- try to create cloudspace on this account using user2 api')
         try:
-            self.cloudapi_cloudspace_create(account_id=self.account_id,
-                                            location=self.location,
+            cloudspaceId = self.cloudapi_cloudspace_create(account_id=self.account_id,
+                                            location_id=self.location_id,
                                             access=self.user,
                                             api=self.user_api)
+            self.assertFalse(cloudspaceId)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('3- add user2  with write access to the account created by user1')
         self.api.cloudapi.accounts.addUser(accountId=self.account_id,
@@ -160,9 +165,10 @@ class Write(ACLACCOUNT):
 
         self.lg('4- create cloudspace on the account with user2, should succeed')
         newcloudspaceId = self.cloudapi_cloudspace_create(account_id=self.account_id,
-                                                          location=self.location,
+                                                          location_id=self.location_id,
                                                           access=self.user,
                                                           api=self.user_api)
+        self.assertTrue(newcloudspaceId)
         self._cloudspaces.append(newcloudspaceId)
 
         newcloudspace = self.user_api.cloudapi.cloudspaces.get(cloudspaceId=newcloudspaceId)
@@ -176,29 +182,33 @@ class Write(ACLACCOUNT):
 
         self.lg('6- create cloudspace with user2, should fail "404 Not Found"')
         try:
-            self.cloudapi_cloudspace_create(account_id=self.account_id,
-                                            location=self.location,
-                                            access=self.user,
-                                            api=self.user_api)
+            response = self.cloudapi_cloudspace_create(account_id=self.account_id,
+                                                       location_id=self.location_id,
+                                                       access=self.user,
+                                                       api=self.user_api)
+            self.assertFalse(response)
+
         except ApiError as e:
-            self.assertEqual(e.message, '404 Not Found')
-            self.lg('- expected error raised %s' % e.message)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
+            self.lg('- expected error raised %s ' % e.response.content)
 
         self.lg('7- create cloudspace with user1, should fail "404 Not Found"')
         try:
-            self.cloudapi_cloudspace_create(account_id=self.account_id,
-                                            location=self.location,
+            response = self.cloudapi_cloudspace_create(account_id=self.account_id,
+                                            location_id=self.location_id,
                                             access=self.account_owner,
                                             api=self.account_owner_api)
+            self.assertFalse(response)
+
         except ApiError as e:
-            self.assertEqual(e.message, '404 Not Found')
-            self.lg('- expected error raised %s' % e.message)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
+            self.lg('- expected error raised %s ' % e.response.content)
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('bug: https://github.com/0-complexity/openvcloud/issues/748')
+    @unittest.skip('https://docs.greenitglobe.com/openvcloud/openvcloud/issues/46')
     def test004_machine_convertToTemplate(self):
-        """ ACL-10
+        """ ACL-04
         *Test case for machine_convertToTemplate api with user has write access.*
 
         **Test Scenario:**
@@ -216,7 +226,7 @@ class Write(ACLACCOUNT):
         self._cloudspaces = []
         self.lg('1- create cloudspace and machine with user1')
         self.cloudspace_id = self.cloudapi_cloudspace_create(account_id=self.account_id,
-                                                             location=self.location,
+                                                             location_id=self.location_id,
                                                              access=self.account_owner,
                                                              api=self.account_owner_api)
         self._cloudspaces.append(self.cloudspace_id)
@@ -231,8 +241,8 @@ class Write(ACLACCOUNT):
         try:
             self.account_owner_api.cloudapi.machines.convertToTemplate(machineId=machine_id, templatename=str(uuid.uuid4()).replace('-', '')[0:10])
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '409 Conflict')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 409 ,e.response.content)
 
         self.lg('stop machine1')
         stopped = self.account_owner_api.cloudapi.machines.stop(machineId=machine_id)
@@ -258,8 +268,8 @@ class Write(ACLACCOUNT):
             self.user_api.cloudapi.machines.convertToTemplate(machineId=machine_id,
             templatename=str(uuid.uuid4()).replace('-', '')[0:10])
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('4- add user2 to the account created by user1')
         self.api.cloudapi.accounts.addUser(accountId=self.account_id,
@@ -294,15 +304,17 @@ class Write(ACLACCOUNT):
             self.user_api.cloudapi.machines.convertToTemplate(machineId=machine_id,
                                                            templatename=str(uuid.uuid4()).replace('-', '')[0:10])
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 404 ,e.response.content)
 
         self.lg('%s ENDED' % self._testID)
 
 
 class Admin(ACLACCOUNT):
-    def test003_account_add_update_delete_User(self):
-        """ ACL-13
+
+    @unittest.skip("https://docs.greenitglobe.com/openvcloud/openvcloud/issues/47")
+    def test005_account_add_update_delete_User(self):
+        """ ACL-05
         *Test case for add/update/delete api with user has admin access.*
 
         **Test Scenario:**
@@ -353,8 +365,8 @@ class Admin(ACLACCOUNT):
         try:
             self.user_api.cloudapi.accounts.get(accountId=self.account_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('9- delete account, should succeed')
         self.api.cloudbroker.account.delete(accountId=self.account_id, reason='test')

@@ -143,8 +143,8 @@ class level1_group(ACLACCOUNT):
         try:
             self.user1_api.cloudbroker.cloudspace.deployVFW(cloudspaceId = cloudspaceId1)
         except ApiError as e :
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbbiden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
         self.lg('- start VFW')
 
         response= self.user1_api.cloudbroker.cloudspace.startVFW(cloudspaceId = cloudspaceId1)
@@ -156,21 +156,21 @@ class level1_group(ACLACCOUNT):
         #    self.user1_api.cloudbroker.cloudspace.resetVFW(cloudspaceId = cloudspaceId1)
 
         # except ApiError as e :
-        #    self.lg('- expected error raised %s' % e.message)
-        #   self.assertEqual(e.message, '403 Forbbiden')
+        #    self.lg('- expected error raised %s ' % e.response.content)
+        #   self.assertEqual(e.response.status_code, 403 ,e.response.content)
         self.lg('- stop VFW')
         try:
             self.user1_api.cloudbroker.cloudspace.stopVFW(cloudspaceId = cloudspaceId1)
         except ApiError as e :
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbbiden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
         self.lg('- destroy VFW')
         try:
             self.user1_api.cloudbroker.cloudspace.destroyVFW(cloudspaceId = cloudspaceId1)
 
         except ApiError as e :
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbbiden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- add user1 to cloudspace')
 

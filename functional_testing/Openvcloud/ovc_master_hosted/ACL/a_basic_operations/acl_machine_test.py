@@ -3,8 +3,7 @@ import uuid
 import unittest
 
 from ....utils.utils import BasicACLTest
-from JumpScale.portal.portal.PortalClient2 import ApiError
-
+from JumpScale9Lib.clients.portal.PortalClient import ApiError
 
 class ACLMACHINE(BasicACLTest):
 
@@ -38,15 +37,15 @@ class Read(ACLMACHINE):
         try:
             self.user_api.cloudapi.machines.get(machineId=self.machine_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- try to list machines with new user [user], should return 403')
         try:
             self.user_api.cloudapi.machines.list(cloudspaceId=self.cloudspace_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- add user to the machine with read access')
         accesstype = 'R'
@@ -99,8 +98,8 @@ class Read(ACLMACHINE):
         try:
             self.user_api.cloudapi.machines.getConsoleUrl(machineId=self.machine_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- create snapshot for a machine with the account user, should succeed')
         name = str(uuid.uuid4()).replace('-', '')[0:10]
@@ -113,16 +112,16 @@ class Read(ACLMACHINE):
         try:
             self.user_api.cloudapi.machines.listSnapshots(machineId=self.machine_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- try to getHistory of created machine with new user [user], should return 403')
         try:
             self.user_api.cloudapi.machines.getHistory(machineId=self.machine_id,
                                                        size=1)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- add user to the machine with read access')
         accesstype = 'R'
@@ -172,27 +171,27 @@ class Write(ACLMACHINE):
         #. start machine with new user [user], should succeed
         """
         self.lg('%s STARTED' % self._testID)
-        
+
         self.lg('- try to stop machine with new user [user], should return 403 ')
         try:
             self.user_api.cloudapi.machines.stop(machineId=self.machine_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- try to reboot machine with new user [user], should return 403 ')
         try:
             self.user_api.cloudapi.machines.reboot(machineId=self.machine_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- try to reset machine with new user [user], should return 403 ')
         try:
             self.user_api.cloudapi.machines.reset(machineId=self.machine_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- stop machine with the account user, should succeed')
         self.account_owner_api.cloudapi.machines.stop(machineId=self.machine_id)
@@ -203,8 +202,8 @@ class Write(ACLMACHINE):
         try:
             self.user_api.cloudapi.machines.start(machineId=self.machine_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- add user to the machine with write access')
         accesstype = 'CRX'
@@ -276,25 +275,25 @@ class Write(ACLMACHINE):
         #. resume machine with new user [user], should succeed
         """
         self.lg('%s STARTED' % self._testID)
-        
+
         self.lg('- try to pause machine with new user [user], should return 403')
         try:
             self.user_api.cloudapi.machines.pause(machineId=self.machine_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- pause machine with the account user, should succeed')
         self.account_owner_api.cloudapi.machines.pause(machineId=self.machine_id)
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=self.machine_id)['status'], 
+        self.assertEqual(self.api.cloudapi.machines.get(machineId=self.machine_id)['status'],
                          'PAUSED')
 
         self.lg('- try to resume machine with new user [user], should return 403')
         try:
             self.user_api.cloudapi.machines.resume(machineId=self.machine_id)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- add user to the machine with write access')
         accesstype = 'CRX'
@@ -311,7 +310,7 @@ class Write(ACLMACHINE):
         self.lg('- pause machine with new user [user], should succeed')
         self.user_api.cloudapi.machines.pause(machineId=self.machine_id)
         self.assertEqual(self.api.cloudapi.machines.get(machineId=self.machine_id)['status'],
-                         'PAUSED') 
+                         'PAUSED')
 
         self.lg('- disable the machine account and check the machine status, should be Halted')
         self.api.cloudbroker.account.disable(accountId=self.account_id,
@@ -333,7 +332,7 @@ class Write(ACLMACHINE):
         self.lg('- pause machine with new user [user], should succeed')
         self.user_api.cloudapi.machines.pause(machineId=self.machine_id)
         self.assertEqual(self.api.cloudapi.machines.get(machineId=self.machine_id)['status'],
-                         'PAUSED') 
+                         'PAUSED')
 
         self.lg('- resume machine with new user [user], should succeed')
         self.user_api.cloudapi.machines.resume(machineId=self.machine_id)
@@ -362,15 +361,15 @@ class Write(ACLMACHINE):
         #. delete snapshot for a machine with new user [user], should succeed
         """
         self.lg('%s STARTED' % self._testID)
-        
+
         self.lg('- try to create snapshot for a machine with new user [user], should return 403')
         first_name = str(uuid.uuid4()).replace('-', '')[0:10]
         try:
             self.user_api.cloudapi.machines.snapshot(machineId=self.machine_id,
                                                      name=first_name)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- create snapshot for a machine with the account user, should succeed')
         self.account_owner_api.cloudapi.machines.snapshot(machineId=self.machine_id,
@@ -388,16 +387,16 @@ class Write(ACLMACHINE):
             self.user_api.cloudapi.machines.rollbackSnapshot(machineId=self.machine_id,
                                                              epoch=first_snapshot['epoch'])
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- try to delete snapshot for a machine with new user [user], should return 403')
         try:
             self.user_api.cloudapi.machines.deleteSnapshot(machineId=self.machine_id,
                                                            epoch=first_snapshot['epoch'])
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- add user to the machine with write access')
         accesstype = 'CRX'
@@ -465,8 +464,8 @@ class Write(ACLMACHINE):
             self.user_api.cloudapi.machines.update(machineId=self.machine_id,
                                                    name=name)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+            self.lg('- expected error raised %s ' % e.response.content)
+            self.assertEqual(e.response.status_code, 403 ,e.response.content)
 
         self.lg('- add user to the machine with write access')
         accesstype = 'CRX'
@@ -524,7 +523,7 @@ class Admin(ACLMACHINE):
         machine = self.api.cloudapi.machines.get(self.machine_id)
         self.assertIn(user3, [acl['userGroupId'] for acl in machine['acl']])
         acl_user3 = [acl for acl in machine['acl'] if acl['userGroupId'] == user3][0]
-        self.assertEqual(acl_user3['right'], 'R')                                                   
+        self.assertEqual(acl_user3['right'], 'R')
 
         self.lg('4- update user3 access on machine by user2 with write access, should succeed')
         self.user_api.cloudapi.machines.updateUser(machineId=self.machine_id,
@@ -533,7 +532,7 @@ class Admin(ACLMACHINE):
         machine = self.api.cloudapi.machines.get(self.machine_id)
         self.assertIn(user3, [acl['userGroupId'] for acl in machine['acl']])
         acl_user3 = [acl for acl in machine['acl'] if acl['userGroupId'] == user3][0]
-        self.assertEqual(acl_user3['right'], 'CRX')        
+        self.assertEqual(acl_user3['right'], 'CRX')
 
         self.lg('5- delete machine user3 with user1, should succeed')
         self.user_api.cloudapi.machines.deleteUser(machineId=self.machine_id,
@@ -581,16 +580,16 @@ class Admin(ACLMACHINE):
                                                     userId=not_registered_user,
                                                     accesstype='R')
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
+            self.lg('- expected error raised %s ' % e.response.content)
             self.assertEqual(e.message, '404 Not Found')
 
         self.lg('5- try update not_registered_user access on machine by admin user with write access')
         try:
-            self.user_api.cloudapi.machines.updateUser(machineId=self.machine_id, 
+            self.user_api.cloudapi.machines.updateUser(machineId=self.machine_id,
                                                        userId=not_registered_user,
                                                        accesstype='RCX')
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
+            self.lg('- expected error raised %s ' % e.response.content)
             self.assertEqual(e.message, '404 Not Found')
 
         self.lg('- get machine users, not_registered_user not in the returened list')
@@ -599,11 +598,11 @@ class Admin(ACLMACHINE):
 
         self.lg('6- try update user3 access on machine by admin user with write access')
         try:
-            self.user_api.cloudapi.machines.updateUser(machineId=self.machine_id, 
+            self.user_api.cloudapi.machines.updateUser(machineId=self.machine_id,
                                                        userId=user3,
                                                        accesstype='RCX')
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
+            self.lg('- expected error raised %s ' % e.response.content)
             self.assertEqual(e.message, '404 Not Found')
 
         self.lg('- get machine users, user3 not in the returened list')
@@ -612,18 +611,18 @@ class Admin(ACLMACHINE):
 
         self.lg('7- try delete machine not_registered_user with admin user')
         try:
-            self.user_api.cloudapi.machines.deleteUser(machineId=self.machine_id, 
+            self.user_api.cloudapi.machines.deleteUser(machineId=self.machine_id,
                                                        userId=not_registered_user)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
+            self.lg('- expected error raised %s ' % e.response.content)
             self.assertEqual(e.message, '404 Not Found')
 
         self.lg('8- try to delete user3 from the machine using admin user api')
         try:
-            self.user_api.cloudapi.machines.deleteUser(machineId=self.machine_id, 
+            self.user_api.cloudapi.machines.deleteUser(machineId=self.machine_id,
                                                        userId=user3)
         except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
+            self.lg('- expected error raised %s ' % e.response.content)
             self.assertEqual(e.message, '404 Not Found')
 
-        self.lg('%s ENDED' % self._testID) 
+        self.lg('%s ENDED' % self._testID)

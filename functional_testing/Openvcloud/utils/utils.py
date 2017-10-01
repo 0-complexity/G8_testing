@@ -1,5 +1,5 @@
-from JumpScale import j
-from JumpScale.baselib.http_client.HttpClient import HTTPError
+from js9 import j
+from JumpScale9.clients.http.HttpClient import HTTPError
 import logging
 import unittest
 import uuid
@@ -11,44 +11,17 @@ from testconfig import config
 SESSION_DATA = {'vms': []}
 
 
-class API(object):
-    API = {}
-
-    def __init__(self):
-        self._models = None
-        self._portalclient = None
-        self._cloudapi = None
-        self._cloudbroker = None
-
-    def __getattr__(self, item):
-        def set_api(attr):
-            API.API[item] = attr
-            setattr(self, item, attr)
-            return attr
-
-        if item in API.API:
-            attr = API.API[item]
-            setattr(self, item, attr)
-            return attr
-        else:
-            if item == 'models':
-                return set_api(j.clients.osis.getNamespace('cloudbroker'))
-            elif item == 'portalclient':
-                return set_api(j.clients.portal.getByInstance('main'))
-            else:
-                actor = getattr(self.portalclient.actors, item)
-                return set_api(actor)
-        raise AttributeError(item)
-
-
 class BaseTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        self.api = API()
+        client = j.clients.openvcloud.get(port=config['main']['port'],
+                                          url=config['main']['environment'],
+                                          login="admin", password="admin")
+        self.api = client.api
         super(BaseTest, self).__init__(*args, **kwargs)
 
     def setUp(self):
 
-        self.CLEANUP = {'username': [], 'accountId': [],'groupname':[]}
+        self.CLEANUP = {'username': [], 'accountId': [], 'groupname': []}
         self._testID = self._testMethodName
         self._startTime = time.time()
         self._logger = logging.LoggerAdapter(logging.getLogger('openvcloud_testsuite'),
@@ -57,7 +30,6 @@ class BaseTest(unittest.TestCase):
         def timeout_handler(signum, frame):
             raise TimeExpired('Timeout expired before end of test %s' % self._testID)
 
-        # adding a signal alarm for timing out the test if it took longer than 15 minutes
         signal.signal(signal.SIGALRM, timeout_handler)
         if 'OVC-003' in self._testID:
             signal.alarm(2 * 900)
@@ -65,19 +37,19 @@ class BaseTest(unittest.TestCase):
             signal.alarm(900)
 
     def default_setup(self,create_default_cloudspace = True):
-        self.create_default_cloudspace= create_default_cloudspace 
-        self.location = self.get_location()['locationCode']    
+        self.create_default_cloudspace= create_default_cloudspace
+        self.location = self.get_location()['apiUrl']
+        self.location_id = self.get_location()['id']
         self.account_owner = self.username
         self.lg('- create account for :%s' % self.account_owner)
         self.account_id = self.cloudbroker_account_create(self.account_owner, self.account_owner,
                                                           self.email)
 
         self.account_owner_api = self.get_authenticated_user_api(self.account_owner)
-   
-	if self.create_default_cloudspace:
-		self.lg('- create default cloudspace for :%s' % self.account_owner)
-		self.cloudspace_id = self.cloudapi_cloudspace_create(account_id=self.account_id,
-                                                             location=self.location,
+        if self.create_default_cloudspace:
+            self.lg('- create default cloudspace for :%s' % self.account_owner)
+            self.cloudspace_id = self.cloudapi_cloudspace_create(account_id=self.account_id,
+                                                             location_id=self.location_id,
                                                              access=self.account_owner,
                                                              api=self.account_owner_api,
                                                              name='default')
@@ -87,19 +59,21 @@ class BaseTest(unittest.TestCase):
         self.user = self.cloudbroker_user_create()
         self.user_api = self.get_authenticated_user_api(self.user)
 
-    def cloudapi_cloudspace_create(self, account_id, location, access, api=None,
+    def cloudapi_cloudspace_create(self, account_id, location_id, access, api=None,
                                    name='', maxMemoryCapacity=-1, maxDiskCapacity=-1,
                                    maxCPUCapacity=-1, maxNumPublicIP=-1):
         if api is None:
             api = self.api
-        cloudspaceId = api.cloudapi.cloudspaces.create(
-            accountId=account_id, location=location, access=access,
-            name=name or str(uuid.uuid4()).replace('-', '')[0:10],
-            maxMemoryCapacity=maxMemoryCapacity, maxVDiskCapacity=maxDiskCapacity,
-            maxCPUCapacity=maxCPUCapacity, maxNumPublicIP=maxNumPublicIP)
+        cloudspaceId = api.cloudapi.cloudspaces.create(accountId=account_id,
+                                                       locationId=location_id,
+                                                       access=access,
+                                                       name=name or str(uuid.uuid4()).replace('-', '')[0:10],
+                                                       maxMemoryCapacity=maxMemoryCapacity,
+                                                       maxVDiskCapacity=maxDiskCapacity,
+                                                       maxCPUCapacity=maxCPUCapacity,
+                                                       maxNumPublicIP=maxNumPublicIP)
         self.assertTrue(cloudspaceId)
-        self.wait_for_status('DEPLOYED', api.cloudapi.cloudspaces.get,
-                             cloudspaceId=cloudspaceId)
+        self.wait_for_status('DEPLOYED', api.cloudapi.cloudspaces.get, cloudspaceId=cloudspaceId)
         return cloudspaceId
 
     def cloudbroker_cloudspace_create(self, account_id, location, access, api=None,
@@ -107,25 +81,31 @@ class BaseTest(unittest.TestCase):
                                    maxCPUCapacity=-1, maxNumPublicIP=-1):
         if api is None:
             api = self.api
+
         cloudspaceId = api.cloudbroker.cloudspace.create(
-            accountId=account_id, location=location, access=access,
-            name=name or str(uuid.uuid4()).replace('-', '')[0:10],
-            maxMemoryCapacity=maxMemoryCapacity, maxVDiskCapacity=maxDiskCapacity,
-            maxCPUCapacity=maxCPUCapacity, maxNumPublicIP=maxNumPublicIP)
+                                                        accountId=account_id,
+                                                        location=location,
+                                                        access=access,
+                                                        name=name or str(uuid.uuid4()).replace('-', '')[0:10],
+                                                        maxMemoryCapacity=maxMemoryCapacity,
+                                                        maxVDiskCapacity=maxDiskCapacity,
+                                                        maxCPUCapacity=maxCPUCapacity,
+                                                        maxNumPublicIP=maxNumPublicIP)
         self.assertTrue(cloudspaceId)
-        self.wait_for_status('DEPLOYED', api.cloudapi.cloudspaces.get,
-                             cloudspaceId=cloudspaceId)
+        self.wait_for_status('DEPLOYED', api.cloudapi.cloudspaces.get, cloudspaceId=cloudspaceId)
         return cloudspaceId
 
     def cloudbroker_account_create(self, name, username, email, maxMemoryCapacity=-1,
                                    maxVDiskCapacity=-1, maxCPUCapacity=-1, maxNumPublicIP=-1):
-        accountId = self.api.cloudbroker.account.create(name, username, email,
+        accountId = self.api.cloudbroker.account.create( name=name, username=username, emailaddress=email,
                                                         maxMemoryCapacity=maxMemoryCapacity,
                                                         maxVDiskCapacity=maxVDiskCapacity,
                                                         maxCPUCapacity=maxCPUCapacity,
                                                         maxNumPublicIP=maxNumPublicIP)
+
         self.assertTrue(accountId, 'Failed to create account for user %s!' % username)
         self.CLEANUP['accountId'].append(accountId)
+        # accountId = config['main']['accountid']
         self.lg('- account ID: %s' % accountId)
         return accountId
 
@@ -145,7 +125,7 @@ class BaseTest(unittest.TestCase):
 
         :returns user_api: cloud_api authenticated with the user name and password
         """
-        user_api = j.clients.portal.get2()
+        user_api = j.clients.portal.get()
         user_api.system.usermanager.authenticate(name=username, secret=password or username)
         return user_api
 
@@ -169,12 +149,12 @@ class BaseTest(unittest.TestCase):
         return SESSION_DATA['cloudspaceid']
 
     def get_location(self):
-        env_location = config['main']['environment']
+        env_location = config['main']['location']
         self.assertTrue(env_location)
         locations = self.api.cloudapi.locations.list()
         self.assertTrue(locations)
         for location in locations:
-            if env_location == location['locationCode']:
+            if env_location == location['name']:
                 return location
         else:
             raise Exception("can't find the %s environment location in grid" % env_location)
@@ -197,20 +177,25 @@ class BaseTest(unittest.TestCase):
         self.assertTrue(sizes)
         return sizes[0]
 
-    def cloudapi_create_machine(self, cloudspace_id, api='', name='', size_id=0, image_id=0,
-                                disksize=10, datadisks=[], wait=True, stackId=None):
+    def cloudapi_create_machine(self, cloudspace_id, api='', name='',image_id=0,
+                                disksize=15, memory=512, vcpus=1, datadisks=[], wait=True, stackId=None):
         api = api or self.api
         name = name or str(uuid.uuid4())
-        sizeId = size_id or self.get_size(cloudspace_id)['id']
         imageId = image_id or self.get_image()['id']
 
         if not stackId:
-            machine_id = api.cloudapi.machines.create(cloudspaceId=cloudspace_id, name=name,
-                                                      sizeId=sizeId, imageId=imageId,
+            machine_id = api.cloudapi.machines.create(cloudspaceId=cloudspace_id,
+                                                      name=name,
+                                                      imageId=imageId,
+                                                      memory=memory,
+                                                      vcpus=vcpus,
                                                       disksize=disksize, datadisks=datadisks)
         else:
-            machine_id = api.cloudbroker.machine.createOnStack(cloudspaceId=cloudspace_id, name=name,
-                                                               sizeId=sizeId, imageId=imageId,
+            machine_id = api.cloudbroker.machine.createOnStack(cloudspaceId=cloudspace_id,
+                                                               memory=memory,
+                                                               vcpus=vcpus,
+                                                               name=name,
+                                                               imageId=imageId,
                                                                disksize=disksize, stackid=stackId)
         self.assertTrue(machine_id)
         if wait:
@@ -220,7 +205,7 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(machine['status'], 'RUNNING')
         return machine_id
     def cloudbroker_create_machine(self, cloudspace_id, api='', name='', size_id=0, image_id=0,
-                                disksize=10, datadisks=[], wait=True, stackId=None):
+                                disksize=15, datadisks=[], wait=True, stackId=None):
         api = api or self.api
         name = name or str(uuid.uuid4())
         sizeId = size_id or self.get_size(cloudspace_id)['id']
@@ -273,7 +258,7 @@ class BaseTest(unittest.TestCase):
         """
         resource = func(**kwargs)  # get resource
         self.assertTrue(resource)
-        for _ in xrange(timeout):
+        for _ in range(timeout):
             if resource['status'] == status:
                 break
             time.sleep(1)
@@ -351,7 +336,7 @@ class BaseTest(unittest.TestCase):
 
         cloudspace_id = cloudspace_id or self.cloudspace_id
         cloudspace = self.api.cloudapi.cloudspaces.get(cloudspaceId=cloudspace_id)
-        cs_publicip = cs_publicip or str(netaddr.IPNetwork(cloudspace['publicipaddress']).ip)
+        cs_publicip = cs_publicip or str(netaddr.IPNetwork(cloudspace['externalnetworkip']).ip)
         api.cloudapi.portforwarding.create(cloudspaceId=cloudspace_id,
                                            publicIp=cs_publicip,
                                            publicPort=cs_publicport,
@@ -415,7 +400,7 @@ class BaseTest(unittest.TestCase):
         for nodeId in nodeIds_list[1:]:
             node = scl.node.get(nodeId)
             node_details=self.api.system.gridmanager.getNodes(id = node.id)
-            if (node.active == True ) and ( "fw" in node_details[0]["roles"]): 
+            if (node.active == True ) and ( "fw" in node_details[0]["roles"]):
                 return node.id
         return -1
 
@@ -437,42 +422,44 @@ class BasicACLTest(BaseTest):
         """
         Setup environment for the test case.
         """
+
         super(BasicACLTest, self).setUp()
 
-        self.username = str(uuid.uuid4()).replace('-', '')[0:10] + self.shortDescription().split(' ')[
-            0].lower().replace('-', '')
+        self.username = str(uuid.uuid4()).replace('-', '')[0:10] + self.shortDescription().split(' ')[0].lower().replace('-', '')
         self.lg(' ***************************** ')
         self.lg('setUp -- create user %s' % self.username)
         password = self.username
         self.email = "%s@example.com" % str(uuid.uuid4())
         self.CLEANUP['username'] = [self.username]
-        self.api.cloudbroker.user.create(self.username, self.email, password)
+        self.groups= ['level1','level2', 'admin']
+        self.api.cloudbroker.user.create(username=self.username, emailaddress=self.email, password=password, groups = self.groups)
 
     def tearDown(self):
         """
         Environment cleanup and logs collection.
         """
-        api = API()
-        accountIds = self.CLEANUP.get('accountId')
-        if accountIds:
-            for account in accountIds:
-                self.lg('Teardown -- delete account: %s' % account)
-                try:
-                    api.cloudbroker.account.delete(accountId=account, reason="Teardown delete")
-                    self.wait_for_status('DESTROYED', self.api.cloudapi.accounts.get,
-                                         accountId=self.account_id)
-                except HTTPError as e:
-                    # Account is already deleted
-                    self.assertEqual(e.status_code, 404)
-        users = self.CLEANUP.get('username')
-        if users:
-            for user in users:
-                self.lg('Teardown -- delete user: %s' % user)
-                api.cloudbroker.user.delete(user)
-        groups = self.CLEANUP.get('groupname')
-        if groups:
-            print groups
-            for group in groups:
-                self.lg('Teardown -- delete group: %s' % group)
-                self.api.system.usermanager.deleteGroup(id=group)
         super(BasicACLTest, self).tearDown()
+
+        #pass
+        # accountIds = self.CLEANUP.get('accountId')
+        # if accountIds:
+        #     for account in accountIds:
+        #         self.lg('Teardown -- delete account: %s' % account)
+        #         try:
+        #             import ipdb;ipdb.set_trace()
+        #             self.api.cloudbroker.account.delete(accountId=account, reason="Teardown delete")
+        #             self.wait_for_status('DESTROYED', self.api.cloudapi.accounts.get,
+        #                                  accountId=self.account_id)
+        #         except HTTPError as e:
+        #             self.assertEqual(e.status_code, 404)
+        #users = self.CLEANUP.get('username')
+        # if users:
+        #     for user in users:
+        #         self.lg('Teardown -- delete user: %s' % user)
+        #         self.api.cloudbroker.user.delete(username = user)
+        # groups = self.CLEANUP.get('groupname')
+        # if groups:
+        #     for group in groups:
+        #         self.lg('Teardown -- delete group: %s' % group)
+        #         self.api.system.usermanager.deleteGroup(id=group)
+        #super(BasicACLTest, self).tearDown()
