@@ -356,6 +356,7 @@ class Read(ACLCLOUDSPACE):
 
         self.lg('7- Delete the created portforwarding')
         portforwarding_id = portforwarding[0]['id']
+        self.user_api.load_swagger()
         self.user_api.actors.cloudapi.portforwarding.delete(cloudspaceId=self.cloudspace_id, id=portforwarding_id)
 
         self.lg('8- List portforwarding with new user [user], should return 0 portforwarding')
@@ -875,7 +876,7 @@ class Admin(ACLCLOUDSPACE):
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
             self.assertEqual(e.response.status_code, 403 ,e.response.content)
-        cloudspace = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)
+        cloudspace = self.api.cloudapi.cloudspaces.get(cloudspaceId=self.cloudspace_id)
         self.assertEqual(cloudspace['id'], self.cloudspace_id)
 
         self.lg('%s ENDED' % self._testID)
@@ -983,7 +984,6 @@ class Admin(ACLCLOUDSPACE):
 
         self.lg('1- create new cloudspace and deploy machine with 4G memory and 10G disksize')
         newcloudspaceId = self.cloudapi_cloudspace_create(account_id=self.account_id,
-                                                          location=self.location_id,
                                                           access=self.account_owner,
                                                           api=self.account_owner_api,
                                                           maxMemoryCapacity=5,
