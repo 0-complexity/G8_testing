@@ -356,9 +356,7 @@ class Read(ACLCLOUDSPACE):
 
         self.lg('7- Delete the created portforwarding')
         portforwarding_id = portforwarding[0]['id']
-        pcl = j.clients.portal.get(port=self.port)
-        pcl.load_swagger()
-        pcl.actors.cloudapi.portforwarding.delete(cloudspaceId=self.cloudspace_id, id=portforwarding_id)
+        self.user_api.actors.cloudapi.portforwarding.delete(cloudspaceId=self.cloudspace_id, id=portforwarding_id)
 
         self.lg('8- List portforwarding with new user [user], should return 0 portforwarding')
         portforwarding = self.user_api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id, machineId=machine_id)
