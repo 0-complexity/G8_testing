@@ -13,9 +13,14 @@ SESSION_DATA = {'vms': []}
 
 class BaseTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        client = j.clients.openvcloud.get(port=config['main']['port'],
-                                          url=config['main']['environment'],
-                                          login="admin", password="admin")
+        self.port = config['main']['port']
+        self.url = config['main']['environment']
+        self.location = config['main']['location']
+
+        client = j.clients.openvcloud.get(port=self.port,
+                                          url=self.url,
+                                          login="admin", 
+                                          password="admin")
         self.api = client.api
         super(BaseTest, self).__init__(*args, **kwargs)
 
@@ -125,8 +130,9 @@ class BaseTest(unittest.TestCase):
 
         :returns user_api: cloud_api authenticated with the user name and password
         """
-        user_api = j.clients.portal.get()
+        user_api = j.clients.portal.get(port=self.port)
         user_api.system.usermanager.authenticate(name=username, secret=password or username)
+        user_api.load_swagger()
         return user_api
 
     def tearDown(self):
