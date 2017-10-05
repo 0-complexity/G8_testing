@@ -38,14 +38,14 @@ class Read(ACLMACHINE):
             self.user_api.cloudapi.machines.get(machineId=self.machine_id)
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
-            self.assertEqual(e.response.status_code, 403 ,e.response.content)
+            self.assertEqual(e.response.status_code, 403 , e.response.content)
 
         self.lg('- try to list machines with new user [user], should return 403')
         try:
             self.user_api.cloudapi.machines.list(cloudspaceId=self.cloudspace_id)
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
-            self.assertEqual(e.response.status_code, 403 ,e.response.content)
+            self.assertEqual(e.response.status_code, 403 , e.response.content)
 
         self.lg('- add user to the machine with read access')
         accesstype = 'R'
@@ -64,7 +64,7 @@ class Read(ACLMACHINE):
         self.assertEqual(machines[0]['id'], self.machine_id)
 
         self.lg('- create new machine with user2, should succeed')
-        new_machine_id = self.cloudapi_create_machine(self.cloudspace_id,
+        new_machine_id = self.cloudapi_create_machine(cloudspaceId=self.cloudspace_id,
                                                       self.account_owner_api)
         self.lg('- get machine with user2, should succeed')
         new_machine = self.account_owner_api.cloudapi.machines.get(machineId=new_machine_id)
