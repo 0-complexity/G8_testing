@@ -581,7 +581,7 @@ class Admin(ACLMACHINE):
                                                     accesstype='R')
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
-            self.assertEqual(e.response.content, '404 Not Found')
+            self.assertEqual(e.response.status_code, 404)
 
         self.lg('5- try update not_registered_user access on machine by admin user with write access')
         try:
@@ -590,7 +590,7 @@ class Admin(ACLMACHINE):
                                                        accesstype='RCX')
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
-            self.assertEqual(e.response.content, '404 Not Found')
+            self.assertEqual(e.response.status_code, 404)
 
         self.lg('- get machine users, not_registered_user not in the returened list')
         machine = self.api.cloudapi.machines.get(machineId=self.machine_id)
@@ -603,7 +603,7 @@ class Admin(ACLMACHINE):
                                                        accesstype='RCX')
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
-            self.assertEqual(e.response.content, '404 Not Found')
+            self.assertEqual(e.response.status_code, 404)
 
         self.lg('- get machine users, user3 not in the returened list')
         machine = self.api.cloudapi.machines.get(machineId=self.machine_id)
@@ -615,7 +615,7 @@ class Admin(ACLMACHINE):
                                                        userId=not_registered_user)
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
-            self.assertEqual(e.response.content, '404 Not Found')
+            self.assertEqual(e.response.status_code, 404)
 
         self.lg('8- try to delete user3 from the machine using admin user api')
         try:
@@ -623,6 +623,6 @@ class Admin(ACLMACHINE):
                                                        userId=user3)
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
-            self.assertEqual(e.response.content, '404 Not Found')
+            self.assertEqual(e.response.status_code, 404)
 
         self.lg('%s ENDED' % self._testID)
