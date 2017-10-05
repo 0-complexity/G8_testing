@@ -15,7 +15,7 @@ class BaseTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         self.port = config['main']['port']
         self.url = config['main']['environment']
-        self.location = config['main']['location']
+        self.location_name = config['main']['location']
 
         client = j.clients.openvcloud.get(port=self.port,
                                           url=self.url,
@@ -332,7 +332,7 @@ class BaseTest(unittest.TestCase):
         self.lg('4- The user gives user2 write access to the newly created machine')
         self.user_api.cloudapi.machines.addUser(machineId=machine_id,
                                                 userId=self.user2, accesstype='CRX')
-        machine = self.api.cloudapi.machines.get(machine_id)
+        machine = self.api.cloudapi.machines.get(machineId=machine_id)
         return machine
 
     def add_portforwarding(self, machine_id, api='', cloudspace_id='', cs_publicip='', cs_publicport=444, vm_port=22,
