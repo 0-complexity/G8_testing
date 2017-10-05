@@ -65,7 +65,7 @@ class Read(ACLMACHINE):
 
         self.lg('- create new machine with user2, should succeed')
         new_machine_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id,
-                                                      self.account_owner_api)
+                                                      api=self.account_owner_api)
         self.lg('- get machine with user2, should succeed')
         new_machine = self.account_owner_api.cloudapi.machines.get(machineId=new_machine_id)
         self.assertEqual(new_machine['id'], new_machine_id)
