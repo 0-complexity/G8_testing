@@ -106,7 +106,7 @@ class Read(ACLMACHINE):
         self.account_owner_api.cloudapi.machines.snapshot(machineId=self.machine_id,
                                                           name=name)
         snapshot = self.api.cloudapi.machines.listSnapshots(machineId=self.machine_id)[0]
-        self.assertEqual(snapshot['name'], name)
+        self.assertEqual(snapshot['label'], name)
 
         self.lg('- try to listSnapshots of created machine with new user [user], should return 403')
         try:
@@ -375,7 +375,7 @@ class Write(ACLMACHINE):
         self.account_owner_api.cloudapi.machines.snapshot(machineId=self.machine_id,
                                                           name=first_name)
         first_snapshot = self.api.cloudapi.machines.listSnapshots(machineId=self.machine_id)[0]
-        self.assertEqual(first_snapshot['name'], first_name)
+        self.assertEqual(first_snapshot['label'], first_name)
 
         self.lg('- stop machine with account user, should succeed')
         self.account_owner_api.cloudapi.machines.stop(machineId=self.machine_id)
@@ -416,9 +416,9 @@ class Write(ACLMACHINE):
                                                           name=second_name)
         snapshots = self.api.cloudapi.machines.listSnapshots(machineId=self.machine_id)
         self.assertEqual(len(snapshots), 2)
-        self.assertIn(second_name, [snapshot['name'] for snapshot in snapshots])
-        self.assertIn(first_name, [snapshot['name'] for snapshot in snapshots])
-        second_snapshot = [snapshot for snapshot in snapshots if second_name == snapshot['name']][0]
+        self.assertIn(second_name, [snapshot['label'] for snapshot in snapshots])
+        self.assertIn(first_name, [snapshot['label'] for snapshot in snapshots])
+        second_snapshot = [snapshot for snapshot in snapshots if second_name == snapshot['label']][0]
 
         self.lg('- stop machine with new user [user], should succeed')
         self.user_api.cloudapi.machines.stop(machineId=self.machine_id)
@@ -440,7 +440,7 @@ class Write(ACLMACHINE):
 
         snapshots = self.api.cloudapi.machines.listSnapshots(machineId=self.machine_id)
         self.assertEqual(len(snapshots), 1)
-        self.assertNotIn(second_name, [snapshot['name'] for snapshot in snapshots])
+        self.assertNotIn(second_name, [snapshot['label'] for snapshot in snapshots])
         self.assertEqual(first_name, snapshots[0]['name'])
 
         self.lg('%s ENDED' % self._testID)
