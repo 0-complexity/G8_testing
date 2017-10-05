@@ -520,7 +520,7 @@ class Admin(ACLMACHINE):
         self.user_api.cloudapi.machines.addUser(machineId=self.machine_id,
                                                 userId=user3,
                                                 accesstype='R')
-        machine = self.api.cloudapi.machines.get(self.machine_id)
+        machine = self.api.cloudapi.machines.get(machineId=self.machine_id)
         self.assertIn(user3, [acl['userGroupId'] for acl in machine['acl']])
         acl_user3 = [acl for acl in machine['acl'] if acl['userGroupId'] == user3][0]
         self.assertEqual(acl_user3['right'], 'R')
@@ -606,7 +606,7 @@ class Admin(ACLMACHINE):
             self.assertEqual(e.message, '404 Not Found')
 
         self.lg('- get machine users, user3 not in the returened list')
-        machine = self.api.cloudapi.machines.get(self.machine_id)
+        machine = self.api.cloudapi.machines.get(machineId=self.machine_id)
         self.assertNotIn(user3, [acl['userGroupId'] for acl in machine['acl']])
 
         self.lg('7- try delete machine not_registered_user with admin user')
