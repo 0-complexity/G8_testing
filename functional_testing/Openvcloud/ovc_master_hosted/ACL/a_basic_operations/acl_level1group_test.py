@@ -88,7 +88,7 @@ class level1_group(ACLACCOUNT):
 
         self.user1_api.cloudbroker.account.delete(accountId = accountId ,reason="test")
 
-
+    @unittest.skip("https://github.com/openvcloud/openvcloud/issues/44")
     def test002_level1_and_cloudspaces(self):
         """ ACL-62
         *test case for user with level1+admin groups dealing with cloudspaces.*
@@ -188,7 +188,6 @@ class level1_group(ACLACCOUNT):
 
         self.user2_api.cloudbroker.cloudspace.destroy(accountId=self.account_id,cloudspaceId = cloudspaceId1,reason="test")
         self.wait_for_status('DESTROYED', self.api.cloudapi.cloudspaces.get,cloudspaceId= cloudspaceId1)
-
 
 
     def test003_level1_and_VMS(self):

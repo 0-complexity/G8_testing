@@ -211,21 +211,17 @@ class BaseTest(unittest.TestCase):
         machine = api.cloudapi.machines.get(machineId=machine_id)
         self.assertEqual(machine['status'], 'RUNNING')
         return machine_id
-    def cloudbroker_create_machine(self, cloudspace_id, api='', name='', size_id=0, image_id=0,
-                                disksize=15, datadisks=[], wait=True, stackId=None):
+
+    def cloudbroker_create_machine(self, cloudspace_id, api='', name='', vcpus=1, memory=512, image_id=0,
+                                disksize=15, datadisks=[], wait=True):
         api = api or self.api
         name = name or str(uuid.uuid4())
-        sizeId = size_id or self.get_size(cloudspace_id)['id']
         imageId = image_id or self.get_image()['id']
 
-        if not stackId:
-            machine_id = api.cloudbroker.machine.create(cloudspaceId=cloudspace_id, name=name,
-                                                      sizeId=sizeId, imageId=imageId,
+        machine_id = api.cloudbroker.machine.create(cloudspaceId=cloudspace_id, name=name,
+                                                      vcpus=vcpus, imageId=imageId, memory=memory,
                                                       disksize=disksize, datadisks=datadisks)
-        else:
-            machine_id = api.cloudbroker.machine.createOnStack(cloudspaceId=cloudspace_id, name=name,
-                                                               sizeId=sizeId, imageId=imageId,
-                                                               disksize=disksize, stackid=stackId)
+
         self.assertTrue(machine_id)
         if wait:
             self.wait_for_status('DEPLOYED', api.cloudapi.cloudspaces.get,
