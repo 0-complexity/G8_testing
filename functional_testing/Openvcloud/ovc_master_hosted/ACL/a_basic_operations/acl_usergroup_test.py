@@ -11,8 +11,8 @@ from JumpScale9Lib.clients.portal.PortalClient import ApiError
 class ACLACCOUNT(BasicACLTest):
     def setUp(self):
         super(ACLACCOUNT, self).setUp()
-        self.acl_setup(False)
-        #self.machine_id = self.cloudapi_create_machine(self.cloudspace_id,self.account_owner_api)
+        self.acl_setup(True)
+        self.machine_id = self.cloudapi_create_machine(self.cloudspace_id,self.account_owner_api)
 
 
 class user_group(ACLACCOUNT):
@@ -70,7 +70,7 @@ class user_group(ACLACCOUNT):
         self.lg(' 5-get cloudspace details ')
 
         try:
-            cloudspace_details = self.user1_api.cloudapi.cloudspaces.get(cloudspaceId=cloudspaceId)
+            cloudspace_details = self.user1_api.cloudapi.cloudspaces.get(cloudspaceId=self.cloudspace_id)
             self.assertFalse(cloudspace_details)
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
@@ -78,7 +78,7 @@ class user_group(ACLACCOUNT):
 
         self.lg('6-create VM')
         try:
-            machineId = self.user1_api.cloudapi.machines.create(cloudspaceId=cloudspaceId,
+            machineId = self.user1_api.cloudapi.machines.create(cloudspaceId=self.cloudspace_id,
                                                             name=self.user1,
                                                             memory=512, vcpus=1,
                                                             disksize=10,datadisks=[],
@@ -91,7 +91,7 @@ class user_group(ACLACCOUNT):
         self.lg(' 7-get vm details ')
 
         try:
-            macine_details = self.user1_api.cloudapi.machines.get(machineId=machineId)
+            macine_details = self.user1_api.cloudapi.machines.get(machineId=self.machine_id)
             self.assertFalse(macine_details)
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
@@ -108,7 +108,7 @@ class user_group(ACLACCOUNT):
 
         self.lg('10-get machines list' )
         try:
-            machines_list = self.user1_api.cloudapi.machines.list(cloudspaceId=cloudspaceId)
+            machines_list = self.user1_api.cloudapi.machines.list(cloudspaceId=self.cloudspace_id)
             self.assertFalse(machines_list)
         except ApiError as e :
             self.lg('- expected error raised %s ' % e.response.content)
