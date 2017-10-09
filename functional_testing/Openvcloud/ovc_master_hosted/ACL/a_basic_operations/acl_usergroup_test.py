@@ -216,7 +216,7 @@ class user_group(ACLACCOUNT):
 
         self.lg('6--delete created account by user1, should be forbidden. ')
         try:
-            response=self.user1_api.cloudapi.accounts.delete(accountId=accountId)
+            response=self.user1_api.cloudbroker.account.delete(accountId=accountId, reason='test')
             self.assertFalse(response)
         except ApiError as e :
             self.lg('-expected error raised %s' % e.response.content)
