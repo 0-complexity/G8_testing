@@ -195,8 +195,6 @@ class user_group(ACLACCOUNT):
         self.lg('creat account with Id %s' % accountId)
         self.assertTrue(accountId)
 
-        import ipdb ; ipdb.set_trace()
-
         self.lg('3- delete user1 from created account, should return bad request')
         try:
             response = self.user1_api.cloudapi.accounts.deleteUser(accountId=accountId,userId=self.user1)
@@ -223,7 +221,7 @@ class user_group(ACLACCOUNT):
             self.assertEqual(e.response.status_code, 403, e.response.status_code)
 
         self.lg('7-create cloudspace by user2 ,should succeed.')
-        cloudspaceId = self.cloudapi_cloudspace_create(account_id=accountId, locationId=self.location, access=self.user2,api=self.user2_api)
+        cloudspaceId = self.cloudapi_cloudspace_create(account_id=accountId, location_id=self.location, access=self.user2,api=self.user2_api)
         self.lg('creat cloudspace  with Id %s' % cloudspaceId)
         self.assertTrue(cloudspaceId)
 
