@@ -15,6 +15,7 @@ class ACLACCOUNT(BasicACLTest):
 
 class group_creation(ACLACCOUNT):
 
+    @unittest.skip("https://github.com/Jumpscale/portal9/issues/78")
     def test_1_group_creation(self):
         """ ACL-55
         *Test case for group creation and add user to created group.*
@@ -37,20 +38,20 @@ class group_creation(ACLACCOUNT):
         self.lg('2- add user %s to the group ' % user)
         response= self.cloudbroker_group_edit(self.name_group,"test","test",user)
         self.assertTrue(response)
-        #skip("BUG # 656")
-        #user_group_list=self.get_user_group_list(user)
-        #self.lg('3-get groups for user %s' % user)
-        #self.assertEqual(user_group_list,self.name_group)
+
+        user_group_list=self.get_user_group_list(user)
+        self.lg('3-get groups for user %s' % user)
+        self.assertEqual(user_group_list,self.name_group)
         self.lg('4- delete created group  %s' % self.name_group)
         self.api.system.usermanager.deleteGroup(id=self.name_group)
 
         self.CLEANUP['groupname'].remove(self.name_group)
-        # Skip("BUG # 656")
-        # self.lg('5- get groups for user %s' % user)
-        # user_group_list=self.get_user_group_list(user)
-        # self.assertEqual(user_group_list,[])
 
-    @unittest.skip("bug https://github.com/0-complexity/openvcloud/issues/651")
+        self.lg('5- get groups for user %s' % user)
+        user_group_list=self.get_user_group_list(user)
+        self.assertEqual(user_group_list,[])
+
+    @unittest.skip("https://github.com/Jumpscale/portal9/issues/79, 78")
     def test_2_group_creation(self):
         """ ACL-56
         *Test case for add fake user to group*
@@ -67,6 +68,7 @@ class group_creation(ACLACCOUNT):
         self.lg('1- create group ')
         self.cloudbroker_group_create(self.name_group,"test","test")
         self.lg('groupname %s ' % self.name_group)
+
         try:
             self.lg('2- add user with fake name to created group')
             response=self.cloudbroker_group_edit(self.name_group,"test","test",user)
@@ -76,6 +78,8 @@ class group_creation(ACLACCOUNT):
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
             self.assertEqual(e.response.status_code, 403 ,e.response.content)
+
+    @unittest.skip("https://github.com/Jumpscale/portal9/issues/78")
     def test_3_group_creation(self):
         """ ACL-57
         *Test case for create user with created group *
@@ -100,21 +104,18 @@ class group_creation(ACLACCOUNT):
         self.lg('2- create user %s with created group ' % self.user1)
         self.user2 = self.cloudbroker_user_create(group = groupsdomain )
         self.lg(' 3-create user %s with created group ' % self.user2)
-        # Skip("BUG # 656")
-        #user_group_list=self.get_user_group_list(self.user1)
-        #self.lg('4-get groups for user1 %s' % self.user1)
+        user_group_list=self.get_user_group_list(self.user1)
+        self.lg('4-get groups for user1 %s' % self.user1)
 
-        #skip("BUG # 656")
-        #user_group_list=self.get_user_group_list(self.user2)
-        #self.lg('5-get groups for user2 %s' % self.user2)
-        #self.assertTrue(self.name_group in user_group_list)
+        user_group_list=self.get_user_group_list(self.user2)
+        self.lg('5-get groups for user2 %s' % self.user2)
+        self.assertTrue(self.name_group in user_group_list)
 
         self.lg('4-delete group  %s' % self.name_group)
         self.api.system.usermanager.deleteGroup(id=self.name_group)
         self.CLEANUP['groupname'].remove(self.name_group)
 
-        # Skip("BUG # 656")
-        #user_group_list=self.get_user_group_list(self.user1)
-        #self.lg('5-get groups after delete created group for user1 %s' % self.user1)
-        #self.assertFalse(self.name_group in user_group_list)
-        #self.assertTrue('user' in user_group_list)
+        user_group_list=self.get_user_group_list(self.user1)
+        self.lg('5-get groups after delete created group for user1 %s' % self.user1)
+        self.assertFalse(self.name_group in user_group_list)
+        self.assertTrue('user' in user_group_list)
