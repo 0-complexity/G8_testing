@@ -11,8 +11,8 @@ from JumpScale9Lib.clients.portal.PortalClient import ApiError
 class ACLACCOUNT(BasicACLTest):
     def setUp(self):
         super(ACLACCOUNT, self).setUp()
-        self.acl_setup(True)
-        self.machine_id = self.cloudapi_create_machine(self.cloudspace_id,self.account_owner_api)
+        self.acl_setup(False)
+        #self.machine_id = self.cloudapi_create_machine(self.cloudspace_id,self.account_owner_api)
 
 
 class user_group(ACLACCOUNT):
@@ -70,7 +70,7 @@ class user_group(ACLACCOUNT):
         self.lg(' 5-get cloudspace details ')
 
         try:
-            cloudspace_details = self.user1_api.cloudapi.cloudspaces.get(cloudspaceId=self.cloudspace_id)
+            cloudspace_details = self.user1_api.cloudapi.cloudspaces.get(cloudspaceId=cloudspaceId)
             self.assertFalse(cloudspace_details)
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
@@ -78,12 +78,12 @@ class user_group(ACLACCOUNT):
 
         self.lg('6-create VM')
         try:
-            VM_Id = self.user1_api.cloudapi.machines.create(cloudspaceId=self.cloudspace_id,
+            machineId = self.user1_api.cloudapi.machines.create(cloudspaceId=cloudspaceId,
                                                             name=self.user1,
                                                             memory=512, vcpus=1,
                                                             disksize=10,datadisks=[],
                                                             imageId=0)
-            self.assertFalse(VM_Id)
+            self.assertFalse(machineId)
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
             self.assertEqual(e.response.status_code, 403, e.response.status_code)
@@ -91,7 +91,7 @@ class user_group(ACLACCOUNT):
         self.lg(' 7-get vm details ')
 
         try:
-            macine_details = self.user1_api.cloudapi.machines.get(machineId=self.machine_id)
+            macine_details = self.user1_api.cloudapi.machines.get(machineId=machineId)
             self.assertFalse(macine_details)
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
@@ -105,9 +105,10 @@ class user_group(ACLACCOUNT):
         cloudspace_list = self.user1_api.cloudapi.cloudspaces.list()
         self.lg('- cloudspace list %s ' % cloudspace_list )
         self.assertEqual(cloudspace_list,[])
+
         self.lg('10-get machines list' )
         try:
-            machines_list = self.user1_api.cloudapi.machines.list(cloudspaceId=self.cloudspace_id)
+            machines_list = self.user1_api.cloudapi.machines.list(cloudspaceId=cloudspaceId)
             self.assertFalse(machines_list)
         except ApiError as e :
             self.lg('- expected error raised %s ' % e.response.content)
@@ -221,7 +222,7 @@ class user_group(ACLACCOUNT):
             self.assertEqual(e.response.status_code, 403, e.response.status_code)
 
         self.lg('7-create cloudspace by user2 ,should succeed.')
-        cloudspaceId = self.cloudapi_cloudspace_create(account_id=accountId, location_id=self.location, access=self.user2,api=self.user2_api)
+        cloudspaceId = self.cloudapi_cloudspace_create(account_id=accountId, location_id=self.location_id, access=self.user2,api=self.user2_api)
         self.lg('creat cloudspace  with Id %s' % cloudspaceId)
         self.assertTrue(cloudspaceId)
 
