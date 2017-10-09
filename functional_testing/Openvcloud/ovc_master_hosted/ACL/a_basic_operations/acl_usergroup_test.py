@@ -113,7 +113,6 @@ class user_group(ACLACCOUNT):
             self.lg('- expected error raised %s ' % e.response.content)
             self.assertEqual(e.response.status_code, 403, e.response.status_code)
 
-    @unittest.skip("https://docs.greenitglobe.com/openvcloud/openvcloud/issues/47")
     def test002_usergroup_add_account(self):
         """ ACL-59
         *Test case for create user with only user group.*
@@ -164,7 +163,7 @@ class user_group(ACLACCOUNT):
         update_response = self.user1_api.cloudapi.accounts.update(accountId=accountId,name=self.user)
         self.assertTrue(update_response)
 
-    @unittest.skip("https://docs.greenitglobe.com/openvcloud/openvcloud/issues/48")
+    # @unittest.skip("https://docs.greenitglobe.com/openvcloud/openvcloud/issues/48")
     def test003_usergroup_delete_user_from_account(self):
         """ ACL-60
         *Test case for create user with only user group.*
@@ -195,6 +194,8 @@ class user_group(ACLACCOUNT):
 
         self.lg('creat account with Id %s' % accountId)
         self.assertTrue(accountId)
+
+        import ipdb ; ipdb.set_trace()
 
         self.lg('3- delete user1 from created account, should return bad request')
         try:
