@@ -3,7 +3,7 @@ import time
 import unittest
 from random import randint
 from ....utils.utils import BasicACLTest
-from JumpScale.portal.portal.PortalClient2 import ApiError
+from JumpScale9Lib.clients.portal.PortalClient import ApiError
 
 class ACLACCOUNT(BasicACLTest):
     def setUp(self):
@@ -124,9 +124,9 @@ class level1_group(ACLACCOUNT):
         self.user2_api = self.get_authenticated_user_api(self.user2)
         self.lg('- create 2 cloudspaces one by user1 and another by user2')
 
-        cloudspaceId1 = self.cloudbroker_cloudspace_create(account_id=self.account_id,location=self.location,access=self.user2,api=self.user2_api)
-        cloudspaceId2 = self.cloudbroker_cloudspace_create(account_id=self.account_id,location=self.location,access=self.user1,api=self.user1_api)
-        cloudspaceId3 = self.cloudbroker_cloudspace_create(account_id=self.account_id,location=self.location,access=self.user1,api=self.user1_api)
+        cloudspaceId1 = self.cloudbroker_cloudspace_create(account_id=self.account_id,location=self.location_id,access=self.user2,api=self.user2_api)
+        cloudspaceId2 = self.cloudbroker_cloudspace_create(account_id=self.account_id,location=self.location_id,access=self.user1,api=self.user1_api)
+        cloudspaceId3 = self.cloudbroker_cloudspace_create(account_id=self.account_id,location=self.location_id,access=self.user1,api=self.user1_api)
 
         self.lg('- update cloudspace name by user1')
 
@@ -226,7 +226,7 @@ class level1_group(ACLACCOUNT):
         self.user1_api = self.get_authenticated_user_api(self.user1)
         self.user2_api = self.get_authenticated_user_api(self.user2)
         self.lg('- create cloudspace ')
-        cloudspaceId1 = self.cloudbroker_cloudspace_create(account_id=self.account_id,location=self.location,access=self.account_owner,api=self.user1_api)
+        cloudspaceId1 = self.cloudbroker_cloudspace_create(account_id=self.account_id,location=self.location_id,access=self.account_owner,api=self.user1_api)
         self.lg('- create VM1 by user1')
         machine1_id = self.cloudbroker_create_machine(cloudspace_id=cloudspaceId1,api=self.user1_api)
         self.lg('- create VM2 by user2')
