@@ -367,7 +367,7 @@ class Read(ACLCLOUDSPACE):
 
 
 class Write(ACLCLOUDSPACE):
-
+    @unittest.skip("https://github.com/openvcloud/openvcloud/issues/37")
     def test001_cloudspace_deploy_getDefenseShield(self):
         """ ACL-14
         *Test case for deploy/getDefenseShield cloudspace api with user has write access on cloud space level.*
@@ -418,6 +418,7 @@ class Write(ACLCLOUDSPACE):
 
         self.lg('%s ENDED' % self._testID)
 
+    @unittest.skip("https://github.com/openvcloud/openvcloud/issues/38")
     def test002_cloudspace_portforwarding_add_update_delete(self):
         """ ACL-15
         *Test case for add/update/delete portforwarding api with user has write access on cloud space level.*
@@ -598,8 +599,7 @@ class Write(ACLCLOUDSPACE):
         """
         machine = self._machine_addUser_scenario_base()
         self.lg('5- Checking if user2 has a write access on the created machine, should return CRX')
-        self.assertEqual(filter(lambda e: e['userGroupId'] == self.user2,
-                                machine['acl'])[0]['right'], 'CRX')
+        self.assertEqual(filter(lambda e: e['userGroupId'] == self.user2, machine['acl'])[0]['right'], 'CRX')
 
     def test024_machine_addUser_wrong(self):
         """ ACL-23
@@ -618,8 +618,7 @@ class Write(ACLCLOUDSPACE):
         self.not_user = str(uuid.uuid4()).replace('-', '')[0:10]  # non registered user
         self.lg('5- Adding non registered user to the created machine, should return 404 Not Found')
         try:
-            self.user_api.cloudapi.machines.addUser(machineId=machine['id'],
-                                                    userId=self.not_user, accesstype='CRX')
+            self.user_api.cloudapi.machines.addUser(machineId=machine['id'], userId=self.not_user, accesstype='CRX')
         except ApiError as e:
             self.lg('- expected error raised %s ' % e.response.content)
             self.assertEqual(e.response.status_code, 404 ,e.response.content)
@@ -642,8 +641,7 @@ class Write(ACLCLOUDSPACE):
         self.lg('5- Revoking user2 access to the created machine, should return empty list')
         self.user_api.cloudapi.machines.deleteUser(machineId=machine['id'], userId=self.user2)
         machine_after_deleteuser = self.api.cloudapi.machines.get(machine['id'])
-        self.assertEqual(filter(lambda e: e['userGroupId'] == self.user2,
-                                machine_after_deleteuser['acl']), [])
+        self.assertEqual(filter(lambda e: e['userGroupId'] == self.user2, machine_after_deleteuser['acl']), [])
 
     def test026_machine_deleteUser_wrong(self):
         """ ACL-25
@@ -690,8 +688,7 @@ class Write(ACLCLOUDSPACE):
         self.user_api.cloudapi.machines.updateUser(machineId=machine['id'],
                                                    userId=self.user2, accesstype='ACDRUX')
         machine_after_updateuser = self.api.cloudapi.machines.get(machine['id'])
-        self.assertEqual(filter(lambda e: e['userGroupId'] == self.user2,
-                                machine_after_updateuser['acl'])[0]['right'], 'ACDRUX')
+        self.assertEqual(filter(lambda e: e['userGroupId'] == self.user2, machine_after_updateuser['acl'])[0]['right'], 'ACDRUX')
 
     def test028_machine_updateUser_wrong(self):
         """ ACL-27
