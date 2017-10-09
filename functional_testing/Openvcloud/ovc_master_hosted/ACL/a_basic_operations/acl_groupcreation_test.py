@@ -4,7 +4,7 @@ import time
 import unittest
 
 from ....utils.utils import BasicACLTest
-from JumpScale.portal.portal.PortalClient2 import ApiError
+from JumpScale9Lib.clients.portal.PortalClient import ApiError
 
 
 class ACLACCOUNT(BasicACLTest):
