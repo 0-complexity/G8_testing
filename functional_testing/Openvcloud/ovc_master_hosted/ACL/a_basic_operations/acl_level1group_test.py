@@ -225,7 +225,7 @@ class level1_group(ACLACCOUNT):
         self.user1_api = self.get_authenticated_user_api(self.user1)
         self.user2_api = self.get_authenticated_user_api(self.user2)
         self.lg('- create cloudspace ')
-        cloudspaceId1 = self.cloudapi_create_machine(account_id=self.account_id,location=self.location_id,access=self.account_owner,api=self.user1_api)
+        cloudspaceId1 = self.cloudbroker_cloudspace_create(account_id=self.account_id,location=self.location_id,access=self.account_owner,api=self.user1_api)
         self.lg('- create VM1 by user1')
         machine1_id = self.cloudapi_create_machine(cloudspace_id=cloudspaceId1,api=self.user1_api)
         self.lg('- create VM2 by user2')
