@@ -308,6 +308,8 @@ class level1_group(ACLACCOUNT):
             self.assertEqual(e.message,'403 Forbidden')
 
         """
+        
+    @unittest.skip('https://github.com/openvcloud/openvcloud/issues/41')
     def test004_level1_and_usermangment(self):
 
         """ ACL-64
