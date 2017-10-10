@@ -15,7 +15,6 @@ class ACLMACHINE(BasicACLTest):
                                                        self.account_owner_api)
 
 class Read(ACLMACHINE):
-
     def test003_machine_get_list(self):
         """ ACL-52
         *Test case for get/list machine api with user has read access on machine level.*
@@ -77,6 +76,7 @@ class Read(ACLMACHINE):
 
         self.lg('%s ENDED' % self._testID)
 
+    @unittest.skip("https://github.com/openvcloud/openvcloud/issues/46")
     def test004_machine_getConsoleUrl_listSnapshots_getHistory(self):
         """ ACL-53
         *Test case for getConsoleUrl/listSnapshots/getHistory machine api with user has read access on machine level.*
@@ -147,8 +147,9 @@ class Read(ACLMACHINE):
 
         self.lg('%s ENDED' % self._testID)
 
-class Write(ACLMACHINE):
 
+class Write(ACLMACHINE):
+    @unittest.skip("https://github.com/openvcloud/openvcloud/issues/45")
     def test003_machine_start_stop_reboot_reset(self):
         """ ACL-40
         *Test case for start/stop/reboot/reset machine api with user has write access on machine level.*
@@ -256,6 +257,7 @@ class Write(ACLMACHINE):
 
         self.lg('%s ENDED' % self._testID)
 
+    @unittest.skip("https://github.com/openvcloud/openvcloud/issues/45")
     def test004_machine_pause_resume(self):
         """ ACL-41
         *Test case for pause/resume machine api with user has write access on machine level.*
@@ -341,6 +343,7 @@ class Write(ACLMACHINE):
 
         self.lg('%s ENDED' % self._testID)
 
+    @unittest.skip("https://github.com/openvcloud/openvcloud/issues/45")
     def test005_machine_snapshot_create_rollback_delete(self):
         """ ACL-42
         *Test case for snapshot create/rollback/delete machine api with user has write access on machine level.*
@@ -445,6 +448,7 @@ class Write(ACLMACHINE):
 
         self.lg('%s ENDED' % self._testID)
 
+    @unittest.skip("https://github.com/openvcloud/openvcloud/issues/43")
     def test006_machine_update(self):
         """ ACL-43
         *Test case for update machine api with user has write access on machine level.*
@@ -490,7 +494,6 @@ class Write(ACLMACHINE):
 
 
 class Admin(ACLMACHINE):
-
     def test003_machine_add_update_delete_User(self):
         """ ACL-44
         *Test case for add/update/delete user api with user has admin access on machine level.*
