@@ -15,11 +15,11 @@ class UsersBasicTests(BasicACLTest):
 
         **Test Scenario:**
 
-        #. Create [User1] with admin access.
-        #. Authenticate [User1] with POST /cloudapi/users/authenticate API,should return session key[user1_key] .
-        #. Use [User1_key] to list accounts for [User1], should succeed.
-        #. Use [User1_key] to update [User1] password, should succeed.
-        #. Check that password of user1 reset successfully.
+        #. Create user (U1) with admin access.
+        #. Authenticate U1 with POST /cloudapi/users/authenticate API,should return session key[user1_key] .
+        #. Use U1's key to list accounts for U1, should succeed.
+        #. Use U1's key to update U1's password, should succeed.
+        #. Check that user1's password has been reset successfully.
 
         """
 
@@ -29,11 +29,11 @@ class UsersBasicTests(BasicACLTest):
 
         **Test Scenario:**
 
-        #. Create [User1] with admin access and Email [user1_email].
-        #. Get [User1] info with /cloudapi/users/get Api, should succeed.
-        #. Check that [User1] info has right Email[user1_email], should succeed.
-        #. Set data for [User1] with /cloudapi/users/setData API, Should succeed.
-        #. Check that this data added to [ user1] info ,should succeed.
+        #. Create user (U1) with admin access and Email U1's email.
+        #. Get U1 info with /cloudapi/users/get Api, should succeed.
+        #. Check that U1 info has right Email[user1_email], should succeed.
+        #. Set data for U1 with /cloudapi/users/setData API, Should succeed.
+        #. Check that this data has been added to U1 info ,should succeed.
 
         """
 
@@ -43,10 +43,10 @@ class UsersBasicTests(BasicACLTest):
 
         **Test Scenario:**
 
-        #. Create user1 with random name [user1].
+        #. Create user1 with random name user1.
         #. Create user2 with name which user1 name part of it .
         #. Use user1 name to get Matching usernames with /cloudapi/users/getMatchingUsernames Api,sould succeed.
-        #. Check that Userr1 and User2 in matching list, should succeed.
+        #. Check that userr1 and user2 in matching list, should succeed.
 
         """
 
@@ -56,11 +56,11 @@ class UsersBasicTests(BasicACLTest):
 
         **Test Scenario:**
 
-        #. Create user1 with Email[user1_email].
-        #. Send ResetPasswordLink to [User1_email] with cloudapi/users/sendResetPasswordLink API,should succeed.
+        #. Create user1 with Email (E1).
+        #. Send ResetPasswordLink to E1 with cloudapi/users/sendResetPasswordLink API,should succeed.
         #. Check validation of received ResetPassword token with /cloudapi/users/getResetPasswordInformation API,should succeed.
         #. Use received  ResetPassword token to  reset password, should succeed.
-        #. Check that password of user1 reset successfully.
+        #. Check that password of user1 has been reset successfully.
 
 
         """

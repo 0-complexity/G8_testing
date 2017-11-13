@@ -82,13 +82,13 @@ class CloudspaceTests(BasicACLTest):
         *Test case for add and remove  allowed size to cloudspace.*
 
         **Test Scenario:**
-        #. Create new cloudspace [cs].
+        #. Create new cloudspace CS1.
         #. Get list of availabe sizes in location ,should succeed.
-        #. Add random size to created cloudspace[cs] with /cloudapi/cloudspaces/addAllowedSize API ,should succeed.
-        #. Check that size added successfully to cs.
-        #. Remove this size from cloudspsce[cs] with /cloudapi/cloudspaces/removeAllowedSize API, should succeed.
-        #. check that  size removed successfully from cs.
-
+        #. Add random size to CS1 with /cloudapi/cloudspaces/addAllowedSize API ,should succeed.
+        #. Check if the size has been added successfully to CS1.
+        #. Remove this size from CS1 with /cloudapi/cloudspaces/removeAllowedSize API, should succeed.
+        #. check if the size has been removed successfully from CS1.
+        #. Remove this size again, should fail.
         """
 
     @unittest.skip('Not Implemented')
@@ -96,11 +96,10 @@ class CloudspaceTests(BasicACLTest):
         """ OVC-000
         *Test case for test execute script in routeros.*
 
-        **Test Scenario:(Not Implemented)**
-        #. Create new cloudspace [cs].
-        #. Excute script in routeros of the cloudspace[cs].
+        **Test Scenario:**
+        #. Create new cloudspace CS1.
+        #. Excute script in routeros of CS1, should succeed.
         #. Check that script executeed , should succeed.
-
         """
 
     @unittest.skip('Not Implemented')
@@ -108,9 +107,8 @@ class CloudspaceTests(BasicACLTest):
         """ OVC-000
         *Test case for getting OpenVPN config file for cloudspace.*
 
-        **Test Scenario:(Not Implemented)**
-        #. Create new cloudspace [cs].
-        #. Get OpenVPN config file in the cloudspace[cs] with /cloudapi/cloudspaces/getOpenvpnConfig API, should succeed.
-        #. Check that Config file is right , should succeed.
-
+        **Test Scenario:**
+        #. Create new cloudspace CS1.
+        #. Get OpenVPN config file for CS1, should succeed .. with /cloudapi/cloudspaces/getOpenvpnConfig API, should succeed.
+        #. Check that Config file is right.
         """
