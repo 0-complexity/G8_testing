@@ -1,5 +1,6 @@
 # coding=utf-8
 import random
+import unittest
 
 from ....utils.utils import BasicACLTest
 
@@ -75,6 +76,7 @@ class CloudspaceTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
+    @unittest.skip('Not Implemented')
     def test002_add_remove_AllowedSize_to_cloudspace(self):
         """ OVC-000
         *Test case for add and remove  allowed size to cloudspace.*
@@ -86,5 +88,29 @@ class CloudspaceTests(BasicACLTest):
         #. Check that size added successfully to cs.
         #. Remove this size from cloudspsce[cs] with /cloudapi/cloudspaces/removeAllowedSize API, should succeed.
         #. check that  size removed successfully from cs.
+
+        """
+
+    @unittest.skip('Not Implemented')
+    def test003_executeRouterOSScript(self):
+        """ OVC-000
+        *Test case for test execute script in routeros.*
+
+        **Test Scenario:(Not Implemented)**
+        #. Create new cloudspace [cs].
+        #. Excute script in routeros of the cloudspace[cs].
+        #. Check that script executeed , should succeed.
+
+        """
+
+    @unittest.skip('Not Implemented')
+    def test004_get_OpenVPN_config_file(self):
+        """ OVC-000
+        *Test case for getting OpenVPN config file for cloudspace.*
+
+        **Test Scenario:(Not Implemented)**
+        #. Create new cloudspace [cs].
+        #. Get OpenVPN config file in the cloudspace[cs] with /cloudapi/cloudspaces/getOpenvpnConfig API, should succeed.
+        #. Check that Config file is right , should succeed.
 
         """
