@@ -2,7 +2,7 @@
 
 class MachineTests(BasicACLTest):
 
-    def test001_chech_machines_networking(self):
+    def test001_check_machines_networking(self):
         """ OVC-000
         *Test case for checking machines networking*
 
@@ -15,4 +15,17 @@ class MachineTests(BasicACLTest):
         #. Create VM2 and VM3 in CS2
         #. From VM2 ping VM3, should succeed
         #. From VM2 ping VM1, should fail
+        """
+
+    def test002_check_network_data_integrity(self):
+        """ OVC-000
+        *Test case for checking network data integrity through VMS*
+
+        **Test Scenario:**
+
+        #. Create a cloudspace CS1, should succeed
+        #. Create VM1 and VM2 inside CS1, should succeed
+        #. create a file F1 inside VM1
+        #. From VM1 send F1 to VM2, should succeed
+        #. Check that F1 has been sent to vm2 without data loss
         """
