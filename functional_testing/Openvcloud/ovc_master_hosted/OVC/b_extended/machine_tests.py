@@ -161,3 +161,18 @@ class ExtendedTests(BasicACLTest):
         #. Delete DS1, should succeed.
         #. List the disks, DS1 shouldn't be there.
         """
+
+    def test005_attaching_detaching_disks(self):
+        """ OVC-000
+        *Test case for attaching and detaching disks to a virtual machine*
+
+        **Test Scenario: (Not implemented)**
+
+        #. Create a disk DS1, should succeed.
+        #. Create VM1, should succeed
+        #. Attach non existing disk to VM1, should fail
+        #. Attach DS1 to VM1, should succeed
+        #. Delete DS1 without detaching it, should fail
+        #. Detach non existing disk, should fail
+        #. Detach DS1, should succeed
+        """
