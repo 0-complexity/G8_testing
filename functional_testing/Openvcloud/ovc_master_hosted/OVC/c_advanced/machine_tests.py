@@ -71,3 +71,17 @@ class MachineTests(BasicACLTest):
         #. Check if VM1's ip is the same as before rebooting.
         #. Check if VM1's credentials are the same as well
         """
+
+    def test006_attach_same_disk_to_two_vms(self):
+        """ OVC-000
+        *Test case for attaching same disk to two different vms*
+
+        **Test Scenario:**
+
+        #. Create disk DS1.
+        #. Create cloudspace CS1.
+        #. Create VM1 and VM2 on CS1.
+        #. Attach DS1 to VM1, should succeed.
+        #. Attach DS1 to VM2, should fail.
+        #. Delete disk after detaching it, should succeed
+        """
