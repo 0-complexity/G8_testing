@@ -1,12 +1,8 @@
-# coding=utf-8
-import time
-import random
 import unittest
-
-from JumpScale import j
 from ....utils.utils import BasicACLTest
 
 
+@unittest.skip('Not Implemented')
 class UsersBasicTests(BasicACLTest):
 
     def setUp(self):
