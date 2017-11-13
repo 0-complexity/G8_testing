@@ -153,7 +153,7 @@ class ExtendedTests(BasicACLTest):
         """ OVC-000
         *Test case for creating and deleting disks*
 
-        **Test Scenario: (Not implemented)**
+        **Test Scenario:**
 
         #. Create a disk DS1, should succeed.
         #. Create a disk with the same name of DS1, should fail.
@@ -168,7 +168,7 @@ class ExtendedTests(BasicACLTest):
         """ OVC-000
         *Test case for attaching and detaching disks to a virtual machine*
 
-        **Test Scenario: (Not implemented)**
+        **Test Scenario:**
 
         #. Create a disk DS1, should succeed.
         #. Create VM1, should succeed

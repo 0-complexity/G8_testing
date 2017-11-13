@@ -9,7 +9,7 @@ class MachineTests(BasicACLTest):
         """ OVC-000
         *Test case for checking machines networking*
 
-        **Test Scenario: (Not Implemented)**
+        **Test Scenario:**
 
         #. Create cloudspace CS1, should succeed
         #. Create cloudspace CS2, should succeed
@@ -24,7 +24,7 @@ class MachineTests(BasicACLTest):
         """ OVC-000
         *Test case for checking network data integrity through VMS*
 
-        **Test Scenario: (Not Implemented)**
+        **Test Scenario:**
 
         #. Create a cloudspace CS1, should succeed
         #. Create VM1 and VM2 inside CS1, should succeed
@@ -37,10 +37,24 @@ class MachineTests(BasicACLTest):
         """ OVC-000
         *Test case for checking machine connectivity through external network*
 
-        **Test Scenario: (Not Implemented)**
+        **Test Scenario:**
 
         #. Create a cloudspace CS1, should succeed
         #. Create VM1
         #. Attach VM1 to an external network, should succeed
         #. Check if you can ping VM1 from outside, should succeed
         """
+
+    def test004_migrate_vm_in_middle_of writing_file(self):
+        """ OVC-000
+        *Test case for checking data integrity after migrating vm in the middle of writing a file*
+
+        **Test Scenario:**
+
+        #. Create a cloudspace CS1, should succeed
+        #. Create VM1
+        #. Write a big file FS1 on VM1
+        #. Migrate VM1 in the middle of writing a file, should succeed
+        #. Check if the file has been written correctly after vm live migration
+        """
+        # Note: this testcase may be hard to be implemented from here.

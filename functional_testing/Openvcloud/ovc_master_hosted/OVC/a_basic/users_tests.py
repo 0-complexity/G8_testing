@@ -13,7 +13,7 @@ class UsersBasicTests(BasicACLTest):
         """ OVC-000
         * Test case for check user authentication and passsword update. *
 
-        **Test Scenario:(Not Implemented)**
+        **Test Scenario:**
 
         #. Create [User1] with admin access.
         #. Authenticate [User1] with POST /cloudapi/users/authenticate API,should return session key[user1_key] .
@@ -27,7 +27,7 @@ class UsersBasicTests(BasicACLTest):
         """ OVC-000
         * Test case for check get user information.*
 
-        **Test Scenario:(Not Implemented)**
+        **Test Scenario:**
 
         #. Create [User1] with admin access and Email [user1_email].
         #. Get [User1] info with /cloudapi/users/get Api, should succeed.
@@ -41,7 +41,7 @@ class UsersBasicTests(BasicACLTest):
         """ OVC-000
         * Test case for check get matching usernames.
 
-        **Test Scenario:(Not Implemented)**
+        **Test Scenario:**
 
         #. Create user1 with random name [user1].
         #. Create user2 with name which user1 name part of it .
@@ -54,7 +54,7 @@ class UsersBasicTests(BasicACLTest):
         """ OVC-000
         * Test case for check password reset.
 
-        **Test Scenario:(Not Implemented)**
+        **Test Scenario:**
 
         #. Create user1 with Email[user1_email].
         #. Send ResetPasswordLink to [User1_email] with cloudapi/users/sendResetPasswordLink API,should succeed.
@@ -69,7 +69,7 @@ class UsersBasicTests(BasicACLTest):
         """ OVC-000
         * Test case for check creation of more than one user with same specs .
 
-        **Test Scenario:(Not Implemented)**
+        **Test Scenario:**
 
         #. Create user1,sould succeed .
         #. Create User2 with same name as user1, should fail .
