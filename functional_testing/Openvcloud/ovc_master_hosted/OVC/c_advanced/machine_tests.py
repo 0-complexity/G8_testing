@@ -58,3 +58,16 @@ class MachineTests(BasicACLTest):
         #. Check if the file has been written correctly after vm live migration
         """
         # Note: this testcase may be hard to be implemented from here.
+
+    def test005_cheching_vm_specs_after_rebooting(self):
+        """ OVC-000
+        *Test case for checking VM's ip and credentials after rebooting*
+
+        **Test Scenario:**
+
+        #. Create a cloudspace CS1, should succeed
+        #. Create virtual machine VM1 with windows image
+        #. Reboot VM1, should succeed
+        #. Check if VM1's ip is the same as before rebooting.
+        #. Check if VM1's credentials are the same as well
+        """
