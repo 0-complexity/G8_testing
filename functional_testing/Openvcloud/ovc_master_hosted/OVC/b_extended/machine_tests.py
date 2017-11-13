@@ -147,3 +147,17 @@ class ExtendedTests(BasicACLTest):
             self.assertEqual(e.status_code, 400)
 
         self.lg('%s ENDED' % self._testID)
+
+    def test004_disk_create_delete(self):
+        """ OVC-000
+        *Test case for creating and deleting disks*
+
+        **Test Scenario: (Not implemented)**
+
+        #. Create a disk DS1, should succeed.
+        #. Create a disk with the same name of DS1, should fail.
+        #. List the disks, DS1 should be found.
+        #. Delete non existing disk, should fail.
+        #. Delete DS1, should succeed.
+        #. List the disks, DS1 shouldn't be there.
+        """
