@@ -110,7 +110,7 @@ class MachineTests(BasicACLTest):
 
         #. Create virtual machines (VM1) and (VM2).
         #. Stop VM1 and VM2, should succeed.
-        #. Deattach VM1's boot disk (BD1) and VM2's boot disk (BD2).
+        #. Detach VM1's boot disk (BD1) and VM2's boot disk (BD2).
         #. Attach BD1 to VM2, should succeed.
         #. Start VM2 and make sure it is working.
         #. Attach BD2 to VM1, should succeed.
