@@ -85,3 +85,34 @@ class MachineTests(BasicACLTest):
         #. Attach DS1 to VM2, should fail.
         #. Delete disk after detaching it, should succeed
         """
+        # Note: try this scenario for data and boot disks
+
+    def test007_detach_boot_from_running_machine(self):
+        """ OVC-000
+        * Test case for detaching boot disk from a running machine.
+
+        **Test Scenario:**
+
+        #. Create virtual machine (VM1).
+        #. Detach VM1's boot disk (BD1), should fail.
+        #. Stop VM1.
+        #. Detach VM1's boot disk again, should succeed.
+        #. Start VM1, should fail.
+        #. Attach BD1 to VM1, should succeed.
+        #. Start VM1 and make sure it is running.
+        """
+
+    def test008_swap_vms_boot_disks(self):
+        """ OVC-000
+        * Test case for swapping vms boot disks.
+
+        **Test Scenario:**
+
+        #. Create virtual machines (VM1) and (VM2).
+        #. Stop VM1 and VM2, should succeed.
+        #. Deattach VM1's boot disk (BD1) and VM2's boot disk (BD2).
+        #. Attach BD1 to VM2, should succeed.
+        #. Start VM2 and make sure it is working.
+        #. Attach BD2 to VM1, should succeed.
+        #. Start VM1 and make sure it is working.
+        """
