@@ -29,9 +29,9 @@ class UsersBasicTests(BasicACLTest):
 
         **Test Scenario:**
 
-        #. Create user (U1) with admin access and Email U1's email.
+        #. Create user (U1) with admin access and Email.
         #. Get U1 info with /cloudapi/users/get Api, should succeed.
-        #. Check that U1 info has right Email[user1_email], should succeed.
+        #. Check that U1's info is right, should succeed.
         #. Set data for U1 with /cloudapi/users/setData API, Should succeed.
         #. Check that this data has been added to U1 info ,should succeed.
 
@@ -44,8 +44,8 @@ class UsersBasicTests(BasicACLTest):
         **Test Scenario:**
 
         #. Create user1 with random name user1.
-        #. Create user2 with name which user1 name part of it .
-        #. Use user1 name to get Matching usernames with /cloudapi/users/getMatchingUsernames Api,sould succeed.
+        #. Create user2 with name in which user1 name is part of it .
+        #. Use user1 name to get matching usernames with /cloudapi/users/getMatchingUsernames Api,sould succeed.
         #. Check that userr1 and user2 in matching list, should succeed.
 
         """

@@ -79,11 +79,11 @@ class CloudspaceTests(BasicACLTest):
     @unittest.skip('Not Implemented')
     def test002_add_remove_AllowedSize_to_cloudspace(self):
         """ OVC-000
-        *Test case for add and remove  allowed size to cloudspace.*
+        *Test case for adding and removing  allowed size to a cloudspace.*
 
         **Test Scenario:**
         #. Create new cloudspace CS1.
-        #. Get list of availabe sizes in location ,should succeed.
+        #. Get list of available sizes in location, should succeed.
         #. Add random size to CS1 with /cloudapi/cloudspaces/addAllowedSize API ,should succeed.
         #. Check if the size has been added successfully to CS1.
         #. Remove this size from CS1 with /cloudapi/cloudspaces/removeAllowedSize API, should succeed.
