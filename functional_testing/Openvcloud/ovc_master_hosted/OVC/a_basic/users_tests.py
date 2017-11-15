@@ -2,13 +2,14 @@ import unittest
 from ....utils.utils import BasicACLTest
 
 
-@unittest.skip('Not Implemented')
+
 class UsersBasicTests(BasicACLTest):
 
     def setUp(self):
         super(UsersBasicTests, self).setUp()
         self.acl_setup()
 
+    @unittest.skip('Not Implemented')
     def test001_authenticate_user(self):
         """ OVC-000
         * Test case for check user authentication and passsword update. *
@@ -23,6 +24,7 @@ class UsersBasicTests(BasicACLTest):
 
         """
 
+    @unittest.skip('Not Implemented')
     def test002_get_user_info(self):
         """ OVC-000
         * Test case for check get user information.*
@@ -37,6 +39,7 @@ class UsersBasicTests(BasicACLTest):
 
         """
 
+    @unittest.skip('Not Implemented')
     def test003_check_matching_users(self):
         """ OVC-000
         * Test case for check get matching usernames.
@@ -50,6 +53,7 @@ class UsersBasicTests(BasicACLTest):
 
         """
 
+    @unittest.skip('Not Implemented')
     def test004_password_reset(self):
         """ OVC-000
         * Test case for check password reset.
@@ -65,6 +69,7 @@ class UsersBasicTests(BasicACLTest):
 
         """
 
+    @unittest.skip('Not Implemented')
     def test005_create_users_with_same_specs(self):
         """ OVC-000
         * Test case for check creation of more than one user with same specs .
