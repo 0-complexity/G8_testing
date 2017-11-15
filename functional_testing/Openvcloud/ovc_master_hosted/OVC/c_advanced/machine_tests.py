@@ -2,9 +2,10 @@ import unittest
 from ....utils.utils import BasicACLTest
 
 
-@unittest.skip('Not Implemented')
+
 class MachineTests(BasicACLTest):
 
+    @unittest.skip('Not Implemented')
     def test001_check_machines_networking(self):
         """ OVC-000
         *Test case for checking machines networking*
@@ -20,6 +21,7 @@ class MachineTests(BasicACLTest):
         #. From VM2 ping VM1, should fail
         """
 
+    @unittest.skip('Not Implemented')
     def test002_check_network_data_integrity(self):
         """ OVC-000
         *Test case for checking network data integrity through VMS*
@@ -33,6 +35,7 @@ class MachineTests(BasicACLTest):
         #. Check that F1 has been sent to vm2 without data loss
         """
 
+    @unittest.skip('Not Implemented')
     def test003_check_connectivity_through_external_network(self):
         """ OVC-000
         *Test case for checking machine connectivity through external network*
@@ -46,6 +49,7 @@ class MachineTests(BasicACLTest):
         #. Check if you can ping VM1 from outside, should succeed
         """
 
+    @unittest.skip('Not Implemented')
     def test004_migrate_vm_in_middle_of writing_file(self):
         """ OVC-000
         *Test case for checking data integrity after migrating vm in the middle of writing a file*
@@ -60,6 +64,7 @@ class MachineTests(BasicACLTest):
         """
         # Note: this testcase may be hard to be implemented from here.
 
+    @unittest.skip('Not Implemented')
     def test005_cheching_vm_specs_after_rebooting(self):
         """ OVC-000
         *Test case for checking VM's ip and credentials after rebooting*
@@ -73,6 +78,7 @@ class MachineTests(BasicACLTest):
         #. Check if VM1's credentials are the same as well
         """
 
+    @unittest.skip('Not Implemented')
     def test006_attach_same_disk_to_two_vms(self):
         """ OVC-000
         *Test case for attaching same disk to two different vms*
@@ -88,6 +94,7 @@ class MachineTests(BasicACLTest):
         """
         # Note: try this scenario for data and boot disks
 
+    @unittest.skip('Not Implemented')
     def test007_detach_boot_from_running_machine(self):
         """ OVC-000
         * Test case for detaching boot disk from a running machine.
@@ -103,6 +110,7 @@ class MachineTests(BasicACLTest):
         #. Start VM1 and make sure it is running.
         """
 
+    @unittest.skip('Not Implemented')
     def test008_swap_vms_boot_disks(self):
         """ OVC-000
         * Test case for swapping vms boot disks.
@@ -118,6 +126,7 @@ class MachineTests(BasicACLTest):
         #. Start VM1 and make sure it is working.
         """
 
+    @unittest.skip('Not Implemented')
     def test009_connection_bet_VM_CS_ExternalNetwork(self):
         """ OVC-000
         * Test case for connection between virtual machines, cloudspaces and externel networks.
@@ -133,6 +142,7 @@ class MachineTests(BasicACLTest):
         #. Ping EN1's Gateway ip again, should fail.
         """
 
+    @unittest.skip('Not Implemented')
     def test010_node_maintenance_migrateVMs(self):
         """ OVC-000
         *Test case for putting node in maintenance with action migrate all vms.*
@@ -146,6 +156,7 @@ class MachineTests(BasicACLTest):
         #. Enable the node back, should succeed.
         """
 
+    @unittest.skip('Not Implemented')
     def test011_restart_vm_after_migration(self):
         """ OVC-000
         *Test case for checking VM status after restarting it after migration*
@@ -159,6 +170,7 @@ class MachineTests(BasicACLTest):
         #. Restart VM1 and make sure it is still running.
         """
 
+    @unittest.skip('Not Implemented')
     def test012_check_cloned_vm(self):
         """ OVC-000
         *Test case for checking cloned VM ip, portforwards and credentials*
