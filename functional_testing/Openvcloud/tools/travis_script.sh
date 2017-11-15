@@ -3,7 +3,7 @@ action=$1
 if [[ ${action} == "before" ]]; then
 
     ssh-keygen -f $HOME/.ssh/id_rsa -t rsa -N ''
-    
+
     echo "[+] Joining zerotier network : ${zerotier_network}"
     sudo zerotier-cli join ${zerotier_network}; sleep 10
 
@@ -13,11 +13,9 @@ if [[ ${action} == "before" ]]; then
 
     sleep 30
 
-    ping -w5 ${ctrl_ipaddress}
-
-    echo "[+] Cloning G8_testing repo : ${ctrl_ipaddress}"
+    echo "[+] Cloning G8_testing repo"
     cmd="cd /tmp; rm -rf G8_testing; git clone -b ${TRAVIS_BRANCH} https://github.com/0-complexity/G8_testing"
-    sshpass -p ${ctrl_password} ssh -t ${ctrl_user}@${ctrl_ipaddress} "${cmd}" > /dev/null
+    sshpass -p "${ctrl_password}" ssh -t ${ctrl_user}@${ctrl_ipaddress} "${cmd}" > /dev/null
 
 elif [[ ${action} == "test" ]]; then
 
