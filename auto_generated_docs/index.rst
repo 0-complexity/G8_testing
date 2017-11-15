@@ -1,7 +1,7 @@
 Welcome to the OpenvCloud Test Suite Coverage Documentation
 ===========================================================
 
-OVC API Test Suites
+API Test Suites
 -----------------------------------
 .. toctree::
    :maxdepth:2
