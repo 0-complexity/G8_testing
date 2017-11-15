@@ -4,11 +4,11 @@ if [[ ${action} == "before" ]]; then
 
     echo "[+] Joining zerotier network : ${zerotier_network}"
     sudo zerotier-one -d || true; sleep 5
-    sudo zerotier-cli join ${zerotier_network}
+    sudo zerotier-cli join ${zerotier_network}; sleep 5
 
     echo "[+] Authorizing zerotier member"
     memberid=$(sudo zerotier-cli info | awk '{print $3}')
-    curl -H "Content-Type: application/json" -H "Authorization: Bearer ${zerotier_token}" -X POST -d '{"config": {"authorized": true}}' https://my.zerotier.com/api/network/${zerotier_network}/member/${memberid} > /dev/null
+    curl -H "Content-Type: application/json" -H "Authorization: Bearer ${zerotier_token}" -X POST -d '{"config": {"authorized": true}}' https://my.zerotier.com/api/network/${zerotier_network}/member/${memberid}
 
     sleep 5
 
