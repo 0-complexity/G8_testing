@@ -42,6 +42,7 @@ class MachineTests(BasicACLTest):
         #. Create a cloudspace CS1, should succeed
         #. Create VM1
         #. Attach VM1 to an external network, should succeed
+        #. Assign IP to VM1's external netowrk interface, should succeed.
         #. Check if you can ping VM1 from outside, should succeed
         """
 
