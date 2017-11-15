@@ -110,5 +110,5 @@ class CloudspaceTests(BasicACLTest):
         **Test Scenario:**
         #. Create new cloudspace CS1.
         #. Get OpenVPN config file for CS1, should succeed .. with /cloudapi/cloudspaces/getOpenvpnConfig API, should succeed.
-        #. Check that Config file is right.
+        #. Check that Config file is correct.
         """

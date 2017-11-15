@@ -18,9 +18,10 @@ class UsersBasicTests(BasicACLTest):
 
         #. Create user (U1) with admin access.
         #. Authenticate U1 with POST /cloudapi/users/authenticate API,should return session key[user1_key] .
-        #. Use U1's key to list accounts for U1, should succeed.
+        #. Use U1's key to list the accounts for U1, should succeed.
         #. Use U1's key to update U1's password, should succeed.
         #. Check that user1's password has been reset successfully.
+        #. Use U1's key again to list the accounts for U1, should succeed.
 
         """
 
@@ -50,8 +51,9 @@ class UsersBasicTests(BasicACLTest):
         #. Create user2 with name in which user1 name is part of it .
         #. Use user1 name to get matching usernames with /cloudapi/users/getMatchingUsernames Api,sould succeed.
         #. Check that userr1 and user2 in matching list, should succeed.
-
+        #. Delete user1 and user2 and make sure that they can't be listed.
         """
+        #Note: add users with upper case & special characters as well.
 
     @unittest.skip('Not Implemented')
     def test004_password_reset(self):
