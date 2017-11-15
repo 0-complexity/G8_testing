@@ -145,3 +145,16 @@ class MachineTests(BasicACLTest):
         #. Check that the 3 VMs are in running state.
         #. Enable the node back, should succeed.
         """
+
+    def test011_restart_vm_after_migration(self):
+        """ OVC-000
+        *Test case for checking VM status after restarting it after migration*
+
+        **Test Scenario:**
+
+        #. Create a cloudspace CS1, should succeed.
+        #. Create VM1.
+        #. Migrate VM1 to another node, should succeed.
+        #. Make sure that VM1 is running.
+        #. Restart VM1 and make sure it is still running.
+        """
