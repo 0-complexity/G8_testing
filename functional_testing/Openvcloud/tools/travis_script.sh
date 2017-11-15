@@ -2,12 +2,8 @@ action=$1
 
 if [[ ${action} == "before" ]]; then
 
-    sshpass --help
-    ssh --help
+    ssh-keygen -f $HOME/.ssh/id_rsa -t rsa -N ''
     
-
-
-
     echo "[+] Joining zerotier network : ${zerotier_network}"
     sudo zerotier-cli join ${zerotier_network}; sleep 10
 
