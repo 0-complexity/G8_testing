@@ -15,7 +15,7 @@ if [[ ${action} == "before" ]]; then
 
     echo "[+] Cloning G8_testing repo : ${ctrl_ipaddress}"
     cmd="cd /tmp; rm -rf G8_testing; git clone -b ${TRAVIS_BRANCH} https://github.com/0-complexity/G8_testing"
-    sshpass -p ${ctrl_password} ssh -t ${ctrl_user}@${ctrl_ipaddress} "pwd"
+    sshpass -p ${ctrl_password} ssh -t ${ctrl_user}@${ctrl_ipaddress} "${cmd}" > /dev/null
 
 elif [[ ${action} == "test" ]]; then
 
