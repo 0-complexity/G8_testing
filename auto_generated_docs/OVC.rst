@@ -2,10 +2,11 @@
 
 API Test Suites
 -------------------------
-
+used to test the end user APIs for openvcloud.
 
 ACL API Test Suite
 ******************
+test the access control list for openvcloud
 
 Basic Tests
 ===============
