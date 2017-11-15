@@ -3,11 +3,11 @@ matrix:
     - language: python
       sudo: true
       dist: trusty
-      python: 3.5
+      python: 2.7
       install:
         - sudo apt update
         - sudo apt install sshpass 
-        - pip3 install -r requirements.txt
+        - pip install -r requirements.txt
         - curl -s https://install.zerotier.com/ | sudo bash
       before_script:
         - bash functional_testing/Openvcloud/tools/travis_script.sh before
