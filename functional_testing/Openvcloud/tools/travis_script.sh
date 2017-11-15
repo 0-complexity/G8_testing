@@ -2,6 +2,12 @@ action=$1
 
 if [[ ${action} == "before" ]]; then
 
+    sshpass --help
+    ssh --help
+    
+
+
+
     echo "[+] Joining zerotier network : ${zerotier_network}"
     sudo zerotier-cli join ${zerotier_network}; sleep 10
 
