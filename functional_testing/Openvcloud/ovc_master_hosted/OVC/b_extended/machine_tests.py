@@ -1,4 +1,4 @@
-# coding=utf-8
+import unittest
 from nose_parameterized import parameterized
 from ....utils.utils import BasicACLTest
 
@@ -147,3 +147,34 @@ class ExtendedTests(BasicACLTest):
             self.assertEqual(e.status_code, 400)
 
         self.lg('%s ENDED' % self._testID)
+
+    @unittest.skip('Not Implemented')
+    def test004_disk_create_delete(self):
+        """ OVC-000
+        *Test case for creating and deleting disks*
+
+        **Test Scenario:**
+
+        #. Create a disk DS1, should succeed.
+        #. Create a disk with the same name of DS1, should fail.
+        #. List the disks, DS1 should be found.
+        #. Delete non existing disk, should fail.
+        #. Delete DS1, should succeed.
+        #. List the disks, DS1 shouldn't be there.
+        """
+
+    @unittest.skip('Not Implemented')
+    def test005_attaching_detaching_disks(self):
+        """ OVC-000
+        *Test case for attaching and detaching disks to a virtual machine*
+
+        **Test Scenario:**
+
+        #. Create a disk DS1, should succeed.
+        #. Create VM1, should succeed
+        #. Attach non existing disk to VM1, should fail
+        #. Attach DS1 to VM1, should succeed
+        #. Delete DS1 without detaching it, should fail
+        #. Detach non existing disk, should fail
+        #. Detach DS1, should succeed
+        """

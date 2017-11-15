@@ -721,3 +721,13 @@ class BasicTests(BasicACLTest):
                 self.assertTrue(machineId)
 
         self.lg('%s ENDED' % self._testID)
+
+    @unittest.skip('Not Implemented')
+    def test012_delete_nonexisting_machine(self):
+        """ OVC-000
+        *Test case for deleting non existing machine*
+
+        **Test Scenario:**
+
+        #. Delete a non existing machine, should fail
+        """

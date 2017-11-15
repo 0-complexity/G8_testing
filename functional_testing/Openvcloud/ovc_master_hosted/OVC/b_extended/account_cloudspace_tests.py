@@ -1,3 +1,4 @@
+import unittest
 from ....utils.utils import BasicACLTest
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
@@ -267,3 +268,20 @@ class ExtendedTests(BasicACLTest):
         except ApiError as e:
             self.lg('- expected error raised %s' % e.message)
             self.assertEqual(e.message, '400 Bad Request')
+
+    @unittest.skip('Not Implemented')
+    def test004_getting_account_resources(self):
+        """ OVC-000
+        *Test case for checking account's resources retrieval*
+
+        **Test Scenario:**
+
+        #. Create account.
+        #. Create cloudspaces CS1 and CS2.
+        #. Create VM1 on CS1 and VM2 & VM3 on CS2 with certain specs.
+        #. Trigger jumscript on the controller to collect account's information.
+        #. Trigger jumscript on the master to collect account's information
+        #. Get the account information binary file.
+        #. Convert binary file to .xls file to be able extract account's information.
+        #. Check if the account's information in the .xls file matches the vms and cloudspaces information.
+        """
