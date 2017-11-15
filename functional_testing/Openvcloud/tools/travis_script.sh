@@ -3,8 +3,8 @@ action=$1
 if [[ ${action} == "before" ]]; then
 
     echo "[+] Joining zerotier network : ${zerotier_network}"
-    sudo zerotier-one -d || true; sleep 5
-    sudo zerotier-cli join ${zerotier_network}; sleep 5
+    sudo zerotier-one -d || true; sleep 10
+    sudo zerotier-cli join ${zerotier_network}; sleep 10
 
     echo "[+] Authorizing zerotier member"
     memberid=$(sudo zerotier-cli info | awk '{print $3}')
