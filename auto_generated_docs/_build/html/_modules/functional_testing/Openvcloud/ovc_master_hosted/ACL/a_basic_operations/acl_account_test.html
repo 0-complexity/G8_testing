@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test &mdash; OpenVCloud Testsuite 1.0 documentation</title>
+  <title>functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test &mdash; OpenvCloud Test Suite 1.0 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="OpenVCloud Testsuite 1.0 documentation" href="../../../../../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../../../search.html"/>
+    <link rel="top" title="OpenvCloud Test Suite 1.0 documentation" href="../../../../../../index.html"/>
         <link rel="up" title="Module code" href="../../../../../index.html"/> 
 
   
@@ -40,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -49,7 +55,7 @@
           
 
           
-            <a href="../../../../../../index.html" class="icon icon-home"> OpenVCloud Testsuite
+            <a href="../../../../../../index.html" class="icon icon-home"> OpenvCloud Test Suite
           
 
           
@@ -80,16 +86,14 @@
           
             
             
-                <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../acl.html">Access Control List Basic Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../acl.html#access-control-list-extended-tests">Access Control List Extended Tests</a></li>
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../OVC.html">API Test Suites</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../ovc.html">Openvcloud APIs Test Suite:</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html">End user Portal Test Suite</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html#admin-user-portal-test-suite">Admin user Portal Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html">Portal Test Suite</a></li>
 </ul>
 
             
@@ -102,8 +106,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../../../../index.html">OpenVCloud Testsuite</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">OpenvCloud Test Suite</a>
+        
       </nav>
 
 
@@ -116,19 +122,36 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../../../../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../../../../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../../../../../index.html">Module code</a> &raquo;</li>
-      
-    <li>functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test</li>
+        
+      <li>functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -147,11 +170,11 @@
 <span class="k">class</span> <span class="nc">ACLACCOUNT</span><span class="p">(</span><span class="n">BasicACLTest</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ACLACCOUNT</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">acl_setup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acl_setup</span><span class="p">(</span><span class="n">create_default_cloudspace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Read"><a class="viewcode-back" href="../../../../../../acl.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Read">[docs]</a><span class="k">class</span> <span class="nc">Read</span><span class="p">(</span><span class="n">ACLACCOUNT</span><span class="p">):</span>
-<div class="viewcode-block" id="Read.test003_account_get_with_readonly_user"><a class="viewcode-back" href="../../../../../../acl.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Read.test003_account_get_with_readonly_user">[docs]</a>    <span class="k">def</span> <span class="nf">test003_account_get_with_readonly_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Read"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Read">[docs]</a><span class="k">class</span> <span class="nc">Read</span><span class="p">(</span><span class="n">ACLACCOUNT</span><span class="p">):</span>
+<div class="viewcode-block" id="Read.test003_account_get_with_readonly_user"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Read.test003_account_get_with_readonly_user">[docs]</a>    <span class="k">def</span> <span class="nf">test003_account_get_with_readonly_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; ACL-3</span>
 <span class="sd">        *Test case for account get api with user has read only access.*</span>
 
@@ -200,7 +223,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Read.test004_account_list_with_readonly_user"><a class="viewcode-back" href="../../../../../../acl.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Read.test004_account_list_with_readonly_user">[docs]</a>    <span class="k">def</span> <span class="nf">test004_account_list_with_readonly_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Read.test004_account_list_with_readonly_user"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Read.test004_account_list_with_readonly_user">[docs]</a>    <span class="k">def</span> <span class="nf">test004_account_list_with_readonly_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; ACL-4</span>
 <span class="sd">        *Test case for account list api with user has read only access.*</span>
 
@@ -255,8 +278,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Write"><a class="viewcode-back" href="../../../../../../acl.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Write">[docs]</a><span class="k">class</span> <span class="nc">Write</span><span class="p">(</span><span class="n">ACLACCOUNT</span><span class="p">):</span>
-<div class="viewcode-block" id="Write.test003_cloudspace_create"><a class="viewcode-back" href="../../../../../../acl.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Write.test003_cloudspace_create">[docs]</a>    <span class="k">def</span> <span class="nf">test003_cloudspace_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Write"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Write">[docs]</a><span class="k">class</span> <span class="nc">Write</span><span class="p">(</span><span class="n">ACLACCOUNT</span><span class="p">):</span>
+<div class="viewcode-block" id="Write.test003_cloudspace_create"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Write.test003_cloudspace_create">[docs]</a>    <span class="k">def</span> <span class="nf">test003_cloudspace_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; ACL-9</span>
 <span class="sd">        *Test case for cloudspace_create api with user has write access.*</span>
 
@@ -333,45 +356,67 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
 
-    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;https://github.com/0-complexity/openvcloud/issues/353&quot;</span><span class="p">)</span>
-<div class="viewcode-block" id="Write.test004_machine_createTemplate"><a class="viewcode-back" href="../../../../../../acl.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Write.test004_machine_createTemplate">[docs]</a>    <span class="k">def</span> <span class="nf">test004_machine_createTemplate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Write.test004_machine_convertToTemplate"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Write.test004_machine_convertToTemplate">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;bug: https://github.com/0-complexity/openvcloud/issues/748&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test004_machine_convertToTemplate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; ACL-10</span>
-<span class="sd">        *Test case for machine_createTemplate api with user has write access.*</span>
+<span class="sd">        *Test case for machine_convertToTemplate api with user has write access.*</span>
 
 <span class="sd">        **Test Scenario:**</span>
 
 <span class="sd">        #. create cloudspace and machine with user1</span>
-<span class="sd">        #. use created machine1 to create machineTemplate with user1</span>
-<span class="sd">        #. try to use created machine1 to create machineTemplate with user2, should fail &#39;403 Forbidden&#39;</span>
+<span class="sd">        #. use convertToTemplate to convert machine1 to template with user1, should fail with &#39;409 Conflict&#39; (machine should be stopped first)</span>
+<span class="sd">        #. stop machine1</span>
+<span class="sd">        #. use convertToTemplate to convert machine1 to Template with user1</span>
+<span class="sd">        #. try to use convert machine1 to  template with user2, should fail &#39;403 Forbidden&#39;</span>
 <span class="sd">        #. add user2 to the account created by user1 with write access.</span>
-<span class="sd">        #. use created machine1 to create machineTemplate with user2, should succeed</span>
-<span class="sd">        #. delete user1 account, create machineTemplate with user1, should fail &#39;404 Not Found&#39;</span>
+<span class="sd">        #. use convert machine1 to template with user2, should succeed</span>
+<span class="sd">        #. use convert machine1 to template with user1, should fail with 404&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cloudspaces</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;1- create cloudspace and machine with user1&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cloudspaceId1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_cloudspace_create</span><span class="p">(</span><span class="n">account_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_cloudspace_create</span><span class="p">(</span><span class="n">account_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span>
                                                              <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
                                                              <span class="n">access</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_owner</span><span class="p">,</span>
                                                              <span class="n">api</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cloudspaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspaceId1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cloudspaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_machines</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">machineId1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspaceId1</span><span class="p">,</span>
-                                                  <span class="n">api</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_machines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">machineId1</span><span class="p">)</span>
-        <span class="n">basename1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspaceId1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="n">selected_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">machine_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span>
+                                                  <span class="n">api</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="p">,</span>
+                                                  <span class="n">image_id</span><span class="o">=</span><span class="n">selected_image</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_machines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">machine_id</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;2- use created machine1 to create machineTemplate with user1&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">createTemplate</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId1</span><span class="p">,</span>
-                                                                                <span class="n">templatename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                                                                                    <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">],</span>
-                                                                                <span class="n">basename</span><span class="o">=</span><span class="n">basename1</span><span class="p">))</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;3- try to use created machine1 to create machineTemplate with user2&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;use convertToTemplate to convert machine1 to Template with user1, should fail with &quot;409 Conflict&quot; (machine should be stopped first)&#39;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">user_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">createTemplate</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId1</span><span class="p">,</span>
-                                                           <span class="n">templatename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">],</span>
-                                                           <span class="n">basename</span><span class="o">=</span><span class="n">basename1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">convertToTemplate</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">,</span> <span class="n">templatename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
+        <span class="k">except</span> <span class="n">ApiError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s1">&#39;409 Conflict&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;stop machine1&#39;</span><span class="p">)</span>
+        <span class="n">stopped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">stopped</span><span class="p">,</span> <span class="s1">&#39;machine1 </span><span class="si">%s</span><span class="s1"> did not stopped&#39;</span> <span class="o">%</span> <span class="n">machine_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;use convertToTemplate to convert machine1 to Template with user1&#39;</span><span class="p">)</span>
+        <span class="n">converted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">convertToTemplate</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">,</span> <span class="n">templatename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">converted</span><span class="p">,</span> <span class="s1">&#39;machine1 did not converted to template&#39;</span><span class="p">)</span>
+
+        <span class="n">templates</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">listTemplates</span><span class="p">(</span><span class="n">accountId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">templates</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;We should have only one template for this account not [</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="n">templates</span><span class="p">)</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">120</span>
+        <span class="k">while</span><span class="p">(</span><span class="n">counter</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">listTemplates</span><span class="p">(</span><span class="n">accountId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;CREATED&#39;</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">counter</span><span class="o">-=</span><span class="mi">1</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="s1">&#39;CREATED&#39;</span><span class="p">,</span> <span class="s1">&#39;Template did not created and still </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">status</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;try to use convert machine1 to  template with user2, should fail 403 Forbidden&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">convertToTemplate</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">,</span>
+            <span class="n">templatename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
         <span class="k">except</span> <span class="n">ApiError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s1">&#39;403 Forbidden&#39;</span><span class="p">)</span>
@@ -381,24 +426,33 @@
                                            <span class="n">userId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
                                            <span class="n">accesstype</span><span class="o">=</span><span class="s1">&#39;RCX&#39;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;5- use created machine1 to create machineTemplate with user2&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">createTemplate</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId1</span><span class="p">,</span>
-                                                                       <span class="n">templatename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span>
-                                                                                    <span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">],</span>
-                                                                       <span class="n">basename</span><span class="o">=</span><span class="n">basename1</span><span class="p">))</span>
-        <span class="c1">#To Do: this step create template take time and we should wait until the image created so we can delete the account in the next step.</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;5- use convert machine1 to create template with user2&#39;</span><span class="p">)</span>
+        <span class="n">created</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">convertToTemplate</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">,</span>
+                  <span class="n">templatename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">created</span><span class="p">,</span> <span class="s1">&#39;Create Template API returned False&#39;</span><span class="p">)</span>
+        <span class="n">templates</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">listTemplates</span><span class="p">(</span><span class="n">accountId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">templates</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;We should have only two template for this account not [</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="n">templates</span><span class="p">)</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">120</span>
+        <span class="k">while</span><span class="p">(</span><span class="n">counter</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">status1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">listTemplates</span><span class="p">(</span><span class="n">accountId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span>
+            <span class="n">status2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">listTemplates</span><span class="p">(</span><span class="n">accountId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">status1</span> <span class="o">==</span> <span class="s1">&#39;CREATED&#39;</span> <span class="ow">and</span> <span class="n">status2</span> <span class="o">==</span> <span class="s1">&#39;CREATED&#39;</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">counter</span><span class="o">-=</span><span class="mi">1</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">status1</span><span class="p">,</span> <span class="s1">&#39;CREATED&#39;</span><span class="p">,</span> <span class="s1">&#39;Template did not created and still </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">status1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">status2</span><span class="p">,</span> <span class="s1">&#39;CREATED&#39;</span><span class="p">,</span> <span class="s1">&#39;Template did not created and still </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">status2</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;6- delete user1 account: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">accountId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;testing&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_status</span><span class="p">(</span><span class="s1">&#39;DESTROYED&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">get</span><span class="p">,</span>
                              <span class="n">accountId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">CLEANUP</span><span class="p">[</span><span class="s1">&#39;accountId&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- use created machine1 to create machineTemplate with user1&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;use convert machine1 to template with user1, should fail with 404&#39;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">user_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">createTemplate</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId1</span><span class="p">,</span>
-                                                           <span class="n">templatename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">],</span>
-                                                           <span class="n">basename</span><span class="o">=</span><span class="n">basename1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">convertToTemplate</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">,</span>
+                                                           <span class="n">templatename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
         <span class="k">except</span> <span class="n">ApiError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s1">&#39;404 Not Found&#39;</span><span class="p">)</span>
@@ -406,8 +460,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Admin"><a class="viewcode-back" href="../../../../../../acl.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Admin">[docs]</a><span class="k">class</span> <span class="nc">Admin</span><span class="p">(</span><span class="n">ACLACCOUNT</span><span class="p">):</span>
-<div class="viewcode-block" id="Admin.test003_account_add_update_delete_User"><a class="viewcode-back" href="../../../../../../acl.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Admin.test003_account_add_update_delete_User">[docs]</a>    <span class="k">def</span> <span class="nf">test003_account_add_update_delete_User</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Admin"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Admin">[docs]</a><span class="k">class</span> <span class="nc">Admin</span><span class="p">(</span><span class="n">ACLACCOUNT</span><span class="p">):</span>
+<div class="viewcode-block" id="Admin.test003_account_add_update_delete_User"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.a_basic_operations.acl_account_test.Admin.test003_account_add_update_delete_User">[docs]</a>    <span class="k">def</span> <span class="nf">test003_account_add_update_delete_User</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; ACL-13</span>
 <span class="sd">        *Test case for add/update/delete api with user has admin access.*</span>
 
@@ -479,6 +533,9 @@
 </pre></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -512,7 +569,8 @@
             VERSION:'1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>

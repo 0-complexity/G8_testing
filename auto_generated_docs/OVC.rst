@@ -162,6 +162,14 @@ Basic Network Tests
     :undoc-members:
     :show-inheritance:
 
+Basic Users Tests
+^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests
+.. autoclass:: functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests.UsersBasicTests
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 Extended Tests
 ==============

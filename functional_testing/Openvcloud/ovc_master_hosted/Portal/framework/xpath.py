@@ -785,8 +785,7 @@ elements = {
             'group_page_description':['XPATH', '/html/body/div[2]/div/div/ul[2]/li[3]'],
             'stacks_table_first_element_id': ['XPATH', '//*[@id="table_cloudbroker_stack"]/tbody/tr[1]/td[1]/a'],
             'stacks_table_first_element_name': ['XPATH', '//*[@id="table_cloudbroker_stack"]/tbody/tr/td[3]'],
-            'current_table_page':['CLASS_NAME', 'paginate_button active']
-
+            'current_table_page':['CLASS_NAME', 'paginate_button active'],
             'stack_table_pagination':['ID', 'table_cloudbroker_stack_paginate'],
             'machine_operations_loading':['ID', 'overlay-loader'],
             'create_user_dialog':['ID','createuser'],

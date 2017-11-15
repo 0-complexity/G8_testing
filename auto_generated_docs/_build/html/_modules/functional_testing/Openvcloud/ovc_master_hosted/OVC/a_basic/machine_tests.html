@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests &mdash; OpenVCloud Testsuite 1.0 documentation</title>
+  <title>functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests &mdash; OpenvCloud Test Suite 1.0 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="OpenVCloud Testsuite 1.0 documentation" href="../../../../../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../../../search.html"/>
+    <link rel="top" title="OpenvCloud Test Suite 1.0 documentation" href="../../../../../../index.html"/>
         <link rel="up" title="Module code" href="../../../../../index.html"/> 
 
   
@@ -40,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -49,7 +55,7 @@
           
 
           
-            <a href="../../../../../../index.html" class="icon icon-home"> OpenVCloud Testsuite
+            <a href="../../../../../../index.html" class="icon icon-home"> OpenvCloud Test Suite
           
 
           
@@ -80,16 +86,14 @@
           
             
             
-                <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../acl.html">Access Control List Basic Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../acl.html#access-control-list-extended-tests">Access Control List Extended Tests</a></li>
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../OVC.html">API Test Suites</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../ovc.html">Openvcloud APIs Test Suite:</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html">End user Portal Test Suite</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html#admin-user-portal-test-suite">Admin user Portal Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html">Portal Test Suite</a></li>
 </ul>
 
             
@@ -102,8 +106,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../../../../index.html">OpenVCloud Testsuite</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">OpenvCloud Test Suite</a>
+        
       </nav>
 
 
@@ -116,19 +122,36 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../../../../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../../../../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../../../../../index.html">Module code</a> &raquo;</li>
-      
-    <li>functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests</li>
+        
+      <li>functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -147,7 +170,7 @@
 <span class="kn">from</span> <span class="nn">JumpScale.baselib.http_client.HttpClient</span> <span class="k">import</span> <span class="n">HTTPError</span>
 
 
-<div class="viewcode-block" id="BasicTests"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests">[docs]</a><span class="k">class</span> <span class="nc">BasicTests</span><span class="p">(</span><span class="n">BasicACLTest</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicTests"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests">[docs]</a><span class="k">class</span> <span class="nc">BasicTests</span><span class="p">(</span><span class="n">BasicACLTest</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BasicTests</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">acl_setup</span><span class="p">()</span>
@@ -188,6 +211,7 @@
 
     <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s1">&#39;Ubuntu 14.04 x64&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;Ubuntu 15.10 x64&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;Ubuntu 16.04 x64&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;Windows 2012r2 Standard&#39;</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">test002_create_vmachine_withbig_disk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-002</span>
@@ -245,7 +269,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BasicTests.test003_create_machine_with_resize"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test003_create_machine_with_resize">[docs]</a>    <span class="k">def</span> <span class="nf">test003_create_machine_with_resize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicTests.test003_create_machine_with_resize"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test003_create_machine_with_resize">[docs]</a>    <span class="k">def</span> <span class="nf">test003_create_machine_with_resize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-003</span>
 <span class="sd">        *Test case for testing resize operation with all combinations*</span>
 
@@ -258,7 +282,7 @@
 <span class="sd">        #. Check that the machine is updated</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;2- get all available sizes to use and choose one random, should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;1- get all available sizes to use and choose one random and creat vm with it , should succeed&#39;</span><span class="p">)</span>
         <span class="n">size</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">sizes</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">))</span>
         <span class="n">disksize</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="s1">&#39;disks&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- using memory size [</span><span class="si">%s</span><span class="s1">] with disk &#39;</span>
@@ -267,18 +291,28 @@
                                                        <span class="n">size_id</span><span class="o">=</span><span class="n">size</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
                                                        <span class="n">disksize</span><span class="o">=</span><span class="n">disksize</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;4- Resize the machine with all possible combinations, should succeed&#39;</span><span class="p">)</span>
-        <span class="n">sizesMaxValue</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">sizes</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">resizeId</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">sizesMaxValue</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;2- Resize the machine with all possible combinations, should succeed&#39;</span><span class="p">)</span>
+        <span class="n">basic_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">512</span><span class="p">,</span><span class="mi">1024</span><span class="p">,</span><span class="mi">4096</span><span class="p">,</span><span class="mi">8192</span><span class="p">,</span><span class="mi">16384</span><span class="p">,</span><span class="mi">2048</span><span class="p">]</span>
+
+        <span class="n">sizesMaxValue</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">basic_sizes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;sizesMaxValue</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">sizesMaxValue</span><span class="p">)</span>
+        <span class="c1">#sizesMaxValue = len(self.api.cloudapi.sizes.list(self.cloudspace_id))</span>
+        <span class="k">for</span> <span class="n">sizes</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sizesMaxValue</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;3- Stop the machine&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span>
-                             <span class="s1">&#39;HALTED&#39;</span><span class="p">)</span>
-
+                              <span class="s1">&#39;HALTED&#39;</span><span class="p">)</span>
+            <span class="n">sizes_list</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">sizes</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;memory&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">basic_sizes</span><span class="p">[</span><span class="n">sizes</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sizes_list</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="n">resizeId</span><span class="o">=</span><span class="n">sizes_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;resizeId </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">resizeId</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">,</span>
                                                             <span class="n">sizeId</span><span class="o">=</span><span class="n">resizeId</span><span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;5- Start the machine&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;4- Start the machine&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span>
                              <span class="s1">&#39;RUNNING&#39;</span><span class="p">)</span>
@@ -288,9 +322,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
 
-    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;openvcloud Bug-57: Admin can&#39;t resize the machine more than one time in the same halt&quot;</span>
-                   <span class="s2">&quot; using Cloudbroker or the End use portal&quot;</span><span class="p">)</span>
-<div class="viewcode-block" id="BasicTests.test004_create_machine_with_resize_in_halted"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test004_create_machine_with_resize_in_halted">[docs]</a>    <span class="k">def</span> <span class="nf">test004_create_machine_with_resize_in_halted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicTests.test004_create_machine_with_resize_in_halted"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test004_create_machine_with_resize_in_halted">[docs]</a>    <span class="k">def</span> <span class="nf">test004_create_machine_with_resize_in_halted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-004</span>
 <span class="sd">        *Test case for testing resize operation in the halted machine*</span>
 
@@ -313,20 +345,33 @@
                                                        <span class="n">size_id</span><span class="o">=</span><span class="n">size</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
                                                        <span class="n">disksize</span><span class="o">=</span><span class="n">disksize</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;4- Resize the machine with all possible combinations, should succeed&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;3- Stop the machine&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span>
                          <span class="s1">&#39;HALTED&#39;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;4- Resize it more than one time&#39;</span><span class="p">)</span>
-        <span class="n">sizesMaxValue</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">sizes</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">resizeId</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">sizesMaxValue</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;4- Resize the machine with all possible combinations more than one , should succeed&#39;</span><span class="p">)</span>
+        <span class="n">basic_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">512</span><span class="p">,</span><span class="mi">1024</span><span class="p">,</span><span class="mi">4096</span><span class="p">,</span><span class="mi">8192</span><span class="p">,</span><span class="mi">16384</span><span class="p">,</span><span class="mi">2048</span><span class="p">]</span>
+        <span class="c1">#sizesMaxValue = len(self.api.cloudapi.sizes.list(self.cloudspace_id))</span>
+        <span class="n">sizesMaxValue</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">basic_sizes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;sizesMaxValue</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">sizesMaxValue</span><span class="p">)</span>
+        <span class="c1">#sizesMaxValue=6</span>
+        <span class="k">for</span> <span class="n">sizes</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sizesMaxValue</span><span class="p">):</span>
+            <span class="n">sizes_list</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">sizes</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;memory&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">basic_sizes</span><span class="p">[</span><span class="n">sizes</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sizes_list</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="n">resizeId</span><span class="o">=</span><span class="n">sizes_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+
+
+
             <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">,</span>
                                                             <span class="n">sizeId</span><span class="o">=</span><span class="n">resizeId</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">60</span><span class="p">):</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)[</span><span class="s1">&#39;sizeid&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">resizeId</span><span class="p">:</span>
-                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                   <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                   <span class="k">break</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)[</span><span class="s1">&#39;sizeid&#39;</span><span class="p">],</span>
                              <span class="n">resizeId</span><span class="p">)</span>
@@ -400,8 +445,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
-    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;https://github.com/gig-projects/org_quality/issues/446&quot;</span><span class="p">)</span>
-<div class="viewcode-block" id="BasicTests.test006_machine_snapshots"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test006_machine_snapshots">[docs]</a>    <span class="k">def</span> <span class="nf">test006_machine_snapshots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicTests.test006_machine_snapshots"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test006_machine_snapshots">[docs]</a>    <span class="k">def</span> <span class="nf">test006_machine_snapshots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-006</span>
 <span class="sd">        *Test case  for restoring certain snapshots for multiple snapshots*</span>
 
@@ -426,6 +470,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- add portforward for the created virtual machine&#39;</span><span class="p">)</span>
         <span class="n">cs_publicip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_portforwarding</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">,</span> <span class="n">api</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="p">,</span> <span class="n">cs_publicport</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
         <span class="n">machine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)</span>
         <span class="n">account</span> <span class="o">=</span> <span class="n">machine</span><span class="p">[</span><span class="s1">&#39;accounts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
@@ -466,7 +511,13 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_status</span><span class="p">(</span><span class="s1">&#39;RUNNING&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">,</span>
                                      <span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;cd; python machine_script.py </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> 2000 </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> result&#39;</span>
+                        <span class="o">%</span> <span class="p">(</span><span class="n">account</span><span class="p">[</span><span class="s1">&#39;login&#39;</span><span class="p">],</span> <span class="n">account</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">],</span> <span class="n">cs_publicip</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">nodeID</span><span class="p">)</span>
+                        <span class="k">break</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- Rollback to the 3rd snapshot&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)</span>
@@ -479,7 +530,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_status</span><span class="p">(</span><span class="s1">&#39;RUNNING&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">,</span>
                                  <span class="n">machineId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_id</span><span class="p">)</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;cd; python machine_script.py </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> 2000 </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> result&#39;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="n">account</span><span class="p">[</span><span class="s1">&#39;login&#39;</span><span class="p">],</span> <span class="n">account</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">],</span> <span class="n">cs_publicip</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">nodeID</span><span class="p">)</span>
+                    <span class="k">break</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;check if the rolling back have succeed&#39;</span><span class="p">)</span>
             <span class="n">count_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;cd; python machine_script.py </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> 2000 </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> result&#39;</span>
@@ -512,7 +569,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BasicTests.test007_cleanup_vxlans_for_stopped_deleted_vms"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test007_cleanup_vxlans_for_stopped_deleted_vms">[docs]</a>    <span class="k">def</span> <span class="nf">test007_cleanup_vxlans_for_stopped_deleted_vms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicTests.test007_cleanup_vxlans_for_stopped_deleted_vms"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test007_cleanup_vxlans_for_stopped_deleted_vms">[docs]</a>    <span class="k">def</span> <span class="nf">test007_cleanup_vxlans_for_stopped_deleted_vms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-007</span>
 <span class="sd">        *Test case  for cleaning up vxlans for stopped or deleted VMs*</span>
 
@@ -550,53 +607,56 @@
                                                        <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;space_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;3- stop the virtual machine&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_status</span><span class="p">(</span><span class="s1">&#39;HALTED&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">,</span>
-                             <span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;4- check that vxlan and space bridge are deleted&#39;</span><span class="p">)</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;if [ ! -d &quot;/sys/class/net/vx-</span><span class="si">%s</span><span class="s1">&quot; ]; &#39;</span>
-                                                       <span class="s1">&#39;then echo notfound;fi&#39;</span> <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;notfound&#39;</span><span class="p">)</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;if [ ! -d &quot;/sys/class/net/space_</span><span class="si">%s</span><span class="s1">&quot; ]; &#39;</span>
-                                                       <span class="s1">&#39;then echo notfound;fi&#39;</span> <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;notfound&#39;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;5- start the virtual machine&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_status</span><span class="p">(</span><span class="s1">&#39;RUNNING&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">,</span>
-                             <span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;6- check again on vxlan and space bridge, should be found&#39;</span><span class="p">)</span>
-        <span class="n">nodeID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_machine_nodeID</span><span class="p">(</span><span class="n">machineId</span><span class="p">)</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;cd /sys/class/net; ls | grep vx-</span><span class="si">%s</span><span class="s1">&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;check if the routeros on the same node&#39;</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;virsh list --all | grep -o -F routeros_</span><span class="si">%s</span><span class="s1">&#39;</span>
                                                        <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;vx-</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">)</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;cd /sys/class/net; ls | grep space_</span><span class="si">%s</span><span class="s1">&#39;</span>
-                                                       <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;space_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">output</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;3- stop the virtual machine&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_status</span><span class="p">(</span><span class="s1">&#39;HALTED&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">,</span>
+                                 <span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;7- delete the virtual machine&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;4- check that vxlan and space bridge are deleted&#39;</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;if [ ! -d &quot;/sys/class/net/vx-</span><span class="si">%s</span><span class="s1">&quot; ]; &#39;</span>
+                                                           <span class="s1">&#39;then echo notfound;fi&#39;</span> <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;notfound&#39;</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;if [ ! -d &quot;/sys/class/net/space_</span><span class="si">%s</span><span class="s1">&quot; ]; &#39;</span>
+                                                           <span class="s1">&#39;then echo notfound;fi&#39;</span> <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;notfound&#39;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;8- check once more on vxlan and space bridge, shouldn</span><span class="se">\&#39;</span><span class="s1">t be found&#39;</span><span class="p">)</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;if [ ! -d &quot;/sys/class/net/vx-</span><span class="si">%s</span><span class="s1">&quot; ]; &#39;</span>
-                                                       <span class="s1">&#39;then echo notfound;fi&#39;</span> <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;notfound&#39;</span><span class="p">)</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;if [ ! -d &quot;/sys/class/net/space_</span><span class="si">%s</span><span class="s1">&quot; ]; &#39;</span>
-                                                       <span class="s1">&#39;then echo notfound;fi&#39;</span> <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;notfound&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;5- start the virtual machine&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_status</span><span class="p">(</span><span class="s1">&#39;RUNNING&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">,</span>
+                                 <span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;6- check again on vxlan and space bridge, should be found&#39;</span><span class="p">)</span>
+            <span class="n">nodeID</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_machine_nodeID</span><span class="p">(</span><span class="n">machineId</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;cd /sys/class/net; ls | grep vx-</span><span class="si">%s</span><span class="s1">&#39;</span>
+                                                           <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;vx-</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;cd /sys/class/net; ls | grep space_</span><span class="si">%s</span><span class="s1">&#39;</span>
+                                                           <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;space_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;7- delete the virtual machine&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;8- check once more on vxlan and space bridge, shouldn</span><span class="se">\&#39;</span><span class="s1">t be found&#39;</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;if [ ! -d &quot;/sys/class/net/vx-</span><span class="si">%s</span><span class="s1">&quot; ]; &#39;</span>
+                                                           <span class="s1">&#39;then echo notfound;fi&#39;</span> <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;notfound&#39;</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;if [ ! -d &quot;/sys/class/net/space_</span><span class="si">%s</span><span class="s1">&quot; ]; &#39;</span>
+                                                           <span class="s1">&#39;then echo notfound;fi&#39;</span> <span class="o">%</span> <span class="n">NetId_hexa</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;notfound&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
 
-    <span class="c1">#@parameterized.expand([&#39;تست_عربى&#39;,</span>
-    <span class="c1">#                       &#39;утрчиогфрыуи&#39;,</span>
-    <span class="c1">#                       &#39;é€èêëâæüéêæâàâ&#39;,</span>
-    <span class="c1">#                       &#39;ωβνμκλπιυρσζαωθ&#39;,</span>
-    <span class="c1">#                       &#39;îöşüû«»“âç&#39;])</span>
-    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;https://github.com/gig-projects/org_quality/issues/452&quot;</span><span class="p">)</span>
-<div class="viewcode-block" id="BasicTests.test008_test_different_Language"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test008_test_different_Language">[docs]</a>    <span class="k">def</span> <span class="nf">test008_test_different_Language</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">language</span><span class="p">):</span>
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s1">&#39;تست_عربى&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;утрчиогфрыуи&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;é€èêëâæüéêæâàâ&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;ωβνμκλπιυρσζαωθ&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;îöşüû«»“âç&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">test008_test_different_Language</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">language</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-008</span>
 <span class="sd">        *Test case  for testing different language*</span>
 
@@ -613,7 +673,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">language</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- create an account with </span><span class="si">%s</span><span class="s1"> name&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">language</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">accountId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">language</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">accountId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">language</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">accountId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">accountId</span><span class="p">)[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">accountId</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- create cloudspace with </span><span class="si">%s</span><span class="s1"> name&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">language</span><span class="p">))</span>
@@ -667,9 +727,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_status</span><span class="p">(</span><span class="s1">&#39;DESTROYED&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">get</span><span class="p">,</span>
                              <span class="n">accountId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">accountId</span><span class="p">,</span>
                              <span class="n">timeout</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BasicTests.test009_access_docker_on_vm"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test009_access_docker_on_vm">[docs]</a>    <span class="k">def</span> <span class="nf">test009_access_docker_on_vm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicTests.test009_access_docker_on_vm"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test009_access_docker_on_vm">[docs]</a>    <span class="k">def</span> <span class="nf">test009_access_docker_on_vm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-009</span>
 <span class="sd">        *Test case for publically accessing docker on vm*</span>
 
@@ -740,13 +800,14 @@
             <span class="n">flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;cd; python machine_script.py </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> 3000 2000&#39;</span>
                                                          <span class="o">%</span><span class="p">(</span><span class="n">account</span><span class="p">[</span><span class="s1">&#39;login&#39;</span><span class="p">],</span> <span class="n">account</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">],</span>
                                                            <span class="n">cs_publicip</span><span class="p">),</span> <span class="n">nodeID</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;flag</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">flag</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="n">flag</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">execute_command_on_physical_node</span><span class="p">(</span><span class="s1">&#39;cd; rm machine_script.py&#39;</span><span class="p">,</span> <span class="n">nodeID</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BasicTests.test010_enable_disable_fireWall"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test010_enable_disable_fireWall">[docs]</a>    <span class="k">def</span> <span class="nf">test010_enable_disable_fireWall</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicTests.test010_enable_disable_fireWall"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test010_enable_disable_fireWall">[docs]</a>    <span class="k">def</span> <span class="nf">test010_enable_disable_fireWall</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-010</span>
 <span class="sd">        *Test case  for testing enable and disable virtual firewall*</span>
 
@@ -774,7 +835,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">cloudspace</span><span class="o">.</span><span class="n">startVFW</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="n">cloudspaceId</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BasicTests.test011_windowsVM_with_different_sizes"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test011_windowsVM_with_different_sizes">[docs]</a>    <span class="k">def</span> <span class="nf">test011_windowsVM_with_different_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BasicTests.test011_windowsVM_with_different_sizes"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test011_windowsVM_with_different_sizes">[docs]</a>    <span class="k">def</span> <span class="nf">test011_windowsVM_with_different_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-015</span>
 <span class="sd">        *Test case  for testing that creating a VM with windows image must use a disksize greater than 25GB*</span>
 
@@ -800,12 +861,16 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- &#39;</span><span class="p">)</span>
         <span class="n">images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+        <span class="n">imageId</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
             <span class="k">if</span> <span class="s1">&#39;Windows&#39;</span> <span class="ow">in</span> <span class="n">image</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]:</span>
                 <span class="n">imageId</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">imageId</span><span class="p">,</span> <span class="s1">&#39;No windows image found on the environment&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- Get all sizes&#39;</span><span class="p">)</span>
         <span class="n">diskSizes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">sizes</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;disks&#39;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">diskSize</span> <span class="ow">in</span> <span class="n">diskSizes</span><span class="p">:</span>
+        <span class="n">basic_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">250</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="mi">2000</span><span class="p">]</span>
+        <span class="n">diff_sizes</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">basic_sizes</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">diskSize</span> <span class="ow">in</span> <span class="n">diff_sizes</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- Create a new machine with disk size </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">diskSize</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">machineId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="p">,</span><span class="n">image_id</span><span class="o">=</span><span class="n">imageId</span><span class="p">,</span><span class="n">disksize</span><span class="o">=</span><span class="n">diskSize</span><span class="p">)</span>
@@ -815,9 +880,22 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">machineId</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasicTests.test012_delete_nonexisting_machine"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.machine_tests.BasicTests.test012_delete_nonexisting_machine">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test012_delete_nonexisting_machine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        *Test case for deleting non existing machine*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Delete a non existing machine, should fail</span>
+<span class="sd">        &quot;&quot;&quot;</span></div></div>
 </pre></div>
 
+           </div>
+           <div class="articleComments">
+            
            </div>
           </div>
           <footer>
@@ -852,7 +930,8 @@
             VERSION:'1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>

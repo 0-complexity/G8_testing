@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>End user Portal Test Suite &mdash; OpenVCloud Testsuite 1.0 documentation</title>
+  <title>Portal Test Suite &mdash; OpenvCloud Test Suite 1.0 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,8 +32,11 @@
   
 
   
-    <link rel="top" title="OpenVCloud Testsuite 1.0 documentation" href="index.html"/>
-        <link rel="prev" title="Openvcloud APIs Test Suite:" href="ovc.html"/> 
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="OpenvCloud Test Suite 1.0 documentation" href="index.html"/>
+        <link rel="prev" title="API Test Suites" href="OVC.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -40,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -49,7 +55,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> OpenVCloud Testsuite
+            <a href="index.html" class="icon icon-home"> OpenvCloud Test Suite
           
 
           
@@ -80,20 +86,29 @@
           
             
             
-                <ul>
-<li class="toctree-l1"><a class="reference internal" href="acl.html">Access Control List Basic Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="acl.html#access-control-list-extended-tests">Access Control List Extended Tests</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="ovc.html">Openvcloud APIs Test Suite:</a></li>
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="OVC.html">API Test Suites</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">End user Portal Test Suite</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout">Home Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test01_machine_operations">Machine Page</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Portal Test Suite</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#end-user-portal">End User Portal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout">Home Page</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test01_machine_operations">Machine Page</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apis-page">APIs Page</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#admin-user-portal-test-suite">Admin user Portal Test Suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#admin-portal">Admin Portal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">APIs Page</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts">Cloud Broker Portal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test01_create_account_user_cs_vm">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test01_error_conditions">Grid Portal</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -106,8 +121,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">OpenVCloud Testsuite</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">OpenvCloud Test Suite</a>
+        
       </nav>
 
 
@@ -116,41 +133,62 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>End user Portal Test Suite</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Portal Test Suite</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/portal.txt" rel="nofollow"> View page source</a>
+            
+            <a href="_sources/portal.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="end-user-portal-test-suite">
-<span id="portal"></span><h1>End user Portal Test Suite<a class="headerlink" href="#end-user-portal-test-suite" title="Permalink to this headline">¶</a></h1>
-<p>used to test the end user portal which is written with AngularJs by getting the x-paths for every clickable link and test it.
+  <div class="section" id="portal-test-suite">
+<span id="portal"></span><h1>Portal Test Suite<a class="headerlink" href="#portal-test-suite" title="Permalink to this headline">¶</a></h1>
+<p>used to test the portal by getting the x-paths for every clickable link and test it.
 (work in progress)</p>
-<div class="section" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout">
-<span id="home-page"></span><h2>Home Page<a class="headerlink" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="end-user-portal">
+<h2>End User Portal<a class="headerlink" href="#end-user-portal" title="Permalink to this headline">¶</a></h2>
+<p>used to test the end user portal which is written with AngularJs .
+(work in progress)</p>
+<div class="section" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout">
+<span id="home-page"></span><h3>Home Page<a class="headerlink" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests">
-<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.</code><code class="descname">LoginLogoutPortalTests</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test01_login_logout.html#LoginLogoutPortalTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.utils.utils.BaseTest</span></code></p>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.</code><code class="descname">LoginLogoutPortalTests</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test01_login_logout.html#LoginLogoutPortalTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test001_login_and_portal_title">
-<code class="descname">test001_login_and_portal_title</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test01_login_logout.html#LoginLogoutPortalTests.test001_login_and_portal_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test001_login_and_portal_title" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test001_login_and_portal_title">
+<code class="descname">test001_login_and_portal_title</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test01_login_logout.html#LoginLogoutPortalTests.test001_login_and_portal_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test001_login_and_portal_title" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-001
 <em>Test case for check user potal login and titles.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -162,8 +200,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test002_logout_and_portal_title">
-<code class="descname">test002_logout_and_portal_title</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test01_login_logout.html#LoginLogoutPortalTests.test002_logout_and_portal_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test002_logout_and_portal_title" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test002_logout_and_portal_title">
+<code class="descname">test002_logout_and_portal_title</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test01_login_logout.html#LoginLogoutPortalTests.test002_logout_and_portal_title"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test002_logout_and_portal_title" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-002
 <em>Test case for check user potal logout and titles.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -179,69 +217,65 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username">
-<code class="descname">test003_login_wrong_username</code><em class="property"> = None</em><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username">
+<code class="descname">test003_login_wrong_username</code><em class="property"> = None</em><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_0_normal_username">
-<code class="descname">test003_login_wrong_username_0_normal_username</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_0_normal_username" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-003 [with _=&#8217;normal username&#8217;, username=&#8216;3b0819fd-3c5c-424e-99ea-e133f6eb75b5&#8217;]
-<em>Test case for check user potal login with wrong username.</em></p>
-<p><strong>Test Scenario:</strong></p>
-<ol class="arabic simple">
-<li>check the login page title, should succeed</li>
-<li>do login using wrong username, should fail</li>
-<li>proper error message, should succeed</li>
-<li>do login using admin username/password, should succeed</li>
-<li>check the home page title, should succeed</li>
-<li>do logout, should succeed</li>
-<li>check the login page title, should succeed</li>
-</ol>
-</dd></dl>
-
-<dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_1_long_username">
-<code class="descname">test003_login_wrong_username_1_long_username</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_1_long_username" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-003 [with _=&#8217;long username&#8217;, username=&#8217;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX...XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&#8217;]
-<em>Test case for check user potal login with wrong username.</em></p>
-<p><strong>Test Scenario:</strong></p>
-<ol class="arabic simple">
-<li>check the login page title, should succeed</li>
-<li>do login using wrong username, should fail</li>
-<li>proper error message, should succeed</li>
-<li>do login using admin username/password, should succeed</li>
-<li>check the home page title, should succeed</li>
-<li>do logout, should succeed</li>
-<li>check the login page title, should succeed</li>
-</ol>
-</dd></dl>
-
-<dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_2_numeric_username">
-<code class="descname">test003_login_wrong_username_2_numeric_username</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_2_numeric_username" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-003 [with _=&#8217;numeric username&#8217;, username=9876543210]
-<em>Test case for check user potal login with wrong username.</em></p>
-<p><strong>Test Scenario:</strong></p>
-<ol class="arabic simple">
-<li>check the login page title, should succeed</li>
-<li>do login using wrong username, should fail</li>
-<li>proper error message, should succeed</li>
-<li>do login using admin username/password, should succeed</li>
-<li>check the home page title, should succeed</li>
-<li>do logout, should succeed</li>
-<li>check the login page title, should succeed</li>
-</ol>
-</dd></dl>
-
-<dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_3_special_chars_username">
-<code class="descname">test003_login_wrong_username_3_special_chars_username</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_3_special_chars_username" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-003 [with _=&#8217;special chars username&#8217;, username=&#8221;+_=-)(<em>&amp;^#&#64;!~`{}[];&#8217;,.&lt;&gt;\/&#8221;]
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_0_normal_username">
+<code class="descname">test003_login_wrong_username_0_normal_username</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_0_normal_username" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-003 [with <em>args=(‘normal username’, ‘16524bef-8d16-4ec0-a34e-19231db17fb9’)]
 *Test case for check user potal login with wrong username.</em></p>
 <p><strong>Test Scenario:</strong></p>
 <ol class="arabic simple">
+<li>do login using wrong username, should fail</li>
+<li>proper error message, should succeed</li>
+<li>do login using admin username/password, should succeed</li>
+<li>check the home page title, should succeed</li>
+<li>do logout, should succeed</li>
 <li>check the login page title, should succeed</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_1_long_username">
+<code class="descname">test003_login_wrong_username_1_long_username</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_1_long_username" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-003 [with <em>args=(‘long username’, ‘XXXXXXXXXXXXX…XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX’)]
+*Test case for check user potal login with wrong username.</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>do login using wrong username, should fail</li>
+<li>proper error message, should succeed</li>
+<li>do login using admin username/password, should succeed</li>
+<li>check the home page title, should succeed</li>
+<li>do logout, should succeed</li>
+<li>check the login page title, should succeed</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_2_numeric_username">
+<code class="descname">test003_login_wrong_username_2_numeric_username</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_2_numeric_username" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-003 [with <em>args=(‘numeric username’, 9876543210)]
+*Test case for check user potal login with wrong username.</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>do login using wrong username, should fail</li>
+<li>proper error message, should succeed</li>
+<li>do login using admin username/password, should succeed</li>
+<li>check the home page title, should succeed</li>
+<li>do logout, should succeed</li>
+<li>check the login page title, should succeed</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_3_special_chars_username">
+<code class="descname">test003_login_wrong_username_3_special_chars_username</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test003_login_wrong_username_3_special_chars_username" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-003 [with <em>args=(‘special chars username’, “+_=-)(*&amp;^#&#64;!~`{}[];’,.&lt;&gt;\/”)]
+*Test case for check user potal login with wrong username.</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
 <li>do login using wrong username, should fail</li>
 <li>proper error message, should succeed</li>
 <li>do login using admin username/password, should succeed</li>
@@ -252,15 +286,15 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password">
-<code class="descname">test004_login_wrong_password</code><em class="property"> = None</em><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password">
+<code class="descname">test004_login_wrong_password</code><em class="property"> = None</em><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_0_normal_password">
-<code class="descname">test004_login_wrong_password_0_normal_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_0_normal_password" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-004 [with _=&#8217;normal password&#8217;, password=&#8216;0d406e86-956e-4df6-ab1d-84366f079775&#8217;]
-<em>Test case for check user potal login with wrong password.</em></p>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_0_normal_password">
+<code class="descname">test004_login_wrong_password_0_normal_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_0_normal_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-004 [with <em>args=(‘normal password’, ‘2c1386c7-f985-4310-b631-0f906f60cc28’)]
+*Test case for check user potal login with wrong password.</em></p>
 <p><strong>Test Scenario:</strong></p>
 <ol class="arabic simple">
 <li>check the login page title, should succeed</li>
@@ -274,10 +308,10 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_1_long_password">
-<code class="descname">test004_login_wrong_password_1_long_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_1_long_password" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-004 [with _=&#8217;long password&#8217;, password=&#8217;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX...XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&#8217;]
-<em>Test case for check user potal login with wrong password.</em></p>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_1_long_password">
+<code class="descname">test004_login_wrong_password_1_long_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_1_long_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-004 [with <em>args=(‘long password’, ‘XXXXXXXXXXXXX…XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX’)]
+*Test case for check user potal login with wrong password.</em></p>
 <p><strong>Test Scenario:</strong></p>
 <ol class="arabic simple">
 <li>check the login page title, should succeed</li>
@@ -291,10 +325,10 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_2_numeric_password">
-<code class="descname">test004_login_wrong_password_2_numeric_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_2_numeric_password" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-004 [with _=&#8217;numeric password&#8217;, password=9876543210]
-<em>Test case for check user potal login with wrong password.</em></p>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_2_numeric_password">
+<code class="descname">test004_login_wrong_password_2_numeric_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_2_numeric_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-004 [with <em>args=(‘numeric password’, 9876543210)]
+*Test case for check user potal login with wrong password.</em></p>
 <p><strong>Test Scenario:</strong></p>
 <ol class="arabic simple">
 <li>check the login page title, should succeed</li>
@@ -308,9 +342,9 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_3_special_chars_password">
-<code class="descname">test004_login_wrong_password_3_special_chars_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_3_special_chars_password" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-004 [with _=&#8217;special chars password&#8217;, password=&#8221;+_=-)(<em>&amp;^#&#64;!~`{}[];&#8217;,.&lt;&gt;\/&#8221;]
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_3_special_chars_password">
+<code class="descname">test004_login_wrong_password_3_special_chars_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test004_login_wrong_password_3_special_chars_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-004 [with <em>args=(‘special chars password’, “+_=-)(*&amp;^#&#64;!~`{}[];’,.&lt;&gt;\/”)]
 *Test case for check user potal login with wrong password.</em></p>
 <p><strong>Test Scenario:</strong></p>
 <ol class="arabic simple">
@@ -325,15 +359,15 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password">
-<code class="descname">test005_login_wrong_username_password</code><em class="property"> = None</em><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password">
+<code class="descname">test005_login_wrong_username_password</code><em class="property"> = None</em><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_0_normal_username_password">
-<code class="descname">test005_login_wrong_username_password_0_normal_username_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_0_normal_username_password" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-005 [with _=&#8217;normal username/password&#8217;, name=&#8216;30936841-c997-4cb7-87bc-07c76852973d&#8217;]
-<em>Test case for check user potal login with wrong username/password.</em></p>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_0_normal_username_password">
+<code class="descname">test005_login_wrong_username_password_0_normal_username_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_0_normal_username_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-005 [with <em>args=(‘normal username/password’, ‘74…b2-4b57-4712-9d4a-cc44f59ffbf4’)]
+*Test case for check user potal login with wrong username/password.</em></p>
 <p><strong>Test Scenario:</strong></p>
 <ol class="arabic simple">
 <li>check the login page title, should succeed</li>
@@ -347,10 +381,10 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_1_long_username_password">
-<code class="descname">test005_login_wrong_username_password_1_long_username_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_1_long_username_password" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-005 [with _=&#8217;long username/password&#8217;, name=&#8217;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX...XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&#8217;]
-<em>Test case for check user potal login with wrong username/password.</em></p>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_1_long_username_password">
+<code class="descname">test005_login_wrong_username_password_1_long_username_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_1_long_username_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-005 [with <em>args=(‘long username/password’, ‘XXXX…XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX’)]
+*Test case for check user potal login with wrong username/password.</em></p>
 <p><strong>Test Scenario:</strong></p>
 <ol class="arabic simple">
 <li>check the login page title, should succeed</li>
@@ -364,10 +398,10 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_2_numeric_username_password">
-<code class="descname">test005_login_wrong_username_password_2_numeric_username_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_2_numeric_username_password" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-005 [with _=&#8217;numeric username/password&#8217;, name=9876543210]
-<em>Test case for check user potal login with wrong username/password.</em></p>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_2_numeric_username_password">
+<code class="descname">test005_login_wrong_username_password_2_numeric_username_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_2_numeric_username_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-005 [with <em>args=(‘numeric username/password’, 9876543210)]
+*Test case for check user potal login with wrong username/password.</em></p>
 <p><strong>Test Scenario:</strong></p>
 <ol class="arabic simple">
 <li>check the login page title, should succeed</li>
@@ -381,9 +415,9 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_3_special_chars_username_password">
-<code class="descname">test005_login_wrong_username_password_3_special_chars_username_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_3_special_chars_username_password" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-005 [with _=&#8217;special chars username/password&#8217;, name=&#8221;+_=-)(<em>&amp;^#&#64;!~`{}[];&#8217;,.&lt;&gt;\/&#8221;]
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_3_special_chars_username_password">
+<code class="descname">test005_login_wrong_username_password_3_special_chars_username_password</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test01_login_logout.LoginLogoutPortalTests.test005_login_wrong_username_password_3_special_chars_username_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-005 [with <em>args=(‘special chars username/passwor…, “+_=-)(*&amp;^#&#64;!~`{}[];’,.&lt;&gt;\/”)]
 *Test case for check user potal login with wrong username/password.</em></p>
 <p><strong>Test Scenario:</strong></p>
 <ol class="arabic simple">
@@ -399,13 +433,13 @@
 
 </dd></dl>
 
-<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test02_getting_started"></span><dl class="class">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test02_getting_started.QuickTutorialGuide">
-<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test02_getting_started.</code><code class="descname">QuickTutorialGuide</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test02_getting_started.html#QuickTutorialGuide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test02_getting_started.QuickTutorialGuide" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.utils.utils.BaseTest</span></code></p>
+<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test02_getting_started"></span><dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test02_getting_started.QuickTutorialGuide">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test02_getting_started.</code><code class="descname">QuickTutorialGuide</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test02_getting_started.html#QuickTutorialGuide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test02_getting_started.QuickTutorialGuide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test02_getting_started.QuickTutorialGuide.test01_intro">
-<code class="descname">test01_intro</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test02_getting_started.html#QuickTutorialGuide.test01_intro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test02_getting_started.QuickTutorialGuide.test01_intro" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test02_getting_started.QuickTutorialGuide.test01_intro">
+<code class="descname">test01_intro</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test02_getting_started.html#QuickTutorialGuide.test01_intro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test02_getting_started.QuickTutorialGuide.test01_intro" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-006
 <em>Test case for check user potal intro tab.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -415,8 +449,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test02_getting_started.QuickTutorialGuide.test02_cloudspace">
-<code class="descname">test02_cloudspace</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test02_getting_started.html#QuickTutorialGuide.test02_cloudspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test02_getting_started.QuickTutorialGuide.test02_cloudspace" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test02_getting_started.QuickTutorialGuide.test02_cloudspace">
+<code class="descname">test02_cloudspace</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test02_getting_started.html#QuickTutorialGuide.test02_cloudspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test02_getting_started.QuickTutorialGuide.test02_cloudspace" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-007
 <em>Test case for check user potal cloudspace tab.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -426,8 +460,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test02_getting_started.QuickTutorialGuide.test03_machines">
-<code class="descname">test03_machines</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test02_getting_started.html#QuickTutorialGuide.test03_machines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test02_getting_started.QuickTutorialGuide.test03_machines" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test02_getting_started.QuickTutorialGuide.test03_machines">
+<code class="descname">test03_machines</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test02_getting_started.html#QuickTutorialGuide.test03_machines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test02_getting_started.QuickTutorialGuide.test03_machines" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-008
 <em>Test case for check user potal machines tab.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -437,8 +471,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test02_getting_started.QuickTutorialGuide.test04_defense_shield">
-<code class="descname">test04_defense_shield</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test02_getting_started.html#QuickTutorialGuide.test04_defense_shield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test02_getting_started.QuickTutorialGuide.test04_defense_shield" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test02_getting_started.QuickTutorialGuide.test04_defense_shield">
+<code class="descname">test04_defense_shield</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test02_getting_started.html#QuickTutorialGuide.test04_defense_shield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test02_getting_started.QuickTutorialGuide.test04_defense_shield" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-009
 <em>Test case for check user potal defense shield tab.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -449,13 +483,13 @@
 
 </dd></dl>
 
-<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base"></span><dl class="class">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase">
-<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.</code><code class="descname">KnowledgeBase</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test03_knowlege_base.html#KnowledgeBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.utils.utils.BaseTest</span></code></p>
+<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base"></span><dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.</code><code class="descname">KnowledgeBase</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test03_knowlege_base.html#KnowledgeBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test01_technical_tutorials">
-<code class="descname">test01_technical_tutorials</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test03_knowlege_base.html#KnowledgeBase.test01_technical_tutorials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test01_technical_tutorials" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test01_technical_tutorials">
+<code class="descname">test01_technical_tutorials</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test03_knowlege_base.html#KnowledgeBase.test01_technical_tutorials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test01_technical_tutorials" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-010
 <em>Test case for check user potal technical tutorials.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -465,8 +499,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test02_technical_tutorials_first_tab">
-<code class="descname">test02_technical_tutorials_first_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test03_knowlege_base.html#KnowledgeBase.test02_technical_tutorials_first_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test02_technical_tutorials_first_tab" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test02_technical_tutorials_first_tab">
+<code class="descname">test02_technical_tutorials_first_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test03_knowlege_base.html#KnowledgeBase.test02_technical_tutorials_first_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test02_technical_tutorials_first_tab" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-011
 <em>Test case for check user potal technical tutorials first tab.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -476,8 +510,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test03_technical_tutorials_second_tab">
-<code class="descname">test03_technical_tutorials_second_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test03_knowlege_base.html#KnowledgeBase.test03_technical_tutorials_second_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test03_technical_tutorials_second_tab" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test03_technical_tutorials_second_tab">
+<code class="descname">test03_technical_tutorials_second_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test03_knowlege_base.html#KnowledgeBase.test03_technical_tutorials_second_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test03_technical_tutorials_second_tab" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-012
 <em>Test case for check user potal technical tutorials second tab.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -487,8 +521,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test04_technical_tutorials_third_tab">
-<code class="descname">test04_technical_tutorials_third_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test03_knowlege_base.html#KnowledgeBase.test04_technical_tutorials_third_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test04_technical_tutorials_third_tab" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test04_technical_tutorials_third_tab">
+<code class="descname">test04_technical_tutorials_third_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test03_knowlege_base.html#KnowledgeBase.test04_technical_tutorials_third_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test04_technical_tutorials_third_tab" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-013
 <em>Test case for check user potal technical tutorials third tab.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -498,8 +532,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test05_technical_tutorials_forth_tab">
-<code class="descname">test05_technical_tutorials_forth_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test03_knowlege_base.html#KnowledgeBase.test05_technical_tutorials_forth_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test05_technical_tutorials_forth_tab" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test05_technical_tutorials_forth_tab">
+<code class="descname">test05_technical_tutorials_forth_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test03_knowlege_base.html#KnowledgeBase.test05_technical_tutorials_forth_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test05_technical_tutorials_forth_tab" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-014
 <em>Test case for check user potal technical tutorials forth tab.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -509,8 +543,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test06_technical_tutorials_fifth_tab">
-<code class="descname">test06_technical_tutorials_fifth_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test03_knowlege_base.html#KnowledgeBase.test06_technical_tutorials_fifth_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test06_technical_tutorials_fifth_tab" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test06_technical_tutorials_fifth_tab">
+<code class="descname">test06_technical_tutorials_fifth_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test03_knowlege_base.html#KnowledgeBase.test06_technical_tutorials_fifth_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test06_technical_tutorials_fifth_tab" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-015
 <em>Test case for check user potal technical tutorials fifth tab.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -520,8 +554,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test07_technical_tutorials_sixth_tab">
-<code class="descname">test07_technical_tutorials_sixth_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test03_knowlege_base.html#KnowledgeBase.test07_technical_tutorials_sixth_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test07_technical_tutorials_sixth_tab" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test07_technical_tutorials_sixth_tab">
+<code class="descname">test07_technical_tutorials_sixth_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test03_knowlege_base.html#KnowledgeBase.test07_technical_tutorials_sixth_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test07_technical_tutorials_sixth_tab" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-016
 <em>Test case for check user potal technical tutorials sixth tab.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -531,8 +565,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test08_technical_tutorials_seventh_tab">
-<code class="descname">test08_technical_tutorials_seventh_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test03_knowlege_base.html#KnowledgeBase.test08_technical_tutorials_seventh_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test03_knowlege_base.KnowledgeBase.test08_technical_tutorials_seventh_tab" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test08_technical_tutorials_seventh_tab">
+<code class="descname">test08_technical_tutorials_seventh_tab</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test03_knowlege_base.html#KnowledgeBase.test08_technical_tutorials_seventh_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test03_knowlege_base.KnowledgeBase.test08_technical_tutorials_seventh_tab" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-017
 <em>Test case for check user potal technical tutorials seventh tab.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -543,13 +577,13 @@
 
 </dd></dl>
 
-<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test04_support"></span><dl class="class">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test04_support.Support">
-<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test04_support.</code><code class="descname">Support</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test04_support.html#Support"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test04_support.Support" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.utils.utils.BaseTest</span></code></p>
+<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test04_support"></span><dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test04_support.Support">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test04_support.</code><code class="descname">Support</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test04_support.html#Support"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test04_support.Support" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test04_support.Support.test01_support">
-<code class="descname">test01_support</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test04_support.html#Support.test01_support"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test04_support.Support.test01_support" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test04_support.Support.test01_support">
+<code class="descname">test01_support</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test04_support.html#Support.test01_support"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test04_support.Support.test01_support" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-018
 <em>Test case for check user potal support page.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -560,14 +594,14 @@
 
 </dd></dl>
 
-<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test05_verify_change_user_password"></span><dl class="class">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test05_verify_change_user_password.ChangePassword">
-<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test05_verify_change_user_password.</code><code class="descname">ChangePassword</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test05_verify_change_user_password.html#ChangePassword"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test05_verify_change_user_password.ChangePassword" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.utils.utils.BaseTest</span></code></p>
+<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test05_verify_change_user_password"></span><dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test05_verify_change_user_password.ChangePassword">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test05_verify_change_user_password.</code><code class="descname">ChangePassword</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test05_verify_change_user_password.html#ChangePassword"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test05_verify_change_user_password.ChangePassword" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test05_verify_change_user_password.ChangePassword.test01_verify_change_user_password">
-<code class="descname">test01_verify_change_user_password</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/home/test05_verify_change_user_password.html#ChangePassword.test01_verify_change_user_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.home.test05_verify_change_user_password.ChangePassword.test01_verify_change_user_password" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-010
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test05_verify_change_user_password.ChangePassword.test01_verify_change_user_password">
+<code class="descname">test01_verify_change_user_password</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/home/test05_verify_change_user_password.html#ChangePassword.test01_verify_change_user_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.home.test05_verify_change_user_password.ChangePassword.test01_verify_change_user_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-022
 <em>Test case for create new user and change his password</em></p>
 <p><strong>Test Scenario:</strong>
 #. Create new user
@@ -583,15 +617,15 @@
 </dd></dl>
 
 </div>
-<div class="section" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test01_machine_operations">
-<span id="machine-page"></span><h2>Machine Page<a class="headerlink" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test01_machine_operations" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test01_machine_operations">
+<span id="machine-page"></span><h3>Machine Page<a class="headerlink" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test01_machine_operations" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test01_machine_operations.Write">
-<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test01_machine_operations.</code><code class="descname">Write</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/machines/test01_machine_operations.html#Write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test01_machine_operations.Write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.utils.utils.BaseTest</span></code></p>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test01_machine_operations.Write">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test01_machine_operations.</code><code class="descname">Write</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/machines/test01_machine_operations.html#Write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test01_machine_operations.Write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test01_machine_operations.Write.test01_machine_stop_start_reboot_reset_pause_resume">
-<code class="descname">test01_machine_stop_start_reboot_reset_pause_resume</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/machines/test01_machine_operations.html#Write.test01_machine_stop_start_reboot_reset_pause_resume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test01_machine_operations.Write.test01_machine_stop_start_reboot_reset_pause_resume" title="Permalink to this definition">¶</a></dt>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test01_machine_operations.Write.test01_machine_stop_start_reboot_reset_pause_resume">
+<code class="descname">test01_machine_stop_start_reboot_reset_pause_resume</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/machines/test01_machine_operations.html#Write.test01_machine_stop_start_reboot_reset_pause_resume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test01_machine_operations.Write.test01_machine_stop_start_reboot_reset_pause_resume" title="Permalink to this definition">¶</a></dt>
 <dd><p>PRTL-007
 <em>Test case for start/stop/reboot/reset/pause/resume machine.</em></p>
 <p><strong>Test Scenario:</strong></p>
@@ -608,9 +642,10 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test01_machine_operations.Write.test02_machine_create_rollback_delete_snapshot">
-<code class="descname">test02_machine_create_rollback_delete_snapshot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/machines/test01_machine_operations.html#Write.test02_machine_create_rollback_delete_snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test01_machine_operations.Write.test02_machine_create_rollback_delete_snapshot" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>Test case for create snapshot machine.</em></p>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test01_machine_operations.Write.test02_machine_create_rollback_delete_snapshot">
+<code class="descname">test02_machine_create_rollback_delete_snapshot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/machines/test01_machine_operations.html#Write.test02_machine_create_rollback_delete_snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test01_machine_operations.Write.test02_machine_create_rollback_delete_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-008
+<em>Test case for create snapshot machine.</em></p>
 <p><strong>Test Scenario:</strong></p>
 <ol class="arabic simple">
 <li>create new machine, should succeed</li>
@@ -622,76 +657,14 @@
 
 </dd></dl>
 
-<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation"></span><dl class="class">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read">
-<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.</code><code class="descname">Read</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/machines/test02_machine_creation.html#Read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.utils.utils.BaseTest</span></code></p>
+<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test02_machine_creation"></span><dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test02_machine_creation.Read">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test02_machine_creation.</code><code class="descname">Read</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/machines/test02_machine_creation.html#Read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test02_machine_creation.Read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test01_machine_get">
-<code class="descname">test01_machine_get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/machines/test02_machine_creation.html#Read.test01_machine_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test01_machine_get" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>Test case for get machine.</em></p>
-<p><strong>Test Scenario:</strong></p>
-<ol class="arabic simple">
-<li>create new machine, should succeed</li>
-<li>get machine, should succeed</li>
-</ol>
-</dd></dl>
-
-<dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test02_machine_list">
-<code class="descname">test02_machine_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/machines/test02_machine_creation.html#Read.test02_machine_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test02_machine_list" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>Test case for list machine.</em></p>
-<p><strong>Test Scenario:</strong></p>
-<ol class="arabic simple">
-<li>create new machine, should succeed</li>
-<li>list machines should see 1 machine, should succeed</li>
-</ol>
-</dd></dl>
-
-<dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test03_machine_getConsoleUrl">
-<code class="descname">test03_machine_getConsoleUrl</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/machines/test02_machine_creation.html#Read.test03_machine_getConsoleUrl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test03_machine_getConsoleUrl" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>Test case for getConsoleUrl machine.</em></p>
-<p><strong>Test Scenario:</strong></p>
-<ol class="arabic simple">
-<li>create new machine, should succeed</li>
-<li>getConsoleUrl machine, should succeed</li>
-</ol>
-</dd></dl>
-
-<dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test04_machine_listSnapshots">
-<code class="descname">test04_machine_listSnapshots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/machines/test02_machine_creation.html#Read.test04_machine_listSnapshots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test04_machine_listSnapshots" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>Test case for listSnapshots machine.</em></p>
-<p><strong>Test Scenario:</strong></p>
-<ol class="arabic simple">
-<li>create snapshot for a machine with the account user, should succeed</li>
-<li>try to listSnapshots of created machine with new user [user], should return 403</li>
-<li>add user to the machine with read access</li>
-<li>listSnapshots of created machine with new user [user], should succeed</li>
-</ol>
-</dd></dl>
-
-<dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test05_machine_getHistory">
-<code class="descname">test05_machine_getHistory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/end_user/admin/machines/test02_machine_creation.html#Read.test05_machine_getHistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test05_machine_getHistory" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>Test case for getHistory machine.</em></p>
-<p><strong>Test Scenario:</strong></p>
-<ol class="arabic simple">
-<li>create new machine, should succeed</li>
-<li>getHistory of created machine, should succeed</li>
-</ol>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test06_machine_create">
-<code class="descname">test06_machine_create</code><em class="property"> = None</em><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test06_machine_create" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test06_machine_create_0_ubuntu_14_04">
-<code class="descname">test06_machine_create_0_ubuntu_14_04</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test06_machine_create_0_ubuntu_14_04" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-011 [with image_name=&#8217;ubuntu_14_04&#8217;]
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test02_machine_creation.Read.test06_machine_create">
+<code class="descname">test06_machine_create</code><span class="sig-paren">(</span><em>image_name='Ubuntu 16.04 x64'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/machines/test02_machine_creation.html#Read.test06_machine_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test02_machine_creation.Read.test06_machine_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-011
 <em>Test case for creating/deleting machine with all avaliable image name, random package and random disk size</em></p>
 <p><strong>Test Scenario:</strong></p>
 <ol class="arabic simple">
@@ -700,59 +673,293 @@
 </ol>
 </dd></dl>
 
-<dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test06_machine_create_1_ubuntu_15_10">
-<code class="descname">test06_machine_create_1_ubuntu_15_10</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test06_machine_create_1_ubuntu_15_10" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-011 [with image_name=&#8217;ubuntu_15_10&#8217;]
-<em>Test case for creating/deleting machine with all avaliable image name, random package and random disk size</em></p>
-<p><strong>Test Scenario:</strong></p>
-<ol class="arabic simple">
-<li>create new machine, should succeed</li>
-<li>delete the new machine</li>
-</ol>
 </dd></dl>
 
+<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test03_defense_shield"></span><dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test03_defense_shield.DefenseShield">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test03_defense_shield.</code><code class="descname">DefenseShield</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/machines/test03_defense_shield.html#DefenseShield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test03_defense_shield.DefenseShield" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test06_machine_create_2_ubuntu_16_04">
-<code class="descname">test06_machine_create_2_ubuntu_16_04</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test06_machine_create_2_ubuntu_16_04" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-011 [with image_name=&#8217;ubuntu_16_04&#8217;]
-<em>Test case for creating/deleting machine with all avaliable image name, random package and random disk size</em></p>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test03_defense_shield.DefenseShield.test001_defense_shield_page">
+<code class="descname">test001_defense_shield_page</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/end_user/machines/test03_defense_shield.html#DefenseShield.test001_defense_shield_page"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test03_defense_shield.DefenseShield.test001_defense_shield_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-006
+<em>Test case for checking defense shield page</em></p>
 <p><strong>Test Scenario:</strong></p>
 <ol class="arabic simple">
-<li>create new machine, should succeed</li>
-<li>delete the new machine</li>
-</ol>
-</dd></dl>
-
-<dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test06_machine_create_3_windows_2012">
-<code class="descname">test06_machine_create_3_windows_2012</code><span class="sig-paren">(</span><em>*a</em><span class="sig-paren">)</span><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.end_user.admin.machines.test02_machine_creation.Read.test06_machine_create_3_windows_2012" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-011 [with image_name=&#8217;windows_2012&#8217;]
-<em>Test case for creating/deleting machine with all avaliable image name, random package and random disk size</em></p>
-<p><strong>Test Scenario:</strong></p>
-<ol class="arabic simple">
-<li>create new machine, should succeed</li>
-<li>delete the new machine</li>
+<li>do login using admin username/password, should succeed</li>
+<li>click defense shield picture</li>
+<li>click Download OpenVPN Config button, should download .zip file</li>
+<li>click Advanced Shield Configuration button</li>
+<li>click close button, should return to defense shield page</li>
 </ol>
 </dd></dl>
 
 </dd></dl>
 
 </div>
+<div class="section" id="apis-page">
+<h3>APIs Page<a class="headerlink" href="#apis-page" title="Permalink to this headline">¶</a></h3>
+<p>(work in progress)</p>
 </div>
-<div class="section" id="admin-user-portal-test-suite">
-<h1>Admin user Portal Test Suite<a class="headerlink" href="#admin-user-portal-test-suite" title="Permalink to this headline">¶</a></h1>
-<p>used to test the Admin user portal (writen with wiki) by get the x-paths for every clickable link and test it.
-(work in progress)</p>
-<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.admin_portal.admin.test01_create_account_user_cs_vm"></span><dl class="class">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.admin_portal.admin.test01_create_account_user_cs_vm.Account">
-<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.admin_portal.admin.test01_create_account_user_cs_vm.</code><code class="descname">Account</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/admin_portal/admin/test01_create_account_user_cs_vm.html#Account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.admin_portal.admin.test01_create_account_user_cs_vm.Account" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.utils.utils.BaseTest</span></code></p>
+</div>
+<div class="section" id="admin-portal">
+<h2>Admin Portal<a class="headerlink" href="#admin-portal" title="Permalink to this headline">¶</a></h2>
+<p>used to test the Admin user portal (writen with wiki)</p>
+<div class="section" id="id1">
+<h3>APIs Page<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.apis.test01_apis"></span><dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.apis.test01_apis.APIsTests">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.apis.test01_apis.</code><code class="descname">APIsTests</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/apis/test01_apis.html#APIsTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.apis.test01_apis.APIsTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
 <dl class="method">
-<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.admin_portal.admin.test01_create_account_user_cs_vm.Account.test01_create_account_user_cs_vm">
-<code class="descname">test01_create_account_user_cs_vm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/admin_portal/admin/test01_create_account_user_cs_vm.html#Account.test01_create_account_user_cs_vm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.admin_portal.admin.test01_create_account_user_cs_vm.Account.test01_create_account_user_cs_vm" title="Permalink to this definition">¶</a></dt>
-<dd><p>PRTL-010
-<em>Test case for create new user and update his password</em></p>
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.apis.test01_apis.APIsTests.test01_list_images_using_account">
+<code class="descname">test01_list_images_using_account</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/apis/test01_apis.html#APIsTests.test01_list_images_using_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.apis.test01_apis.APIsTests.test01_list_images_using_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-025
+<em>Test case for check list images using accountId is working.</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>check list images without accountId, should succeed</li>
+<li>check list images with valid accountId, should succeed</li>
+<li>check list images with invalid accountId, should succeed</li>
+</ol>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts">
+<span id="cloud-broker-portal"></span><h3>Cloud Broker Portal<a class="headerlink" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.</code><code class="descname">AccountsTests</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test01_accounts.html#AccountsTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests.test01_edit_account">
+<code class="descname">test01_edit_account</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test01_accounts.html#AccountsTests.test01_edit_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests.test01_edit_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-023
+<em>Test case to make sure that edit actions on accounts are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. create account.
+#. search for it and verify it should succeed
+#. edit account parameters and verify it should succeed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests.test02_disable_enable_account">
+<code class="descname">test02_disable_enable_account</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test01_accounts.html#AccountsTests.test02_disable_enable_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests.test02_disable_enable_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-024
+<em>Test case to make sure that enable/disable actions on accounts are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. create account.
+#. search for it and verify it should succeed
+#. disable account and verify it should succeed
+#. enable account and verify it should succeed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests.test03_add_account_with_decimal_limitations">
+<code class="descname">test03_add_account_with_decimal_limitations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test01_accounts.html#AccountsTests.test03_add_account_with_decimal_limitations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests.test03_add_account_with_decimal_limitations" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-026
+<em>Test case to make sure that creating account with decimal limitations working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. create account with decimal limitations.
+#. search for it and verify it should succeed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests.test04_account_page_paging_table">
+<code class="descname">test04_account_page_paging_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test01_accounts.html#AccountsTests.test04_account_page_paging_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests.test04_account_page_paging_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-030
+<em>Test case to make sure that paging and sorting of accounts page are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to accounts page.
+#. get number of accounts
+#. try paging from the available page numbers and verify it should succeed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests.test05_account_page_table_paging_buttons">
+<code class="descname">test05_account_page_table_paging_buttons</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test01_accounts.html#AccountsTests.test05_account_page_table_paging_buttons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests.test05_account_page_table_paging_buttons" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-031
+<em>Test case to make sure that paging and sorting of accounts page are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to accounts page.
+#. get number of accounts
+#. try paging from start/previous/next/last and verify it should succeed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests.test06_account_page_table_sorting">
+<code class="descname">test06_account_page_table_sorting</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test01_accounts.html#AccountsTests.test06_account_page_table_sorting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test01_accounts.AccountsTests.test06_account_page_table_sorting" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-032
+<em>Test case to make sure that paging and sorting of accounts page are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to accounts page.
+#. get number of accounts
+#. sorting of all fields of accounts table, should be working as expected</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test02_cloudspaces"></span><dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test02_cloudspaces.CloudspacesTests">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test02_cloudspaces.</code><code class="descname">CloudspacesTests</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test02_cloudspaces.html#CloudspacesTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test02_cloudspaces.CloudspacesTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test02_cloudspaces.CloudspacesTests.test01_cloudspace_page_basic_elements">
+<code class="descname">test01_cloudspace_page_basic_elements</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test02_cloudspaces.html#CloudspacesTests.test01_cloudspace_page_basic_elements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test02_cloudspaces.CloudspacesTests.test01_cloudspace_page_basic_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-033
+<em>Test case to make sure the basic elements in cloudspaces page as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to cloudspaces page
+#. check page url &amp; title
+#. check navigation bar
+#. check page title
+#. check ‘show records per page’ list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test02_cloudspaces.CloudspacesTests.test02_cloudspace_page_paging_table">
+<code class="descname">test02_cloudspace_page_paging_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test02_cloudspaces.html#CloudspacesTests.test02_cloudspace_page_paging_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test02_cloudspaces.CloudspacesTests.test02_cloudspace_page_paging_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-034
+<em>Test case to make sure that paging and sorting of cloudspaces page are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to cloudspaces page.
+#. try paging from the available page numbers and verify it should succeed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test02_cloudspaces.CloudspacesTests.test03_cloudspace_page_table_paging_buttons">
+<code class="descname">test03_cloudspace_page_table_paging_buttons</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test02_cloudspaces.html#CloudspacesTests.test03_cloudspace_page_table_paging_buttons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test02_cloudspaces.CloudspacesTests.test03_cloudspace_page_table_paging_buttons" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-035
+<em>Test case to make sure that paging and sorting of cloudspaces page are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to cloudspaces page.
+#. try paging from start/previous/next/last and verify it should succeed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test02_cloudspaces.CloudspacesTests.test04_cloudspace_page_table_sorting">
+<code class="descname">test04_cloudspace_page_table_sorting</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test02_cloudspaces.html#CloudspacesTests.test04_cloudspace_page_table_sorting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test02_cloudspaces.CloudspacesTests.test04_cloudspace_page_table_sorting" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-036
+<em>Test case to make sure that paging and sorting of cloudspaces page are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to cloudspaces page.
+#. sorting of all fields of cloudspaces table, should be working as expected</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test03_users"></span><dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test03_users.UsersTests">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test03_users.</code><code class="descname">UsersTests</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test03_users.html#UsersTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test03_users.UsersTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test03_users.UsersTests.test01_users_page_basic_elements">
+<code class="descname">test01_users_page_basic_elements</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test03_users.html#UsersTests.test01_users_page_basic_elements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test03_users.UsersTests.test01_users_page_basic_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-001
+<em>Test case to make sure the basic elements in storage routers page as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to users page
+#. check page url &amp; title
+#. check navigation bar
+#. check page title
+#. check ‘show records per page’ list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test03_users.UsersTests.test02_users_page_paging_table">
+<code class="descname">test02_users_page_paging_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test03_users.html#UsersTests.test02_users_page_paging_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test03_users.UsersTests.test02_users_page_paging_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-039
+<em>Test case to make sure that paging and sorting of users page are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to users page.
+#. try paging from the available page numbers and verify it should succeed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test03_users.UsersTests.test03_users_page_table_paging_buttons">
+<code class="descname">test03_users_page_table_paging_buttons</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test03_users.html#UsersTests.test03_users_page_table_paging_buttons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test03_users.UsersTests.test03_users_page_table_paging_buttons" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-040
+<em>Test case to make sure that paging and sorting of users page are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to users page.
+#. try paging from start/previous/next/last and verify it should succeed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test03_users.UsersTests.test04_users_page_table_sorting">
+<code class="descname">test04_users_page_table_sorting</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test03_users.html#UsersTests.test04_users_page_table_sorting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test03_users.UsersTests.test04_users_page_table_sorting" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-041
+<em>Test case to make sure that paging and sorting of users page are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to users page.
+#. sorting of all fields of users table, should be working as expected</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines"></span><dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines.VirtualMachinesTest">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines.</code><code class="descname">VirtualMachinesTest</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test04_virtualmashines.html#VirtualMachinesTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines.VirtualMachinesTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines.VirtualMachinesTest.test01_cloudspace_page_basic_elements">
+<code class="descname">test01_cloudspace_page_basic_elements</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test04_virtualmashines.html#VirtualMachinesTest.test01_cloudspace_page_basic_elements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines.VirtualMachinesTest.test01_cloudspace_page_basic_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-042
+<em>Test case to make sure the basic elements in virtual machines page as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to virtual machines page
+#. check page url &amp; title
+#. check navigation bar
+#. check page title
+#. check ‘show records per page’ list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines.VirtualMachinesTest.test02_vm_page_paging_table">
+<code class="descname">test02_vm_page_paging_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test04_virtualmashines.html#VirtualMachinesTest.test02_vm_page_paging_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines.VirtualMachinesTest.test02_vm_page_paging_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-043
+<em>Test case to make sure that paging and sorting of vms page are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to vms page.
+#. try paging from the available page numbers and verify it should succeed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines.VirtualMachinesTest.test03_vms_page_table_paging_buttons">
+<code class="descname">test03_vms_page_table_paging_buttons</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test04_virtualmashines.html#VirtualMachinesTest.test03_vms_page_table_paging_buttons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines.VirtualMachinesTest.test03_vms_page_table_paging_buttons" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-044
+<em>Test case to make sure that paging and sorting of vms page are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to vms page.
+#. try paging from start/previous/next/last and verify it should succeed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines.VirtualMachinesTest.test04_vms_page_table_sorting">
+<code class="descname">test04_vms_page_table_sorting</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/cloud_broker/test04_virtualmashines.html#VirtualMachinesTest.test04_vms_page_table_sorting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines.VirtualMachinesTest.test04_vms_page_table_sorting" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-045
+<em>Test case to make sure that paging and sorting of vms page are working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to vms page.
+#. sorting of all fields of vms table, should be working as expected</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test01_create_account_user_cs_vm">
+<span id="general"></span><h3>General<a class="headerlink" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test01_create_account_user_cs_vm" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test01_create_account_user_cs_vm.Account">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test01_create_account_user_cs_vm.</code><code class="descname">Account</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/general/test01_create_account_user_cs_vm.html#Account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test01_create_account_user_cs_vm.Account" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test01_create_account_user_cs_vm.Account.test01_create_account_user_cs_vm">
+<code class="descname">test01_create_account_user_cs_vm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/general/test01_create_account_user_cs_vm.html#Account.test01_create_account_user_cs_vm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test01_create_account_user_cs_vm.Account.test01_create_account_user_cs_vm" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-027
+<em>Test case for create new account, user, cloud space and Vm</em></p>
 <p><strong>Test Scenario:</strong></p>
 <ol class="arabic simple">
 <li>Create new user</li>
@@ -771,9 +978,76 @@
 
 </dd></dl>
 
+<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test02_admin_menu"></span><dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test02_admin_menu.AdminMenu">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test02_admin_menu.</code><code class="descname">AdminMenu</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/general/test02_admin_menu.html#AdminMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test02_admin_menu.AdminMenu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test02_admin_menu.AdminMenu.test01_admin_menu_items">
+<code class="descname">test01_admin_menu_items</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/general/test02_admin_menu.html#AdminMenu.test01_admin_menu_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test02_admin_menu.AdminMenu.test01_admin_menu_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-022
+<em>Test case to make sure that the admin portal menu work as expected</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>click on the admin menu</li>
+<li>verify all items</li>
+<li>for every main item verify its items and behavior</li>
+<li>for all items verify redirect page</li>
+</ol>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test01_error_conditions">
+<span id="grid-portal"></span><h3>Grid Portal<a class="headerlink" href="#module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test01_error_conditions" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test01_error_conditions.GridTests">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test01_error_conditions.</code><code class="descname">GridTests</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/grid/test01_error_conditions.html#GridTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test01_error_conditions.GridTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test01_error_conditions.GridTests.test001_error_condition_page">
+<code class="descname">test001_error_condition_page</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/grid/test01_error_conditions.html#GridTests.test001_error_condition_page"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test01_error_conditions.GridTests.test001_error_condition_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-021
+<em>Test case for checking error condition page in the admin portal</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>do login using admin username/password, should succeed</li>
+<li>click grid arrow then click on error condition</li>
+<li>check that all elements on error condition page exist</li>
+<li>check if show 10 and 25 entries works as expected</li>
+<li>click action button then click on purge</li>
+<li>select All and click on confirm, and check that all ECS are deleted</li>
+</ol>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test02_status_overview"></span><dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test02_status_overview.StatusTests">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test02_status_overview.</code><code class="descname">StatusTests</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/grid/test02_status_overview.html#StatusTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test02_status_overview.StatusTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework.Framework</span></code></p>
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test02_status_overview.StatusTests.test01_health_check">
+<code class="descname">test01_health_check</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/Portal/testcases/admin_portal/grid/test02_status_overview.html#StatusTests.test01_health_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.grid.test02_status_overview.StatusTests.test01_health_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>PRTL-029
+<em>Test case to make sure that the health check is working as expected</em></p>
+<p><strong>Test Scenario:</strong>
+#. go to status overview page
+#. press on “Run Healthcheck”
+#. verify expected behavior</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
 </div>
 
 
+           </div>
+           <div class="articleComments">
+            
            </div>
           </div>
           <footer>
@@ -781,7 +1055,7 @@
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="ovc.html" class="btn btn-neutral" title="Openvcloud APIs Test Suite:" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="OVC.html" class="btn btn-neutral" title="API Test Suites" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -815,7 +1089,8 @@
             VERSION:'1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

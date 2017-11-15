@@ -65,22 +65,21 @@ class BaseTest(unittest.TestCase):
             signal.alarm(900)
 
     def default_setup(self,create_default_cloudspace = True):
-        self.create_default_cloudspace= create_default_cloudspace 
-        self.location = self.get_location()['locationCode']    
+        self.create_default_cloudspace= create_default_cloudspace
+        self.location = self.get_location()['locationCode']
         self.account_owner = self.username
         self.lg('- create account for :%s' % self.account_owner)
-        self.account_id = self.cloudbroker_account_create(self.account_owner, self.account_owner,
+        self.account_id = self.cloudbroker_account_create(self.account_owner,
+                                                          self.account_owner,
                                                           self.email)
-
         self.account_owner_api = self.get_authenticated_user_api(self.account_owner)
-   
-	if self.create_default_cloudspace:
-		self.lg('- create default cloudspace for :%s' % self.account_owner)
-		self.cloudspace_id = self.cloudapi_cloudspace_create(account_id=self.account_id,
-                                                             location=self.location,
-                                                             access=self.account_owner,
-                                                             api=self.account_owner_api,
-                                                             name='default')
+        if self.create_default_cloudspace:
+            self.lg('- create default cloudspace for :%s' % self.account_owner)
+            self.cloudspace_id = self.cloudapi_cloudspace_create(account_id=self.account_id,
+                                                                 location=self.location,
+                                                                 access=self.account_owner,
+                                                                 api=self.account_owner_api,
+                                                                 name='default')
 
     def acl_setup(self, create_default_cloudspace=True):
         self.default_setup(create_default_cloudspace)
@@ -415,7 +414,7 @@ class BaseTest(unittest.TestCase):
         for nodeId in nodeIds_list[1:]:
             node = scl.node.get(nodeId)
             node_details=self.api.system.gridmanager.getNodes(id = node.id)
-            if (node.active == True ) and ( "fw" in node_details[0]["roles"]): 
+            if (node.active == True ) and ( "fw" in node_details[0]["roles"]):
                 return node.id
         return -1
 
@@ -471,7 +470,7 @@ class BasicACLTest(BaseTest):
                 api.cloudbroker.user.delete(user)
         groups = self.CLEANUP.get('groupname')
         if groups:
-            print groups
+            #print groups
             for group in groups:
                 self.lg('Teardown -- delete group: %s' % group)
                 self.api.system.usermanager.deleteGroup(id=group)

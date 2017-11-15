@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests &mdash; OpenVCloud Testsuite 1.0 documentation</title>
+  <title>functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests &mdash; OpenvCloud Test Suite 1.0 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="OpenVCloud Testsuite 1.0 documentation" href="../../../../../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../../../search.html"/>
+    <link rel="top" title="OpenvCloud Test Suite 1.0 documentation" href="../../../../../../index.html"/>
         <link rel="up" title="Module code" href="../../../../../index.html"/> 
 
   
@@ -40,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -49,7 +55,7 @@
           
 
           
-            <a href="../../../../../../index.html" class="icon icon-home"> OpenVCloud Testsuite
+            <a href="../../../../../../index.html" class="icon icon-home"> OpenvCloud Test Suite
           
 
           
@@ -80,16 +86,14 @@
           
             
             
-                <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../acl.html">Access Control List Basic Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../acl.html#access-control-list-extended-tests">Access Control List Extended Tests</a></li>
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../OVC.html">API Test Suites</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../ovc.html">Openvcloud APIs Test Suite:</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html">End user Portal Test Suite</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html#admin-user-portal-test-suite">Admin user Portal Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html">Portal Test Suite</a></li>
 </ul>
 
             
@@ -102,8 +106,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../../../../index.html">OpenVCloud Testsuite</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">OpenvCloud Test Suite</a>
+        
       </nav>
 
 
@@ -116,34 +122,51 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../../../../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../../../../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../../../../../index.html">Module code</a> &raquo;</li>
-      
-    <li>functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests</li>
+        
+      <li>functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
   <h1>Source code for functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests</h1><div class="highlight"><pre>
-<span></span><span class="c1"># coding=utf-8</span>
+<span></span><span class="kn">import</span> <span class="nn">unittest</span>
 <span class="kn">from</span> <span class="nn">nose_parameterized</span> <span class="k">import</span> <span class="n">parameterized</span>
 <span class="kn">from</span> <span class="nn">....utils.utils</span> <span class="k">import</span> <span class="n">BasicACLTest</span>
 
 <span class="kn">from</span> <span class="nn">JumpScale.portal.portal.PortalClient2</span> <span class="k">import</span> <span class="n">ApiError</span>
 <span class="kn">from</span> <span class="nn">JumpScale.baselib.http_client.HttpClient</span> <span class="k">import</span> <span class="n">HTTPError</span>
+<span class="kn">import</span> <span class="nn">random</span>
 
-
-<div class="viewcode-block" id="ExtendedTests"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests">[docs]</a><span class="k">class</span> <span class="nc">ExtendedTests</span><span class="p">(</span><span class="n">BasicACLTest</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedTests"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests">[docs]</a><span class="k">class</span> <span class="nc">ExtendedTests</span><span class="p">(</span><span class="n">BasicACLTest</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ExtendedTests</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
@@ -172,9 +195,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;2- get all available sizes to use, should succeed&#39;</span><span class="p">)</span>
         <span class="n">sizes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">sizes</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- using image [</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="n">image_name</span><span class="p">)</span>
+        <span class="n">basic_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">512</span><span class="p">,</span><span class="mi">1024</span><span class="p">,</span><span class="mi">4096</span><span class="p">,</span><span class="mi">8192</span><span class="p">,</span><span class="mi">16384</span><span class="p">,</span><span class="mi">2048</span><span class="p">]</span>
+        <span class="n">random_sizes</span><span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">basic_sizes</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">size</span><span class="p">[</span><span class="s1">&#39;memory&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">random_sizes</span><span class="p">:</span>
+                <span class="k">continue</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- using image [</span><span class="si">%s</span><span class="s1">] with memory size [</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">image_name</span><span class="p">,</span> <span class="n">size</span><span class="p">[</span><span class="s1">&#39;memory&#39;</span><span class="p">]))</span>
-            <span class="k">for</span> <span class="n">disk</span> <span class="ow">in</span> <span class="n">size</span><span class="p">[</span><span class="s1">&#39;disks&#39;</span><span class="p">]:</span>
+            <span class="n">disk_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">250</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="mi">2000</span><span class="p">]</span>
+            <span class="n">random_disks</span><span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">disk_sizes</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">disk</span> <span class="ow">in</span> <span class="n">random_disks</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- using image [</span><span class="si">%s</span><span class="s1">] with memory size [</span><span class="si">%s</span><span class="s1">] with disk &#39;</span>
                         <span class="s1">&#39;[</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">image_name</span><span class="p">,</span> <span class="n">size</span><span class="p">[</span><span class="s1">&#39;memory&#39;</span><span class="p">],</span> <span class="n">disk</span><span class="p">))</span>
                 <span class="n">machine_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span>
@@ -189,7 +219,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ExtendedTests.test002_node_maintenance_stopVMs"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests.test002_node_maintenance_stopVMs">[docs]</a>    <span class="k">def</span> <span class="nf">test002_node_maintenance_stopVMs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedTests.test002_node_maintenance_stopVMs"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests.test002_node_maintenance_stopVMs">[docs]</a>    <span class="k">def</span> <span class="nf">test002_node_maintenance_stopVMs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-019</span>
 <span class="sd">        *Test case for putting node in maintenance with action stop all vms.*</span>
 
@@ -237,7 +267,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExtendedTests.test003_create_vmachine_clone_with_empty_name"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests.test003_create_vmachine_clone_with_empty_name">[docs]</a>    <span class="k">def</span> <span class="nf">test003_create_vmachine_clone_with_empty_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedTests.test003_create_vmachine_clone_with_empty_name"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests.test003_create_vmachine_clone_with_empty_name">[docs]</a>    <span class="k">def</span> <span class="nf">test003_create_vmachine_clone_with_empty_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-021</span>
 <span class="sd">        *Test case for create vmachine/clone with empty name.*</span>
 
@@ -276,9 +306,43 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExtendedTests.test004_disk_create_delete"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests.test004_disk_create_delete">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test004_disk_create_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        *Test case for creating and deleting disks*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create a disk DS1, should succeed.</span>
+<span class="sd">        #. Create a disk with the same name of DS1, should fail.</span>
+<span class="sd">        #. List the disks, DS1 should be found.</span>
+<span class="sd">        #. Delete non existing disk, should fail.</span>
+<span class="sd">        #. Delete DS1, should succeed.</span>
+<span class="sd">        #. List the disks, DS1 shouldn&#39;t be there.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="ExtendedTests.test005_attaching_detaching_disks"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests.test005_attaching_detaching_disks">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test005_attaching_detaching_disks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        *Test case for attaching and detaching disks to a virtual machine*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create a disk DS1, should succeed.</span>
+<span class="sd">        #. Create VM1, should succeed</span>
+<span class="sd">        #. Attach non existing disk to VM1, should fail</span>
+<span class="sd">        #. Attach DS1 to VM1, should succeed</span>
+<span class="sd">        #. Delete DS1 without detaching it, should fail</span>
+<span class="sd">        #. Detach non existing disk, should fail</span>
+<span class="sd">        #. Detach DS1, should succeed</span>
+<span class="sd">        &quot;&quot;&quot;</span></div></div>
 </pre></div>
 
+           </div>
+           <div class="articleComments">
+            
            </div>
           </div>
           <footer>
@@ -313,7 +377,8 @@
             VERSION:'1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>

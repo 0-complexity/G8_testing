@@ -107,8 +107,8 @@ Cloud Broker Portal
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmachines
-.. autoclass:: functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmachines.VirtualMachinesTest
+.. automodule:: functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines
+.. autoclass:: functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.cloud_broker.test04_virtualmashines.VirtualMachinesTest
     :members:
     :undoc-members:
     :show-inheritance:

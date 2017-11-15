@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>functional_testing.Openvcloud.ovc_master_hosted.ACL.b_try_operations.acl_account_test &mdash; OpenVCloud Testsuite 1.0 documentation</title>
+  <title>functional_testing.Openvcloud.ovc_master_hosted.ACL.b_try_operations.acl_account_test &mdash; OpenvCloud Test Suite 1.0 documentation</title>
   
 
+  
+  
   
   
 
@@ -30,7 +32,10 @@
   
 
   
-    <link rel="top" title="OpenVCloud Testsuite 1.0 documentation" href="../../../../../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../../../search.html"/>
+    <link rel="top" title="OpenvCloud Test Suite 1.0 documentation" href="../../../../../../index.html"/>
         <link rel="up" title="Module code" href="../../../../../index.html"/> 
 
   
@@ -40,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -49,7 +55,7 @@
           
 
           
-            <a href="../../../../../../index.html" class="icon icon-home"> OpenVCloud Testsuite
+            <a href="../../../../../../index.html" class="icon icon-home"> OpenvCloud Test Suite
           
 
           
@@ -80,16 +86,14 @@
           
             
             
-                <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../acl.html">Access Control List Basic Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../acl.html#access-control-list-extended-tests">Access Control List Extended Tests</a></li>
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../OVC.html">API Test Suites</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../ovc.html">Openvcloud APIs Test Suite:</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html">End user Portal Test Suite</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html#admin-user-portal-test-suite">Admin user Portal Test Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html">Portal Test Suite</a></li>
 </ul>
 
             
@@ -102,8 +106,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../../../../index.html">OpenVCloud Testsuite</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">OpenvCloud Test Suite</a>
+        
       </nav>
 
 
@@ -116,19 +122,36 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../../../../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../../../../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../../../../../index.html">Module code</a> &raquo;</li>
-      
-    <li>functional_testing.Openvcloud.ovc_master_hosted.ACL.b_try_operations.acl_account_test</li>
+        
+      <li>functional_testing.Openvcloud.ovc_master_hosted.ACL.b_try_operations.acl_account_test</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -137,7 +160,7 @@
   <h1>Source code for functional_testing.Openvcloud.ovc_master_hosted.ACL.b_try_operations.acl_account_test</h1><div class="highlight"><pre>
 <span></span><span class="c1"># coding=utf-8</span>
 <span class="kn">from</span> <span class="nn">nose_parameterized</span> <span class="k">import</span> <span class="n">parameterized</span>
-
+<span class="kn">import</span> <span class="nn">unittest</span>
 <span class="kn">from</span> <span class="nn">....utils.utils</span> <span class="k">import</span> <span class="n">BasicACLTest</span>
 <span class="kn">from</span> <span class="nn">....utils.acl_try_operations</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">JumpScale.portal.portal.PortalClient2</span> <span class="k">import</span> <span class="n">ApiError</span>
@@ -151,7 +174,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">acl_setup</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="Read"><a class="viewcode-back" href="../../../../../../acl.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.b_try_operations.acl_account_test.Read">[docs]</a><span class="k">class</span> <span class="nc">Read</span><span class="p">(</span><span class="n">ACLACCOUNT</span><span class="p">):</span>
+<div class="viewcode-block" id="Read"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.b_try_operations.acl_account_test.Read">[docs]</a><span class="k">class</span> <span class="nc">Read</span><span class="p">(</span><span class="n">ACLACCOUNT</span><span class="p">):</span>
 
     <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s1">&#39;getCloudspace&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;listCloudspaces&#39;</span><span class="p">,</span>
@@ -364,7 +387,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Write"><a class="viewcode-back" href="../../../../../../acl.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.b_try_operations.acl_account_test.Write">[docs]</a><span class="k">class</span> <span class="nc">Write</span><span class="p">(</span><span class="n">ACLACCOUNT</span><span class="p">):</span>
+<div class="viewcode-block" id="Write"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.b_try_operations.acl_account_test.Write">[docs]</a><span class="k">class</span> <span class="nc">Write</span><span class="p">(</span><span class="n">ACLACCOUNT</span><span class="p">):</span>
 
     <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s1">&#39;cloudspaceDeploy&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;cloudspaceDefenseshield&#39;</span><span class="p">,</span>
@@ -372,7 +395,8 @@
                            <span class="s1">&#39;cloudspacePortforwardingUpdate&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;cloudspacePortforwardingDelete&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;cloudspaceMachineCreate&#39;</span><span class="p">,</span>
-                           <span class="s1">&#39;cloudspaceMachineClone&#39;</span><span class="p">,</span>
+                           <span class="c1">#&#39;cloudspaceMachineClone&#39;,</span>
+                           <span class="c1">#skip(&quot;https://github.com/0-complexity/openvcloud/issues/745&quot;)</span>
                            <span class="s1">&#39;cloudspaceMachineDelete&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;cloudspaceMachineResize&#39;</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">test000a_try_cloudspace_write_operations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">):</span>
@@ -499,6 +523,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_user_to_account</span><span class="p">(</span><span class="n">account_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span>
                                  <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
                                  <span class="n">accesstype</span><span class="o">=</span><span class="n">accesstype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;-try </span><span class="si">%s</span><span class="s1"> read operation machine with user1&#39;</span><span class="o">%</span> <span class="n">operation</span><span class="p">)</span>
         <span class="n">try_machine_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
@@ -577,7 +602,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Admin"><a class="viewcode-back" href="../../../../../../acl.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.b_try_operations.acl_account_test.Admin">[docs]</a><span class="k">class</span> <span class="nc">Admin</span><span class="p">(</span><span class="n">ACLACCOUNT</span><span class="p">):</span>
+<div class="viewcode-block" id="Admin"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.ACL.b_try_operations.acl_account_test.Admin">[docs]</a><span class="k">class</span> <span class="nc">Admin</span><span class="p">(</span><span class="n">ACLACCOUNT</span><span class="p">):</span>
 
 
     <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s1">&#39;cloudspaceAdduser&#39;</span><span class="p">,</span>
@@ -707,8 +732,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
     <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s1">&#39;create_cloudspace&#39;</span><span class="p">,</span>
-                           <span class="s1">&#39;create_machineTemplate&#39;</span>
-                           <span class="p">])</span>
+                           <span class="s1">&#39;create_machineTemplate&#39;</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">test002a_try_account_write_operations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; ACL-12</span>
 <span class="sd">        *Test case for try to use write operations with admin access.*</span>
@@ -735,7 +759,8 @@
                            <span class="s1">&#39;cloudspacePortforwardingUpdate&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;cloudspacePortforwardingDelete&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;cloudspaceMachineCreate&#39;</span><span class="p">,</span>
-                           <span class="s1">&#39;cloudspaceMachineClone&#39;</span><span class="p">,</span>
+                           <span class="c1">#skip (&quot;https://github.com/0-complexity/openvcloud/issues/745&quot;)</span>
+                           <span class="c1">#&#39;cloudspaceMachineClone&#39;,</span>
                            <span class="s1">&#39;cloudspaceMachineDelete&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;cloudspaceMachineResize&#39;</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">test002b_try_cloudspace_write_operations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">):</span>
@@ -747,8 +772,9 @@
 <span class="sd">        #. add user1 to the cloudspace created by user2 with admin access</span>
 <span class="sd">        #. try write operation on user2 with user1, should succeed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+ 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
-
+        
         <span class="n">accesstype</span> <span class="o">=</span> <span class="s1">&#39;ACDRUX&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- add user1 to the account owned by user2 with access type [</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="n">accesstype</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_user_to_account</span><span class="p">(</span><span class="n">account_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span>
@@ -795,6 +821,9 @@
 </pre></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -828,7 +857,8 @@
             VERSION:'1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>
