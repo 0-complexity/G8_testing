@@ -10,7 +10,7 @@ matrix:
         - sudo apt install sshpass 
         - curl -s https://install.zerotier.com/ | sudo bash
       before_script:
-        - bash functional_testing/Openvcloud/tools/travis_script.sh before
+        - bash functional_testing/Openvcloud/tools/travis_script.sh test
       script:
         - bash functional_testing/Openvcloud/tools/travis_script.sh test
       after_script:
