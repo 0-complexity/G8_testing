@@ -131,3 +131,17 @@ class MachineTests(BasicACLTest):
         #. Ping EN1's Gateway ip, should fail.
         #. Assign CS2's ip to VM1 external network interface, should succeed.
         #. Ping EN1's Gateway ip again, should fail.
+        """
+
+    def test010_node_maintenance_migrateVMs(self):
+        """ OVC-000
+        *Test case for putting node in maintenance with action migrate all vms.*
+
+        **Test Scenario:**
+
+        #. Create 3 VMs, should succeed.
+        #. Put node in maintenance with migrate all vms, should succeed.
+        #. Check that the 3 VMs have been migrated.
+        #. Check that the 3 VMs are in running state.
+        #. Enable the node back, should succeed.
+        """
