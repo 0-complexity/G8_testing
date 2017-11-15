@@ -1,6 +1,18 @@
-before_install:
-  - echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-  - echo -e "$travis_pull_private_key" > ~/.ssh/id_rsa
-  - chmod 600 ~/.ssh/id_rsa
-  - eval `ssh-agent -s`
-  - ssh-add ~/.ssh/id_rsa
+matrix:
+  include:
+    - language: python
+      sudo: true
+      dist: trusty
+      python: 3.5
+      install:
+        - sudo apt update
+        - sudo apt install sshpass 
+        - pip3 install -r requirements.txt
+      before_script:
+        - bash functional_testing/Openvcloud/tools/travis_script.sh before
+      script:
+        - bash functional_testing/Openvcloud/tools/travis_script.sh test
+      after_script:
+        - bash functional_testing/Openvcloud/tools/travis_script.sh after
+      after_failure:
+        - bash functional_testing/Openvcloud/tools/travis_script.sh after
