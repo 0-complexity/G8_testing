@@ -6,6 +6,7 @@ matrix:
       python: 2.7
       install:
         - sudo apt update
+        - sudo apt install git
         - sudo apt install sshpass 
         - curl -s https://install.zerotier.com/ | sudo bash
       before_script:
