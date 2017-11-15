@@ -158,3 +158,16 @@ class MachineTests(BasicACLTest):
         #. Make sure that VM1 is running.
         #. Restart VM1 and make sure it is still running.
         """
+
+    def test012_check_cloned_vm(self):
+        """ OVC-000
+        *Test case for checking cloned VM ip, portforwards and credentials*
+
+        **Test Scenario:**
+
+        #. Create (VM1).
+        #. Clone VM1 as (VM2_C), should succeed.
+        #. Make sure VM2_C got a new ip.
+        #. Check that VM2 got different credentials from VM1.
+        #. Make sure no portforwards have been created.
+        """
