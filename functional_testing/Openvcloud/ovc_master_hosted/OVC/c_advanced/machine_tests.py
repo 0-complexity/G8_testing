@@ -116,3 +116,17 @@ class MachineTests(BasicACLTest):
         #. Attach BD2 to VM1, should succeed.
         #. Start VM1 and make sure it is working.
         """
+
+    def test009_connection_bet_VM_CS_ExternalNetwork(self):
+        """ OVC-000
+        * Test case for connection between virtual machines, cloudspaces and externel networks.
+
+        **Test Scenario:**
+
+        #. Create two cloudspace (CS1) and (CS2) with external network (EN1).
+        #. Create a virtual machine (VM1) on CS1, should succeed.
+        #. Attach VM1 to EN1, should succeed (Not implemented yet).
+        #. Assign CS1's ip to VM1 external network interface, should succeed.
+        #. Ping EN1's Gateway ip, should fail.
+        #. Assign CS2's ip to VM1 external network interface, should succeed.
+        #. Ping EN1's Gateway ip again, should fail.
