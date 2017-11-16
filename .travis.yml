@@ -15,5 +15,3 @@ matrix:
         - bash functional_testing/Openvcloud/tools/travis_script.sh test
       after_script:
         - bash functional_testing/Openvcloud/tools/travis_script.sh after
-      after_failure:
-        - bash functional_testing/Openvcloud/tools/travis_script.sh after

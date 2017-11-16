@@ -146,8 +146,8 @@ class BaseTest(unittest.TestCase):
 
         :returns user_api: cloud_api authenticated with the user name and password
         """
-        ip = "{}.demo.greenitglobe.com".format(self.environment)
-        user_api = j.clients.portal.get2(ip=ip, port=443)
+        url = "{}.demo.greenitglobe.com".format(self.environment)
+        user_api = j.clients.portal.get2(url, port=443)
         user_api.system.usermanager.authenticate(name=username, secret=password or username)
         return user_api
 
