@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test02_machine_creation &mdash; OpenvCloud Test Suite 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../../../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../../../../../search.html"/>
+    <link rel="top" title="OpenvCloud Test Suite 1.0 documentation" href="../../../../../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../../../../../index.html"/> 
+
+  
+  <script src="../../../../../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../../../../../index.html" class="icon icon-home"> OpenvCloud Test Suite
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../OVC.html">API Test Suites</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../portal.html">Portal Test Suite</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../../../index.html">OpenvCloud Test Suite</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test02_machine_creation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test02_machine_creation</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework</span> <span class="k">import</span> <span class="n">Framework</span>
+
+
+<div class="viewcode-block" id="Read"><a class="viewcode-back" href="../../../../../../../../portal.html#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test02_machine_creation.Read">[docs]</a><span class="k">class</span> <span class="nc">Read</span><span class="p">(</span><span class="n">Framework</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Read</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Read</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Login</span><span class="o">.</span><span class="n">Login</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EUMachines</span><span class="o">.</span><span class="n">create_default_account_cloudspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">admin_username</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudspace</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EUMachines</span><span class="o">.</span><span class="n">delete_default_account_cloudspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudspace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Logout</span><span class="o">.</span><span class="n">Admin_Logout</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Read</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
+
+
+<span class="c1">#     def test01_machine_get(self):</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         *Test case for get machine.*</span>
+<span class="c1">#</span>
+<span class="c1">#         **Test Scenario:**</span>
+<span class="c1">#</span>
+<span class="c1">#         #. create new machine, should succeed</span>
+<span class="c1">#         #. get machine, should succeed</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1">#     def test02_machine_list(self):</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         *Test case for list machine.*</span>
+<span class="c1">#</span>
+<span class="c1">#         **Test Scenario:**</span>
+<span class="c1">#</span>
+<span class="c1">#         #. create new machine, should succeed</span>
+<span class="c1">#         #. list machines should see 1 machine, should succeed</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         pass</span>
+<span class="c1">#</span>
+<span class="c1">#     def test03_machine_getConsoleUrl(self):</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         *Test case for getConsoleUrl machine.*</span>
+<span class="c1">#</span>
+<span class="c1">#         **Test Scenario:**</span>
+<span class="c1">#</span>
+<span class="c1">#         #. create new machine, should succeed</span>
+<span class="c1">#         #. getConsoleUrl machine, should succeed</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         pass</span>
+<span class="c1">#</span>
+<span class="c1">#     def test04_machine_listSnapshots(self):</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         *Test case for listSnapshots machine.*</span>
+<span class="c1">#</span>
+<span class="c1">#         **Test Scenario:**</span>
+<span class="c1">#</span>
+<span class="c1">#         #. create snapshot for a machine with the account user, should succeed</span>
+<span class="c1">#         #. try to listSnapshots of created machine with new user [user], should return 403</span>
+<span class="c1">#         #. add user to the machine with read access</span>
+<span class="c1">#         #. listSnapshots of created machine with new user [user], should succeed</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         pass</span>
+<span class="c1">#</span>
+<span class="c1">#     def test05_machine_getHistory(self):</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         *Test case for getHistory machine.*</span>
+<span class="c1">#</span>
+<span class="c1">#         **Test Scenario:**</span>
+<span class="c1">#</span>
+<span class="c1">#         #. create new machine, should succeed</span>
+<span class="c1">#         #. getHistory of created machine, should succeed</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         pass</span>
+
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    @parameterized.expand([&quot;Ubuntu 16.04 x64&quot;,</span>
+<span class="sd">                           &quot;Ubuntu 14.04 x64&quot;,</span>
+<span class="sd">                           &quot;Ubuntu 15.10 x64&quot;,</span>
+<span class="sd">                           &quot;Windows 2012r2 Standard&quot;</span>
+<span class="sd">                           ])</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="Read.test06_machine_create"><a class="viewcode-back" href="../../../../../../../../portal.html#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.end_user.machines.test02_machine_creation.Read.test06_machine_create">[docs]</a>    <span class="k">def</span> <span class="nf">test06_machine_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_name</span><span class="o">=</span><span class="s2">&quot;Ubuntu 16.04 x64&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; PRTL-011</span>
+<span class="sd">        *Test case for creating/deleting machine with all avaliable image name, random package and random disk size*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. create new machine, should succeed</span>
+<span class="sd">        #. delete the new machine</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39; create </span><span class="si">%s</span><span class="s1"> machine &#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">EUMachines</span><span class="o">.</span><span class="n">end_user_create_virtual_machine</span><span class="p">(</span><span class="n">image_name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;delete </span><span class="si">%s</span><span class="s1"> machine &#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">EUMachines</span><span class="o">.</span><span class="n">end_user_delete_virtual_machine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, CodeScalers.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../../../../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../../../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../../../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

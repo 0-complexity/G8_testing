@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test02_admin_menu &mdash; OpenvCloud Test Suite 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../../../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../../../../../search.html"/>
+    <link rel="top" title="OpenvCloud Test Suite 1.0 documentation" href="../../../../../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../../../../../index.html"/> 
+
+  
+  <script src="../../../../../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../../../../../index.html" class="icon icon-home"> OpenvCloud Test Suite
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../OVC.html">API Test Suites</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../../portal.html">Portal Test Suite</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../../../index.html">OpenvCloud Test Suite</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test02_admin_menu</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test02_admin_menu</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework</span> <span class="k">import</span> <span class="n">Framework</span>
+
+
+<div class="viewcode-block" id="AdminMenu"><a class="viewcode-back" href="../../../../../../../../portal.html#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test02_admin_menu.AdminMenu">[docs]</a><span class="k">class</span> <span class="nc">AdminMenu</span><span class="p">(</span><span class="n">Framework</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AdminMenu</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AdminMenu</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Login</span><span class="o">.</span><span class="n">Login</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_page</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_page</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AdminMenu.test01_admin_menu_items"><a class="viewcode-back" href="../../../../../../../../portal.html#functional_testing.Openvcloud.ovc_master_hosted.Portal.testcases.admin_portal.general.test02_admin_menu.AdminMenu.test01_admin_menu_items">[docs]</a>    <span class="k">def</span> <span class="nf">test01_admin_menu_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; PRTL-022</span>
+<span class="sd">        *Test case to make sure that the admin portal menu work as expected*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. click on the admin menu</span>
+<span class="sd">        #. verify all items</span>
+<span class="sd">        #. for every main item verify its items and behavior</span>
+<span class="sd">        #. for all items verify redirect page</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">compo_menu</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;At Your Service&quot;</span><span class="p">,</span> <span class="s2">&quot;Cloud Broker&quot;</span><span class="p">,</span> <span class="s2">&quot;Statistics&quot;</span><span class="p">,</span> <span class="s2">&quot;Grid&quot;</span><span class="p">,</span> <span class="s2">&quot;Storage&quot;</span><span class="p">,</span> <span class="s2">&quot;System&quot;</span><span class="p">,</span> <span class="s2">&quot;End User&quot;</span><span class="p">]</span>
+        <span class="n">ays_menu</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Services&#39;</span><span class="p">,</span> <span class="s1">&#39;Templates&#39;</span><span class="p">]</span>
+        <span class="n">cloud_broker_menu</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Accounts&#39;</span><span class="p">,</span> <span class="s1">&#39;Cloud Spaces&#39;</span><span class="p">,</span> <span class="s1">&#39;Locations&#39;</span><span class="p">,</span> <span class="s1">&#39;Stacks&#39;</span><span class="p">,</span> <span class="s1">&#39;Images&#39;</span><span class="p">,</span> <span class="s1">&#39;External Networks&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;Private Networks&#39;</span><span class="p">,</span> <span class="s1">&#39;Users&#39;</span><span class="p">,</span> <span class="s1">&#39;Groups&#39;</span><span class="p">,</span> <span class="s1">&#39;Virtual Machines&#39;</span><span class="p">,</span> <span class="s1">&#39;Software Versions&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;Storage Routers&#39;</span><span class="p">]</span>
+        <span class="n">grid_menu</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Audits&#39;</span><span class="p">,</span> <span class="s1">&#39;Error Conditions&#39;</span><span class="p">,</span> <span class="s1">&#39;Jobs&#39;</span><span class="p">,</span> <span class="s1">&#39;Job Queues&#39;</span><span class="p">,</span> <span class="s1">&#39;JumpScripts&#39;</span><span class="p">,</span> <span class="s1">&#39;Logs&#39;</span><span class="p">,</span> <span class="s1">&#39;Grid Nodes&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;Status Overview&#39;</span><span class="p">,</span> <span class="s1">&#39;Virtual Machines&#39;</span><span class="p">]</span>
+
+        <span class="n">storage_menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_list</span><span class="p">()</span>
+
+        <span class="n">system_menu</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Spaces&#39;</span><span class="p">,</span> <span class="s1">&#39;System Config&#39;</span><span class="p">,</span> <span class="s1">&#39;System Macros&#39;</span><span class="p">,</span> <span class="s1">&#39;Users&#39;</span><span class="p">,</span> <span class="s1">&#39;Groups&#39;</span><span class="p">,</span> <span class="s1">&#39;Code&#39;</span><span class="p">,</span> <span class="s1">&#39;API&#39;</span><span class="p">,</span> <span class="s1">&#39;Portal Logs&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;Access Overview&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;check left menu&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">compare_original_list_with_exist_list</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;left_menu&quot;</span><span class="p">,</span> <span class="n">compo_menu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;check ays menu&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">compare_original_list_with_exist_list</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;ays_menu&quot;</span><span class="p">,</span> <span class="n">ays_menu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;check cloudbroker menu&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">compare_original_list_with_exist_list</span><span class="p">(</span><span class="s2">&quot;cloudbroker_arrow&quot;</span><span class="p">,</span> <span class="s2">&quot;cloudbroker_menu&quot;</span><span class="p">,</span>
+                                                                      <span class="n">cloud_broker_menu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;check grid menu&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">compare_original_list_with_exist_list</span><span class="p">(</span><span class="s2">&quot;grid_arrow&quot;</span><span class="p">,</span> <span class="s2">&quot;grid_menu&quot;</span><span class="p">,</span> <span class="n">grid_menu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;check system menu&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">compare_original_list_with_exist_list</span><span class="p">(</span><span class="s2">&quot;system_arrow&quot;</span><span class="p">,</span> <span class="s2">&quot;system_menu&quot;</span><span class="p">,</span> <span class="n">system_menu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;check storage menu&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">compare_original_list_with_exist_list</span><span class="p">(</span><span class="s2">&quot;storage_arrow&quot;</span><span class="p">,</span> <span class="s2">&quot;storage_menu&quot;</span><span class="p">,</span> <span class="n">storage_menu</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;check ays items redirect page&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;ays_text&quot;</span><span class="p">,</span> <span class="s2">&quot;AYS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;ays_sub_service&quot;</span><span class="p">,</span> <span class="s2">&quot;Services&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;ays_sub_templates&quot;</span><span class="p">,</span> <span class="s2">&quot;Templates&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;check cloudbroker items redirect page&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;cloudbroker_text&quot;</span><span class="p">,</span> <span class="s2">&quot;cbgrid&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;cloudbroker_sub_accounts&quot;</span><span class="p">,</span> <span class="s2">&quot;accounts&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;cloudbroker_sub_cs&quot;</span><span class="p">,</span> <span class="s2">&quot;Cloud Spaces&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;cloudbroker_sub_locations&quot;</span><span class="p">,</span> <span class="s2">&quot;locations&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;cloudbroker_sub_stacks&quot;</span><span class="p">,</span> <span class="s2">&quot;Stacks&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;cloudbroker_sub_images&quot;</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;cloudbroker_sub_public_nw&quot;</span><span class="p">,</span> <span class="s2">&quot;External Networks&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;cloudbroker_sub_private_nw&quot;</span><span class="p">,</span> <span class="s2">&quot;private networks&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;cloudbroker_sub_users&quot;</span><span class="p">,</span> <span class="s2">&quot;users&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;cloudbroker_sub_groups&quot;</span><span class="p">,</span> <span class="s2">&quot;groups&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;cloudbroker_sub_vm&quot;</span><span class="p">,</span> <span class="s2">&quot;Virtual Machines&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;cloudbroker_sub_sr&quot;</span><span class="p">,</span> <span class="s2">&quot;Storage Routers&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;cloudbroker_sub_sv&quot;</span><span class="p">,</span> <span class="s2">&quot;Version&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;check statistics items redirect page&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;statistics&quot;</span><span class="p">,</span> <span class="s2">&quot;home/external&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_page</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_page</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;check grid items redirect page&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;grid_text&quot;</span><span class="p">,</span> <span class="s2">&quot;grid&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;grid_sub_audits&quot;</span><span class="p">,</span> <span class="s2">&quot;Audits&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;grid_sub_ec&quot;</span><span class="p">,</span> <span class="s2">&quot;Error Conditions&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;grid_sub_jobs&quot;</span><span class="p">,</span> <span class="s2">&quot;Jobs&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;grid_sub_jq&quot;</span><span class="p">,</span> <span class="s2">&quot;job queues&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;grid_sub_jumpsacale&quot;</span><span class="p">,</span> <span class="s2">&quot;Jumpscripts&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;grid_sub_logs&quot;</span><span class="p">,</span> <span class="s2">&quot;Logs&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;grid_sub_gn&quot;</span><span class="p">,</span> <span class="s2">&quot;Grid Nodes&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;grid_sub_so&quot;</span><span class="p">,</span> <span class="s2">&quot;Status Overview&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;grid_sub_vm&quot;</span><span class="p">,</span> <span class="s2">&quot;Virtual Machines&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;check system items redirect page&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;system_text&quot;</span><span class="p">,</span> <span class="s2">&quot;system&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;system_sub_spaces&quot;</span><span class="p">,</span> <span class="s2">&quot;spaces&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;system_sub_sc&quot;</span><span class="p">,</span> <span class="s2">&quot;Systemconfig&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;system_sub_sm&quot;</span><span class="p">,</span> <span class="s2">&quot;systemmacros&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;system_sub_users&quot;</span><span class="p">,</span> <span class="s2">&quot;userlist&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;system_sub_groups&quot;</span><span class="p">,</span> <span class="s2">&quot;groups&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;system_sub_code&quot;</span><span class="p">,</span> <span class="s2">&quot;code&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;system_sub_api&quot;</span><span class="p">,</span> <span class="s2">&quot;actorsdocs&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;system_sub_pl&quot;</span><span class="p">,</span> <span class="s2">&quot;PortalLogs&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LeftNavigationMenu</span><span class="o">.</span><span class="n">check_redirect_page</span><span class="p">(</span><span class="s2">&quot;system_sub_ao&quot;</span><span class="p">,</span> <span class="s2">&quot;overviewaccess&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;check end user page&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_side_list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">click</span><span class="p">(</span><span class="s2">&quot;end_user&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_page</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_url</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">element_in_url</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">))</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, CodeScalers.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../../../../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../../../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../../../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
