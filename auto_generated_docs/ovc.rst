@@ -1,4 +1,4 @@
-.. _OVC:
+.. _ovc:
 
 API Test Suites
 -------------------------
@@ -205,6 +205,14 @@ Extended Machine Tests
 ^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests
 .. autoclass:: functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Advanced Machine Tests
+^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests
+.. autoclass:: functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests
     :members:
     :undoc-members:
     :show-inheritance:

@@ -118,6 +118,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#module-functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests">Extended Cloud Space Tests</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.jumpscale_tests">Extended JumpScale Tests</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests">Extended Machine Tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests">Advanced Machine Tests</a></li>
 </ul>
 </li>
 </ul>
@@ -177,7 +178,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/OVC.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/ovc.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -5518,6 +5519,204 @@ should return list with 1 cloud space</li>
 <li>Delete DS1 without detaching it, should fail</li>
 <li>Detach non existing disk, should fail</li>
 <li>Detach DS1, should succeed</li>
+</ol>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests">
+<span id="advanced-machine-tests"></span><h4>Advanced Machine Tests<a class="headerlink" href="#module-functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests">
+<em class="property">class </em><code class="descclassname">functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.</code><code class="descname">MachineTests</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/OVC/c_advanced/machine_tests.html#MachineTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">functional_testing.Openvcloud.utils.utils.BasicACLTest</span></code></p>
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test001_check_machines_networking">
+<code class="descname">test001_check_machines_networking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/OVC/c_advanced/machine_tests.html#MachineTests.test001_check_machines_networking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test001_check_machines_networking" title="Permalink to this definition">¶</a></dt>
+<dd><p>OVC-000
+<em>Test case for checking machines networking</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>Create cloudspace CS1, should succeed</li>
+<li>Create cloudspace CS2, should succeed</li>
+<li>Create VM1 in CS1</li>
+<li>From VM1 ping google, should succeed</li>
+<li>Create VM2 and VM3 in CS2</li>
+<li>From VM2 ping VM3, should succeed</li>
+<li>From VM2 ping VM1, should fail</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test002_check_network_data_integrity">
+<code class="descname">test002_check_network_data_integrity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/OVC/c_advanced/machine_tests.html#MachineTests.test002_check_network_data_integrity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test002_check_network_data_integrity" title="Permalink to this definition">¶</a></dt>
+<dd><p>OVC-000
+<em>Test case for checking network data integrity through VMS</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>Create a cloudspace CS1, should succeed</li>
+<li>Create VM1 and VM2 inside CS1, should succeed</li>
+<li>create a file F1 inside VM1</li>
+<li>From VM1 send F1 to VM2, should succeed</li>
+<li>Check that F1 has been sent to vm2 without data loss</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test003_check_connectivity_through_external_network">
+<code class="descname">test003_check_connectivity_through_external_network</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/OVC/c_advanced/machine_tests.html#MachineTests.test003_check_connectivity_through_external_network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test003_check_connectivity_through_external_network" title="Permalink to this definition">¶</a></dt>
+<dd><p>OVC-000
+<em>Test case for checking machine connectivity through external network</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>Create a cloudspace CS1, should succeed</li>
+<li>Create VM1</li>
+<li>Attach VM1 to an external network, should succeed</li>
+<li>Assign IP to VM1’s external netowrk interface, should succeed.</li>
+<li>Check if you can ping VM1 from outside, should succeed</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test004_migrate_vm_in_middle_of_writing_file">
+<code class="descname">test004_migrate_vm_in_middle_of_writing_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/OVC/c_advanced/machine_tests.html#MachineTests.test004_migrate_vm_in_middle_of_writing_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test004_migrate_vm_in_middle_of_writing_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>OVC-000
+<em>Test case for checking data integrity after migrating vm in the middle of writing a file</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>Create a cloudspace CS1, should succeed</li>
+<li>Create VM1</li>
+<li>Write a big file FS1 on VM1</li>
+<li>Migrate VM1 in the middle of writing a file, should succeed</li>
+<li>Check if the file has been written correctly after vm live migration</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test005_cheching_vm_specs_after_rebooting">
+<code class="descname">test005_cheching_vm_specs_after_rebooting</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/OVC/c_advanced/machine_tests.html#MachineTests.test005_cheching_vm_specs_after_rebooting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test005_cheching_vm_specs_after_rebooting" title="Permalink to this definition">¶</a></dt>
+<dd><p>OVC-000
+<em>Test case for checking VM’s ip and credentials after rebooting</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>Create a cloudspace CS1, should succeed</li>
+<li>Create virtual machine VM1 with windows image</li>
+<li>Reboot VM1, should succeed</li>
+<li>Check if VM1’s ip is the same as before rebooting.</li>
+<li>Check if VM1’s credentials are the same as well</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test006_attach_same_disk_to_two_vms">
+<code class="descname">test006_attach_same_disk_to_two_vms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/OVC/c_advanced/machine_tests.html#MachineTests.test006_attach_same_disk_to_two_vms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test006_attach_same_disk_to_two_vms" title="Permalink to this definition">¶</a></dt>
+<dd><p>OVC-000
+<em>Test case for attaching same disk to two different vms</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>Create disk DS1.</li>
+<li>Create cloudspace CS1.</li>
+<li>Create VM1 and VM2 on CS1.</li>
+<li>Attach DS1 to VM1, should succeed.</li>
+<li>Attach DS1 to VM2, should fail.</li>
+<li>Delete disk after detaching it, should succeed</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test007_detach_boot_from_running_machine">
+<code class="descname">test007_detach_boot_from_running_machine</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/OVC/c_advanced/machine_tests.html#MachineTests.test007_detach_boot_from_running_machine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test007_detach_boot_from_running_machine" title="Permalink to this definition">¶</a></dt>
+<dd><p>OVC-000
+* Test case for detaching boot disk from a running machine.</p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>Create virtual machine (VM1).</li>
+<li>Detach VM1’s boot disk (BD1), should fail.</li>
+<li>Stop VM1.</li>
+<li>Detach VM1’s boot disk again, should succeed.</li>
+<li>Start VM1, should fail.</li>
+<li>Attach BD1 to VM1, should succeed.</li>
+<li>Start VM1 and make sure it is running.</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test008_swap_vms_boot_disks">
+<code class="descname">test008_swap_vms_boot_disks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/OVC/c_advanced/machine_tests.html#MachineTests.test008_swap_vms_boot_disks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test008_swap_vms_boot_disks" title="Permalink to this definition">¶</a></dt>
+<dd><p>OVC-000
+* Test case for swapping vms boot disks.</p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>Create virtual machines (VM1) and (VM2).</li>
+<li>Stop VM1 and VM2, should succeed.</li>
+<li>Detach VM1’s boot disk (BD1) and VM2’s boot disk (BD2).</li>
+<li>Attach BD1 to VM2, should succeed.</li>
+<li>Start VM2 and make sure it is working.</li>
+<li>Attach BD2 to VM1, should succeed.</li>
+<li>Start VM1 and make sure it is working.</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test009_connection_bet_VM_CS_ExternalNetwork">
+<code class="descname">test009_connection_bet_VM_CS_ExternalNetwork</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/OVC/c_advanced/machine_tests.html#MachineTests.test009_connection_bet_VM_CS_ExternalNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test009_connection_bet_VM_CS_ExternalNetwork" title="Permalink to this definition">¶</a></dt>
+<dd><p>OVC-000
+* Test case for connection between virtual machines, cloudspaces and externel networks.</p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>Create two cloudspace (CS1) and (CS2) with external network (EN1).</li>
+<li>Create a virtual machine (VM1) on CS1, should succeed.</li>
+<li>Attach VM1 to EN1, should succeed (Not implemented yet).</li>
+<li>Assign CS1’s ip to VM1 external network interface, should succeed.</li>
+<li>Ping EN1’s Gateway ip, should fail.</li>
+<li>Assign CS2’s ip to VM1 external network interface, should succeed.</li>
+<li>Ping EN1’s Gateway ip again, should fail.</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test010_node_maintenance_migrateVMs">
+<code class="descname">test010_node_maintenance_migrateVMs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/OVC/c_advanced/machine_tests.html#MachineTests.test010_node_maintenance_migrateVMs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test010_node_maintenance_migrateVMs" title="Permalink to this definition">¶</a></dt>
+<dd><p>OVC-000
+<em>Test case for putting node in maintenance with action migrate all vms.</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>Create 3 VMs, should succeed.</li>
+<li>Put node in maintenance with migrate all vms, should succeed.</li>
+<li>Check that the 3 VMs have been migrated.</li>
+<li>Check that the 3 VMs are in running state.</li>
+<li>Enable the node back, should succeed.</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test011_restart_vm_after_migration">
+<code class="descname">test011_restart_vm_after_migration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/OVC/c_advanced/machine_tests.html#MachineTests.test011_restart_vm_after_migration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test011_restart_vm_after_migration" title="Permalink to this definition">¶</a></dt>
+<dd><p>OVC-000
+<em>Test case for checking VM status after restarting it after migration</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>Create a cloudspace CS1, should succeed.</li>
+<li>Create VM1.</li>
+<li>Migrate VM1 to another node, should succeed.</li>
+<li>Make sure that VM1 is running.</li>
+<li>Restart VM1 and make sure it is still running.</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test012_check_cloned_vm">
+<code class="descname">test012_check_cloned_vm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/functional_testing/Openvcloud/ovc_master_hosted/OVC/c_advanced/machine_tests.html#MachineTests.test012_check_cloned_vm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test012_check_cloned_vm" title="Permalink to this definition">¶</a></dt>
+<dd><p>OVC-000
+<em>Test case for checking cloned VM ip, portforwards and credentials</em></p>
+<p><strong>Test Scenario:</strong></p>
+<ol class="arabic simple">
+<li>Create (VM1).</li>
+<li>Clone VM1 as (VM2_C), should succeed.</li>
+<li>Make sure VM2_C got a new ip.</li>
+<li>Check that VM2 got different credentials from VM1.</li>
+<li>Make sure no portforwards have been created.</li>
 </ol>
 </dd></dl>
 

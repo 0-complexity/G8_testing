@@ -6,7 +6,7 @@ API Test Suites
 .. toctree::
    :maxdepth:2
 
-   OVC
+   ovc
 
 
 Portal Test Suite

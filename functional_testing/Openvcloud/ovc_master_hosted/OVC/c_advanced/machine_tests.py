@@ -50,7 +50,7 @@ class MachineTests(BasicACLTest):
         """
 
     @unittest.skip('Not Implemented')
-    def test004_migrate_vm_in_middle_of writing_file(self):
+    def test004_migrate_vm_in_middle_of_writing_file(self):
         """ OVC-000
         *Test case for checking data integrity after migrating vm in the middle of writing a file*
 

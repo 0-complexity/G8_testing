@@ -90,7 +90,7 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../OVC.html">API Test Suites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../ovc.html">API Test Suites</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html">Portal Test Suite</a></li>
@@ -164,13 +164,13 @@
 <span class="kn">from</span> <span class="nn">JumpScale.baselib.http_client.HttpClient</span> <span class="k">import</span> <span class="n">HTTPError</span>
 
 
-<div class="viewcode-block" id="ExtendedTests"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests.ExtendedTests">[docs]</a><span class="k">class</span> <span class="nc">ExtendedTests</span><span class="p">(</span><span class="n">BasicACLTest</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedTests"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests.ExtendedTests">[docs]</a><span class="k">class</span> <span class="nc">ExtendedTests</span><span class="p">(</span><span class="n">BasicACLTest</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ExtendedTests</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_location</span><span class="p">()[</span><span class="s1">&#39;locationCode&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">account_owner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">username</span>
 
-<div class="viewcode-block" id="ExtendedTests.test001_basic_resource_limits"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests.ExtendedTests.test001_basic_resource_limits">[docs]</a>    <span class="k">def</span> <span class="nf">test001_basic_resource_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedTests.test001_basic_resource_limits"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests.ExtendedTests.test001_basic_resource_limits">[docs]</a>    <span class="k">def</span> <span class="nf">test001_basic_resource_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot; OVC-016</span>
 <span class="sd">        *Test case for testing basic resource limits on account and cloudspace limits.*</span>
@@ -296,7 +296,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s1">&#39;400 Bad Request&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ExtendedTests.test002_resource_limits_on_account_level"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests.ExtendedTests.test002_resource_limits_on_account_level">[docs]</a>    <span class="k">def</span> <span class="nf">test002_resource_limits_on_account_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedTests.test002_resource_limits_on_account_level"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests.ExtendedTests.test002_resource_limits_on_account_level">[docs]</a>    <span class="k">def</span> <span class="nf">test002_resource_limits_on_account_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-017</span>
 <span class="sd">        *Test case for testing basic resource limits on account and cloudspace limits.*</span>
 
@@ -368,7 +368,7 @@
 
 
 
-<div class="viewcode-block" id="ExtendedTests.test003_resource_limits_on_cloudspace_level"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests.ExtendedTests.test003_resource_limits_on_cloudspace_level">[docs]</a>    <span class="k">def</span> <span class="nf">test003_resource_limits_on_cloudspace_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtendedTests.test003_resource_limits_on_cloudspace_level"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests.ExtendedTests.test003_resource_limits_on_cloudspace_level">[docs]</a>    <span class="k">def</span> <span class="nf">test003_resource_limits_on_cloudspace_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-018</span>
 <span class="sd">        *Test case for testing basic resource limits on account and cloudspace limits.*</span>
 
@@ -429,7 +429,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s1">&#39;400 Bad Request&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExtendedTests.test004_getting_account_resources"><a class="viewcode-back" href="../../../../../../OVC.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests.ExtendedTests.test004_getting_account_resources">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="ExtendedTests.test004_getting_account_resources"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests.ExtendedTests.test004_getting_account_resources">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test004_getting_account_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; OVC-000</span>
 <span class="sd">        *Test case for checking account&#39;s resources retrieval*</span>

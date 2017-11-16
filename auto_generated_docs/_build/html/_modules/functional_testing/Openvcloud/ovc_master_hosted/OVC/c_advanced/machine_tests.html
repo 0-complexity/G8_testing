@@ -1,0 +1,410 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests &mdash; OpenvCloud Test Suite 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../../../search.html"/>
+    <link rel="top" title="OpenvCloud Test Suite 1.0 documentation" href="../../../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../../../index.html"/> 
+
+  
+  <script src="../../../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../../../index.html" class="icon icon-home"> OpenvCloud Test Suite
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../ovc.html">API Test Suites</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../portal.html">Portal Test Suite</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">OpenvCloud Test Suite</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">....utils.utils</span> <span class="k">import</span> <span class="n">BasicACLTest</span>
+
+
+
+<div class="viewcode-block" id="MachineTests"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests">[docs]</a><span class="k">class</span> <span class="nc">MachineTests</span><span class="p">(</span><span class="n">BasicACLTest</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MachineTests.test001_check_machines_networking"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test001_check_machines_networking">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test001_check_machines_networking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        *Test case for checking machines networking*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create cloudspace CS1, should succeed</span>
+<span class="sd">        #. Create cloudspace CS2, should succeed</span>
+<span class="sd">        #. Create VM1 in CS1</span>
+<span class="sd">        #. From VM1 ping google, should succeed</span>
+<span class="sd">        #. Create VM2 and VM3 in CS2</span>
+<span class="sd">        #. From VM2 ping VM3, should succeed</span>
+<span class="sd">        #. From VM2 ping VM1, should fail</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="MachineTests.test002_check_network_data_integrity"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test002_check_network_data_integrity">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test002_check_network_data_integrity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        *Test case for checking network data integrity through VMS*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create a cloudspace CS1, should succeed</span>
+<span class="sd">        #. Create VM1 and VM2 inside CS1, should succeed</span>
+<span class="sd">        #. create a file F1 inside VM1</span>
+<span class="sd">        #. From VM1 send F1 to VM2, should succeed</span>
+<span class="sd">        #. Check that F1 has been sent to vm2 without data loss</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="MachineTests.test003_check_connectivity_through_external_network"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test003_check_connectivity_through_external_network">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test003_check_connectivity_through_external_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        *Test case for checking machine connectivity through external network*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create a cloudspace CS1, should succeed</span>
+<span class="sd">        #. Create VM1</span>
+<span class="sd">        #. Attach VM1 to an external network, should succeed</span>
+<span class="sd">        #. Assign IP to VM1&#39;s external netowrk interface, should succeed.</span>
+<span class="sd">        #. Check if you can ping VM1 from outside, should succeed</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="MachineTests.test004_migrate_vm_in_middle_of_writing_file"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test004_migrate_vm_in_middle_of_writing_file">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test004_migrate_vm_in_middle_of_writing_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        *Test case for checking data integrity after migrating vm in the middle of writing a file*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create a cloudspace CS1, should succeed</span>
+<span class="sd">        #. Create VM1</span>
+<span class="sd">        #. Write a big file FS1 on VM1</span>
+<span class="sd">        #. Migrate VM1 in the middle of writing a file, should succeed</span>
+<span class="sd">        #. Check if the file has been written correctly after vm live migration</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+        <span class="c1"># Note: this testcase may be hard to be implemented from here.</span>
+
+<div class="viewcode-block" id="MachineTests.test005_cheching_vm_specs_after_rebooting"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test005_cheching_vm_specs_after_rebooting">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test005_cheching_vm_specs_after_rebooting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        *Test case for checking VM&#39;s ip and credentials after rebooting*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create a cloudspace CS1, should succeed</span>
+<span class="sd">        #. Create virtual machine VM1 with windows image</span>
+<span class="sd">        #. Reboot VM1, should succeed</span>
+<span class="sd">        #. Check if VM1&#39;s ip is the same as before rebooting.</span>
+<span class="sd">        #. Check if VM1&#39;s credentials are the same as well</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="MachineTests.test006_attach_same_disk_to_two_vms"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test006_attach_same_disk_to_two_vms">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test006_attach_same_disk_to_two_vms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        *Test case for attaching same disk to two different vms*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create disk DS1.</span>
+<span class="sd">        #. Create cloudspace CS1.</span>
+<span class="sd">        #. Create VM1 and VM2 on CS1.</span>
+<span class="sd">        #. Attach DS1 to VM1, should succeed.</span>
+<span class="sd">        #. Attach DS1 to VM2, should fail.</span>
+<span class="sd">        #. Delete disk after detaching it, should succeed</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+        <span class="c1"># Note: try this scenario for data and boot disks</span>
+
+<div class="viewcode-block" id="MachineTests.test007_detach_boot_from_running_machine"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test007_detach_boot_from_running_machine">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test007_detach_boot_from_running_machine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        * Test case for detaching boot disk from a running machine.</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create virtual machine (VM1).</span>
+<span class="sd">        #. Detach VM1&#39;s boot disk (BD1), should fail.</span>
+<span class="sd">        #. Stop VM1.</span>
+<span class="sd">        #. Detach VM1&#39;s boot disk again, should succeed.</span>
+<span class="sd">        #. Start VM1, should fail.</span>
+<span class="sd">        #. Attach BD1 to VM1, should succeed.</span>
+<span class="sd">        #. Start VM1 and make sure it is running.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="MachineTests.test008_swap_vms_boot_disks"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test008_swap_vms_boot_disks">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test008_swap_vms_boot_disks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        * Test case for swapping vms boot disks.</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create virtual machines (VM1) and (VM2).</span>
+<span class="sd">        #. Stop VM1 and VM2, should succeed.</span>
+<span class="sd">        #. Detach VM1&#39;s boot disk (BD1) and VM2&#39;s boot disk (BD2).</span>
+<span class="sd">        #. Attach BD1 to VM2, should succeed.</span>
+<span class="sd">        #. Start VM2 and make sure it is working.</span>
+<span class="sd">        #. Attach BD2 to VM1, should succeed.</span>
+<span class="sd">        #. Start VM1 and make sure it is working.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="MachineTests.test009_connection_bet_VM_CS_ExternalNetwork"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test009_connection_bet_VM_CS_ExternalNetwork">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test009_connection_bet_VM_CS_ExternalNetwork</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        * Test case for connection between virtual machines, cloudspaces and externel networks.</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create two cloudspace (CS1) and (CS2) with external network (EN1).</span>
+<span class="sd">        #. Create a virtual machine (VM1) on CS1, should succeed.</span>
+<span class="sd">        #. Attach VM1 to EN1, should succeed (Not implemented yet).</span>
+<span class="sd">        #. Assign CS1&#39;s ip to VM1 external network interface, should succeed.</span>
+<span class="sd">        #. Ping EN1&#39;s Gateway ip, should fail.</span>
+<span class="sd">        #. Assign CS2&#39;s ip to VM1 external network interface, should succeed.</span>
+<span class="sd">        #. Ping EN1&#39;s Gateway ip again, should fail.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="MachineTests.test010_node_maintenance_migrateVMs"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test010_node_maintenance_migrateVMs">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test010_node_maintenance_migrateVMs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        *Test case for putting node in maintenance with action migrate all vms.*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create 3 VMs, should succeed.</span>
+<span class="sd">        #. Put node in maintenance with migrate all vms, should succeed.</span>
+<span class="sd">        #. Check that the 3 VMs have been migrated.</span>
+<span class="sd">        #. Check that the 3 VMs are in running state.</span>
+<span class="sd">        #. Enable the node back, should succeed.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="MachineTests.test011_restart_vm_after_migration"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test011_restart_vm_after_migration">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test011_restart_vm_after_migration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        *Test case for checking VM status after restarting it after migration*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create a cloudspace CS1, should succeed.</span>
+<span class="sd">        #. Create VM1.</span>
+<span class="sd">        #. Migrate VM1 to another node, should succeed.</span>
+<span class="sd">        #. Make sure that VM1 is running.</span>
+<span class="sd">        #. Restart VM1 and make sure it is still running.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="MachineTests.test012_check_cloned_vm"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test012_check_cloned_vm">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test012_check_cloned_vm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        *Test case for checking cloned VM ip, portforwards and credentials*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create (VM1).</span>
+<span class="sd">        #. Clone VM1 as (VM2_C), should succeed.</span>
+<span class="sd">        #. Make sure VM2_C got a new ip.</span>
+<span class="sd">        #. Check that VM2 got different credentials from VM1.</span>
+<span class="sd">        #. Make sure no portforwards have been created.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, CodeScalers.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
