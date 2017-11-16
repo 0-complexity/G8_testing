@@ -34,7 +34,7 @@ class MachineTests(BasicACLTest):
         #. From VM1 send F1 to VM2, should succeed
         #. Check that F1 has been sent to vm2 without data loss
         """
-
+    
     @unittest.skip('Not Implemented')
     def test003_check_connectivity_through_external_network(self):
         """ OVC-000
@@ -71,12 +71,39 @@ class MachineTests(BasicACLTest):
 
         **Test Scenario:**
 
-        #. Create a cloudspace CS1, should succeed
-        #. Create virtual machine VM1 with windows image
-        #. Reboot VM1, should succeed
+        #. Create a cloudspace CS1, should succeed.
+        #. Create virtual machine VM1 with windows image.
+        #. Get machine VM1 info, should succeed.
+        #. Reboot VM1, should succeed.
+        #. Get machine VM1 info, should succeed.
         #. Check if VM1's ip is the same as before rebooting.
-        #. Check if VM1's credentials are the same as well
+        #. Check if VM1's credentials are the same as well.
         """
+        self.lg('1- Create a cloudspace CS1, should succeed')
+        cloudspaceId = self.cloudapi_cloudspace_create(self.account_id, self.location, self.account_owner)
+
+        self.lg('2- Create virtual machine VM1 with windows image')
+        imageId = [x.id for x in self.api.cloudapi.image.list() if x.type == 'Windows']         
+        machineId = self.cloudapi_create_machine(cloudspaceId, self.account_owner_api, image_id=imageId)
+
+        self.lg('Get machine VM1 info, should succeed')
+        machine_info_before_reboot = self.api.cloudapi.machines.get(machineId=machineId)
+
+        self.lg('Reboot VM1, should succeed')
+        self.api.cloudapi.machines.reboot(machineId=machineId)
+
+        self.lg('Get machine VM1 info, should succeed')
+        machine_info_after_reboot = self.api.cloudapi.machines.get(machineId=machineId)
+
+        self.assertEqual(
+            machine_info_before_reboot.accounts[0].password,
+            machine_info_after_reboot.accounts[0].password 
+        )
+
+        self.assertEqual(
+            machine_info_before_reboot.interfaces[0].ipAddress,
+            machine_info_after_reboot.interfaces[0].ipAddress 
+        )
 
     @unittest.skip('Not Implemented')
     def test006_attach_same_disk_to_two_vms(self):
