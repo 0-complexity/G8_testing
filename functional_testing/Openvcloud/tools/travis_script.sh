@@ -25,8 +25,9 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
     elif [[ ${action} == "test" ]]; then
 
+        python_path="export PYTHONPATH=/opt/jumpscale7/lib:/opt/jumpscale7/lib/lib-dynload/:/opt/jumpscale7/bin:/opt/jumpscale7/lib/python.zip:/opt/jumpscale7/lib/plat-x86_64-linux-gnu"
         echo "[+] Executing testsuite from path : ${testsuite_dir}"
-        cmd="cd /tmp/G8_testing/functional_testing/Openvcloud; nosetests -s -v ${testsuite_dir} --tc-file config.ini --tc=main.environment:${environment}"
+        cmd="export PYTHONPATH=${python_path}; cd /tmp/G8_testing/functional_testing/Openvcloud; nosetests -s -v ${testsuite_dir} --tc-file config.ini --tc=main.environment:${environment}"
         sshpass -p ${ctrl_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_user}@${ctrl_ipaddress} "${cmd}"
 
     elif [[ ${action} == "after" ]]; then
