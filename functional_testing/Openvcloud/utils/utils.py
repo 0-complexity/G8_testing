@@ -44,6 +44,7 @@ class API(object):
 class BaseTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         self.api = API()
+        self.environment = config['main']['environment']
         super(BaseTest, self).__init__(*args, **kwargs)
 
     def setUp(self):
@@ -144,7 +145,8 @@ class BaseTest(unittest.TestCase):
 
         :returns user_api: cloud_api authenticated with the user name and password
         """
-        user_api = j.clients.portal.get2()
+        url = "{}.demo.greenitglobe.com".format(self.environment)
+        user_api = j.clients.portal.get2(url, port=443)
         user_api.system.usermanager.authenticate(name=username, secret=password or username)
         return user_api
 
