@@ -511,7 +511,9 @@ class BasicTests(BasicACLTest):
         #. delete the cloud space
         #. delete the account
         """
+        language = language.decode('utf-8')
         language += str(random.randrange(1, 1000))
+
         self.lg('- create an account with %s name' % (language))
         self.accountId = self.api.cloudbroker.account.create(language, self.username, self.email)
         self.assertEqual(self.api.cloudapi.accounts.get(accountId=self.accountId)['id'], self.accountId)
@@ -524,9 +526,10 @@ class BasicTests(BasicACLTest):
 
         self.lg('- create virtual machine with %s name' % (language))
         size = random.choice(self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id))
+        sizeId = size['id']      
         disksize = random.choice(size['disks'])
         self.machineId = self.api.cloudapi.machines.create(cloudspaceId=self.cloudspaceId, name=language,
-                                                           sizeId=self.get_size(self.cloudspaceId)['id'],
+                                                           sizeId=sizeId,
                                                            imageId=self.get_image()['id'], disksize=disksize)
         self.assertEqual(self.api.cloudapi.machines.get(machineId=self.machineId)['id'], self.machineId)
 
@@ -544,12 +547,6 @@ class BasicTests(BasicACLTest):
 
         self.lg('- delete the virtual machine')
         self.api.cloudapi.machines.delete(machineId=self.machineId)
-        time.sleep(5)
-        try:
-            self.api.cloudapi.machines.get(machineId=self.machineId)
-        except HTTPError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 404)
 
         self.lg('- Delete the cloud space')
         self.wait_for_status('DEPLOYED', self.api.cloudapi.cloudspaces.get,
@@ -567,6 +564,7 @@ class BasicTests(BasicACLTest):
         self.wait_for_status('DESTROYED', self.api.cloudapi.accounts.get,
                              accountId=self.accountId,
                              timeout=120)
+                             
         self.lg('%s ENDED' % self._testID)
 
     def test009_access_docker_on_vm(self):
