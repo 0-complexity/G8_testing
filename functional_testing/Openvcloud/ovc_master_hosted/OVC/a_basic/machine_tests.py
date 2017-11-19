@@ -3,7 +3,6 @@ import unittest
 import uuid
 import random
 import time
-
 from ....utils.utils import BasicACLTest
 from nose_parameterized import parameterized
 from JumpScale.portal.portal.PortalClient2 import ApiError
@@ -122,43 +121,36 @@ class BasicTests(BasicACLTest):
         #. Check that the machine is updated
         """
 
-        self.lg('1- get all available sizes to use and choose one random and creat vm with it , should succeed')
-        size = random.choice(self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id))
-        disksize = random.choice(size['disks'])
-        self.lg('- using memory size [%s] with disk '
-                '[%s]' % (size['memory'], disksize))
-        self.machine_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id,
-                                                       size_id=size['id'],
-                                                       disksize=disksize)
+        self.lg('1- Get all available sizes to use and choose one random and create vm with it , should succeed')
+        sizes = self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id)
+        selected_size = random.choice(sizes)
+        disksize = random.choice(selected_size['disks'])
 
-        self.lg('2- Resize the machine with all possible combinations, should succeed')
-        basic_sizes=[512,1024,4096,8192,16384,2048]
+        self.lg('- using memory size [%s] with disk [%s]' % (selected_size['memory'], disksize))
+        machineId = self.cloudapi_create_machine(
+            cloudspace_id=self.cloudspace_id, 
+            size_id=selected_size['id'], 
+            disksize=disksize
+        )
 
-        sizesMaxValue = len(basic_sizes)
-
-        self.lg('sizesMaxValue%s'%sizesMaxValue)
-        #sizesMaxValue = len(self.api.cloudapi.sizes.list(self.cloudspace_id))
-        for sizes in xrange(0, sizesMaxValue):
+        for size in sizes:
+            
             self.lg('3- Stop the machine')
-            self.account_owner_api.cloudapi.machines.stop(machineId=self.machine_id)
-            self.assertEqual(self.api.cloudapi.machines.get(machineId=self.machine_id)['status'],
-                              'HALTED')
-            sizes_list= self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id)
-            y = [i['memory']==basic_sizes[sizes] for i in sizes_list]
-            for i, item in enumerate(y):
-                if item:
-                    resizeId=sizes_list[i]['id']
-            self.lg('resizeId %s'%resizeId)
-            self.account_owner_api.cloudapi.machines.resize(machineId=self.machine_id,
-                                                            sizeId=resizeId)
+            self.account_owner_api.cloudapi.machines.stop(machineId=machineId)
+
+            machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
+            self.assertEqual(machineInfo['status'], 'HALTED')
+
+            self.lg('Resize the machine with all possible combinations, should succeed')
+            self.account_owner_api.cloudapi.machines.resize(machineId=machineId, sizeId=size['id'])
 
             self.lg('4- Start the machine')
-            self.account_owner_api.cloudapi.machines.start(machineId=self.machine_id)
-            self.assertEqual(self.api.cloudapi.machines.get(machineId=self.machine_id)['status'],
-                             'RUNNING')
-
-            self.assertEqual(self.api.cloudapi.machines.get(machineId=self.machine_id)['sizeid'],
-                             resizeId)
+            self.account_owner_api.cloudapi.machines.start(machineId=machineId)
+            
+            self.lg('Check that the machine is updated')
+            machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
+            self.assertEqual(machineInfo['status'], 'RUNNING')
+            self.assertEqual(machineInfo['sizeid'], size['id'])
 
         self.lg('%s ENDED' % self._testID)
 
@@ -176,54 +168,39 @@ class BasicTests(BasicACLTest):
         #. Check that the machine is updated with the last resized info
         """
 
-        self.lg('2- get all available sizes to use and choose one random, should succeed')
-        size = random.choice(self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id))
-        disksize = random.choice(size['disks'])
-        self.lg('- using memory size [%s] with disk '
-                '[%s]' % (size['memory'], disksize))
-        self.machine_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id,
-                                                       size_id=size['id'],
-                                                       disksize=disksize)
+        self.lg('1- Get all available sizes to use and choose one random and create vm with it , should succeed')
+        sizes = self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id)
+        selected_size = random.choice(sizes)
+        disksize = random.choice(selected_size['disks'])
+
+        self.lg('- using memory size [%s] with disk [%s]' % (selected_size['memory'], disksize))
+        machineId = self.cloudapi_create_machine(
+            cloudspace_id=self.cloudspace_id, 
+            size_id=selected_size['id'], 
+            disksize=disksize
+        )
 
         self.lg('3- Stop the machine')
-        self.account_owner_api.cloudapi.machines.stop(machineId=self.machine_id)
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=self.machine_id)['status'],
-                         'HALTED')
+        self.account_owner_api.cloudapi.machines.stop(machineId=machineId)
 
-        self.lg('4- Resize the machine with all possible combinations more than one , should succeed')
-        basic_sizes=[512,1024,4096,8192,16384,2048]
-        #sizesMaxValue = len(self.api.cloudapi.sizes.list(self.cloudspace_id))
-        sizesMaxValue = len(basic_sizes)
+        for size in sizes:
+            
+            machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
+            self.assertEqual(machineInfo['status'], 'HALTED')
 
-        self.lg('sizesMaxValue%s'%sizesMaxValue)
-        #sizesMaxValue=6
-        for sizes in xrange(0, sizesMaxValue):
-            sizes_list= self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id)
-            y = [i['memory']==basic_sizes[sizes] for i in sizes_list]
-            for i, item in enumerate(y):
-                if item:
-                    resizeId=sizes_list[i]['id']
+            self.lg('Resize the machine with all possible combinations, should succeed')
+            self.account_owner_api.cloudapi.machines.resize(machineId=machineId, sizeId=size['id'])
 
-
-
-            self.account_owner_api.cloudapi.machines.resize(machineId=self.machine_id,
-                                                            sizeId=resizeId)
-            for i in xrange(0, 60):
-                if self.api.cloudapi.machines.get(machineId=self.machine_id)['sizeid'] == resizeId:
-                   time.sleep(1)
-                   break
-
-            self.assertEqual(self.api.cloudapi.machines.get(machineId=self.machine_id)['sizeid'],
-                             resizeId)
-
-        self.lg('5- Start the machine')
-        self.account_owner_api.cloudapi.machines.start(machineId=self.machine_id)
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=self.machine_id)['status'],
-                         'RUNNING')
-
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=self.machine_id)['sizeid'], 6)
+        self.lg('4- Start the machine')
+        self.account_owner_api.cloudapi.machines.start(machineId=machineId)
+        
+        self.lg('Check that the machine is updated')
+        machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
+        self.assertEqual(machineInfo['status'], 'RUNNING')
+        self.assertEqual(machineInfo['sizeid'], sizes[-1]['id'])
 
         self.lg('%s ENDED' % self._testID)
+
 
     @parameterized.expand(['Ubuntu 14.04 x64',
                            'Ubuntu 15.10 x64',
