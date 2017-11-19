@@ -407,18 +407,19 @@ class BaseTest(unittest.TestCase):
         machine = ccl.vmachine.get(machineId)
         stackID = machine.stackId
         nodeID = ccl.stack.get(stackID).referenceId
-        return nodeID
+        return int(nodeID)
 
     def get_nodeId_to_move_VFW_to(self, current_VFW_nodeId):
+        ccl = j.clients.osis.getNamespace('cloudbroker')
         scl = j.clients.osis.getNamespace('system')
-        nodeIds_list = scl.node.list({})
-        nodeIds_list.remove(scl.node.get('%s_%s' % (j.application.whoAmI.gid, str(current_VFW_nodeId))).guid)
-        for nodeId in nodeIds_list[1:]:
-            node = scl.node.get(nodeId)
-            node_details=self.api.system.gridmanager.getNodes(id = node.id)
-            if (node.active == True ) and ( "fw" in node_details[0]["roles"]):
-                return node.id
-        return -1
+        stacks = ccl.stack.list()
+        for stackId in stacks:
+            nodeId = int(ccl.stack.get(stackId).referenceId)
+            node = scl.node.get(int(nodeId))
+            if node.active and 'fw' in node.roles and nodeId != current_VFW_nodeId:
+                return nodeId
+        else:
+            return False
 
     def execute_command_on_physical_node(self, command, nodeid):
         # This function execute a command on a physical real node
