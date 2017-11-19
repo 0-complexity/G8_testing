@@ -1,7 +1,6 @@
 import unittest
 from nose_parameterized import parameterized
 from ....utils.utils import BasicACLTest
-from nose_parameterized import parameterized
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
 import random
@@ -148,10 +147,9 @@ class ExtendedTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('Not Implemented')
     @parameterized.expand(['D', 'B'])
     def test004_disk_create_delete(self, disk_type):
-        """ OVC-000
+        """ OVC-022
         *Test case for creating and deleting disks*
 
         **Test Scenario:**
@@ -199,10 +197,8 @@ class ExtendedTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-
-    @unittest.skip('Not Implemented')
     def test005_attaching_detaching_disks(self):
-        """ OVC-000
+        """ OVC-023
         *Test case for attaching and detaching disks to a virtual machine*
 
         **Test Scenario:**

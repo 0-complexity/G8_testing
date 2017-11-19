@@ -40,7 +40,7 @@ class MachineTests(BasicACLTest):
         #. From VM1 send F1 to VM2, should succeed
         #. Check that F1 has been sent to vm2 without data loss
         """
-    
+
     @unittest.skip('Not Implemented')
     def test003_check_connectivity_through_external_network(self):
         """ OVC-000
@@ -108,23 +108,23 @@ class MachineTests(BasicACLTest):
         self.lg("5- Check if VM1's ip is the same as before rebooting")
         self.assertEqual(
             machine_info_before_reboot['interfaces'][0]['ipAddress'],
-            machine_info_after_reboot['interfaces'][0]['ipAddress'] 
+            machine_info_after_reboot['interfaces'][0]['ipAddress']
         )
 
         self.lg("6- Check if VM1's credentials are the same as well")
         self.assertEqual(
             machine_info_before_reboot['accounts'][0]['login'],
-            machine_info_after_reboot['accounts'][0]['login'] 
+            machine_info_after_reboot['accounts'][0]['login']
         )
 
         self.assertEqual(
             machine_info_before_reboot['accounts'][0]['password'],
-            machine_info_after_reboot['accounts'][0]['password'] 
+            machine_info_after_reboot['accounts'][0]['password']
         )
 
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/938 & 941')
     def test006_attach_same_disk_to_two_vms(self):
-        """ OVC-000
+        """ OVC-024
         *Test case for attaching same disk to two different vms*
 
         **Test Scenario:**
@@ -165,10 +165,9 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/935 & 937')
     def test007_detach_boot_from_running_machine(self):
-        """ OVC-000
+        """ OVC-025
         * Test case for detaching boot disk from a running machine.
 
         **Test Scenario:**
