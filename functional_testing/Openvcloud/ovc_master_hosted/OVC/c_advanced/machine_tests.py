@@ -1,9 +1,13 @@
-import unittest
+import unittest, random
 from ....utils.utils import BasicACLTest
-
+from nose_parameterized import parameterized
 
 
 class MachineTests(BasicACLTest):
+
+    def setUp(self):
+        super(MachineTests, self).setUp()
+        self.default_setup()
 
     @unittest.skip('Not Implemented')
     def test001_check_machines_networking(self):
@@ -34,7 +38,7 @@ class MachineTests(BasicACLTest):
         #. From VM1 send F1 to VM2, should succeed
         #. Check that F1 has been sent to vm2 without data loss
         """
-
+    
     @unittest.skip('Not Implemented')
     def test003_check_connectivity_through_external_network(self):
         """ OVC-000
@@ -64,19 +68,57 @@ class MachineTests(BasicACLTest):
         """
         # Note: this testcase may be hard to be implemented from here.
 
-    @unittest.skip('Not Implemented')
-    def test005_cheching_vm_specs_after_rebooting(self):
+    @parameterized.expand(['Linux', 'Windows'])
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/940')
+    def test005_cheching_vm_specs_after_rebooting(self, image_type):
         """ OVC-000
         *Test case for checking VM's ip and credentials after rebooting*
 
         **Test Scenario:**
 
-        #. Create a cloudspace CS1, should succeed
-        #. Create virtual machine VM1 with windows image
-        #. Reboot VM1, should succeed
+        #. Create virtual machine VM1 with windows image.
+        #. Get machine VM1 info, should succeed.
+        #. Reboot VM1, should succeed.
+        #. Get machine VM1 info, should succeed.
         #. Check if VM1's ip is the same as before rebooting.
-        #. Check if VM1's credentials are the same as well
+        #. Check if VM1's credentials are the same as well.
         """
+
+        self.lg('1- Create virtual machine VM1 with {} image'.format(image_type))
+        target_images = [x['id'] for x in self.api.cloudapi.images.list() if x['type'] == image_type]
+
+        if not target_images:
+            self.skipTest('No image with type {} is avalilable'.format(image_type))
+
+        selected_image_id = random.choice(target_images)
+
+        machineId = self.cloudapi_create_machine(self.cloudspace_id, self.account_owner_api, image_id=selected_image_id, disksize=50)
+
+        self.lg('2- Get machine VM1 info, should succeed')
+        machine_info_before_reboot = self.api.cloudapi.machines.get(machineId=machineId)
+
+        self.lg('3- Reboot VM1, should succeed')
+        self.assertTrue(self.api.cloudapi.machines.reboot(machineId=machineId))
+
+        self.lg('4- Get machine VM1 info, should succeed')
+        machine_info_after_reboot = self.api.cloudapi.machines.get(machineId=machineId)
+
+        self.lg("5- Check if VM1's ip is the same as before rebooting")
+        self.assertEqual(
+            machine_info_before_reboot['interfaces'][0]['ipAddress'],
+            machine_info_after_reboot['interfaces'][0]['ipAddress'] 
+        )
+
+        self.lg("6- Check if VM1's credentials are the same as well")
+        self.assertEqual(
+            machine_info_before_reboot['accounts'][0]['login'],
+            machine_info_after_reboot['accounts'][0]['login'] 
+        )
+
+        self.assertEqual(
+            machine_info_before_reboot['accounts'][0]['password'],
+            machine_info_after_reboot['accounts'][0]['password'] 
+        )
 
     @unittest.skip('Not Implemented')
     def test006_attach_same_disk_to_two_vms(self):
