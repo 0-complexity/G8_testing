@@ -1,7 +1,7 @@
 import unittest
 from nose_parameterized import parameterized
 from ....utils.utils import BasicACLTest
-
+from nose_parameterized import parameterized
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
 import random
@@ -149,19 +149,56 @@ class ExtendedTests(BasicACLTest):
         self.lg('%s ENDED' % self._testID)
 
     @unittest.skip('Not Implemented')
-    def test004_disk_create_delete(self):
+    @parameterized.expand(['D', 'B'])
+    def test004_disk_create_delete(self, disk_type):
         """ OVC-000
         *Test case for creating and deleting disks*
 
         **Test Scenario:**
 
-        #. Create a disk DS1, should succeed.
-        #. Create a disk with the same name of DS1, should fail.
-        #. List the disks, DS1 should be found.
+        #. Create a data disk DS1, should succeed.
+        #. List the data disks, DS1 should be found.
+        #. List the Boot disks, DS1 shouldn't be found
         #. Delete non existing disk, should fail.
         #. Delete DS1, should succeed.
         #. List the disks, DS1 shouldn't be there.
+        #. Repeat the above steps for a boot Disk
         """
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg(' Create a %s disk DS1, should succeed'% disk_type)
+        disk_id = self.create_disk(self.account_id, disk_type=disk_type)
+        self.assertTrue(disk_id)
+
+        self.lg('List the %s disks, DS1 should be found.'% disk_type)
+        disks = self.api.cloudapi.disks.list(accountId=self.account_id, type=disk_type)
+        self.assertTrue([True for d in disks if d['id'] == disk_id])
+
+        if disk_type == 'D':
+            d_type = 'B'
+        else:
+            d_type = 'D'
+        self.lg("List the %s disks, DS1 shouldn't be found."% d_type)
+        disks = self.api.cloudapi.disks.list(accountId=self.account_id, type=d_type)
+        self.assertFalse([True for d in disks if d['id'] == disk_id])
+
+        self.lg('Delete non existing disk, should fail.')
+        try:
+            self.api.cloudapi.disks.delete(diskId=disk_id+9, detach=False)
+        except (HTTPError, ApiError) as e:
+            self.lg('- expected error raised %s' % e.message)
+            self.assertEqual(e.status_code, 404)
+
+        self.lg('Delete DS1, should succeed.')
+        response = self.api.cloudapi.disks.delete(diskId=disk_id, detach=False)
+        self.assertTrue(response)
+
+        self.lg("List the %s disks, DS1 shouldn't be there."% disk_type)
+        disks = self.api.cloudapi.disks.list(accountId=self.account_id, type=disk_type)
+        self.assertFalse([True for d in disks if d['id'] == disk_id])
+
+        self.lg('%s ENDED' % self._testID)
+
 
     @unittest.skip('Not Implemented')
     def test005_attaching_detaching_disks(self):
@@ -171,10 +208,49 @@ class ExtendedTests(BasicACLTest):
         **Test Scenario:**
 
         #. Create a disk DS1, should succeed.
-        #. Create VM1, should succeed
+        #. Create VM1
         #. Attach non existing disk to VM1, should fail
         #. Attach DS1 to VM1, should succeed
         #. Delete DS1 without detaching it, should fail
         #. Detach non existing disk, should fail
         #. Detach DS1, should succeed
         """
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg("Create a disk DS1, should succeed.")
+        disk_id = self.create_disk(self.account_id)
+        self.assertTrue(disk_id)
+
+        self.lg("Create VM1")
+        VM1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+
+        self.lg("Attach non existing disk to VM1, should fail")
+        try:
+            response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id+9)
+        except (HTTPError, ApiError) as e:
+            self.lg('- expected error raised %s' % e.message)
+            self.assertEqual(e.status_code, 404)
+
+        self.lg("Attach DS1 to VM1, should succeed")
+        response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id)
+        self.assertTrue(response)
+
+        self.lg("Delete DS1 without detaching it, should fail")
+        try:
+            self.api.cloudapi.disks.delete(diskId=disk_id, detach=False)
+        except (HTTPError, ApiError) as e:
+            self.lg('- expected error raised %s' % e.message)
+            self.assertEqual(e.status_code, 409)
+
+        self.lg("Detach non existing disk, should fail")
+        try:
+            self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id+9)
+        except (HTTPError, ApiError) as e:
+            self.lg('- expected error raised %s' % e.message)
+            self.assertEqual(e.status_code, 404)
+
+        self.lg("Detach DS1, should succeed")
+        response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id)
+        self.assertTrue(response)
+
+        self.lg('%s ENDED' % self._testID)

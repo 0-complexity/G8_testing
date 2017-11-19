@@ -1,6 +1,8 @@
 import unittest, random
 from ....utils.utils import BasicACLTest
 from nose_parameterized import parameterized
+from JumpScale.portal.portal.PortalClient2 import ApiError
+from JumpScale.baselib.http_client.HttpClient import HTTPError
 
 
 class MachineTests(BasicACLTest):
@@ -120,23 +122,51 @@ class MachineTests(BasicACLTest):
             machine_info_after_reboot['accounts'][0]['password'] 
         )
 
-    @unittest.skip('Not Implemented')
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/938 & 941')
     def test006_attach_same_disk_to_two_vms(self):
         """ OVC-000
         *Test case for attaching same disk to two different vms*
 
         **Test Scenario:**
 
+        #. Create VM1 and VM2.
         #. Create disk DS1.
-        #. Create cloudspace CS1.
-        #. Create VM1 and VM2 on CS1.
         #. Attach DS1 to VM1, should succeed.
         #. Attach DS1 to VM2, should fail.
+        #. Detach DS1 from VM2, should fail.
         #. Delete disk after detaching it, should succeed
         """
         # Note: try this scenario for data and boot disks
 
-    @unittest.skip('Not Implemented')
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg('Create VM1 and VM2')
+        VM1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+        VM2_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+
+        self.lg(' Create disk DS1.')
+        disk_id = self.create_disk(self.account_id)
+        self.assertTrue(disk_id)
+
+        self.lg('Attach DS1 to VM1, should succeed.')
+        response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id)
+        self.assertTrue(response)
+
+        self.lg('Attach DS1 to VM2, should fail.')
+        try:
+            self.api.cloudapi.machines.attachDisk(machineId=VM2_id, diskId=disk_id)
+        except (HTTPError, ApiError) as e:
+            self.lg('- expected error raised %s' % e.message)
+            self.assertEqual(e.status_code, 400)
+
+        self.lg('Delete disk after detaching it, should succeed')
+        response = self.api.cloudapi.disks.delete(diskId=disk_id, detach=True)
+        self.assertTrue(response)
+
+        self.lg('%s ENDED' % self._testID)
+
+
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/935 & 937')
     def test007_detach_boot_from_running_machine(self):
         """ OVC-000
         * Test case for detaching boot disk from a running machine.
@@ -151,6 +181,46 @@ class MachineTests(BasicACLTest):
         #. Attach BD1 to VM1, should succeed.
         #. Start VM1 and make sure it is running.
         """
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg('Create virtual machine (VM1)')
+        VM1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+        bd_id = self.api.cloudapi.machines.get(machineId=VM1_id)['disks'][0]['id']
+
+        self.lg("Detach VM1's boot disk (BD1), should fail")
+        try:
+            self.api.cloudapi.machines.detachDisk(machineId=VM1_id, diskId=bd_id)
+        except (HTTPError, ApiError) as e:
+            self.lg('- expected error raised %s' % e.message)
+            self.assertEqual(e.status_code, 400)
+
+        self.lg('Stop VM1')
+        self.api.cloudapi.machines.stop(machineId=VM1_id)
+        self.assertEqual(self.api.cloudapi.machines.get(machineId=VM1_id)['status'], 'HALTED')
+
+        self.lg("Detach VM1's boot disk again, should succeed")
+        response = self.api.cloudapi.machines.detachDisk(machineId=VM1_id, diskId=bd_id)
+        self.assertTrue(response)
+        self.assertFalse(self.api.cloudapi.machines.get(machineId=VM1_id)['disks'])
+
+        self.lg("Start VM1, should fail")
+        try:
+            self.api.cloudapi.machines.start(machineId=VM1_id)
+        except (HTTPError, ApiError) as e:
+            self.lg('- expected error raised %s' % e.message)
+            self.assertEqual(e.status_code, 400)
+
+        self.lg("Attach BD1 to VM1, should succeed.")
+        response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=bd_id)
+        self.assertTrue(response)
+
+        self.lg('Start VM1 and make sure it is running.')
+        self.user_api.cloudapi.machines.start(machineId=VM1_id)
+        self.assertEqual(self.api.cloudapi.machines.get(machineId=VM1_id)['status'], 'RUNNING')
+
+        self.lg('%s ENDED' % self._testID)
+
+
 
     @unittest.skip('Not Implemented')
     def test008_swap_vms_boot_disks(self):

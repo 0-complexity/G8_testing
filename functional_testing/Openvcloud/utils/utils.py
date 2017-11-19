@@ -220,6 +220,7 @@ class BaseTest(unittest.TestCase):
         machine = api.cloudapi.machines.get(machineId=machine_id)
         self.assertEqual(machine['status'], 'RUNNING')
         return machine_id
+
     def cloudbroker_create_machine(self, cloudspace_id, api='', name='', size_id=0, image_id=0,
                                 disksize=10, datadisks=[], wait=True, stackId=None):
         api = api or self.api
@@ -384,6 +385,15 @@ class BaseTest(unittest.TestCase):
         scl = j.clients.osis.getNamespace('system')
         nodeId = ccl.stack.get(stackId).referenceId
         return scl.node.get(int(nodeId)).gid
+
+    def create_disk(self, account_id, gid=None, size=10, disk_type='D'):
+        if not gid:
+            stackId = self.get_running_stackId()
+            gid = self.get_node_gid(stackId)
+        disk_id = self.api.cloudapi.disks.create(accountId=account_id, gid=gid,
+                                                 name=str(uuid.uuid4())[0:8],
+                                                 size=size, type=disk_type)
+        return disk_id
 
     def get_running_stackId(self):
         ccl = j.clients.osis.getNamespace('cloudbroker')
