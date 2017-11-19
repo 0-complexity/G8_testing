@@ -60,10 +60,7 @@ class BaseTest(unittest.TestCase):
 
         # adding a signal alarm for timing out the test if it took longer than 15 minutes
         signal.signal(signal.SIGALRM, timeout_handler)
-        if 'OVC-003' in self._testID:
-            signal.alarm(2 * 900)
-        else:
-            signal.alarm(900)
+        signal.alarm(2000)
 
     def default_setup(self,create_default_cloudspace = True):
         self.create_default_cloudspace= create_default_cloudspace
