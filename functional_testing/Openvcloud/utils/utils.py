@@ -196,18 +196,6 @@ class BaseTest(unittest.TestCase):
         self.assertTrue(sizes)
         return sizes[0]
 
-    def list_location_sizes(self, location, cloudspaceId=None):
-        sizes = self.api.cloudapi.location.sizes.list(location=location, cloudspaceId=cloudspaceId)
-        return sizes
-
-    def add_allowedSize_to_cloudspace(self, cloudspaceId, sizeId):
-        sizes = self.api.cloudapi.cloudspaces.sizes.add(cloudspaceId=cloudspaceId, sizeId=sizeId)
-        return sizes
-    
-    def remove_allowedSize_from_cloudspace(self, cloudspaceId, sizeId):
-        self.api.cloudapi.cloudspaces.sizes.remove(cloudspaceId=cloudspaceId, sizeId=sizeId)
-        
-
     def cloudapi_create_machine(self, cloudspace_id, api='', name='', size_id=0, image_id=0,
                                 disksize=10, datadisks=[], wait=True, stackId=None):
         api = api or self.api

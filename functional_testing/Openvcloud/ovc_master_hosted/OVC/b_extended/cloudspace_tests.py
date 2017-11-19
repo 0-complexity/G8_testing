@@ -76,7 +76,6 @@ class CloudspaceTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('Not Implemented')
     def test002_add_remove_AllowedSize_to_cloudspace(self):
         """ OVC-000
         *Test case for adding and removing  allowed size to a cloudspace.*
@@ -90,6 +89,7 @@ class CloudspaceTests(BasicACLTest):
         #. check if the size has been removed successfully from CS1.
         #. Remove this size again, should fail.
         """
+        
         self.lg("1- Create Create cloudspace CS1")
         cloudspaceId = self.cloudapi_cloudspace_create(self.account_id, self.location, self.account_owner)
 
@@ -114,7 +114,6 @@ class CloudspaceTests(BasicACLTest):
         self.lg('7- Remove this size again, should fail')
         with self.assertRaises(ApiError):
             self.remove_allowedSize_from_cloudspace(cloudspaceId=cloudspaceId, sizeId=selected_size.id)                    
-
 
     @unittest.skip('Not Implemented')
     def test003_executeRouterOSScript(self):
