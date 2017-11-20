@@ -88,19 +88,25 @@ class BaseTest(unittest.TestCase):
         self.user = self.cloudbroker_user_create()
         self.user_api = self.get_authenticated_user_api(self.user)
 
-    def cloudapi_cloudspace_create(self, account_id, location, access, api=None,
-                                   name='', maxMemoryCapacity=-1, maxDiskCapacity=-1,
-                                   maxCPUCapacity=-1, maxNumPublicIP=-1):
-        if api is None:
-            api = self.api
+    def cloudapi_cloudspace_create(self, account_id, location, access, api=None, name='', 
+                                   maxMemoryCapacity=-1, maxDiskCapacity=-1,
+                                   maxCPUCapacity=-1, maxNumPublicIP=-1, allowedVMSizes=None):
+        api = api or self.api
+        name = name or str(uuid.uuid4()).replace('-', '')[0:10]
         cloudspaceId = api.cloudapi.cloudspaces.create(
-            accountId=account_id, location=location, access=access,
-            name=name or str(uuid.uuid4()).replace('-', '')[0:10],
-            maxMemoryCapacity=maxMemoryCapacity, maxVDiskCapacity=maxDiskCapacity,
-            maxCPUCapacity=maxCPUCapacity, maxNumPublicIP=maxNumPublicIP)
+            accountId=account_id, 
+            location=location, 
+            access=access,
+            name=name,
+            maxMemoryCapacity=maxMemoryCapacity, 
+            maxVDiskCapacity=maxDiskCapacity,
+            maxCPUCapacity=maxCPUCapacity, 
+            maxNumPublicIP=maxNumPublicIP,
+            allowedVMSizes=allowedVMSizes
+        )
+
         self.assertTrue(cloudspaceId)
-        self.wait_for_status('DEPLOYED', api.cloudapi.cloudspaces.get,
-                             cloudspaceId=cloudspaceId)
+        self.wait_for_status('DEPLOYED', api.cloudapi.cloudspaces.get, cloudspaceId=cloudspaceId)
         return cloudspaceId
 
     def cloudbroker_cloudspace_create(self, account_id, location, access, api=None,

@@ -78,7 +78,7 @@ class CloudspaceTests(BasicACLTest):
 
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/942 943')
     def test002_add_remove_AllowedSize_to_cloudspace(self):
-        """ OVC-000
+        """ OVC-027
         *Test case for adding and removing  allowed size to a cloudspace.*
 
         **Test Scenario:**

@@ -292,3 +292,28 @@ class ExtendedTests(BasicACLTest):
         self.assertTrue(response)
 
         self.lg('%s ENDED' % self._testID)
+
+    def test007_create_vm_with_unallowed_size(self):
+        """ OVC-026
+        *Test case for creating vm with unallowed size*
+
+        **Test Scenario:**
+
+        #. Create cloudspace CS1, should succeed.
+        #. Create VM1 with unallowed size, should fail.
+        """
+
+        self.lg('1- Create cloudspace CS1, should succeed')
+        allowed_sizes = [x['id'] for x in self.api.cloudapi.sizes.list(location=self.location)]
+        unallowed_size = random.choice(allowed_sizes)
+        allowed_sizes.remove(unallowed_size)
+        cloudspaceId = self.cloudapi_cloudspace_create(self.account_id,
+                                                       self.location,
+                                                       self.account_owner,
+                                                       allowedVMSizes=allowed_sizes)
+
+        self.lg('2- Create VM1 with unallowed size, should fail')
+        with self.assertRaises(HTTPError) as e:
+            self.cloudapi_create_machine(cloudspace_id=cloudspaceId, size_id=unallowed_size)
+            self.assertEqual(e.status_code, 400)
+
