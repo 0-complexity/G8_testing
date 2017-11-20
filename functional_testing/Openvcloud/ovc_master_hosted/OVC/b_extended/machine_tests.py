@@ -253,7 +253,7 @@ class ExtendedTests(BasicACLTest):
 
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/954')
     def test006_attach_disk_to_vm_of_another_account(self):
-        """ OVC-000
+        """ OVC-030
         *Test case for attaching disk to a vm of another account*
 
         **Test Scenario:**
@@ -281,11 +281,9 @@ class ExtendedTests(BasicACLTest):
         VM1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
 
         self.lg('Attach DS1 to VM2, should fail')
-        try:
+        with self.assertRasies(HTTPError) as e:
             self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id)
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 409)
+            self.assertEqual(e.status_error, 409)
 
         self.lg('Delete DS1')
         response = self.api.cloudapi.disks.delete(diskId=disk_id, detach=False)
@@ -316,4 +314,3 @@ class ExtendedTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
             self.cloudapi_create_machine(cloudspace_id=cloudspaceId, size_id=unallowed_size)
             self.assertEqual(e.status_code, 400)
-
