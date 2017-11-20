@@ -281,7 +281,7 @@ class ExtendedTests(BasicACLTest):
         VM1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
 
         self.lg('Attach DS1 to VM2, should fail')
-        with self.assertRasies(HTTPError) as e:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id)
             self.assertEqual(e.status_error, 409)
 
