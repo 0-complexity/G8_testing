@@ -250,3 +250,17 @@ class ExtendedTests(BasicACLTest):
         self.assertTrue(response)
 
         self.lg('%s ENDED' % self._testID)
+
+    def test006_attach_disk_to_vm_of_another_account(self):
+        """ OVC-000
+        *Test case for attaching disk to a vm of another account*
+
+        **Test Scenario:**
+
+        #. Create account (AS1), should succeed
+        #. Create a disk (DS1) for account (AC1), should succeed.
+        #. Create account (AC2), should succeed (use this for the default account created)
+        #. Create cloud space (CS2) and virtual machine (VM2) for AC2, should succeed
+        #. Attach DS1 to VM2, should fail
+        #. Delete DS1
+        """

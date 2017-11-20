@@ -66,8 +66,8 @@ class BaseTest(unittest.TestCase):
         else:
             signal.alarm(900)
 
-    def default_setup(self,create_default_cloudspace = True):
-        self.create_default_cloudspace= create_default_cloudspace
+    def default_setup(self, create_default_cloudspace=True):
+        self.create_default_cloudspace = create_default_cloudspace
         self.location = self.get_location()['locationCode']
         self.account_owner = self.username
         self.lg('- create account for :%s' % self.account_owner)
@@ -407,14 +407,9 @@ class BaseTest(unittest.TestCase):
         if cloudspace_publicports:
             cloudspace_publicport = cloudspace_publicports[0]
         else:
-            for i in range(5):
-                cloudspace_publicport = random.randint(7000, 9999)
-                try:
-                    self.add_portforwarding(vm_id, cloudspace_id=vm['cloudspaceid'], cs_publicip=cloudspace_publicip,
-                                            cs_publicport=cloudspace_publicport, wait_vm_ip=wait_vm_ip)
-                    break
-                except:
-                    pass
+            cloudspace_publicport = random.randint(70000, 99999)
+            self.add_portforwarding(vm_id, cloudspace_id=vm['cloudspaceid'], cs_publicip=cloudspace_publicip,
+                                    cs_publicport=cloudspace_publicport, wait_vm_ip=wait_vm_ip)
         connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)
         connection.fabric.state.output["running"] = False
         connection.fabric.state.output["stdout"] = False
