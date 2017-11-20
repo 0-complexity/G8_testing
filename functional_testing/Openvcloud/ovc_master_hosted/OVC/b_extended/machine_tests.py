@@ -3,7 +3,7 @@ from nose_parameterized import parameterized
 from ....utils.utils import BasicACLTest
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
-import random
+import random, uuid
 
 class ExtendedTests(BasicACLTest):
 
@@ -251,16 +251,44 @@ class ExtendedTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/954')
     def test006_attach_disk_to_vm_of_another_account(self):
         """ OVC-000
         *Test case for attaching disk to a vm of another account*
 
         **Test Scenario:**
 
-        #. Create account (AS1), should succeed
+        #. Create account (AC1), should succeed.
         #. Create a disk (DS1) for account (AC1), should succeed.
-        #. Create account (AC2), should succeed (use this for the default account created)
-        #. Create cloud space (CS2) and virtual machine (VM2) for AC2, should succeed
-        #. Attach DS1 to VM2, should fail
-        #. Delete DS1
+        #. Create account (AC2), should succeed.
+        #. Create cloud space (CS2) and virtual machine (VM2) for AC2, should succeed.
+        #. Attach DS1 to VM2, should fail.
+        #. Delete DS1.
         """
+
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg('Create account (AC1), should succeed')
+        ac1_name = str(uuid.uuid4())[0:8]
+        ac1_id = self.cloudbroker_account_create(ac1_name, self.account_owner, self.email)
+
+        self.lg('Create a disk (DS1) for account (AC1), should succeed')
+        disk_id = self.create_disk(ac1_id)
+        self.assertTrue(disk_id)
+
+        self.lg('Create account (AC2), should succeed')
+        self.lg('Create cloud space (CS2) and virtual machine (VM2) for AC2, should succeed')
+        VM1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+
+        self.lg('Attach DS1 to VM2, should fail')
+        try:
+            self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id)
+        except (HTTPError, ApiError) as e:
+            self.lg('- expected error raised %s' % e.message)
+            self.assertEqual(e.status_code, 409)
+
+        self.lg('Delete DS1')
+        response = self.api.cloudapi.disks.delete(diskId=disk_id, detach=False)
+        self.assertTrue(response)
+
+        self.lg('%s ENDED' % self._testID)
