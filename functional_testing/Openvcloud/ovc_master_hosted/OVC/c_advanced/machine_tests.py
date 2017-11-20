@@ -73,7 +73,7 @@ class MachineTests(BasicACLTest):
     @parameterized.expand(['Linux', 'Windows'])
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/940')
     def test005_cheching_vm_specs_after_rebooting(self, image_type):
-        """ OVC-000
+        """ OVC-028
         *Test case for checking VM's ip and credentials after rebooting*
 
         **Test Scenario:**
