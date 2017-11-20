@@ -264,3 +264,27 @@ class ExtendedTests(BasicACLTest):
         #. Attach DS1 to VM2, should fail
         #. Delete DS1
         """
+
+    def test008_create_vm_with_not_allowed_size(self):
+        """ OVC-026
+        *Test case for creating vm with not allowed size*
+
+        **Test Scenario:**
+
+        #. Create cloudspace CS1, should succeed.
+        #. Create VM1 with not allowed size, should fail.
+        """
+
+        self.lg('1- Create cloudspace CS1, should succeed')
+        allowed_sizes = [x['id'] for x in self.api.cloudapi.sizes.list(location=self.location)]
+        not_allowed_size = random.choice(allowed_sizes)
+        allowed_sizes.remove(not_allowed_size)
+        cloudspaceId = self.cloudapi_cloudspace_create(self.account_id,
+                                                       self.location,
+                                                       self.account_owner,
+                                                       allowedVMSizes=allowed_sizes)
+
+        self.lg('2- Create VM1 with not allowed size, should fail')
+        with self.assertRaises(HTTPError) as e:
+            self.cloudapi_create_machine(cloudspace_id=cloudspaceId, size_id=not_allowed_size)
+            self.assertEqual(e.status_code, 400)
