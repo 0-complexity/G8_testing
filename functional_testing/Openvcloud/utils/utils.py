@@ -8,6 +8,7 @@ import netaddr
 import signal
 from nose.tools import TimeExpired
 from testconfig import config
+import random
 SESSION_DATA = {'vms': []}
 
 
@@ -65,8 +66,8 @@ class BaseTest(unittest.TestCase):
         else:
             signal.alarm(900)
 
-    def default_setup(self,create_default_cloudspace = True):
-        self.create_default_cloudspace= create_default_cloudspace
+    def default_setup(self, create_default_cloudspace=True):
+        self.create_default_cloudspace = create_default_cloudspace
         self.location = self.get_location()['locationCode']
         self.account_owner = self.username
         self.lg('- create account for :%s' % self.account_owner)
@@ -220,6 +221,7 @@ class BaseTest(unittest.TestCase):
         machine = api.cloudapi.machines.get(machineId=machine_id)
         self.assertEqual(machine['status'], 'RUNNING')
         return machine_id
+
     def cloudbroker_create_machine(self, cloudspace_id, api='', name='', size_id=0, image_id=0,
                                 disksize=10, datadisks=[], wait=True, stackId=None):
         api = api or self.api
@@ -345,10 +347,11 @@ class BaseTest(unittest.TestCase):
         return machine
 
     def add_portforwarding(self, machine_id, api='', cloudspace_id='', cs_publicip='', cs_publicport=444, vm_port=22,
-                           protocol='tcp'):
+                           protocol='tcp', wait_vm_ip=True):
         api = api or self.api
         # wait until machine takes an ip
-        time.sleep(60)
+        if wait_vm_ip:
+            time.sleep(60)
 
         cloudspace_id = cloudspace_id or self.cloudspace_id
         cloudspace = self.api.cloudapi.cloudspaces.get(cloudspaceId=cloudspace_id)
@@ -384,6 +387,33 @@ class BaseTest(unittest.TestCase):
         scl = j.clients.osis.getNamespace('system')
         nodeId = ccl.stack.get(stackId).referenceId
         return scl.node.get(int(nodeId)).gid
+
+    def create_disk(self, account_id, gid=None, size=10, disk_type='D'):
+        if not gid:
+            stackId = self.get_running_stackId()
+            gid = self.get_node_gid(stackId)
+        disk_id = self.api.cloudapi.disks.create(accountId=account_id, gid=gid,
+                                                 name=str(uuid.uuid4())[0:8], description='test',
+                                                 size=size, type=disk_type)
+        return disk_id
+
+    def execute_cmd_on_vm(self, vm_id, cmd, wait_vm_ip=True):
+        vm = self.api.cloudapi.machines.get(machineId=vm_id)
+        cloudspace_publicip = self.api.cloudapi.cloudspaces.get(cloudspaceId=vm['cloudspaceid'])['publicipaddress']
+        password = vm['accounts'][0]['password']
+        login = vm['accounts'][0]['login']
+        pfs = self.api.cloudapi.portforwarding.list(cloudspaceId=vm['cloudspaceid'], machineId=vm_id)
+        cloudspace_publicports = [pf['publicPort'] for pf in pfs if pf['localPort'] == '22']
+        if cloudspace_publicports:
+            cloudspace_publicport = cloudspace_publicports[0]
+        else:
+            cloudspace_publicport = random.randint(70000, 99999)
+            self.add_portforwarding(vm_id, cloudspace_id=vm['cloudspaceid'], cs_publicip=cloudspace_publicip,
+                                    cs_publicport=cloudspace_publicport, wait_vm_ip=wait_vm_ip)
+        connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)
+        connection.fabric.state.output["running"] = False
+        connection.fabric.state.output["stdout"] = False
+        return connection.run(cmd)
 
     def get_running_stackId(self):
         ccl = j.clients.osis.getNamespace('cloudbroker')
