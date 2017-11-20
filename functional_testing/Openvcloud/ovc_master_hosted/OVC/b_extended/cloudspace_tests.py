@@ -76,7 +76,7 @@ class CloudspaceTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('Not Implemented')
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/942 943')
     def test002_add_remove_AllowedSize_to_cloudspace(self):
         """ OVC-000
         *Test case for adding and removing  allowed size to a cloudspace.*
@@ -84,12 +84,34 @@ class CloudspaceTests(BasicACLTest):
         **Test Scenario:**
         #. Create new cloudspace CS1.
         #. Get list of available sizes in location, should succeed.
-        #. Add random size to CS1 with /cloudapi/cloudspaces/addAllowedSize API ,should succeed.
+        #. Add random size to CS1, should succeed.
         #. Check if the size has been added successfully to CS1.
-        #. Remove this size from CS1 with /cloudapi/cloudspaces/removeAllowedSize API, should succeed.
+        #. Remove this size from CS1, should succeed.
         #. check if the size has been removed successfully from CS1.
         #. Remove this size again, should fail.
         """
+
+        self.lg('1- Get list of available sizes in location, should succeed.')
+        location_sizes = self.api.cloudapi.sizes.list(location=self.location)
+        selected_size = random.choice(location_sizes)            
+
+        self.lg('2- Add random size to CS1, should succeed')
+        self.api.cloudapi.cloudspaces.addAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])   
+
+        self.lg('3- Check if the size has been added successfully to CS1')
+        cloudspace_sizes = self.api.cloudapi.sizes.list(location=self.location, cloudspaceId=self.cloudspace_id) 
+        self.assertIn(selected_size, cloudspace_sizes)     
+
+        self.lg('4- Remove this size from CS1, should succeed') 
+        self.api.cloudapi.cloudspaces.removeAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])  
+
+        self.lg('5- check if the size has been removed successfully from CS1')
+        cloudspace_sizes = self.api.cloudapi.sizes.list(location=self.location, cloudspaceId=self.cloudspace_id) 
+        self.assertNotIn(selected_size, cloudspace_sizes)   
+
+        self.lg('6- Remove this size again, should fail')
+        with self.assertRaises(ApiError):
+            self.api.cloudapi.cloudspaces.removeAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])                    
 
     @unittest.skip('Not Implemented')
     def test003_executeRouterOSScript(self):
