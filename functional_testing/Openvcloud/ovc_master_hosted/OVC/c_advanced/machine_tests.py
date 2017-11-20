@@ -214,8 +214,10 @@ class MachineTests(BasicACLTest):
         self.assertTrue(response)
 
         self.lg('Start VM1 and make sure it is running.')
-        self.user_api.cloudapi.machines.start(machineId=VM1_id)
+        self.api.cloudapi.machines.start(machineId=VM1_id)
         self.assertEqual(self.api.cloudapi.machines.get(machineId=VM1_id)['status'], 'RUNNING')
+        response = self.execute_cmd_on_vm(VM1_id, 'ls /', wait_vm_ip=False)
+        self.assertIn('bin', response)
 
         self.lg('%s ENDED' % self._testID)
 

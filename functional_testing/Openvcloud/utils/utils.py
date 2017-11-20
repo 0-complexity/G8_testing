@@ -8,6 +8,7 @@ import netaddr
 import signal
 from nose.tools import TimeExpired
 from testconfig import config
+import random
 SESSION_DATA = {'vms': []}
 
 
@@ -346,10 +347,11 @@ class BaseTest(unittest.TestCase):
         return machine
 
     def add_portforwarding(self, machine_id, api='', cloudspace_id='', cs_publicip='', cs_publicport=444, vm_port=22,
-                           protocol='tcp'):
+                           protocol='tcp', wait_vm_ip=True):
         api = api or self.api
         # wait until machine takes an ip
-        time.sleep(60)
+        if wait_vm_ip:
+            time.sleep(60)
 
         cloudspace_id = cloudspace_id or self.cloudspace_id
         cloudspace = self.api.cloudapi.cloudspaces.get(cloudspaceId=cloudspace_id)
@@ -391,9 +393,32 @@ class BaseTest(unittest.TestCase):
             stackId = self.get_running_stackId()
             gid = self.get_node_gid(stackId)
         disk_id = self.api.cloudapi.disks.create(accountId=account_id, gid=gid,
-                                                 name=str(uuid.uuid4())[0:8],
+                                                 name=str(uuid.uuid4())[0:8], description='test',
                                                  size=size, type=disk_type)
         return disk_id
+
+    def execute_cmd_on_vm(self, vm_id, cmd, wait_vm_ip=True):
+        vm = self.api.cloudapi.machines.get(machineId=vm_id)
+        cloudspace_publicip = self.api.cloudapi.cloudspaces.get(cloudspaceId=vm['cloudspaceid'])['publicipaddress']
+        password = vm['accounts'][0]['password']
+        login = vm['accounts'][0]['login']
+        pfs = self.api.cloudapi.portforwarding.list(cloudspaceId=vm['cloudspaceid'], machineId=vm_id)
+        cloudspace_publicports = [pf['publicPort'] for pf in pfs if pf['localPort'] == '22']
+        if cloudspace_publicports:
+            cloudspace_publicport = cloudspace_publicports[0]
+        else:
+            for i in range(5):
+                cloudspace_publicport = random.randint(7000, 9999)
+                try:
+                    self.add_portforwarding(vm_id, cloudspace_id=vm['cloudspaceid'], cs_publicip=cloudspace_publicip,
+                                            cs_publicport=cloudspace_publicport, wait_vm_ip=wait_vm_ip)
+                    break
+                except:
+                    pass
+        connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)
+        connection.fabric.state.output["running"] = False
+        connection.fabric.state.output["stdout"] = False
+        return connection.run(cmd)
 
     def get_running_stackId(self):
         ccl = j.clients.osis.getNamespace('cloudbroker')
