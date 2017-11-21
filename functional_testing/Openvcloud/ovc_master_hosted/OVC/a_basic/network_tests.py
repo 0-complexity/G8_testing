@@ -52,15 +52,15 @@ class NetworkBasicTests(BasicACLTest):
         self.api.cloudbroker.account.delete(accountId=self.account_id, reason='testing')
 
         self.lg('5- Check the release network ID are in the free network IDs list')
-        lcl = j.clients.osis.getNamespace('libcloud')
+        lcl = j.clients.osis.getNamespace('libvirt')
         for csNumbers in range(0, 3):
             for timeDelay in range(0, 10):
-                released_network_Id = lcl.libvirtdomain.get('networkids_%s' % j.application.whoAmI.gid)
-                if str(cloud_space_networkId[csNumbers]) not in released_network_Id:
+                released_network_Id = lcl.networkids.get(j.application.whoAmI.gid).networkids
+                if cloud_space_networkId[csNumbers] not in released_network_Id:
                     time.sleep(1)
                 else:
                     break
-            self.assertTrue(str(cloud_space_networkId[csNumbers]) in released_network_Id)
+            self.assertTrue(cloud_space_networkId[csNumbers] in released_network_Id)
         self.lg('%s ENDED' % self._testID)
 
     def test002_clean_ovs_bridge(self):
@@ -230,7 +230,9 @@ class NetworkBasicTests(BasicACLTest):
 
         self.lg('3- get another nodeId to move the virtual firewall to')
         other_nodeId = self.get_nodeId_to_move_VFW_to(nodeId)
-        self.assertNotEqual(other_nodeId, -1, msg="No active node to move the VFW to")
+        
+        if not other_nodeId:
+            self.skipTest('No active node to move the VFW to')
 
         self.lg('4- move virtual firewall to another node')
         self.api.cloudbroker.cloudspace.moveVirtualFirewallToFirewallNode(cloudspaceId=self.cloudspace_id,
