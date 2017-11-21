@@ -53,7 +53,7 @@ class MachineTests(BasicACLTest):
         machine_1_ipaddress = machine_1_info['interfaces'][0]['ipAddress']
 
         machine_3_info = self.api.cloudapi.machines.get(machineId=machine_3_id)
-        machine_3_ipaddress = machine_1_info['interfaces'][0]['ipAddress']
+        machine_3_ipaddress = machine_3_info['interfaces'][0]['ipAddress']
 
         self.lg('From VM2 ping VM3, should succeed')
         cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
