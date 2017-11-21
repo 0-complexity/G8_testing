@@ -30,8 +30,8 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
     elif [[ ${action} == "test" ]]; then
 
-        echo "[+] Executing testsuite from path : ${testsuite-title}"
-        cmd="export PYTHONPATH=${python_path}; cd ${testsuite_repo_path}/${testsuite-home-dir}; nosetests -s -v ${testsuite-run-dir} --tc-file config.ini --tc=main.environment:${environment}"
+        echo "[+] Executing testsuite from path : ${testsuite_title}"
+        cmd="export PYTHONPATH=${python_path}; cd ${testsuite_repo_path}/${testsuite_home_dir}; nosetests -s -v ${testsuite_run_dir} --tc-file config.ini --tc=main.environment:${environment}"
         sshpass -p ${ctrl_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_user}@${ctrl_ipaddress} "${cmd}"
 
     elif [[ ${action} == "after" ]]; then

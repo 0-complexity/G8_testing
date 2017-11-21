@@ -5,15 +5,15 @@ jobs:
   include:
   - python: "2.7"
     env: 
-    - testsuite-title=ACL
-    - testsuite-home-dir=G8_testing/functional_testing/Openvcloud
-    - testsuite-run-dir=${acl_testsuite_dir}
+    - testsuite_title=ACL
+    - testsuite_home_dir=G8_testing/functional_testing/Openvcloud
+    - testsuite_run_dir=${acl_testsuite_dir}
 
   - python: "2.7"
     env:
-    - testsuite-title=OVC 
-    - testsuite-home-dir=G8_testing/functional_testing/Openvcloud
-    - testsuite-run-dir=${ovc_testsuite_dir}
+    - testsuite_title=OVC 
+    - testsuite_home_dir=G8_testing/functional_testing/Openvcloud
+    - testsuite_run_dir=${ovc_testsuite_dir}
 
 install:
   - sudo apt install git
