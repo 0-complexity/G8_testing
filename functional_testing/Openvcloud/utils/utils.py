@@ -407,7 +407,7 @@ class BaseTest(unittest.TestCase):
                                                  size=size, type=disk_type)
         return disk_id
 
-    def execute_cmd_on_vm(self, vm_id, cmd, wait_vm_ip=True, password=None, login=login):
+    def execute_cmd_on_vm(self, vm_id, cmd, wait_vm_ip=True, password=None, login=None):
         vm = self.api.cloudapi.machines.get(machineId=vm_id)
         cloudspace_publicip = self.api.cloudapi.cloudspaces.get(cloudspaceId=vm['cloudspaceid'])['publicipaddress']
         password = password or vm['accounts'][0]['password']

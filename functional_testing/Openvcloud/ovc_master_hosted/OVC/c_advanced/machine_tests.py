@@ -221,11 +221,8 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-
-
-    @unittest.skip('Not Implemented')
     def test008_swap_vms_boot_disks(self):
-        """ OVC-000
+        """ OVC-035
         * Test case for swapping vms boot disks.
 
         **Test Scenario:**
