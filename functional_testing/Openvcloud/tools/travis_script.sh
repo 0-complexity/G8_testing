@@ -2,7 +2,7 @@ action=$1
 
 if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
-    testsuite_repo_path="/tmp/travic-buid-${TRAVIS_BUILD_NUMBER}-${TRAVIS_JOB_NUMBER}"
+    testsuite_repo_path="/tmp/travis.buid.${TRAVIS_JOB_NUMBER}"
     python_path="export PYTHONPATH=/opt/jumpscale7/lib:/opt/jumpscale7/lib/lib-dynload/:/opt/jumpscale7/bin:/opt/jumpscale7/lib/python.zip:/opt/jumpscale7/lib/plat-x86_64-linux-gnu"
 
     if [[ ${action} == "before" ]]; then
@@ -30,7 +30,7 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
     elif [[ ${action} == "test" ]]; then
 
-        echo "[+] Executing testsuite from path : ${testsuite_title}"
+        echo "[+] Executing testsuite : ${testsuite_title}"
         cmd="export PYTHONPATH=${python_path}; cd ${testsuite_repo_path}/${testsuite_home_dir}; nosetests -s -v ${testsuite_run_dir} --tc-file config.ini --tc=main.environment:${environment}"
         sshpass -p ${ctrl_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_user}@${ctrl_ipaddress} "${cmd}"
 
