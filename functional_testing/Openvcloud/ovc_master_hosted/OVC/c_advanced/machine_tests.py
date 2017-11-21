@@ -11,21 +11,60 @@ class MachineTests(BasicACLTest):
         super(MachineTests, self).setUp()
         self.default_setup()
 
-    @unittest.skip('Not Implemented')
     def test001_check_machines_networking(self):
         """ OVC-000
         *Test case for checking machines networking*
 
         **Test Scenario:**
 
-        #. Create cloudspace CS1, should succeed
-        #. Create cloudspace CS2, should succeed
-        #. Create VM1 in CS1
-        #. From VM1 ping google, should succeed
-        #. Create VM2 and VM3 in CS2
-        #. From VM2 ping VM3, should succeed
-        #. From VM2 ping VM1, should fail
+        #. Create cloudspace CS1, should succeed.
+        #. Create cloudspace CS2, should succeed.
+        #. Create VM1 in cloudspace CS1.
+        #. From VM1 ping google, should succeed.
+        #. Create VM2 and VM3 in cloudspace CS2.
+        #. From VM2 ping VM3, should succeed.
+        #. From VM2 ping VM1, should fail.
         """
+        self.lg('Create cloudspace CS1, should succeed')
+        cloudspace_1_id = self.cloudspace_id
+
+        self.lg('Create cloudspace CS2, should succeed')
+        cloudspace_2_id = self.cloudapi_cloudspace_create(
+            self.account_id,
+            self.location, 
+            self.account_owner
+        )
+
+        self.lg('Create VM1 in cloudspace CS1')
+        machine_1_id = self.cloudapi_create_machine(cloudspaceId=cloudspace_1_id)
+
+        self.lg('From VM1 ping google, should succeed')
+        cmd = 'ping -w3 8.8.8.8'
+        response = self.execute_cmd_on_vm(machine_1_id, cmd=cmd, wait_vm_ip=True)
+        self.assertIn('3 packets transmitted, 3 received, 0% packet loss', response)
+
+        self.lg('Create VM2 in cloudspace CS2')
+        machine_2_id = self.cloudapi_create_machine(cloudspaceId=cloudspace_2_id)
+
+        self.lg('Create VM3 in cloudspace CS2')
+        machine_3_id = self.cloudapi_create_machine(cloudspaceId=cloudspace_2_id)
+
+        machine_1_info = self.api.cloudapi.machines.get(machineId=machine_1_id)
+        machine_1_ipaddress = machine_1_info['interfaces'][0]['ipAddress']
+
+        machine_3_info = self.api.cloudapi.machines.get(machineId=machine_3_id)
+        machine_3_ipaddress = machine_1_info['interfaces'][0]['ipAddress']
+
+        self.lg('From VM2 ping VM3, should succeed')
+        cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
+        response = self.execute_cmd_on_vm(machine_1_id, cmd=cmd, wait_vm_ip=False)
+        self.assertIn('3 packets transmitted, 3 received, 0% packet loss', response)
+
+        self.lg('From VM2 ping VM1, should fail')
+        cmd = 'ping -w3 {}'.format(machine_1_ipaddress)
+        response = self.execute_cmd_on_vm(machine_1_id, cmd=cmd, wait_vm_ip=False)
+        self.assertIn('3 packets transmitted, 0 received, 100% packet loss', response)
+
 
     @unittest.skip('Not Implemented')
     def test002_check_network_data_integrity(self):
