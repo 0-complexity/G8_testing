@@ -407,17 +407,17 @@ class BaseTest(unittest.TestCase):
                                                  size=size, type=disk_type)
         return disk_id
 
-    def execute_cmd_on_vm(self, vm_id, cmd, wait_vm_ip=True):
+    def execute_cmd_on_vm(self, vm_id, cmd, wait_vm_ip=True, password=None, login=login):
         vm = self.api.cloudapi.machines.get(machineId=vm_id)
         cloudspace_publicip = self.api.cloudapi.cloudspaces.get(cloudspaceId=vm['cloudspaceid'])['publicipaddress']
-        password = vm['accounts'][0]['password']
-        login = vm['accounts'][0]['login']
+        password = password or vm['accounts'][0]['password']
+        login = login or vm['accounts'][0]['login']
         pfs = self.api.cloudapi.portforwarding.list(cloudspaceId=vm['cloudspaceid'], machineId=vm_id)
         cloudspace_publicports = [pf['publicPort'] for pf in pfs if pf['localPort'] == '22']
         if cloudspace_publicports:
             cloudspace_publicport = cloudspace_publicports[0]
         else:
-            cloudspace_publicport = random.randint(70000, 99999)
+            cloudspace_publicport = random.randint(50000, 65000)
             self.add_portforwarding(vm_id, cloudspace_id=vm['cloudspaceid'], cs_publicip=cloudspace_publicip,
                                     cs_publicport=cloudspace_publicport, wait_vm_ip=wait_vm_ip)
         connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)
