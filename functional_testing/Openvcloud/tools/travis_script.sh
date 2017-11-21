@@ -7,10 +7,6 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
     if [[ ${action} == "before" ]]; then
 
-        echo "[+] Installing travis machine requirements"
-        sudo apt install git sshpass -y
-        curl -s https://install.zerotier.com/ | sudo bash
-
         echo "[+] Joining zerotier network : ${zerotier_network}"
         sudo zerotier-cli join ${zerotier_network}; sleep 10
 

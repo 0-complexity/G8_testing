@@ -16,7 +16,8 @@ jobs:
     - testsuite_run_dir=${ovc_testsuite_dir}
 
 install:
-  - sudo apt install git
+  - sudo apt install git sshpass -y
+  - curl -s https://install.zerotier.com/ | sudo bash
 
 script: bash functional_testing/Openvcloud/tools/travis_script.sh test
 before_script: bash functional_testing/Openvcloud/tools/travis_script.sh before
