@@ -9,6 +9,8 @@ import signal
 from nose.tools import TimeExpired
 from testconfig import config
 import random
+import imaplib
+
 SESSION_DATA = {'vms': []}
 
 
@@ -46,6 +48,8 @@ class BaseTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         self.api = API()
         self.environment = config['main']['environment']
+        self.test_email = config['main']['email']
+        self.email_password = config['main']['email_password']
         super(BaseTest, self).__init__(*args, **kwargs)
 
     def setUp(self):
@@ -88,19 +92,19 @@ class BaseTest(unittest.TestCase):
         self.user = self.cloudbroker_user_create()
         self.user_api = self.get_authenticated_user_api(self.user)
 
-    def cloudapi_cloudspace_create(self, account_id, location, access, api=None, name='', 
+    def cloudapi_cloudspace_create(self, account_id, location, access, api=None, name='',
                                    maxMemoryCapacity=-1, maxDiskCapacity=-1,
                                    maxCPUCapacity=-1, maxNumPublicIP=-1, allowedVMSizes=None):
         api = api or self.api
         name = name or str(uuid.uuid4()).replace('-', '')[0:10]
         cloudspaceId = api.cloudapi.cloudspaces.create(
-            accountId=account_id, 
-            location=location, 
+            accountId=account_id,
+            location=location,
             access=access,
             name=name,
-            maxMemoryCapacity=maxMemoryCapacity, 
+            maxMemoryCapacity=maxMemoryCapacity,
             maxVDiskCapacity=maxDiskCapacity,
-            maxCPUCapacity=maxCPUCapacity, 
+            maxCPUCapacity=maxCPUCapacity,
             maxNumPublicIP=maxNumPublicIP,
             allowedVMSizes=allowedVMSizes
         )
@@ -444,6 +448,16 @@ class BaseTest(unittest.TestCase):
         stackID = machine.stackId
         nodeID = ccl.stack.get(stackID).referenceId
         return nodeID
+
+    def get_email_data(self, Email, password):
+        mail = imaplib.IMAP4_SSL('imap.gmail.com')
+        mail.login(Email, password)
+        mail.select()
+        result, data = mail.search(None, 'ALL')
+        latest_email_id = data[0].split()[-1]
+        result, email_data = mail.fetch(latest_email_id, '(UID BODY[TEXT])')
+        raw_email = email_data[0][1]
+        return raw_email
 
     def get_nodeId_to_move_VFW_to(self, current_VFW_nodeId):
         scl = j.clients.osis.getNamespace('system')

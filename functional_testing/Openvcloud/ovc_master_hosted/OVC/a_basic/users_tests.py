@@ -20,7 +20,7 @@ class UsersBasicTests(BasicACLTest):
         **Test Scenario:**
 
         #. Create user (U1) with admin access.
-        #. Authenticate U1 with POST /cloudapi/users/authenticate API,should return session key[user1_key] .
+        #. Authenticate U1,should return session key[user1_key] .
         #. Use U1's key to list the accounts for U1, should succeed.
         #. Use U1's key to update U1's password, should succeed.
         #. Check that user1's password has been reset successfully.
@@ -29,27 +29,30 @@ class UsersBasicTests(BasicACLTest):
         """
         self.lg('%s STARTED' % self._testID)
 
-        self.lg('- create user1 with admin access ')
+        self.lg('- Create user1 with admin access ')
         old_password = str(uuid.uuid4()).replace('-', '')[0:10]
-        user1 = self.cloudbroker_user_create(group='admin', password=old_password )
+        user1 = self.cloudbroker_user_create(group='admin', password=old_password)
 
-        self.lg("- Authenticate U1 with POST /cloudapi/users/authenticate API,should return session key[user1_key] .")
-        user1_key = self.get_authenticated_user_api(username=user1,password=old_password)
+        self.lg("- Authenticate U1 ,should return session key[user1_key] .")
+        user1_key = self.get_authenticated_user_api(username=user1, password=old_password)
         self.assertTrue(user1_key)
+
+        self.lg("-  Use U1's key to list the accounts for U1, should succeed.")
+        accounts_list = user1_key.cloudapi.accounts.list()
+        self.assertEqual(accounts_list, [])
 
         self.lg("- Use U1's key to update U1's password, should succeed.")
         new_password = str(uuid.uuid4()).replace('-', '')[0:10]
-        response = user1_key.cloudapi.users.updatePassword(oldPassword=old_password,newPassword=new_password)
-        self.assertIn("Your password has been changed.",response)
+        response = user1_key.cloudapi.users.updatePassword(oldPassword=old_password, newPassword=new_password)
+        self.assertIn("Your password has been changed.", response)
 
-        self.lg("Check that user1's password has been reset successfully.")
-        user1_key = self.get_authenticated_user_api(username=user1,password=new_password)
+        self.lg("- Check that user1's password has been reset successfully.")
+        user1_key = self.get_authenticated_user_api(username=user1, password=new_password)
         self.assertTrue(user1_key)
+
         self.lg("- Use U1's key again to list the accounts for U1, should succeed.")
         accounts_list = user1_key.cloudapi.accounts.list()
-
-        self.lg('acountlist %s' % accounts_list)
-        self.assertEqual(accounts_list,[])
+        self.assertEqual(accounts_list, [])
 
     @unittest.skip("https://github.com/0-complexity/openvcloud/issues/952")
     def test002_get_user_info(self):
@@ -67,7 +70,7 @@ class UsersBasicTests(BasicACLTest):
         """
         self.lg('%s STARTED' % self._testID)
         self.lg('- Create user (U1) with admin access and Email ')
-        user1 = self.cloudbroker_user_create(group='admin' )
+        user1 = self.cloudbroker_user_create(group='admin')
         user1_email = "%s@example.com"%user1
 
         self.lg("- Authenticate U1 ,sould succeed .")
@@ -144,20 +147,17 @@ class UsersBasicTests(BasicACLTest):
         #. Check validation of received ResetPassword token with /cloudapi/users/getResetPasswordInformation API,should succeed.
         #. Use received  ResetPassword token to  reset password, should succeed.
         #. Check that password of user1 has been reset successfully.
-        
+
         """
-
-        user1_email = "iyo.test.api.email@gmail.com"
-        password = "vpnsewuwityrhtox"
-
         self.lg("Create user1 with Email (E1).")
+        user1_email = self.test_email
         user1_name = self.cloudbroker_user_create(email=user1_email)
 
         self.lg("Send ResetPasswordLink to E1 with cloudapi/users/sendResetPasswordLink API,should succeed.")
         response = self.api.cloudapi.users.sendResetPasswordLink(emailaddress=user1_email)
 
         self.assertIn("Reset password email send", response)
-        data = self.get_email_data(user1_email, password)
+        data = self.get_email_data(user1_email, self.email_password)
         password_token = (data.split("token="))[1].split('\r')[0]
 
         self.lg("Check validation of received ResetPassword token with /cloudapi/users/getResetPasswordInformation API,should succeed.")
@@ -183,28 +183,21 @@ class UsersBasicTests(BasicACLTest):
         #. Create User3 with same Email as User1 , should fail .
 
         """
-
         self.lg('- Create user1 with random name user1. ')
         user1_name = self.cloudbroker_user_create()
         user1_emailaddress = "%s@example.com"%user1_name
 
         self.lg("- Create User2 with same name as user1, should fail")
         user2_emailaddress = "%s@example.com"%(str(uuid.uuid4()).replace('-', '')[0:10])
-        try:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudbroker.user.create(username=user1_name, emailaddress=user2_emailaddress,
-                                                password=user1_name,groups=[])
-
-        except HTTPError as e:
-            self.lg('- expected error raised %s' % e.status_code)
+                                             password=user1_name, groups=[])
             self.assertEqual(e.status_code, 409)
 
         self.lg("Create User3 with same Email as User1 , should fail . ")
-
-        username3 = str(uuid.uuid4()).replace('-', '')[0:10]
-        try:
-            self.api.cloudbroker.user.create(username=username3, emailaddress=user1_emailaddress,
-                                               password=user1_name, groups=[])
-
-        except HTTPError as e:
+        user3_name = str(uuid.uuid4()).replace('-', '')[0:10]
+        with self.assertRaises(HTTPError) as e:
+            self.api.cloudbroker.user.create(username=user3_name, emailaddress=user1_emailaddress,
+                                             password=user3_name, groups=[])
             self.lg('- expected error raised %s' % e.status_code)
             self.assertEqual(e.status_code, 409)
