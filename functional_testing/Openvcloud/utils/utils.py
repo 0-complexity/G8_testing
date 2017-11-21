@@ -88,19 +88,19 @@ class BaseTest(unittest.TestCase):
         self.user = self.cloudbroker_user_create()
         self.user_api = self.get_authenticated_user_api(self.user)
 
-    def cloudapi_cloudspace_create(self, account_id, location, access, api=None, name='', 
+    def cloudapi_cloudspace_create(self, account_id, location, access, api=None, name='',
                                    maxMemoryCapacity=-1, maxDiskCapacity=-1,
                                    maxCPUCapacity=-1, maxNumPublicIP=-1, allowedVMSizes=None):
         api = api or self.api
         name = name or str(uuid.uuid4()).replace('-', '')[0:10]
         cloudspaceId = api.cloudapi.cloudspaces.create(
-            accountId=account_id, 
-            location=location, 
+            accountId=account_id,
+            location=location,
             access=access,
             name=name,
-            maxMemoryCapacity=maxMemoryCapacity, 
+            maxMemoryCapacity=maxMemoryCapacity,
             maxVDiskCapacity=maxDiskCapacity,
-            maxCPUCapacity=maxCPUCapacity, 
+            maxCPUCapacity=maxCPUCapacity,
             maxNumPublicIP=maxNumPublicIP,
             allowedVMSizes=allowedVMSizes
         )
@@ -413,7 +413,7 @@ class BaseTest(unittest.TestCase):
         if cloudspace_publicports:
             cloudspace_publicport = cloudspace_publicports[0]
         else:
-            cloudspace_publicport = random.randint(70000, 99999)
+            cloudspace_publicport = random.randint(50000, 65000)
             self.add_portforwarding(vm_id, cloudspace_id=vm['cloudspaceid'], cs_publicip=cloudspace_publicip,
                                     cs_publicport=cloudspace_publicport, wait_vm_ip=wait_vm_ip)
         connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)

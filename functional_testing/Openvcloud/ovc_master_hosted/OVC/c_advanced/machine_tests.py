@@ -234,10 +234,49 @@ class MachineTests(BasicACLTest):
         #. Stop VM1 and VM2, should succeed.
         #. Detach VM1's boot disk (BD1) and VM2's boot disk (BD2).
         #. Attach BD1 to VM2, should succeed.
-        #. Start VM2 and make sure it is working.
         #. Attach BD2 to VM1, should succeed.
-        #. Start VM1 and make sure it is working.
+        #. Start VM1 and VM2 and make sure they are working.
         """
+
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg('Create virtual machines (VM1) and (VM2)')
+        VM1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+        VM2_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+
+        self.lg('Stop VM1 and VM2, should succeed')
+        self.api.cloudapi.machines.stop(machineId=VM1_id)
+        self.assertEqual(self.api.cloudapi.machines.get(machineId=VM1_id)['status'], 'HALTED')
+        self.api.cloudapi.machines.stop(machineId=VM2_id)
+        self.assertEqual(self.api.cloudapi.machines.get(machineId=VM2_id)['status'], 'HALTED')
+
+        self.lg("Detach VM1's boot disk (BD1) and VM2's boot disk (BD2)")
+        bd1_id = self.api.cloudapi.machines.get(machineId=VM1_id)['disks'][0]['id']
+        bd2_id = self.api.cloudapi.machines.get(machineId=VM2_id)['disks'][0]['id']
+        response = self.api.cloudapi.machines.detachDisk(machineId=VM1_id, diskId=bd1_id)
+        self.assertTrue(response)
+        response = self.api.cloudapi.machines.detachDisk(machineId=VM1_id, diskId=bd2_id)
+        self.assertTrue(response)
+
+        self.lg('Attach BD1 to VM2, should succeed')
+        response = self.api.cloudapi.machines.attachDisk(machineId=VM2_id, diskId=bd1_id)
+        self.assertTrue(response)
+
+        self.lg('Attach BD2 to VM1, should succeed')
+        response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=bd2_id)
+        self.assertTrue(response)
+
+        self.lg('Start VM1 and VM2 and make sure they are working')
+        self.api.cloudapi.machines.start(machineId=VM1_id)
+        self.assertEqual(self.api.cloudapi.machines.get(machineId=VM1_id)['status'], 'RUNNING')
+        self.api.cloudapi.machines.start(machineId=VM2_id)
+        self.assertEqual(self.api.cloudapi.machines.get(machineId=VM2_id)['status'], 'RUNNING')
+        response = self.execute_cmd_on_vm(VM1_id, 'ls /', wait_vm_ip=True)
+        self.assertIn('bin', response)
+        response = self.execute_cmd_on_vm(VM2_id, 'ls /', wait_vm_ip=False)
+        self.assertIn('bin', response)
+
+        self.lg('%s ENDED' % self._testID)
 
     @unittest.skip('Not Implemented')
     def test009_connection_bet_VM_CS_ExternalNetwork(self):
