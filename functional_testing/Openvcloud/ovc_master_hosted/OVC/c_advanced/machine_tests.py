@@ -23,7 +23,7 @@ class MachineTests(BasicACLTest):
         #. From VM1 ping google, should succeed.
         #. Create VM2 and VM3 in cloudspace CS2.
         #. From VM2 ping VM3, should succeed.
-        #. From VM2 ping VM1, should fail.
+        #. From VM1 ping VM3, should fail.
         """
         self.lg('Create cloudspace CS1, should succeed')
         cloudspace_1_id = self.cloudspace_id
@@ -60,9 +60,9 @@ class MachineTests(BasicACLTest):
         response = self.execute_cmd_on_vm(machine_2_id, cmd=cmd, wait_vm_ip=True)
         self.assertIn(', 0% packet loss', response)
 
-        self.lg('From VM2 ping VM1, should fail')
-        cmd = 'ping -w3 {}'.format(machine_1_ipaddress)
-        response = self.execute_cmd_on_vm(machine_2_id, cmd=cmd, wait_vm_ip=True)
+        self.lg('From VM1 ping VM3, should fail')
+        cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
+        response = self.execute_cmd_on_vm(machine_1_id, cmd=cmd, wait_vm_ip=True)
         self.assertIn(', 100% packet loss', response)
 
 
