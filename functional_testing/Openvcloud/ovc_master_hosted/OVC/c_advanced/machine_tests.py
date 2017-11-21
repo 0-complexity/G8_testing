@@ -37,32 +37,32 @@ class MachineTests(BasicACLTest):
 
         self.lg('Create VM1 in cloudspace CS1')
         machine_1_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_1_id)
+        machine_1_ipaddress = self.wait_for_machine_to_get_ip(machine_1_id)
+        self.assertNotEqual(machine_1_ipaddress, 'Undefined')
 
         self.lg('From VM1 ping google, should succeed')
         cmd = 'ping -w3 8.8.8.8'
-        response = self.execute_cmd_on_vm(machine_1_id, cmd=cmd, wait_vm_ip=True)
+        response = self.execute_cmd_on_vm(machine_1_id, cmd=cmd, wait_vm_ip=False)
         self.assertIn(', 0% packet loss', response)
 
         self.lg('Create VM2 in cloudspace CS2')
         machine_2_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_2_id)
+        machine_2_ipaddress = self.wait_for_machine_to_get_ip(machine_2_id)
+        self.assertNotEqual(machine_2_ipaddress, 'Undefined')
 
         self.lg('Create VM3 in cloudspace CS2')
         machine_3_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_2_id)
-
-        machine_1_info = self.api.cloudapi.machines.get(machineId=machine_1_id)
-        machine_1_ipaddress = machine_1_info['interfaces'][0]['ipAddress']
-
-        machine_3_info = self.api.cloudapi.machines.get(machineId=machine_3_id)
-        machine_3_ipaddress = machine_3_info['interfaces'][0]['ipAddress']
+        machine_3_ipaddress = self.wait_for_machine_to_get_ip(machine_3_id)
+        self.assertNotEqual(machine_3_ipaddress, 'Undefined')
 
         self.lg('From VM2 ping VM3, should succeed')
         cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
-        response = self.execute_cmd_on_vm(machine_2_id, cmd=cmd, wait_vm_ip=True)
+        response = self.execute_cmd_on_vm(machine_2_id, cmd=cmd, wait_vm_ip=False)
         self.assertIn(', 0% packet loss', response)
 
         self.lg('From VM1 ping VM3, should fail')
         cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
-        response = self.execute_cmd_on_vm(machine_1_id, cmd=cmd, wait_vm_ip=True)
+        response = self.execute_cmd_on_vm(machine_1_id, cmd=cmd, wait_vm_ip=False)
         self.assertIn(', 100% packet loss', response)
 
 
