@@ -273,7 +273,8 @@ class MachineTests(BasicACLTest):
         self.assertEqual(self.api.cloudapi.machines.get(machineId=VM2_id)['status'], 'RUNNING')
         vm2 = self.api.cloudapi.machines.get(machineId=VM2_id)
         password = vm2['accounts'][0]['password']
-        response = self.execute_cmd_on_vm(VM1_id, 'ls /', wait_vm_ip=True, password=password)
+        login = vm2['accounts'][0]['login']
+        response = self.execute_cmd_on_vm(VM1_id, 'ls /', wait_vm_ip=True, password=password, login=login)
         self.assertIn('bin', response)
 
         self.lg('%s ENDED' % self._testID)
