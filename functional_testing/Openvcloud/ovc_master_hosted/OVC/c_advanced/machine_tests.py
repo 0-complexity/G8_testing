@@ -1,4 +1,4 @@
-import unittest, random
+import unittest, random, uuid
 from ....utils.utils import BasicACLTest
 from nose_parameterized import parameterized
 from JumpScale.portal.portal.PortalClient2 import ApiError
@@ -27,19 +27,37 @@ class MachineTests(BasicACLTest):
         #. From VM2 ping VM1, should fail
         """
 
-    @unittest.skip('Not Implemented')
     def test002_check_network_data_integrity(self):
-        """ OVC-000
+        """ OVC-036
         *Test case for checking network data integrity through VMS*
-
         **Test Scenario:**
-
-        #. Create a cloudspace CS1, should succeed
-        #. Create VM1 and VM2 inside CS1, should succeed
-        #. create a file F1 inside VM1
-        #. From VM1 send F1 to VM2, should succeed
-        #. Check that F1 has been sent to vm2 without data loss
+        #. Create a cloudspace CS1, should succeed.
+        #. Create VM1 and VM2 inside CS1, should succeed.
+        #. Create a file F1 inside VM1.
+        #. From VM1 send F1 to VM2, should succeed.
+        #. Check that F1 has been sent to vm2 without data loss.
         """
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg('Create a cloudspace CS1, should succeed')
+        self.lg('Create VM1 and VM2 inside CS1, should succeed')
+        VM1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+        VM2_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+
+        self.lg('create a file F1 inside VM1')
+        vm1_conn = self.get_vm_connection(VM1_id)
+        text = str(uuid.uuid4())[0:8]
+        vm1_conn.run('echo %s >> /test.txt' % text)
+
+        self.lg('From VM1 send F1 to VM2, should succeed')
+        self.send_file_from_vm_to_another(vm1_conn, VM2_id, '/test.txt')
+
+        self.lg('Check that F1 has been sent to vm2 without data loss')
+        vm2_conn = self.get_vm_connection(VM2_id)
+        response = vm2_conn.run('cat /test.txt')
+        self.assertEqual(response, text)
+
+        self.lg('%s ENDED' % self._testID)
 
     @unittest.skip('Not Implemented')
     def test003_check_connectivity_through_external_network(self):
@@ -216,8 +234,8 @@ class MachineTests(BasicACLTest):
         self.lg('Start VM1 and make sure it is running.')
         self.api.cloudapi.machines.start(machineId=VM1_id)
         self.assertEqual(self.api.cloudapi.machines.get(machineId=VM1_id)['status'], 'RUNNING')
-        response = self.execute_cmd_on_vm(VM1_id, 'ls /', wait_vm_ip=False)
-        self.assertIn('bin', response)
+        vm1_conn = self.get_vm_connection(VM1_id, wait_vm_ip=False)
+        self.assertIn('bin', vm1_conn.run('ls /'))
 
         self.lg('%s ENDED' % self._testID)
 
@@ -271,8 +289,8 @@ class MachineTests(BasicACLTest):
         vm2 = self.api.cloudapi.machines.get(machineId=VM2_id)
         password = vm2['accounts'][0]['password']
         login = vm2['accounts'][0]['login']
-        response = self.execute_cmd_on_vm(VM1_id, 'ls /', wait_vm_ip=True, password=password, login=login)
-        self.assertIn('bin', response)
+        vm1_conn = self.get_vm_connection(VM1_id, wait_vm_ip=True, password=password, login=login)
+        self.assertIn('bin', vm1_conn.run('ls /'))
 
         self.lg('%s ENDED' % self._testID)
 
