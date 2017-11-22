@@ -422,7 +422,7 @@ class BaseTest(unittest.TestCase):
         vm2_ip = vm2['interfaces'][0]['ipAddress']
         vm1_conn.apt_get('install sshpass')
         vm1_conn.run('sshpass -p%s scp -o \'StrictHostKeyChecking=no\' %s  %s@%s:'
-                    %(account2['password'], file_loc, account2['login'], vm2_ip))
+                     %(account2['password'], file_loc, account2['login'], vm2_ip))
 
     def get_vm_connection(self, vm_id, wait_vm_ip=True, password=None, login=None):
         vm = self.api.cloudapi.machines.get(machineId=vm_id)
@@ -436,14 +436,16 @@ class BaseTest(unittest.TestCase):
         connection.fabric.state.output["stdout"] = False
         return connection
 
-    def get_running_stackId(self):
+    def get_running_stackId(self, except_stackid=''):
         ccl = j.clients.osis.getNamespace('cloudbroker')
         scl = j.clients.osis.getNamespace('system')
         stacks_list = ccl.stack.list()
+        if except_stackid:
+            stacks_list.remove(except_stackid)
         for stackId in stacks_list:
             nodeId = ccl.stack.get(stackId).referenceId
             node = scl.node.get(int(nodeId))
-            if node.active == True:
+            if node.active:
                 return stackId
         return -1
 
