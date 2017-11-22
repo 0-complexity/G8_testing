@@ -436,12 +436,12 @@ class BaseTest(unittest.TestCase):
         connection.fabric.state.output["stdout"] = False
         return connection
 
-    def get_running_stackId(self, current_stackId=''):
+    def get_running_stackId(self, except_stackid=''):
         ccl = j.clients.osis.getNamespace('cloudbroker')
         scl = j.clients.osis.getNamespace('system')
         stacks_list = ccl.stack.list()
-        if current_stackId:
-            stacks_list.remove(current_stackId)
+        if except_stackid:
+            stacks_list.remove(except_stackid)
         for stackId in stacks_list:
             nodeId = ccl.stack.get(stackId).referenceId
             node = scl.node.get(int(nodeId))

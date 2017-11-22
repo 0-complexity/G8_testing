@@ -325,7 +325,7 @@ class MachineTests(BasicACLTest):
         """
 
     def test011_restart_vm_after_migration(self):
-        """ OVC_036
+        """ OVC_037
         *Test case for checking VM status after restarting it after migration*
 
         **Test Scenario:**
