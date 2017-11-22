@@ -411,7 +411,7 @@ class BaseTest(unittest.TestCase):
         if vm_cs_publicports:
             vm_cs_publicport = vm_cs_publicports[0]
         else:
-            vm = random.randint(50000, 65000)
+            vm_cs_publicport = random.randint(50000, 65000)
             self.add_portforwarding(vm_id, cloudspace_id=vm['cloudspaceid'], cs_publicip=vm_cs_publicports,
                                     cs_publicport=vm_cs_publicport, wait_vm_ip=wait_vm_ip)
         return vm_cs_publicport

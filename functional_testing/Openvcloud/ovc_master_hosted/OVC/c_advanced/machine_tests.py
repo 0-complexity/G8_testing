@@ -47,14 +47,14 @@ class MachineTests(BasicACLTest):
         self.lg('create a file F1 inside VM1')
         vm1_conn = self.get_vm_connection(VM1_id)
         text = str(uuid.uuid4())[0:8]
-        vm1_conn.run('echo %s >> /test.txt' % text)
+        vm1_conn.run('echo %s >> test.txt' % text)
 
         self.lg('From VM1 send F1 to VM2, should succeed')
-        self.send_file_from_vm_to_another(vm1_conn, VM2_id, '/test.txt')
+        self.send_file_from_vm_to_another(vm1_conn, VM2_id, 'test.txt')
 
         self.lg('Check that F1 has been sent to vm2 without data loss')
         vm2_conn = self.get_vm_connection(VM2_id)
-        response = vm2_conn.run('cat /test.txt')
+        response = vm2_conn.run('cat test.txt')
         self.assertEqual(response, text)
 
         self.lg('%s ENDED' % self._testID)
