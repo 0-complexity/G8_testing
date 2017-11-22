@@ -183,7 +183,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/935 & 937')
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/969 & 937')
     def test007_detach_boot_from_running_machine(self):
         """ OVC-025
         * Test case for detaching boot disk from a running machine.
