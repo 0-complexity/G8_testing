@@ -1,17 +1,24 @@
-matrix:
+language: python
+sudo: true
+dist: trusty
+jobs:
   include:
-    - language: python
-      sudo: true
-      dist: trusty
-      python: 2.7
-      install:
-        - sudo apt update
-        - sudo apt install git
-        - sudo apt install sshpass 
-        - curl -s https://install.zerotier.com/ | sudo bash
-      before_script:
-        - bash functional_testing/Openvcloud/tools/travis_script.sh before
-      script:
-        - bash functional_testing/Openvcloud/tools/travis_script.sh test
-      after_script:
-        - bash functional_testing/Openvcloud/tools/travis_script.sh after
+  - python: "2.7"
+    env: 
+    - testsuite_title=ACL
+    - testsuite_home_dir=G8_testing/functional_testing/Openvcloud
+    - testsuite_run_dir=${acl_testsuite_dir}
+
+  - python: "2.7"
+    env:
+    - testsuite_title=OVC 
+    - testsuite_home_dir=G8_testing/functional_testing/Openvcloud
+    - testsuite_run_dir=${ovc_testsuite_dir}
+
+install:
+  - sudo apt install git sshpass -y
+  - curl -s https://install.zerotier.com/ | sudo bash
+
+script: bash functional_testing/Openvcloud/tools/travis_script.sh test
+before_script: bash functional_testing/Openvcloud/tools/travis_script.sh before
+after_script: bash functional_testing/Openvcloud/tools/travis_script.sh after
