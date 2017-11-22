@@ -404,23 +404,37 @@ class BaseTest(unittest.TestCase):
                                                  size=size, type=disk_type)
         return disk_id
 
-    def execute_cmd_on_vm(self, vm_id, cmd, wait_vm_ip=True, password=None, login=None):
+    def get_vm_ssh_publicport(self, vm_id, wait_vm_ip=True):
+        vm = self.api.cloudapi.machines.get(machineId=vm_id)
+        pfs = self.api.cloudapi.portforwarding.list(cloudspaceId=vm['cloudspaceid'], machineId=vm_id)
+        vm_cs_publicports = [pf['publicPort'] for pf in pfs if pf['localPort'] == '22']
+        if vm_cs_publicports:
+            vm_cs_publicport = vm_cs_publicports[0]
+        else:
+            vm_cs_publicport = random.randint(50000, 65000)
+            self.add_portforwarding(vm_id, cloudspace_id=vm['cloudspaceid'], cs_publicip=vm_cs_publicports,
+                                    cs_publicport=vm_cs_publicport, wait_vm_ip=wait_vm_ip)
+        return vm_cs_publicport
+
+    def send_file_from_vm_to_another(self, vm1_conn, vm2_id, file_loc):
+        vm2 = self.api.cloudapi.machines.get(machineId=vm2_id)
+        account2 = vm2['accounts'][0]
+        vm2_ip = vm2['interfaces'][0]['ipAddress']
+        vm1_conn.apt_get('install sshpass')
+        vm1_conn.run('sshpass -p%s scp -o \'StrictHostKeyChecking=no\' %s  %s@%s:'
+                    %(account2['password'], file_loc, account2['login'], vm2_ip))
+
+    def get_vm_connection(self, vm_id, wait_vm_ip=True, password=None, login=None):
         vm = self.api.cloudapi.machines.get(machineId=vm_id)
         cloudspace_publicip = self.api.cloudapi.cloudspaces.get(cloudspaceId=vm['cloudspaceid'])['publicipaddress']
         password = password or vm['accounts'][0]['password']
         login = login or vm['accounts'][0]['login']
-        pfs = self.api.cloudapi.portforwarding.list(cloudspaceId=vm['cloudspaceid'], machineId=vm_id)
-        cloudspace_publicports = [pf['publicPort'] for pf in pfs if pf['localPort'] == '22']
-        if cloudspace_publicports:
-            cloudspace_publicport = cloudspace_publicports[0]
-        else:
-            cloudspace_publicport = random.randint(50000, 65000)
-            self.add_portforwarding(vm_id, cloudspace_id=vm['cloudspaceid'], cs_publicip=cloudspace_publicip,
-                                    cs_publicport=cloudspace_publicport, wait_vm_ip=wait_vm_ip)
+        cloudspace_publicport = self.get_vm_ssh_publicport(vm_id, wait_vm_ip=wait_vm_ip)
         connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)
+        connection.user(vm['accounts'][0]['login'])
         connection.fabric.state.output["running"] = False
         connection.fabric.state.output["stdout"] = False
-        return connection.run(cmd)
+        return connection
 
     def get_running_stackId(self):
         ccl = j.clients.osis.getNamespace('cloudbroker')
