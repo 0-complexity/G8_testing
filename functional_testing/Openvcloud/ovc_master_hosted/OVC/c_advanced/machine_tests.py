@@ -324,15 +324,14 @@ class MachineTests(BasicACLTest):
         #. Enable the node back, should succeed.
         """
 
-    #@unittest.skip('Not Implemented')
     def test011_restart_vm_after_migration(self):
-        """ OVC-000
+        """ OVC_036
         *Test case for checking VM status after restarting it after migration*
 
         **Test Scenario:**
 
         #. Create a cloudspace CS1, should succeed.
-        #. Create VM1.
+        #. Create VM1,should succeed.
         #. Migrate VM1 to another node, should succeed.
         #. Make sure that VM1 is running.
         #. Restart VM1 and make sure it is still running.
@@ -346,7 +345,7 @@ class MachineTests(BasicACLTest):
 
         self.assertTrue(cs1_id)
 
-        self.lg("Create VM1.")
+        self.lg("Create VM1,should succeed.")
         vm1_id = self.cloudapi_create_machine(cloudspace_id=cs1_id)
         self.assertTrue(vm1_id)
         current_stackId = self.api.cloudbroker.machine.get(machineId = vm1_id)["stackId"]
@@ -361,7 +360,7 @@ class MachineTests(BasicACLTest):
 
         self.lg("Make sure that VM1 is running.")
         self.assertEqual(self.api.cloudapi.machines.get(machineId=vm1_id)['status'], 'RUNNING')
-        vm1_conn = self.get_vm_connection(vm1_id, wait_vm_ip=False)
+        vm1_conn = self.get_vm_connection(vm1_id)
         self.assertIn('bin', vm1_conn.run('ls /'))
 
         self.lg("Restart VM1 and make sure it is still running.")
@@ -369,9 +368,6 @@ class MachineTests(BasicACLTest):
         time.sleep(2)
         self.assertEqual(self.api.cloudapi.machines.get(machineId=vm1_id)['status'],
                                                         'RUNNING')
-        vm1_conn = self.get_vm_connection(vm1_id, wait_vm_ip=False)
-        self.assertIn('bin', vm1_conn.run('ls /'))
-
         self.lg('%s ENDED' % self._testID)
 
     @unittest.skip('Not Implemented')
