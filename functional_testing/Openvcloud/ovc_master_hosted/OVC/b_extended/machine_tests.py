@@ -40,8 +40,13 @@ class ExtendedTests(BasicACLTest):
             if size['memory'] not in random_sizes:
                 continue
             self.lg('- using image [%s] with memory size [%s]' % (image_name, size['memory']))
-            disk_sizes=[10,20,50,100,250,500,1000,2000]
-            random_disks= random.sample(disk_sizes,3)
+
+            if len(size['disks']) < 3:
+                sample = len(size['disks'])
+            else:
+                sample = 3
+
+            random_disks= random.sample(size['disks'], sample)
 
             for disk in random_disks:
                 self.lg('- using image [%s] with memory size [%s] with disk '
