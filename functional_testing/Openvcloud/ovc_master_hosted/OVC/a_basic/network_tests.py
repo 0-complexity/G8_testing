@@ -132,15 +132,16 @@ class NetworkBasicTests(BasicACLTest):
         '''
 
         self.lg('%s STARTED' % self._testID)
-   
+
         self.wait_for_status('DEPLOYED', self.api.cloudapi.cloudspaces.get, cloudspaceId=self.cloudspace_id)
 
         self.lg('Check the cloudspace has a public ip')
         cloudspace_puplicIp = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)['publicipaddress']
         self.assertNotEqual(cloudspace_puplicIp, '')
 
+        self.lg('Create a virtual machine with image [{}]'.format(image_name))
         imageId = [image['id'] for image in self.api.cloudapi.images.list() if image['name'] == image_name]
-        self.assertTrue(imageId)
+        self.assertTrue(imageId, "Image [{}] doesn't exist in images list")
         machineId = self.cloudapi_create_machine(self.cloudspace_id, image_id=imageId[0], disksize=50)
 
         self.lg('- Make sure that the machine got an IP')
