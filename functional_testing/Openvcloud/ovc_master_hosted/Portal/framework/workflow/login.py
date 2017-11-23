@@ -39,6 +39,7 @@ class login():
         username = username or self.framework.admin_username
         password = password or self.framework.admin_password
         self.GetIt()
+
         self.framework.lg('check the login page title, should succeed')
         self.framework.assertEqual(self.framework.driver.title, 'Log in - It\'s You Online')
         self.framework.lg('Do login using')

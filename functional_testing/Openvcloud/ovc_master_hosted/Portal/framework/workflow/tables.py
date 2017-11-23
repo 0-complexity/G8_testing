@@ -42,11 +42,11 @@ class tables():
 
     def get_table_start_number(self, table_info):
         account_info = self.get_table_info(table_info)
-        return int(account_info[(account_info.index('g') + 2):(account_info.index('to') - 1)])
+        return int(account_info[(account_info.index('g') + 2):(account_info.index('to') - 1)].replace(',', ''))
 
     def get_table_end_number(self, table_info):
         account_info = self.get_table_info(table_info)
-        return int(account_info[(account_info.index('to') + 3):(account_info.index('of') - 1)])
+        return int(account_info[(account_info.index('to') + 3):(account_info.index('of') - 1)].replace(',', ''))
 
     def get_table_max_number(self, table_info):
         account_info = self.get_table_info(table_info)
