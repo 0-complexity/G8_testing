@@ -5,7 +5,7 @@ import unittest
 
 from JumpScale import j
 from ....utils.utils import BasicACLTest
-
+from nose_parameterized import parameterized
 
 class NetworkBasicTests(BasicACLTest):
 
@@ -52,16 +52,17 @@ class NetworkBasicTests(BasicACLTest):
         self.api.cloudbroker.account.delete(accountId=self.account_id, reason='testing')
 
         self.lg('5- Check the release network ID are in the free network IDs list')
-        lcl = j.clients.osis.getNamespace('libvirt')
+        lcl = j.clients.osis.getNamespace('libcloud')
         for csNumbers in range(0, 3):
             for timeDelay in range(0, 10):
-                released_network_Id = lcl.networkids.get(j.application.whoAmI.gid).networkids
-                if cloud_space_networkId[csNumbers] not in released_network_Id:
+                released_network_Id = lcl.libvirtdomain.get('networkids_%s' % j.application.whoAmI.gid)
+                if str(cloud_space_networkId[csNumbers]) not in released_network_Id:
                     time.sleep(1)
                 else:
                     break
-            self.assertTrue(cloud_space_networkId[csNumbers] in released_network_Id)
+            self.assertTrue(str(cloud_space_networkId[csNumbers]) in released_network_Id)
         self.lg('%s ENDED' % self._testID)
+    
 
     def test002_clean_ovs_bridge(self):
         ''' OVC-011
@@ -101,8 +102,12 @@ class NetworkBasicTests(BasicACLTest):
         self.assertNotIn('space_' + self.hexNetworkID, result)
 
         self.lg('%s ENDED' % self._testID)
-
-    def test003_port_forwarding_creation(self):
+    
+    @parameterized.expand(['Ubuntu 14.04 x64',
+                           'Ubuntu 15.10 x64',
+                           'Ubuntu 16.04 x64',
+                           'Windows 2012r2 Standard'])
+    def test003_port_forwarding_creation(self, image_name):
         '''OVC- 007
         * Test case verify the adding port forward to a machine
 
@@ -127,84 +132,67 @@ class NetworkBasicTests(BasicACLTest):
         '''
 
         self.lg('%s STARTED' % self._testID)
-        self.lg('1- Create a new cloudspace')
-        cloudspaceId = self.cloudapi_cloudspace_create(self.account_id,
-                                                       self.location,
-                                                       self.account_owner)
-
-        self.lg('- deploy cloudspace, should succeed')
-        self.api.cloudapi.cloudspaces.deploy(cloudspaceId=cloudspaceId)
-        self.wait_for_status('DEPLOYED', self.api.cloudapi.cloudspaces.get,
-                         cloudspaceId=cloudspaceId)
+   
+        self.wait_for_status('DEPLOYED', self.api.cloudapi.cloudspaces.get, cloudspaceId=self.cloudspace_id)
 
         self.lg('Check the cloudspace has a public ip')
-        cloudspace_puplicIp = self.api.cloudapi.cloudspaces.get(cloudspaceId)['publicipaddress']
+        cloudspace_puplicIp = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)['publicipaddress']
         self.assertNotEqual(cloudspace_puplicIp, '')
 
-        images = self.api.cloudapi.images.list()
-        for image in images:
-            self.lg('- Create a new machine')
-            if 'Windows' in image['name']:
-                machineId = self.cloudapi_create_machine(cloudspaceId,image_id=int(image['id']),disksize=50)
+        imageId = [image['id'] for image in self.api.cloudapi.images.list() if image['name'] == image_name]
+        self.assertTrue(imageId)
+        machineId = self.cloudapi_create_machine(self.cloudspace_id, image_id=imageId[0], disksize=50)
+
+        self.lg('- Make sure that the machine got an IP')
+        for i in range(300):
+            machineIp = self.api.cloudapi.machines.get(machineId)['interfaces'][0]['ipAddress']
+            if machineIp != 'Undefined':
+                break
             else:
-                machineId = self.cloudapi_create_machine(cloudspaceId,image_id=int(image['id']))
-
-            self.lg('- Make sure that the machine got an IP')
-            machineIp = ''
-            for i in range(300):
-                machineIp = self.api.cloudapi.machines.get(machineId)['interfaces'][0]['ipAddress']
-                if machineIp != '':
-                    break
                 time.sleep(1)
-            self.assertNotEqual(machineIp,'')
+        else:
+            self.fail("machine didn't get an ip address")
 
-            self.lg('Create a port forwarding which is covering all combinations')
-            localPorts = [21, 22, 80, 442, 21, 3389]
-            publicPort = random.randint(4000,5000)
-            protocolItems = ['tcp', 'udp']
-            lastAddedIndex = 0
 
-            time.sleep(60)
-            for proctocl in protocolItems:
-                for localPort in localPorts:
-                    self.lg("Create portforward for port %s to public port %s " % (localPort,publicPort))
-                    self.api.cloudapi.portforwarding.create(cloudspaceId=cloudspaceId, publicIp=cloudspace_puplicIp,
-                                                            publicPort=publicPort, machineId=machineId,
-                                                            localPort=localPort, protocol=proctocl)
+        self.lg('Create a port forwarding which is covering all combinations')
+        localPorts = [21, 22, 80, 443, 21, 3389]
+        publicPort = random.randint(4000,5000)
+        protocolItems = ['tcp', 'udp']
+        lastAddedIndex = 0
 
-                    self.assertEqual(self.api.cloudapi.portforwarding.list(cloudspaceId=cloudspaceId,
-                                                                           machineId=machineId)[lastAddedIndex][
-                                         'localPort'],
-                                     str(localPort))
-                    self.assertEqual(self.api.cloudapi.portforwarding.list(cloudspaceId=cloudspaceId,
-                                                                           machineId=machineId)[lastAddedIndex][
-                                         'publicPort'],
-                                     str(publicPort))
-                    self.assertEqual(self.api.cloudapi.portforwarding.list(cloudspaceId=cloudspaceId,
-                                                                           machineId=machineId)[lastAddedIndex][
-                                         'protocol'],
-                                     proctocl)
+        for protocol in protocolItems:
+            for localPort in localPorts:
+                self.lg("Create portforward for port %s to public port %s " % (localPort, publicPort))
+                self.api.cloudapi.portforwarding.create(cloudspaceId=self.cloudspace_id, publicIp=cloudspace_puplicIp,
+                                                        publicPort=publicPort, machineId=machineId,
+                                                        localPort=localPort, protocol=protocol)
 
-                    publicPort += 1
-                    lastAddedIndex += 1
+                portforwarding_info = self.api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id, machineId=machineId)
 
-                    self.lg('test ssh connection')
-                    if localPort == 22:
-                        time.sleep(60)
-                        self.lg('Get the virtual machine user name and password')
-                        username = self.api.cloudapi.machines.get(machineId)['accounts'][0]['login']
-                        password = self.api.cloudapi.machines.get(machineId)['accounts'][0]['password']
-                        command = "sshpass -p " + password + " ssh -p " + str(publicPort) + ' ' + username + "@" + cloudspace_puplicIp + '; uname -a; '
-                        acl = j.clients.agentcontroller.get()
-                        output = acl.executeJumpscript('jumpscale', 'exec', nid=3 , args={'cmd': command})
-                        if output['state'] == 'OK':
-                           if 'Linux' not in output['result'][1]:
-                                raise NameError("This command:"+command+"is wrong")
+                self.assertEqual(portforwarding_info[lastAddedIndex]['localPort'], str(localPort))
+                self.assertEqual(portforwarding_info[lastAddedIndex]['publicPort'], str(publicPort))
+                self.assertEqual(portforwarding_info[lastAddedIndex]['protocol'], str(protocol))
+
+                publicPort += 1
+                lastAddedIndex += 1
+
+                self.lg('test ssh connection')
+                if localPort == 22:
+                    self.lg('Get the virtual machine user name and password')
+                    username = self.api.cloudapi.machines.get(machineId)['accounts'][0]['login']
+                    password = self.api.cloudapi.machines.get(machineId)['accounts'][0]['password']
+                    command = "sshpass -p " + password + " ssh -p " + str(publicPort) + ' ' + username + "@" + cloudspace_puplicIp + '; uname -a; '
+                    acl = j.clients.agentcontroller.get()
+                    output = acl.executeJumpscript('jumpscale', 'exec', nid=3 , args={'cmd': command})
+                    if output['state'] == 'OK':
+                        if 'Linux' not in output['result'][1]:
+                            raise NameError("This command:"+command+"is wrong")
             
+
         self.api.cloudapi.machines.stop(machineId=machineId)
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=machineId)['status'],
-                         'HALTED')
+        self.assertEqual(self.api.cloudapi.machines.get(machineId=machineId)['status'], 'HALTED')
         self.lg('%s ENDED' % self._testID)
+
 
     def test004_move_virtual_firewall(self):
         """ OVC-014
@@ -230,9 +218,7 @@ class NetworkBasicTests(BasicACLTest):
 
         self.lg('3- get another nodeId to move the virtual firewall to')
         other_nodeId = self.get_nodeId_to_move_VFW_to(nodeId)
-        
-        if not other_nodeId:
-            self.skipTest('No active node to move the VFW to')
+        self.assertNotEqual(other_nodeId, -1, msg="No active node to move the VFW to")
 
         self.lg('4- move virtual firewall to another node')
         self.api.cloudbroker.cloudspace.moveVirtualFirewallToFirewallNode(cloudspaceId=self.cloudspace_id,
@@ -243,3 +229,4 @@ class NetworkBasicTests(BasicACLTest):
         self.wait_for_status('DEPLOYED', self.account_owner_api.cloudapi.cloudspaces.get,
                              cloudspaceId=self.cloudspace_id)
         self.lg('%s ENDED' % self._testID)        
+
