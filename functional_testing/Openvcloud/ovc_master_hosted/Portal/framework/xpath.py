@@ -54,8 +54,8 @@ elements = {
             'table_external_network_search_box':['XPATH','//*[@id="table_cloudbroker_externalnetwork_filter"]/label/input'],
 
             'table_storge_routers_data':['ID','DataTables_Table_0'],
-            'table_storge_routers_info':['ID','DataTables_Table_0_info'],
-            'table_storge_routers_selector':['NAME','DataTables_Table_0_length', 0],
+            'table_storge_routers_info':['ID','table_system_node_info'],
+            'table_storge_routers_selector':['NAME','table_system_node_length', 0],
             'table_storge_routers_pagination':['ID','DataTables_Table_0_paginate'],
             'table_storge_routers_search_box':['XPATH','//*[@id="DataTables_Table_0_filter"]/label/input'],
 

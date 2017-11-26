@@ -99,7 +99,6 @@ class tables():
     def check_show_list(self, table):
         table = self.generate_table_elements(table)
         paging_options = [10, 25, 50, 100, 10]
-        rows_max_number = self.get_table_max_number(table['info'])
         for option in paging_options:
             self.framework.select(table['selector'], option)
             if not self.wait_until_table_reload(table, 0, option):
