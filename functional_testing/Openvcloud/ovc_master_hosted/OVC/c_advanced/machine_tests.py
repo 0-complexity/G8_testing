@@ -371,15 +371,18 @@ class MachineTests(BasicACLTest):
         *Test case for checking cloned VM ip, portforwards and credentials*
         **Test Scenario:**
         #. Create (VM1), should succeed.
+        #. Create portforward to ssh port for (VM1).
         #. Stop (VM1), should succeed.
         #. Clone VM1 as (VM2_C), should succeed.
         #. Make sure VM2_C got a new ip.
-        #. Check that VM2 got different credentials from VM1.
         #. Make sure no portforwards have been created.
         """
         self.lg('Create (VM1), should succeed')
         machineId = self.cloudapi_create_machine(self.cloudspace_id)
         self.wait_for_machine_to_get_ip(machineId)
+
+        self.lg('Create portforward to ssh port for (VM1)')
+        self.get_vm_ssh_publicport(machineId, wait_vm_ip=False)
 
         self.lg('Stop (VM1), should succeed')
         self.api.cloudapi.machines.stop(machineId=machineId)
@@ -388,7 +391,6 @@ class MachineTests(BasicACLTest):
         cloned_vm_id = self.api.cloudapi.machines.clone(machineId=machineId, name='test')
         self.wait_for_machine_to_get_ip(cloned_vm_id)
 
-
         vm1_info = self.api.cloudapi.machines.get(machineId=machineId)
         cloned_vm_info = self.api.cloudapi.machines.get(machineId=cloned_vm_id)
 
@@ -396,12 +398,6 @@ class MachineTests(BasicACLTest):
         self.assertNotEqual(
             vm1_info['interfaces'][0]['ipAddress'],
             cloned_vm_info['interfaces'][0]['ipAddress']
-        )
-
-        self.lg("6- Check that VM2 got different credentials from VM1")
-        self.assertNotEqual(
-            vm1_info['accounts'][0]['password'],
-            cloned_vm_info['accounts'][0]['password']
         )
         
         self.lg("7- Make sure no portforwards have been created")
