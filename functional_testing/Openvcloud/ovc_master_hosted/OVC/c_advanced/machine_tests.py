@@ -64,9 +64,14 @@ class MachineTests(BasicACLTest):
         response = machine_2_connection.run(cmd)
         self.assertIn(', 0% packet loss', response)
 
-        self.lg('From VM1 ping VM3, should fail')
+        self.lg('From VM1 ping VM3 or VM2, should fail')
+        if machine_1_ipaddress == machine_2_ipaddress:
+            target_ip = machine_3_ipaddress
+        else:
+            target_ip = machine_2_ipaddress
+
         with self.assertRaises(SystemExit):
-            cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
+            cmd = 'ping -w3 {}'.format(target_ip)
             response = machine_1_connection.run(cmd)
             self.assertIn(', 100% packet loss', response)
 
