@@ -10,6 +10,7 @@ from nose.tools import TimeExpired
 from testconfig import config
 import random
 import imaplib
+import socket
 
 SESSION_DATA = {'vms': []}
 
@@ -430,10 +431,18 @@ class BaseTest(unittest.TestCase):
         password = password or vm['accounts'][0]['password']
         login = login or vm['accounts'][0]['login']
         cloudspace_publicport = self.get_vm_ssh_publicport(vm_id, wait_vm_ip=wait_vm_ip)
-        connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)
-        connection.user(vm['accounts'][0]['login'])
-        connection.fabric.state.output["running"] = False
-        connection.fabric.state.output["stdout"] = False
+        for i in range(5):
+            try:
+                connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)
+                connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)
+                connection.user(vm['accounts'][0]['login'])
+                connection.fabric.state.output["running"] = False
+                connection.fabric.state.output["stdout"] = False
+                connection.run('ls')
+                break
+            except socket.error, ex:
+                print(ex)
+                continue
         return connection
 
     def get_running_stackId(self, except_stackid=''):

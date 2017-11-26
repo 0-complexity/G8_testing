@@ -338,17 +338,11 @@ class MachineTests(BasicACLTest):
 
         """
         self.lg('%s STARTED' % self._testID)
-        self.lg(" Create a cloudspace CS1, should succeed.")
-        cs1_id = self.cloudapi_cloudspace_create(self.account_id,
-                                                 self.location,
-                                                 self.account_owner)
-
-        self.assertTrue(cs1_id)
 
         self.lg("Create VM1,should succeed.")
-        vm1_id = self.cloudapi_create_machine(cloudspace_id=cs1_id)
+        vm1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
         self.assertTrue(vm1_id)
-        current_stackId = self.api.cloudbroker.machine.get(machineId = vm1_id)["stackId"]
+        current_stackId = self.api.cloudbroker.machine.get(machineId=vm1_id)["stackId"]
 
         self.lg("Migrate VM1 to another node, should succeed.")
         second_node = self.get_running_stackId(current_stackId)
@@ -366,8 +360,10 @@ class MachineTests(BasicACLTest):
         self.lg("Restart VM1 and make sure it is still running.")
         self.api.cloudapi.machines.reset(machineId=vm1_id)
         time.sleep(2)
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=vm1_id)['status'],
-                                                        'RUNNING')
+        self.assertEqual(self.api.cloudapi.machines.get(machineId=vm1_id)['status'], 'RUNNING')
+        vm1_conn = self.get_vm_connection(vm1_id)
+        self.assertIn('bin', vm1_conn.run('ls /'))
+
         self.lg('%s ENDED' % self._testID)
 
     @unittest.skip('Not Implemented')
