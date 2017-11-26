@@ -61,13 +61,13 @@ class MachineTests(BasicACLTest):
 
         self.lg('From VM2 ping VM3, should succeed')
         cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
-        response = machine_2_connection.run(cmd=cmd)
+        response = machine_2_connection.run(cmd)
         self.assertIn(', 0% packet loss', response)
 
         self.lg('From VM1 ping VM3, should fail')
         with self.assertRaises(SystemExit):
             cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
-            response = machine_1_connection.run(cmd=cmd)
+            response = machine_1_connection.run(cmd)
             self.assertIn(', 100% packet loss', response)
 
 
