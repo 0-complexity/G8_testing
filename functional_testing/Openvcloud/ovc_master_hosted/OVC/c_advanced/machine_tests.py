@@ -11,21 +11,66 @@ class MachineTests(BasicACLTest):
         super(MachineTests, self).setUp()
         self.default_setup()
 
-    @unittest.skip('Not Implemented')
     def test001_check_machines_networking(self):
         """ OVC-000
         *Test case for checking machines networking*
 
         **Test Scenario:**
 
-        #. Create cloudspace CS1, should succeed
-        #. Create cloudspace CS2, should succeed
-        #. Create VM1 in CS1
-        #. From VM1 ping google, should succeed
-        #. Create VM2 and VM3 in CS2
-        #. From VM2 ping VM3, should succeed
-        #. From VM2 ping VM1, should fail
+        #. Create cloudspace CS1, should succeed.
+        #. Create cloudspace CS2, should succeed.
+        #. Create VM1 in cloudspace CS1.
+        #. From VM1 ping google, should succeed.
+        #. Create VM2 and VM3 in cloudspace CS2.
+        #. From VM2 ping VM3, should succeed.
+        #. From VM1 ping VM3, should fail.
         """
+        self.lg('Create cloudspace CS1, should succeed')
+        cloudspace_1_id = self.cloudspace_id
+
+        self.lg('Create cloudspace CS2, should succeed')
+        cloudspace_2_id = self.cloudapi_cloudspace_create(
+            self.account_id,
+            self.location, 
+            self.account_owner
+        )
+
+        self.lg('Create VM1 in cloudspace CS1')
+        machine_1_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_1_id)
+        machine_1_ipaddress = self.wait_for_machine_to_get_ip(machine_1_id)
+        self.assertNotEqual(machine_1_ipaddress, 'Undefined')
+
+        machine_1_connection = self.get_vm_connection(machine_1_id)
+    
+        self.lg('From VM1 ping google, should succeed')
+        response = self.machine_1_connection.run('ping -w3 8.8.8.8', wait_vm_ip=False)
+        self.assertIn(', 0% packet loss', response)
+
+        self.lg('Create VM2 in cloudspace CS2')
+        machine_2_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_2_id)
+        machine_2_ipaddress = self.wait_for_machine_to_get_ip(machine_2_id)
+        self.assertNotEqual(machine_2_ipaddress, 'Undefined')
+
+        machine_2_connection = self.get_vm_connection(machine_2_id)
+
+        self.lg('Create VM3 in cloudspace CS2')
+        machine_3_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_2_id)
+        machine_3_ipaddress = self.wait_for_machine_to_get_ip(machine_3_id)
+        self.assertNotEqual(machine_3_ipaddress, 'Undefined')
+
+        machine_3_connection = self.get_vm_connection(machine_3_id)
+
+        self.lg('From VM2 ping VM3, should succeed')
+        cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
+        response = machine_2_connection.run(cmd=cmd, wait_vm_ip=False)
+        self.assertIn(', 0% packet loss', response)
+
+        self.lg('From VM1 ping VM3, should fail')
+        with self.assertRaises(SystemExit):
+            cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
+            response = machine_1_connection.run(cmd=cmd, wait_vm_ip=False)
+            self.assertIn(', 100% packet loss', response)
+
 
     def test002_check_network_data_integrity(self):
         """ OVC-036
