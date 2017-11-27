@@ -456,7 +456,7 @@ class BaseTest(unittest.TestCase):
             node = scl.node.get(int(nodeId))
             if node.active:
                 return stackId
-        return -1
+        return False
 
     def get_physical_node_id(self, cloudspaceID):
         # This function take the cloudspace ID and return its physical node ID
