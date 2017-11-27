@@ -396,7 +396,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('Write file to (VM1)')
         machine_1_connection = self.get_vm_connection(machineId, wait_vm_ip=False)
-        machine_1_connection.run('echo "helloWorkd" > /tmp/helloWorld.txt')
+        machine_1_connection.run('echo "helloWorkd" > helloWorld.txt')
 
         self.lg('Stop (VM1), should succeed')
         self.api.cloudapi.machines.stop(machineId=machineId)
@@ -418,7 +418,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('Check that file (F1) exists')
         cloned_machine_connection = self.get_vm_connection(cloned_vm_id, wait_vm_ip=False)
-        response = cloned_machine_connection.run('ls /tmp | grep helloWorld.txt')
+        response = cloned_machine_connection.run('ls | grep helloWorld.txt')
         self.assertIn('helloWorld.txt', response)
 
         self.lg('Rollback (VM2_C) to snapshot (SS1), shoud fail')
