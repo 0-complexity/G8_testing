@@ -90,7 +90,6 @@ class MachineTests(BasicACLTest):
 
         self.lg("Create VM1,should succeed.")
         vm1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
-        self.assertTrue(vm1_id)
 
         self.lg('Write a big file FS1 on VM1')
         current_stackId = self.api.cloudbroker.machine.get(machineId=vm1_id)["stackId"]
@@ -106,10 +105,11 @@ class MachineTests(BasicACLTest):
         self.lg("Migrate VM1 to another node, should succeed.")
         self.api.cloudbroker.machine.moveToDifferentComputeNode(machineId=vm1_id, reason="test",
                                                                 targetStackId=second_node, force=False)
-        self.assertEqual(self.api.cloudbroker.machine.get(machineId=vm1_id)["stackId"], second_node)
+        vm1 = self.api.cloudbroker.machine.get(machineId=vm1_id)
+        self.assertEqual(vm1["stackId"], second_node)
 
         self.lg("Make sure that VM1 is running.")
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=vm1_id)['status'], 'RUNNING')
+        self.assertEqual(vm1['status'], 'RUNNING')
         t.join()
         vm1_conn = self.get_vm_connection(vm1_id)
         self.assertIn('bin', vm1_conn.run('ls /'))
