@@ -415,16 +415,64 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('Not Implemented')
     def test012_check_cloned_vm(self):
-        """ OVC-000
+        """ OVC-029
         *Test case for checking cloned VM ip, portforwards and credentials*
-
         **Test Scenario:**
-
-        #. Create (VM1).
+        #. Create (VM1), should succeed.
+        #. Create portforward to ssh port for (VM1).
+        #. Take a snapshot (SS0) for (VM1).
+        #. Write file (F1) on (VM1).
+        #. Stop (VM1), should succeed.
         #. Clone VM1 as (VM2_C), should succeed.
+        #. Start (VM1), should succeed
         #. Make sure VM2_C got a new ip.
-        #. Check that VM2 got different credentials from VM1.
         #. Make sure no portforwards have been created.
+        #. Check that file (F1) exists.
+        #. Rollback (VM2_C) to snapshot (SS1), should fail.
         """
+        self.lg('Create (VM1), should succeed')
+        machineId = self.cloudapi_create_machine(self.cloudspace_id)
+        machine_1_ipaddress = self.wait_for_machine_to_get_ip(machineId)
+        self.assertNotEqual(machine_1_ipaddress, 'Undefined')
+
+        self.lg('Create portforward to ssh port for (VM1)')
+        self.get_vm_ssh_publicport(machineId, wait_vm_ip=False)
+
+        self.lg('Take a snapshot (SS0) for (VM1)')
+        snapshotId = self.api.cloudapi.machines.snapshot(machineId=machineId, name='test-snapshot')
+        snapshotEpoch = self.api.cloudapi.machines.listSnapshots(machineId=machineId)[0]['epoch']
+
+        self.lg('Write file to (VM1)')
+        machine_1_connection = self.get_vm_connection(machineId, wait_vm_ip=False)
+        machine_1_connection.run('touch helloWorld.txt')
+
+        self.lg('Stop (VM1), should succeed')
+        self.api.cloudapi.machines.stop(machineId=machineId)
+
+        self.lg('Clone VM1 as (VM2_C), should succeed')
+        cloned_vm_id = self.api.cloudapi.machines.clone(machineId=machineId, name='test')
+        cloned_machine_ipaddress = self.wait_for_machine_to_get_ip(cloned_vm_id)
+        self.assertNotEqual(cloned_machine_ipaddress, 'Undefined')
+
+        self.lg('Start (VM1), should succeed')
+        self.api.cloudapi.machines.start(machineId=machineId)
+
+        self.lg("Make sure VM2_C got a new ip")
+        self.assertNotEqual(machine_1_ipaddress, cloned_machine_ipaddress)
+        
+        self.lg("Make sure no portforwards have been created")
+        portforwarding = self.api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id, machineId=cloned_vm_id)
+        self.assertEqual(portforwarding, [])
+
+        self.lg('Check that file (F1) exists')
+        cloned_machine_connection = self.get_vm_connection(cloned_vm_id, wait_vm_ip=False)
+        response = cloned_machine_connection.run('ls | grep helloWorld.txt')
+        self.assertIn('helloWorld.txt', response)
+
+        self.lg('Rollback (VM2_C) to snapshot (SS1), shoud fail')
+        snapshots = self.api.cloudapi.machines.listSnapshots(machineId=cloned_vm_id)
+        self.assertEqual(snapshots, [])
+
+        with self.assertRaises(HTTPError) as e:
+             self.api.cloudapi.machines.rollbackSnapshot(machineId=cloned_vm_id, epoch=snapshotEpoch)
