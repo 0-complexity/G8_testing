@@ -395,7 +395,7 @@ class MachineTests(BasicACLTest):
         snapshotEpoch = self.api.cloudapi.machines.listSnapshots(machineId=machineId)[0]['epoch']
 
         self.lg('Write file to (VM1)')
-        machine_1_connection = self.get_vm_connection(machine_1_ipaddress, wait_vm_ip=False)
+        machine_1_connection = self.get_vm_connection(machineId, wait_vm_ip=False)
         machine_1_connection.run('echo "helloWorkd" > /tmp/helloWorld.txt')
 
         self.lg('Stop (VM1), should succeed')
