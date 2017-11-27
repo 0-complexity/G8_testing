@@ -380,7 +380,7 @@ class MachineTests(BasicACLTest):
         #. Make sure VM2_C got a new ip.
         #. Make sure no portforwards have been created.
         #. Check that file (F1) exists.
-        #. Rollback (VM2_C) to snapshot (SS1), shoud fail.
+        #. Rollback (VM2_C) to snapshot (SS1), should fail.
         """
         self.lg('Create (VM1), should succeed')
         machineId = self.cloudapi_create_machine(self.cloudspace_id)
@@ -396,7 +396,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('Write file to (VM1)')
         machine_1_connection = self.get_vm_connection(machineId, wait_vm_ip=False)
-        machine_1_connection.run('echo "helloWorkd" > helloWorld.txt')
+        machine_1_connection.run('touch helloWorld.txt')
 
         self.lg('Stop (VM1), should succeed')
         self.api.cloudapi.machines.stop(machineId=machineId)
