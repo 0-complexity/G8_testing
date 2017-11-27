@@ -75,7 +75,7 @@ class MachineTests(BasicACLTest):
         """
 
     def test004_migrate_vm_in_middle_of_writing_file(self):
-        """ OVC-000
+        """ OVC-039
         *Test case for checking data integrity after migrating vm in the middle of writing a file*
 
         **Test Scenario:**
