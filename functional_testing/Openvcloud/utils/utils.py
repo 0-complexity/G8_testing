@@ -446,7 +446,6 @@ class BaseTest(unittest.TestCase):
         for i in range(5):
             try:
                 connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)
-                connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)
                 connection.user(vm['accounts'][0]['login'])
                 connection.fabric.state.output["running"] = False
                 connection.fabric.state.output["stdout"] = False
