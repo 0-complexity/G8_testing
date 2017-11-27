@@ -291,6 +291,18 @@ class BaseTest(unittest.TestCase):
             resource = func(**kwargs)  # get resource
         self.assertEqual(resource['status'], status)
 
+    def wait_for_machine_to_get_ip(self, machineId, timeout=300):
+        for _ in range(timeout):
+            machine_info = self.api.cloudapi.machines.get(machineId=machineId)
+            ip_address = machine_info['interfaces'][0]['ipAddress']
+            if ip_address != 'Undefined':
+                return ip_address
+            else:
+                time.sleep(1)
+        else:
+            return None
+
+
     def add_user_to_account(self, account_id, user, accesstype, api=''):
         api = api or self.api
         api.cloudapi.accounts.addUser(accountId=account_id,
