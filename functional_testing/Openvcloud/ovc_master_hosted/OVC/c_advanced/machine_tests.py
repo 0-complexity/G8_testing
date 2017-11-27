@@ -39,17 +39,17 @@ class MachineTests(BasicACLTest):
         self.lg('Create VM1 in cloudspace CS1')
         machine_1_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_1_id)
         machine_1_ipaddress = self.wait_for_machine_to_get_ip(machine_1_id)
-        self.assertNotEqual(machine_1_ipaddress, None)
+        self.assertTrue(machine_1_ipaddress)
 
         self.lg('Create VM2 in cloudspace CS2')
         machine_2_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_2_id)
         machine_2_ipaddress = self.wait_for_machine_to_get_ip(machine_2_id)
-        self.assertNotEqual(machine_2_ipaddress, None)
+        self.assertTrue(machine_2_ipaddress)
 
         self.lg('Create VM3 in cloudspace CS2')
         machine_3_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_2_id)
         machine_3_ipaddress = self.wait_for_machine_to_get_ip(machine_3_id)
-        self.assertNotEqual(machine_3_ipaddress, None)
+        self.assertTrue(machine_3_ipaddress)
 
         machine_1_connection = self.get_vm_connection(machine_1_id, wait_vm_ip=False)
     
