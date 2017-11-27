@@ -300,7 +300,7 @@ class BaseTest(unittest.TestCase):
             else:
                 time.sleep(1)
         else:
-            return 'Undefined'
+            return None
     
 
     def add_user_to_account(self, account_id, user, accesstype, api=''):
