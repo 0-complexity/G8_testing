@@ -134,6 +134,9 @@ class BasicTests(BasicACLTest):
         )
 
         for size in sizes:
+
+            if size['id'] not in range(1, 7):
+                continue
             
             self.lg('3- Stop the machine')
             self.account_owner_api.cloudapi.machines.stop(machineId=machineId)
@@ -173,7 +176,7 @@ class BasicTests(BasicACLTest):
         selected_size = random.choice(sizes)
         disksize = random.choice(selected_size['disks'])
 
-        self.lg('- using memory size [%s] with disk [%s]' % (selected_size['memory'], disksize))
+        self.lg('2- using memory size [%s] with disk [%s]' % (selected_size['memory'], disksize))
         machineId = self.cloudapi_create_machine(
             cloudspace_id=self.cloudspace_id, 
             size_id=selected_size['id'], 
@@ -184,20 +187,23 @@ class BasicTests(BasicACLTest):
         self.account_owner_api.cloudapi.machines.stop(machineId=machineId)
 
         for size in sizes:
+
+            if size['id'] not in range(1, 7):
+                continue
             
             machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
             self.assertEqual(machineInfo['status'], 'HALTED')
 
-            self.lg('Resize the machine with all possible combinations, should succeed')
+            self.lg('4- Resize the machine with all possible combinations, should succeed')
             self.account_owner_api.cloudapi.machines.resize(machineId=machineId, sizeId=size['id'])
 
-        self.lg('4- Start the machine')
+        self.lg('5- Start the machine')
         self.account_owner_api.cloudapi.machines.start(machineId=machineId)
         
-        self.lg('Check that the machine is updated')
+        self.lg('6- Check that the machine is updated')
         machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
         self.assertEqual(machineInfo['status'], 'RUNNING')
-        self.assertEqual(machineInfo['sizeid'], sizes[-1]['id'])
+        self.assertEqual(machineInfo['sizeid'], 6)
 
         self.lg('%s ENDED' % self._testID)
 
