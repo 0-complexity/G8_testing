@@ -80,6 +80,8 @@ class ExtendedTests(BasicACLTest):
 
         self.lg('1- get a running node to create VMs on')
         stackId = self.get_running_stackId()
+        if not stackId:
+            self.skipTest('[*] No running nodes ')
         self.assertNotEqual(stackId, -1, msg="No active node to create VMs on")
 
         self.lg('2- create 2 VMs, should succeed')

@@ -4,6 +4,7 @@ from nose_parameterized import parameterized
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
 import time
+import threading
 
 
 class MachineTests(BasicACLTest):
@@ -122,20 +123,52 @@ class MachineTests(BasicACLTest):
         #. Check if you can ping VM1 from outside, should succeed
         """
 
-    @unittest.skip('Not Implemented')
     def test004_migrate_vm_in_middle_of_writing_file(self):
-        """ OVC-000
+        """ OVC-039
         *Test case for checking data integrity after migrating vm in the middle of writing a file*
 
         **Test Scenario:**
 
         #. Create a cloudspace CS1, should succeed
-        #. Create VM1
+        #. Create VM1, should succeed
         #. Write a big file FS1 on VM1
         #. Migrate VM1 in the middle of writing a file, should succeed
         #. Check if the file has been written correctly after vm live migration
         """
-        # Note: this testcase may be hard to be implemented from here.
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg("Create VM1,should succeed.")
+        vm1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+
+        self.lg('Write a big file FS1 on VM1')
+        current_stackId = self.api.cloudbroker.machine.get(machineId=vm1_id)["stackId"]
+        second_node = self.get_running_stackId(current_stackId)
+        if not second_node:
+            self.skipTest('[*] No running nodes ')
+        vm1_conn = self.get_vm_connection(vm1_id)
+        cmd = "yes 'Some text' | head -n 200000000 > largefile.txt"
+        t = threading.Thread(target=vm1_conn.run, args=(cmd, ))
+        t.start()
+        time.sleep(7)
+
+        self.lg("Migrate VM1 to another node, should succeed.")
+        self.api.cloudbroker.machine.moveToDifferentComputeNode(machineId=vm1_id, reason="test",
+                                                                targetStackId=second_node, force=False)
+        vm1 = self.api.cloudbroker.machine.get(machineId=vm1_id)
+        self.assertEqual(vm1["stackId"], second_node)
+
+        self.lg("Make sure that VM1 is running.")
+        self.assertEqual(vm1['status'], 'RUNNING')
+        t.join()
+        vm1_conn = self.get_vm_connection(vm1_id)
+        self.assertIn('bin', vm1_conn.run('ls /'))
+
+        self.lg('Check if the file has been written correctly after vm live migration')
+        hash_val = vm1_conn.run('md5sum largefile.txt | cut -d " " -f 1')
+        self.assertEqual(hash_val, 'cd96e05cf2a42e587c78544d19145a7e')
+
+        self.lg('%s ENDED' % self._testID)
+
 
     @parameterized.expand(['Linux', 'Windows'])
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/940')
@@ -152,6 +185,7 @@ class MachineTests(BasicACLTest):
         #. Check if VM1's ip is the same as before rebooting.
         #. Check if VM1's credentials are the same as well.
         """
+        self.lg('%s STARTED' % self._testID)
 
         self.lg('1- Create virtual machine VM1 with {} image'.format(image_type))
         target_images = [x['id'] for x in self.api.cloudapi.images.list() if x['type'] == image_type]
@@ -188,6 +222,8 @@ class MachineTests(BasicACLTest):
             machine_info_before_reboot['accounts'][0]['password'],
             machine_info_after_reboot['accounts'][0]['password']
         )
+
+        self.lg('%s ENDED' % self._testID)
 
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/938 & 941')
     def test006_attach_same_disk_to_two_vms(self):
