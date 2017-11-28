@@ -1,7 +1,7 @@
 language: python
 sudo: true
 dist: trusty
-jobs:
+matrix:
   include:
   - python: "2.7"
     env: 
