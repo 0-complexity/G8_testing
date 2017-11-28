@@ -181,12 +181,14 @@ class BaseTest(unittest.TestCase):
                 self.lg(" * Can't locate the left menu. Error : %s" % error)
                 time.sleep(2)
 
+
     def open_base_page(self, menu_item='', sub_menu_item=''):
         self.get_page(self.base_page)
         self.check_side_list()
         self.click(menu_item)
-        self.check_side_list()
-        self.click(sub_menu_item)
+        if sub_menu_item != '':
+            self.check_side_list()
+            self.click(sub_menu_item)
 
     def get_page(self, page_url):
         try:
@@ -196,6 +198,13 @@ class BaseTest(unittest.TestCase):
         else:
             self.execute_angular_script()
             self.maximize_window()
+
+    def get_page_titles(self):
+        titles=[]
+        elements_value = self.driver.find_elements(getattr(By, 'CLASS_NAME'), 'title')
+        for element_value in elements_value:
+            titles.append(str(element_value.text))
+        return titles
 
     def element_is_enabled(self, element):
         return self.find_element(element).is_enabled()
@@ -216,6 +225,18 @@ class BaseTest(unittest.TestCase):
                 return True
             except:
                 time.sleep(1)
+        else:
+            return False
+
+    def wait_until_table_element_has_text(self, element,row,column,text):
+        for temp in range(10):
+            table = self.find_element(element)
+            tbody = table.find_elements_by_tag_name('tbody')
+            table_elements = tbody[0].find_elements_by_tag_name('tr')
+            Row=table_elements[row].find_elements_by_tag_name('td')
+            if Row[column].text == text :
+                return True
+            time.sleep(2)
         else:
             return False
 
@@ -462,7 +483,6 @@ class BaseTest(unittest.TestCase):
         # This method return a table head elements.
         for _ in range(10):
             try:
-
                 table = self.find_element(element)
                 thead = table.find_elements_by_tag_name('thead')
                 thead_row = thead[0].find_elements_by_tag_name('tr')
@@ -470,7 +490,6 @@ class BaseTest(unittest.TestCase):
             except:
                 time.sleep(0.5)
         else:
-
             return False
 
     def maximize_window(self):
@@ -482,7 +501,7 @@ class BaseTest(unittest.TestCase):
 
     def get_navigation_bar(self, element):
         elements = self.get_list_items(element)
-        return [x.text for x in elements]
+        return [str(x.text) for x in elements]
 
     def execute_angular_script(self):
         # This method is trying to load angular elements.
