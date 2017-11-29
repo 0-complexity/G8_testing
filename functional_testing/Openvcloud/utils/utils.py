@@ -437,12 +437,12 @@ class BaseTest(unittest.TestCase):
         vm1_conn.run('sshpass -p%s scp -o \'StrictHostKeyChecking=no\' %s  %s@%s:'
                      %(account2['password'], file_loc, account2['login'], vm2_ip))
 
-    def get_vm_connection(self, vm_id, wait_vm_ip=True, password=None, login=None):
+    def get_vm_connection(self, vm_id, wait_vm_ip=True, password=None, login=None, pb_port=None):
         vm = self.api.cloudapi.machines.get(machineId=vm_id)
         cloudspace_publicip = self.api.cloudapi.cloudspaces.get(cloudspaceId=vm['cloudspaceid'])['publicipaddress']
         password = password or vm['accounts'][0]['password']
         login = login or vm['accounts'][0]['login']
-        cloudspace_publicport = self.get_vm_ssh_publicport(vm_id, wait_vm_ip=wait_vm_ip)
+        cloudspace_publicport = pb_port or self.get_vm_ssh_publicport(vm_id, wait_vm_ip=wait_vm_ip)
         for i in range(5):
             try:
                 connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)

@@ -1,11 +1,10 @@
 # coding=utf-8
 import random
 import unittest
-
 from ....utils.utils import BasicACLTest
-
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
+
 
 class CloudspaceTests(BasicACLTest):
 
@@ -93,36 +92,54 @@ class CloudspaceTests(BasicACLTest):
 
         self.lg('1- Get list of available sizes in location, should succeed.')
         location_sizes = self.api.cloudapi.sizes.list(location=self.location)
-        selected_size = random.choice(location_sizes)            
+        selected_size = random.choice(location_sizes)
 
         self.lg('2- Add random size to CS1, should succeed')
-        self.api.cloudapi.cloudspaces.addAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])   
+        self.api.cloudapi.cloudspaces.addAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])
 
         self.lg('3- Check if the size has been added successfully to CS1')
-        cloudspace_sizes = self.api.cloudapi.sizes.list(location=self.location, cloudspaceId=self.cloudspace_id) 
-        self.assertIn(selected_size, cloudspace_sizes)     
+        cloudspace_sizes = self.api.cloudapi.sizes.list(location=self.location, cloudspaceId=self.cloudspace_id)
+        self.assertIn(selected_size, cloudspace_sizes)
 
-        self.lg('4- Remove this size from CS1, should succeed') 
-        self.api.cloudapi.cloudspaces.removeAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])  
+        self.lg('4- Remove this size from CS1, should succeed')
+        self.api.cloudapi.cloudspaces.removeAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])
 
         self.lg('5- check if the size has been removed successfully from CS1')
-        cloudspace_sizes = self.api.cloudapi.sizes.list(location=self.location, cloudspaceId=self.cloudspace_id) 
-        self.assertNotIn(selected_size, cloudspace_sizes)   
+        cloudspace_sizes = self.api.cloudapi.sizes.list(location=self.location, cloudspaceId=self.cloudspace_id)
+        self.assertNotIn(selected_size, cloudspace_sizes)
 
         self.lg('6- Remove this size again, should fail')
         with self.assertRaises(ApiError):
-            self.api.cloudapi.cloudspaces.removeAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])                    
+            self.api.cloudapi.cloudspaces.removeAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])
 
-    @unittest.skip('Not Implemented')
     def test003_executeRouterOSScript(self):
-        """ OVC-000
+        """ OVC-040
         *Test case for test execute script in routeros.*
 
         **Test Scenario:**
-        #. Create new cloudspace CS1.
-        #. Excute script in routeros of CS1, should succeed.
-        #. Check that script executeed , should succeed.
+        #. Create new cloudspace (CS1).
+        #. Create virtual machine (VM1).
+        #. Execute script on routeros of CS1 to create portforward (PF1), should succeed.
+        #. Connect to VM1 through PF1 , should succeed.
         """
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg('Create virtual machine (VM1)')
+        vm_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+
+        self.lg('Execute script on routeros of CS1 to create portforward (PF1), should succeed')
+        vm = self.api.cloudapi.machines.get(machineId=vm_id)
+        cs_ip = self.api.cloudapi.cloudspaces.get(cloudspaceId=vm['cloudspaceid'])['publicipaddress']
+        vm_ip = self.wait_for_machine_to_get_ip(vm_id)
+        pb_port = random.randint(50000, 60000)
+        script = '/ip firewall nat add chain=dstnat action=dst-nat to-addresses=%s to-ports=22 protocol=tcp dst-address=%s dst-port=%s comment=cloudbroker' % (vm_ip, cs_ip, pb_port)
+        self.api.cloudapi.cloudspaces.executeRouterOSScript(self.cloudspace_id, script=script)
+
+        self.lg('Connect to VM1 through PF1 , should succeed')
+        vm1_conn = self.get_vm_connection(vm_id, pb_port=pb_port)
+        self.assertIn('bin', vm1_conn.run('ls /'))
+
+        self.lg('%s ENDED' % self._testID)
 
     @unittest.skip('Not Implemented')
     def test004_get_OpenVPN_config_file(self):
