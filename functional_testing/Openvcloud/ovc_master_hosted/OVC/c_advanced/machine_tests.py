@@ -4,7 +4,7 @@ from nose_parameterized import parameterized
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
 import time
-
+import os
 
 class MachineTests(BasicACLTest):
     def setUp(self):
@@ -59,9 +59,8 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('Not Implemented')
     def test003_check_connectivity_through_external_network(self):
-        """ OVC-000
+        """ OVC-042
         *Test case for checking machine connectivity through external network*
 
         **Test Scenario:**
@@ -71,7 +70,41 @@ class MachineTests(BasicACLTest):
         #. Attach VM1 to an external network, should succeed
         #. Assign IP to VM1's external netowrk interface, should succeed.
         #. Check if you can ping VM1 from outside, should succeed
+        #. Check that you can connect to vm with new ip ,should succeed.
+
         """
+        self.lg('%s STARTED' % self._testID)
+        self.lg(" Create a cloudspace CS1, should succeed.")
+        cs1_id = self.cloudapi_cloudspace_create(self.account_id,
+                                                 self.location,
+                                                 self.account_owner)
+
+        self.assertTrue(cs1_id)
+        self.lg("Create VM1,should succeed.")
+        vm1_id = self.cloudapi_create_machine(cloudspace_id=cs1_id)
+        self.assertTrue(vm1_id)
+
+        self.lg("Attach VM1 to an external network, should succeed")
+        reponse = self.api.cloudbroker.machine.attachExternalNetwork(machineId=vm1_id)
+        self.assertTrue(reponse)
+
+        self.lg("Assign IP to VM1's external netowrk interface, should succeed.")
+        vm1_nics = self.api.cloudapi.machines.get(machineId=vm1_id)["interfaces"]
+        vm1_nic = [x for x in vm1_nics if "externalnetworkId" in x["params"]][0]
+        self.assertTrue(vm1_nic)
+        vm1_ext_ip = vm1_nic["ipAddress"]
+        vm1_conn = self.get_vm_connection(vm1_id)
+        vm1_conn.sudo("ip a a %s dev eth1"%vm1_ext_ip)
+        vm1_conn.sudo("nohup bash -c 'ip l s dev eth1 up </dev/null >/dev/null 2>&1 & '")
+
+        self.lg("Check if you can ping VM1 from outside, should succeed")
+        self.assertTrue(os.system("ping -c 1 %s"%vm1_ext_ip))
+
+        self.lg("Check that you can connect to vm with new ip ,should succeed.")
+        ssh_client = self.get_vm_ssh_client(vm1_id)
+        ssh_stdin, ssh_stdout, ssh_stderr = ssh_client.exec_command("ls /")
+        self.assertIn('bin', ssh_stdout.read())
+
 
     @unittest.skip('Not Implemented')
     def test004_migrate_vm_in_middle_of_writing_file(self):
