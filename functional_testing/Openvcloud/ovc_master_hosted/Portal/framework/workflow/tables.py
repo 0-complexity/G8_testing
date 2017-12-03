@@ -42,11 +42,11 @@ class tables():
 
     def get_table_start_number(self, table_info):
         account_info = self.get_table_info(table_info)
-        return int(account_info[(account_info.index('g') + 2):(account_info.index('to') - 1)])
+        return int(account_info[(account_info.index('g') + 2):(account_info.index('to') - 1)].replace(',', ''))
 
     def get_table_end_number(self, table_info):
         account_info = self.get_table_info(table_info)
-        return int(account_info[(account_info.index('to') + 3):(account_info.index('of') - 1)])
+        return int(account_info[(account_info.index('to') + 3):(account_info.index('of') - 1)].replace(',', ''))
 
     def get_table_max_number(self, table_info):
         account_info = self.get_table_info(table_info)
@@ -99,7 +99,6 @@ class tables():
     def check_show_list(self, table):
         table = self.generate_table_elements(table)
         paging_options = [10, 25, 50, 100, 10]
-        rows_max_number = self.get_table_max_number(table['info'])
         for option in paging_options:
             self.framework.select(table['selector'], option)
             if not self.wait_until_table_reload(table, 0, option):

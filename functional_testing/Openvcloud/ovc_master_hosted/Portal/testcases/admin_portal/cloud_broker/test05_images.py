@@ -10,7 +10,6 @@ class ImagesTests(Framework):
         super(ImagesTests, self).setUp()
         self.Login.Login(username=self.admin_username, password=self.admin_password)
 
-
     def test01_image_page_paging_table(self):
         """ PRTL-041
         *Test case to make sure that paging and sorting of image  page are working as expected*
@@ -20,7 +19,6 @@ class ImagesTests(Framework):
         #. get number of images
         #. try paging from the available page numbers and verify it should succeed
         """
-        pass
         self.lg('%s STARTED' % self._testID)
         self.lg('1- go to Images page')
         self.Images.get_it()
@@ -58,34 +56,29 @@ class ImagesTests(Framework):
         self.assertTrue(self.Images.is_at())
         self.assertTrue(self.Tables.check_next_previous_buttons('images'))
 
-
     @parameterized.expand(['Name',
                            'Location',
                            'Type',
                            'Status',
                            'Size'])
-    def test04_image_page_searchbox(self,column):
+    def test04_image_page_searchbox(self, column):
         """ PRTL-044
         *Test case to make sure that search boxes of images page are working as expected*
 
         **Test Scenario:**
 
         #. go to images page.
-        #. try use general search box  to search for values in  all columns and verfiy it return the right value
         #. try use the search box in every column and  verfiy it return the right value
         """
 
-        if (column == 'Location' ) or  (column == 'Size'):
+        if (column == 'Location') or (column == 'Size'):
             self.skipTest('https://github.com/0-complexity/openvcloud/issues/696')
 
         self.lg('1- go to Images page')
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
-        self.lg('try general search box to search for values in all columns and verfiy it return the right value')
-        self.assertTrue(self.Tables.check_search_box('images',column ))
         self.lg('try the search box in every column and verfiy it return the right value')
-        self.assertTrue(self.Tables.check_data_filters('images',column ))
-
+        self.assertTrue(self.Tables.check_data_filters('images', column))
 
     def test05_stack_table_in_image_page_test(self):
         """ PRTL-045
@@ -109,7 +102,6 @@ class ImagesTests(Framework):
         self.assertTrue(self.Tables.check_sorting_table('stacks'))
         self.lg('- try paging from start/previous/next/last and verify it should succeed')
         self.assertTrue(self.Tables.check_next_previous_buttons('stacks'))
-
 
     def test06_VM_table_in_image_page_test(self):
         """ PRTL-046
@@ -141,7 +133,7 @@ class ImagesTests(Framework):
                            'Reference ID',
                            'Type',
                            'Description'])
-    def test07_search_boxes_in_stack_in_image_page_test(self,column):
+    def test07_search_boxes_in_stack_in_image_page_test(self, column):
         """ PRTL-047
         *Test case to make sure that search boxes of stack table  image page are working as expected*
 
@@ -149,7 +141,6 @@ class ImagesTests(Framework):
 
         #. go to images page.
         #. open one random  image page
-        #. try use general search box  to search for values in  all columns and verfiy it return the right value in stack table
         #. try use the search box in every column and  verfiy it return the right value in stack table
         """
         if column == 'GridID':
@@ -159,10 +150,8 @@ class ImagesTests(Framework):
         self.lg('1- go to Images page')
         self.Images.get_it()
         self.Images.open_image_page()
-        self.lg('-try search boxes in stack table')
-        self.assertTrue(self.Tables.check_search_box('stacks',column))
         self.lg('try the search box in every column and verfiy it return the right value')
-        self.assertTrue(self.Tables.check_data_filters('stacks',column))
+        self.assertTrue(self.Tables.check_data_filters('stacks', column))
 
     @parameterized.expand(['Name',
                            'Hostname',
@@ -170,7 +159,7 @@ class ImagesTests(Framework):
                            'Cloud Space',
                            'Stack ID']
                           )
-    def test08_search_boxes_in_VM_in_image_page_test(self,column):
+    def test08_search_boxes_in_VM_in_image_page_test(self, column):
         """ PRTL-048
         *Test case to make sure that search boxes of VM table in image page  are working as expected*
         
@@ -178,7 +167,6 @@ class ImagesTests(Framework):
 
         #. go to images page.
         #. open one random  image page
-        #. try use general search box  to search for values in  all columns and verfiy it return the right value in VM table
         #. try use the search box in every column and  verfiy it return the right value in VM table
         """
         if column == 'Cloud Space':
@@ -187,7 +175,5 @@ class ImagesTests(Framework):
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
         self.Images.open_image_page()
-        self.lg('2-try search boxes in VM table')
-        self.assertTrue(self.Tables.check_search_box('machines',column))
         self.lg('3-try the search box in every column and verfiy it return the right value')
-        self.assertTrue(self.Tables.check_data_filters('machines',column))
+        self.assertTrue(self.Tables.check_data_filters('machines', column))
