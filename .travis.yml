@@ -17,6 +17,7 @@ matrix:
       script: bash functional_testing/Openvcloud/tools/travis_script.sh test portal ${portal_testsuite_dir}
 
 install:
+  - sudo apt install xvfb 
   - sudo apt install git sshpass -y
   - curl -s https://install.zerotier.com/ | sudo bash
 
@@ -25,5 +26,5 @@ before_script:
   - sh -e /etc/init.d/xvfb start &
   - sleep 3
   - bash functional_testing/Openvcloud/tools/travis_script.sh before
-  
+
 after_script: bash functional_testing/Openvcloud/tools/travis_script.sh after
