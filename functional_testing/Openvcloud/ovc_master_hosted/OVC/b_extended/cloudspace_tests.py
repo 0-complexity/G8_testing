@@ -140,3 +140,59 @@ class CloudspaceTests(BasicACLTest):
         self.assertIn('bin', vm1_conn.run('ls /'))
 
         self.lg('%s ENDED' % self._testID)
+
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1039')
+    def test004_disable_cloudspace(self):
+        """ OVC-04x
+        *Test case for test disable cloudspace.*
+
+        **Test Scenario:**
+        #. Create new cloudspace (CS1).
+        #. Create virtual machine (VM1).
+        #. Disable cloudspace (CS1), should succeed.
+        #. Check virtual machine (VM1) status, should be halted.
+        #. Create user without Admin access.
+        #. Authenticate (U1), should succeed.
+        #. Add user (U1) to cloudsapce (CS1), should succeed.
+        #. Try to start virtual machine (VM1) using user (U1), should fail.
+        #. Enable cloudspace (CS1), should succeed.
+        #. Try to start virtual machine (VM1) using user (U1), should succeed.
+        #. Disable cloudspace (CS1) again, should succeed.
+        #. Delete cloudspace (CS1) should succeed.
+        """
+
+        self.lg('Create virtual machine (VM1)')
+        machineId = self.cloudapi_create_machine(self.cloudspace_id) 
+        self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machineId)
+
+        self.lg('Disable cloudspace (CS1), should succeed')
+        self.assertTrue(self.api.cloudapi.cloudspaces.disable(cloudspaceId=self.cloudspace_id, reason='test'))
+
+        self.lg('Check virtual machine (VM1) status, should be halted')
+        machine_info = self.api.cloudapi.machines.get(machineId=machineId)
+        self.assertEqual(machine_info['status'], 'HALTED')
+
+        self.lg('Create user (U1) without Admin access')
+        user = self.cloudbroker_user_create()
+
+        self.lg("Authenticate (U1), should succeed")
+        user_api = self.get_authenticated_user_api(user)
+
+        self.lg('Add user (U1) to cloudsapce (CS1), should succeed')
+        self.add_user_to_cloudspace(self.cloudspace_id, user, 'ACDRUX')
+
+        self.lg('Try to start virtual machine (VM1), should fail')
+        with self.assertRaises(ApiError) as e:
+            user_api.cloudapi.machines.start(machineId=machineId)
+        
+        self.lg('Enable cloudspace (CS1), should succeed')
+        self.assertTrue(self.api.cloudapi.cloudspaces.enable(cloudspaceId=self.cloudspace_id, reason='test'))
+
+        self.lg('Try to start virtual machine (VM1) using user (U1), should succeed')
+        self.assertTrue(self.api.cloudapi.machines.start(machineId=machineId))
+
+        self.lg('Disable cloudspace (CS1) again, should succeed')
+        self.assertTrue(self.api.cloudapi.cloudspaces.disable(cloudspaceId=self.cloudspace_id, reason='test'))
+
+        self.lg('Delete cloudspace (CS1) should succeed')
+        self.api.cloudapi.machines.delete(machineId=machineId)
