@@ -342,7 +342,7 @@ class ExtendedTests(BasicACLTest):
         self.lg('%s STARTED' % self._testID)
 
         self.lg('Create a Disk (DS1) with size (S1)')
-        s1 = 10
+        s1 = random.randint(10, 50)
         disk_id = self.create_disk(self.account_id, size=s1)
         self.assertTrue(disk_id)
 
