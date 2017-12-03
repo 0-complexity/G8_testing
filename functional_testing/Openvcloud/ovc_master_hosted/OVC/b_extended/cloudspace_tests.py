@@ -140,14 +140,3 @@ class CloudspaceTests(BasicACLTest):
         self.assertIn('bin', vm1_conn.run('ls /'))
 
         self.lg('%s ENDED' % self._testID)
-
-    @unittest.skip('Not Implemented')
-    def test004_get_OpenVPN_config_file(self):
-        """ OVC-000
-        *Test case for getting OpenVPN config file for cloudspace.*
-
-        **Test Scenario:**
-        #. Create new cloudspace CS1.
-        #. Get OpenVPN config file for CS1, should succeed .. with /cloudapi/cloudspaces/getOpenvpnConfig API, should succeed.
-        #. Check that Config file is correct.
-        """
