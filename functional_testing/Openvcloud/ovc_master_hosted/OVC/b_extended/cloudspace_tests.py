@@ -157,6 +157,7 @@ class CloudspaceTests(BasicACLTest):
         #. Try to start virtual machine (VM1) using user (U1), should fail.
         #. Enable cloudspace (CS1), should succeed.
         #. Try to start virtual machine (VM1) using user (U1), should succeed.
+        #. Disable cloudspace (CS1) again, should succeed.
         #. Delete cloudspace (CS1) should succeed.
         """
 
@@ -189,6 +190,9 @@ class CloudspaceTests(BasicACLTest):
 
         self.lg('Try to start virtual machine (VM1) using user (U1), should succeed')
         self.assertTrue(self.api.cloudapi.machines.start(machineId=machineId))
+
+        self.lg('Disable cloudspace (CS1) again, should succeed')
+        self.assertTrue(self.api.cloudapi.cloudspaces.disable(cloudspaceId=self.cloudspace_id, reason='test'))
 
         self.lg('Delete cloudspace (CS1) should succeed')
         self.api.cloudapi.machines.delete(machineId=machineId)
