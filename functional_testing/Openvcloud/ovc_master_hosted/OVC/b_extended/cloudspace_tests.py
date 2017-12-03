@@ -180,12 +180,12 @@ class CloudspaceTests(BasicACLTest):
         user_api = self.get_authenticated_user_api(user)
 
         self.lg('Add user (U1) to cloudsapce (CS1), should succeed')
-        self.add_user_to_cloudspace(self.cloudspace_id, user, 'CXDRAU')
+        self.add_user_to_cloudspace(self.cloudspace_id, user, 'ACDRUX', user_api)
 
         self.lg('Try to start virtual machine (VM1), should fail')
-        with self.assertRaises(HTTPError) as e:
+        with self.assertRaises(ApiError) as e:
             user_api.cloudapi.machines.start(machineId=machineId)
-        self.assertEqual(e.status_code, 409)
+        self.assertEqual(e.status_code, 403)
 
         self.lg('Try to start virtual machine (VM1) using user with admin access, should succeed')
         self.assertTrue(self.api.cloudapi.machines.start(machineId=machineId))
