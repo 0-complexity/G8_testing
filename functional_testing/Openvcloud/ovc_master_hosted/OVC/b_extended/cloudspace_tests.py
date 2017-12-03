@@ -151,16 +151,14 @@ class CloudspaceTests(BasicACLTest):
         #. Create virtual machine (VM1).
         #. Disable cloudspace (CS1), should succeed.
         #. Check virtual machine (VM1) status, should be halted.
-        #. Create user without Admin role.
+        #. Create user without Admin access.
         #. Authenticate (U1), should succeed.
         #. Add user (U1) to cloudsapce (CS1), should succeed.
         #. Try to start virtual machine (VM1) using user (U1), should fail.
-        #. Try to start virtual machine (VM1) using user with admin access, should succeed.
         #. Enable cloudspace (CS1), should succeed.
-        #. Try to start virtual machine (VM1), should succeed.
-        #. Try to connect to virtual machine (VM1), should succeed.
+        #. Try to start virtual machine (VM1) using user (U1), should succeed.
+        #. Delete cloudspace (CS1) should succeed.
         """
-        import ipdb; ipdb.set_trace()
 
         self.lg('Create virtual machine (VM1)')
         machineId = self.cloudapi_create_machine(self.cloudspace_id) 
@@ -173,7 +171,7 @@ class CloudspaceTests(BasicACLTest):
         machine_info = self.api.cloudapi.machines.get(machineId=machineId)
         self.assertEqual(machine_info['status'], 'HALTED')
 
-        self.lg('Create user (U1) without Admin role')
+        self.lg('Create user (U1) without Admin access')
         user = self.cloudbroker_user_create()
 
         self.lg("Authenticate (U1), should succeed")
@@ -185,19 +183,12 @@ class CloudspaceTests(BasicACLTest):
         self.lg('Try to start virtual machine (VM1), should fail')
         with self.assertRaises(ApiError) as e:
             user_api.cloudapi.machines.start(machineId=machineId)
-        self.assertEqual(e.status_code, 403)
-
-        self.lg('Try to start virtual machine (VM1) using user with admin access, should succeed')
-        self.assertTrue(self.api.cloudapi.machines.start(machineId=machineId))
         
         self.lg('Enable cloudspace (CS1), should succeed')
         self.assertTrue(self.api.cloudapi.cloudspaces.enable(cloudspaceId=self.cloudspace_id, reason='test'))
 
-        self.lg('Try to start virtual machine (VM1), should succeed')
-        self.api.cloudapi.machines.start(machineId=machineId)
+        self.lg('Try to start virtual machine (VM1) using user (U1), should succeed')
+        self.assertTrue(self.api.cloudapi.machines.start(machineId=machineId))
 
-        
-
-
-
-
+        self.lg('Delete cloudspace (CS1) should succeed')
+        self.api.cloudapi.machines.delete(machineId=machineId)
