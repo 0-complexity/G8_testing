@@ -13,11 +13,7 @@ matrix:
       script: bash functional_testing/Openvcloud/tools/travis_script.sh test portal ${portal_testsuite_dir}
       
 install:
-  - sudo apt install xvfb -y
   - sudo apt install git sshpass -y
-  - sudo apt-get install -y chromium-chromedriver
-  - sudo ln -fs /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
-  - sudo ln -fs /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
   - curl -s https://install.zerotier.com/ | sudo bash
 
 before_script: bash functional_testing/Openvcloud/tools/travis_script.sh before
