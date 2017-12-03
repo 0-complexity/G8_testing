@@ -14,15 +14,16 @@ matrix:
         apt:
           packages:
             - google-chrome-stable
-      before_script:
-        - export DISPLAY=:99.0
-        - sh -e /etc/init.d/xvfb start &
-        - sleep 3
       script: bash functional_testing/Openvcloud/tools/travis_script.sh test portal ${portal_testsuite_dir}
 
 install:
   - sudo apt install git sshpass -y
   - curl -s https://install.zerotier.com/ | sudo bash
 
-before_script: bash functional_testing/Openvcloud/tools/travis_script.sh before
+before_script:
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start &
+  - sleep 3
+  - bash functional_testing/Openvcloud/tools/travis_script.sh before
+  
 after_script: bash functional_testing/Openvcloud/tools/travis_script.sh after
