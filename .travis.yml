@@ -3,14 +3,14 @@ sudo: true
 dist: trusty
 matrix:
   include:
-    python: "2.7"
-    script: bash functional_testing/Openvcloud/tools/travis_script.sh test acl ${acl_testsuite_dir}
+    - python: "2.7"
+      script: bash functional_testing/Openvcloud/tools/travis_script.sh test acl ${acl_testsuite_dir}
 
-    python: "2.7"
-    script: bash functional_testing/Openvcloud/tools/travis_script.sh test ovc ${ovc_testsuite_dir}
+    - python: "2.7"
+      script: bash functional_testing/Openvcloud/tools/travis_script.sh test ovc ${ovc_testsuite_dir}
 
-    python: "3.5"
-    script: bash functional_testing/Openvcloud/tools/travis_script.sh test portal ${portal_testsuite_dir}
+    - python: "3.5"
+      script: bash functional_testing/Openvcloud/tools/travis_script.sh test portal ${portal_testsuite_dir}
 
 install:
   - sudo apt install git sshpass -y
