@@ -5,6 +5,7 @@ from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
 import random, uuid
 
+
 class ExtendedTests(BasicACLTest):
 
     def setUp(self):
@@ -307,6 +308,7 @@ class ExtendedTests(BasicACLTest):
         #. Create cloudspace CS1, should succeed.
         #. Create VM1 with unallowed size, should fail.
         """
+        self.lg('%s STARTED' % self._testID)
 
         self.lg('1- Create cloudspace CS1, should succeed')
         allowed_sizes = [x['id'] for x in self.api.cloudapi.sizes.list(location=self.location)]
@@ -321,3 +323,46 @@ class ExtendedTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
             self.cloudapi_create_machine(cloudspace_id=cloudspaceId, size_id=unallowed_size)
             self.assertEqual(e.status_code, 400)
+
+        self.lg('%s ENDED' % self._testID)
+
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1015')
+    def test008_disk_resize(self):
+        """ OVC-041
+        *Test case for disk resizing*
+
+        **Test Scenario:**
+
+        #. Create a Disk (DS1) with size (S1).
+        #. Resize DS1 to a size less than S1, should fail.
+        #. Resize DS1 to a size greater than S1, should succeed.
+        #. Resize DS1 to a very large size, should fail.
+        #. Delete DS1.
+        """
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg('Create a Disk (DS1) with size (S1)')
+        s1 = random.randint(10, 50)
+        disk_id = self.create_disk(self.account_id, size=s1)
+        self.assertTrue(disk_id)
+
+        self.lg('Resize DS1 to a size less than S1, should fail')
+        with self.assertRaises(HTTPError) as e:
+            self.api.cloudapi.disks.resize(diskId=disk_id, size=s1 - 1)
+        self.assertEqual(e.exception.status_code, 400)
+
+        self.lg('Resize DS1 to a size greater than S1, should succeed')
+        self.api.cloudapi.disks.resize(diskId=disk_id, size=s1 + 1)
+        new_size = self.api.cloudapi.disks.get(diskId=disk_id)['sizeMax']
+        self.assertEqual(new_size, s1 + 1)
+
+        self.lg('Resize DS1 to a very large size, should fail')
+        with self.assertRaises(HTTPError) as e:
+            self.api.cloudapi.disks.resize(diskId=disk_id, size=90000000000)
+        self.assertEqual(e.exception.status_code, 400)
+
+        self.lg('Delete DS1')
+        response = self.api.cloudapi.disks.delete(diskId=disk_id, detach=False)
+        self.assertTrue(response)
+
+        self.lg('%s ENDED' % self._testID)
