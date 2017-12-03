@@ -148,7 +148,9 @@ class MachineTests(BasicACLTest):
         vm1_conn.sudo("nohup bash -c 'ip l s dev eth1 up </dev/null >/dev/null 2>&1 & '")
 
         self.lg("Check if you can ping VM1 from outside, should succeed")
-        self.assertTrue(os.system("ping -c 1 %s"%vm1_ext_ip))
+        vm1_ext_ip = vm1_ext_ip[:vm1_ext_ip.find('/')]
+        response = os.system("ping -c 1 %s"%vm1_ext_ip)
+        self.assertFalse(response)
 
         self.lg("Check that you can connect to vm with new ip ,should succeed.")
         ssh_client = self.get_vm_ssh_client(vm1_id)
