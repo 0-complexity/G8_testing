@@ -26,9 +26,35 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
     elif [[ ${action} == "test" ]]; then
 
-        echo "[+] Executing testsuite : ${testsuite_title}"
-        cmd="export PYTHONPATH=${python_path}; cd ${testsuite_repo_path}/${testsuite_home_dir}; nosetests -s -v ${testsuite_run_dir} --tc-file config.ini --tc=main.environment:${environment}"
-        sshpass -p ${ctrl_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_user}@${ctrl_ipaddress} "${cmd}"
+        testsuite=${2}
+        testsuite_path=${3}
+
+        if echo "${jobs}" | grep -q "${testsuite}"; then
+
+            echo "[+] Executing ${testsuite} testsuite"
+            export PYTHONPATH=${python_path}
+
+            if [[ "${testsuite}" == "acl" || "${testsuite}" == "ovc" ]]; then
+
+                echo "running ${testsuite} testsuite from path : ${testsuite_path}"
+
+                # cmd="cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud; nosetests -s -v ${testsuite_path} --tc-file config.ini --tc=main.environment:${environment}"
+                # sshpass -p ${ctrl_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_user}@${ctrl_ipaddress} "${cmd}"
+
+            elif [[ "${testsuite}" == "portal" ]]; then
+
+                echo "running ${testsuite} testsuite from path : ${testsuite_path}"
+
+                # cmd="cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud/ovc_master_hosted/Portal/; nosetests -s -v ${testsuite_path} --tc-file config.ini --tc=main.env:https://${environment}.demo.greenitglobe.com --tc=main.location:${environment} --tc=main.admin:${protal_admin} --tc=main.passwd:${portal_password} --tc=main.secret:${portal_secret} --tc=main.browser:${portal_browser}"
+                # sshpass -p ${ctrl_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_user}@${ctrl_ipaddress} "${cmd}"
+
+            fi
+
+        else
+
+            echo "================= JOB IS SKIPPED ================="
+
+        fi
 
     elif [[ ${action} == "after" ]]; then
 
