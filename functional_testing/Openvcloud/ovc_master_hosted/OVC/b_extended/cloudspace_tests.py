@@ -180,7 +180,7 @@ class CloudspaceTests(BasicACLTest):
         user_api = self.get_authenticated_user_api(user)
 
         self.lg('Add user (U1) to cloudsapce (CS1), should succeed')
-        self.add_user_to_cloudspace(self.cloudspace_id, user, 'ACDRUX', user_api)
+        self.add_user_to_cloudspace(self.cloudspace_id, user, 'ACDRUX')
 
         self.lg('Try to start virtual machine (VM1), should fail')
         with self.assertRaises(ApiError) as e:
