@@ -163,7 +163,7 @@ class CloudspaceTests(BasicACLTest):
         self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machineId)
 
         self.lg('Disable cloudspace (CS1), should succeed')
-        self.assertTrue(self.api.cloudspaces.disable(cloudspaceId=self.cloudspace_id, reason='test'))
+        self.assertTrue(self.api.cloudapi.cloudspaces.disable(cloudspaceId=self.cloudspace_id, reason='test'))
 
         self.lg('Check virtual machine (VM1) status, should be halted')
         machine_info = self.api.cloudapi.machines.get(machineId=machineId)
@@ -176,7 +176,7 @@ class CloudspaceTests(BasicACLTest):
         self.assertEqual(e.status_code, 409)
 
         self.lg('Enable cloudspace (CS1), should succeed')
-        self.assertTrue(self.api.cloudspaces.enable(cloudspaceId=self.cloudspace_id, reason='test'))
+        self.assertTrue(self.api.cloudapi.cloudspaces.enable(cloudspaceId=self.cloudspace_id, reason='test'))
 
         self.lg('Try to start virtual machine (VM1), should succeed')
         self.api.cloudapi.machines.start(machineId=machineId)
