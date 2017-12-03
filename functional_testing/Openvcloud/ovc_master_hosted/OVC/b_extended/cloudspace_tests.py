@@ -140,3 +140,49 @@ class CloudspaceTests(BasicACLTest):
         self.assertIn('bin', vm1_conn.run('ls /'))
 
         self.lg('%s ENDED' % self._testID)
+
+    
+    def test004_disable_cloudspace(self):
+        """ OVC-04x
+        *Test case for test disable cloudspace.*
+
+        **Test Scenario:**
+        #. Create new cloudspace (CS1).
+        #. Create virtual machine (VM1).
+        #. Disable cloudspace (CS1), should succeed.
+        #. Check virtual machine (VM1) status, should be halted.
+        #. Try to start virtual machine (VM1), should fail.
+        #. Enable cloudspace (CS1), should succeed.
+        #. Try to start virtual machine (VM1), should succeed.
+        #. Try to connect to virtual machine (VM1), should succeed.
+        """
+        import ipdb; ipdb.set_trace()
+
+        self.lg('Create virtual machine (VM1)')
+        machineId = self.cloudapi_create_machine(self.cloudspace_id) 
+        self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machineId)
+
+        self.lg('Disable cloudspace (CS1), should succeed')
+        self.assertTrue(self.api.cloudspaces.disable(cloudspaceId=self.cloudspace_id, reason='test'))
+
+        self.lg('Check virtual machine (VM1) status, should be halted')
+        machine_info = self.api.cloudapi.machines.get(machineId=machineId)
+        self.assertEqual(machine_info['status'], 'HALTED')
+
+        self.lg('Try to start virtual machine (VM1), should fail')
+        with self.assertRaises(HTTPError) as e:
+            self.api.cloudapi.machines.start(machineId=machineId)
+        
+        self.assertEqual(e.status_code, 409)
+
+        self.lg('Enable cloudspace (CS1), should succeed')
+        self.assertTrue(self.api.cloudspaces.enable(cloudspaceId=self.cloudspace_id, reason='test'))
+
+        self.lg('Try to start virtual machine (VM1), should succeed')
+        self.api.cloudapi.machines.start(machineId=machineId)
+
+        
+
+
+
+
