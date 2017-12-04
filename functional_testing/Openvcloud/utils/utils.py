@@ -457,7 +457,7 @@ class BaseTest(unittest.TestCase):
                 continue
         return connection
 
-    def get_vm_ssh_client(self, vm_id, vm_ip=None , password=None, login= None):
+    def get_vm_public_ssh_client(self, vm_id, vm_ip=None , password=None, login= None):
         vm = self.api.cloudapi.machines.get(machineId=vm_id)
         if not vm_ip:
             vm_nics = vm["interfaces"]

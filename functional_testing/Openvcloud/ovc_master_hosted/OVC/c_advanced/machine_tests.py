@@ -124,15 +124,9 @@ class MachineTests(BasicACLTest):
 
         """
         self.lg('%s STARTED' % self._testID)
-        self.lg(" Create a cloudspace CS1, should succeed.")
-        cs1_id = self.cloudapi_cloudspace_create(self.account_id,
-                                                 self.location,
-                                                 self.account_owner)
 
-        self.assertTrue(cs1_id)
         self.lg("Create VM1,should succeed.")
-        vm1_id = self.cloudapi_create_machine(cloudspace_id=cs1_id)
-        self.assertTrue(vm1_id)
+        vm1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
 
         self.lg("Attach VM1 to an external network, should succeed")
         reponse = self.api.cloudbroker.machine.attachExternalNetwork(machineId=vm1_id)
@@ -153,7 +147,7 @@ class MachineTests(BasicACLTest):
         self.assertFalse(response)
 
         self.lg("Check that you can connect to vm with new ip ,should succeed.")
-        ssh_client = self.get_vm_ssh_client(vm1_id)
+        ssh_client = self.get_vm_public_ssh_client(vm1_id)
         ssh_stdin, ssh_stdout, ssh_stderr = ssh_client.exec_command("ls /")
         self.assertIn('bin', ssh_stdout.read())
 
