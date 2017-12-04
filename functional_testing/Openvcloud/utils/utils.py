@@ -11,6 +11,7 @@ from testconfig import config
 import random
 import imaplib
 import socket
+import paramiko
 
 SESSION_DATA = {'vms': []}
 
@@ -455,6 +456,21 @@ class BaseTest(unittest.TestCase):
                 print(ex)
                 continue
         return connection
+
+    def get_vm_public_ssh_client(self, vm_id, vm_ip=None , password=None, login= None):
+        vm = self.api.cloudapi.machines.get(machineId=vm_id)
+        if not vm_ip:
+            vm_nics = vm["interfaces"]
+            vm_ip = [x for x in vm_nics if "externalnetworkId" in x["params"]][0]["ipAddress"]
+            vm_ip = vm_ip[:vm_ip.find('/')]
+
+        password = password or vm['accounts'][0]['password']
+        login = login or vm['accounts'][0]['login']
+        ssh_client = paramiko.SSHClient()
+        ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh_client.connect(vm_ip, username=login, password=password)
+        return ssh_client
+
 
     def get_running_stackId(self, except_stackid=''):
         ccl = j.clients.osis.getNamespace('cloudbroker')
