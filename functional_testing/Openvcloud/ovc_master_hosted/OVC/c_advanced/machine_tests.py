@@ -541,3 +541,74 @@ class MachineTests(BasicACLTest):
 
         with self.assertRaises(HTTPError) as e:
              self.api.cloudapi.machines.rollbackSnapshot(machineId=cloned_vm_id, epoch=snapshotEpoch)
+
+
+    def test013_memory_size_after_attaching_external_network(self):
+        """ OVC-029
+        *Test case for memory size after attaching external network*
+
+        **Test Scenario:**
+
+        #. Create virtual machine (VM1), should succeed.
+        #. Attach external network to virtual machine (VM1), should succeed.
+        #. Add new disk (DS1), should succeed.
+        #. Attach disk (DS1) to virtual machine (VM1), should succeed.
+        #. Detach external network from virtual machine (VM1), should succeed.
+        #. Stop virtual machine (VM1), should succeed.
+        #. Resize virtual machine (VM1), should succeed.
+        #. Start virtual machine (VM1), should succeed.
+        #. Check that virtual machine (VM1) is sized with right size in MB unit.
+        """
+
+        self.lg('Create virtual machine (VM1), should succeed')
+        machineId = self.cloudapi_create_machine(self.cloudspace_id)
+        machine_info = self.api.cloudapi.machines.get(machineId=machineId)
+
+        self.lg('Attach external network to virtual machine (VM1), should succeed')
+        response = self.api.cloudbroker.machine.attachExternalNetwork(machineId=machineId)
+        self.assertTrue(response)
+
+        self.lg('Create disk (DS1)')
+        diskId = self.create_disk(self.account_id)
+        self.assertTrue(diskId)
+
+        self.lg('Attach disk (DS1) to virtual machine (VM1), should succeed')
+        response = self.api.cloudapi.machines.attachDisk(machineId=machineId, diskId=diskId)
+        self.assertTrue(response)
+
+        self.lg('Detach external network from virtual machine (VM1), should succeed')
+        response = self.api.cloudapi.machines.detachDisk(machineId=machineId, diskId=diskId)
+        self.assertTrue(response)
+
+        self.lg('Stop virtual machine (VM1), should succeed')
+        response = self.api.cloudapi.machines.stop(machineId=machineId)
+        self.assertTrue(response)
+
+        self.lg('Resize virtual machine (VM1), should succeed')
+        available_sizes = range(1, 7)
+        current_size_id = machine_info['sizeid']
+        available_sizes.remove(current_size_id)
+        new_size_id = random.choice(available_sizes)
+        response = self.api.cloudapi.machines.resize(machineId=machineId, sizeId=new_size_id)
+        self.assertTrue(response)
+
+        self.lg('Start virtual machine (VM1), should succeed')
+        response = self.api.cloudapi.machines.start(machineId=machineId)
+        self.assertTrue(response)
+
+        self.lg('Check that virtual machine (VM1) is sized with right size in MB unit')
+        machine_connection = self.get_vm_connection(machineId, wait_vm_ip=False)
+        response = machine_connection.run('free -m | grep Mem')
+        machine_size = response['result'].split(' ')[1]
+
+
+
+
+
+
+
+
+
+
+
+
