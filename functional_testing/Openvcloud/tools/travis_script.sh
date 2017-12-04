@@ -41,7 +41,7 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
             elif [[ "${testsuite}" == "portal" ]]; then
 
-                cmd="cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud/ovc_master_hosted/Portal/; xvfb-run -a nosetests -s -v ${testsuite_path} --tc-file config.ini --tc=main.env:https://${environment}.demo.greenitglobe.com --tc=main.location:${environment} --tc=main.admin:${protal_admin} --tc=main.passwd:${portal_password} --tc=main.secret:${portal_secret} --tc=main.browser:${portal_browser}"
+                cmd="cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud/ovc_master_hosted/Portal/; xvfb-run -a nosetests3 -s -v ${testsuite_path} --tc-file config.ini --tc=main.env:https://${environment}.demo.greenitglobe.com --tc=main.location:${environment} --tc=main.admin:${protal_admin} --tc=main.passwd:${portal_password} --tc=main.secret:${portal_secret} --tc=main.browser:${portal_browser}"
                 sshpass -p ${ctrl_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_user}@${ctrl_ipaddress} "${cmd}"
 
             fi
