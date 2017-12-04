@@ -376,19 +376,18 @@ class BasicTests(BasicACLTest):
         self.assertEqual(account['status'], 'DISABLED')
 
         self.lg('- try to create snapshot, should fail with 403 forbidden')
-        try:
+        with self.assertRaises(ApiError) as e:
             self.account_owner_api.cloudapi.machines.snapshot(machineId=self.machine_id,
                                                               name='snapshot22')
-        except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+        self.lg('- expected error raised %s' % e.message)
+        self.assertEqual(e.message, '403 Forbidden')
 
         self.lg('- try to start the VM, should fail with 403 forbidden')
-        try:
+        with self.assertRaises(ApiError) as e:
             self.account_owner_api.cloudapi.machines.start(machineId=self.machine_id)
-        except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+
+        self.lg('- expected error raised %s' % e.message)
+        self.assertEqual(e.message, '403 Forbidden')
 
         self.lg('%s ENDED' % self._testID)
 
@@ -693,13 +692,12 @@ class BasicTests(BasicACLTest):
         diff_sizes = random.sample(basic_sizes,4)
         for diskSize in diff_sizes:
             self.lg('- Create a new machine with disk size %s' % diskSize)
-            try:
+            with self.assertRaises(HTTPError) as e:
                 machineId = self.cloudapi_create_machine(cloudspaceId,image_id=imageId,disksize=diskSize)
-            except HTTPError as e:
-                self.lg('- expected error raised %s' % e.message)
-                self.assertEqual(e.status_code, 400)
-            else:
-                self.assertTrue(machineId)
+
+            self.lg('- expected error raised %s' % e.message)
+            self.assertEqual(e.status_code, 400)
+            self.assertTrue(machineId)
 
         self.lg('%s ENDED' % self._testID)
 
