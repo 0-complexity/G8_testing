@@ -688,9 +688,8 @@ class BasicTests(BasicACLTest):
         self.assertTrue(imageId, 'No windows image found on the environment')
         self.lg('- Get all sizes')
         diskSizes = self.api.cloudapi.sizes.list(cloudspaceId)[0]['disks']
-        basic_sizes=[10,20,50,100,250,500,1000,2000]
-        diff_sizes = random.sample(basic_sizes,4)
-        for diskSize in diff_sizes:
+        basic_sizes = [10, 20, 25]
+        for diskSize in basic_sizes:
             self.lg('- Create a new machine with disk size %s' % diskSize)
             with self.assertRaises(HTTPError) as e:
                 self.cloudapi_create_machine(cloudspaceId,image_id=imageId,disksize=diskSize)
