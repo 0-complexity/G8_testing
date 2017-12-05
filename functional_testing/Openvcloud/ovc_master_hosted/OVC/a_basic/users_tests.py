@@ -192,6 +192,8 @@ class UsersBasicTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
             self.api.cloudbroker.user.create(username=user1_name, emailaddress=user2_emailaddress,
                                              password=user1_name, groups=[])
+                                             
+        self.lg('- expected error raised %s' % e.exception.status_code)
         self.assertEqual(e.exception.status_code, 409)
 
         self.lg("Create User3 with same Email as User1 , should fail . ")
