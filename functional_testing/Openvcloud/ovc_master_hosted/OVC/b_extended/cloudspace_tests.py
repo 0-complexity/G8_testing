@@ -57,11 +57,11 @@ class CloudspaceTests(BasicACLTest):
                              timeout=60, cloudspaceId=cloudspace_id)
 
         self.lg('3- Try to delete the cloudspace with delete, should fail with 409 conflict')
-        try:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.cloudspaces.delete(cloudspaceId=cloudspace_id)
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 409)
+            
+        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.assertEqual(e.exception.status_code, 409)
 
         self.lg('4- Delete the cloudspace with destroy, should succeed')
         self.api.cloudbroker.cloudspace.destroy(accountId= self.account_id,

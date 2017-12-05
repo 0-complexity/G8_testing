@@ -376,19 +376,18 @@ class BasicTests(BasicACLTest):
         self.assertEqual(account['status'], 'DISABLED')
 
         self.lg('- try to create snapshot, should fail with 403 forbidden')
-        try:
+        with self.assertRaises(ApiError) as e:
             self.account_owner_api.cloudapi.machines.snapshot(machineId=self.machine_id,
                                                               name='snapshot22')
-        except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+        self.lg('- expected error raised %s' % e.exception.message)
+        self.assertEqual(e.exception.message, '403 Forbidden')
 
         self.lg('- try to start the VM, should fail with 403 forbidden')
-        try:
+        with self.assertRaises(ApiError) as e:
             self.account_owner_api.cloudapi.machines.start(machineId=self.machine_id)
-        except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
+
+        self.lg('- expected error raised %s' % e.exception.message)
+        self.assertEqual(e.exception.message, '403 Forbidden')
 
         self.lg('%s ENDED' % self._testID)
 
@@ -689,17 +688,13 @@ class BasicTests(BasicACLTest):
         self.assertTrue(imageId, 'No windows image found on the environment')
         self.lg('- Get all sizes')
         diskSizes = self.api.cloudapi.sizes.list(cloudspaceId)[0]['disks']
-        basic_sizes=[10,20,50,100,250,500,1000,2000]
-        diff_sizes = random.sample(basic_sizes,4)
-        for diskSize in diff_sizes:
+        basic_sizes = [10, 20, 25]
+        for diskSize in basic_sizes:
             self.lg('- Create a new machine with disk size %s' % diskSize)
-            try:
-                machineId = self.cloudapi_create_machine(cloudspaceId,image_id=imageId,disksize=diskSize)
-            except HTTPError as e:
-                self.lg('- expected error raised %s' % e.message)
-                self.assertEqual(e.status_code, 400)
-            else:
-                self.assertTrue(machineId)
+            with self.assertRaises(HTTPError) as e:
+                self.cloudapi_create_machine(cloudspaceId,image_id=imageId,disksize=diskSize)
+
+            self.assertEqual(e.exception.status_code, 400)
 
         self.lg('%s ENDED' % self._testID)
 

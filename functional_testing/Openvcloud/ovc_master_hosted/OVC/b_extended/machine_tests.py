@@ -128,15 +128,15 @@ class ExtendedTests(BasicACLTest):
         self.lg('%s STARTED' % self._testID)
 
         self.lg('1- Try to create machine with empty name, should fail')
-        try:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.create(cloudspaceId=self.cloudspace_id,
                                               name='',
                                               sizeId=self.get_size(self.cloudspace_id)['id'],
                                               imageId=self.get_image()['id'],
                                               disksize=10)
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 400)
+                                              
+        self.lg('- expected error raised %s' % e.message)
+        self.assertEqual(e.status_code, 400)
 
         self.lg("2- Create normal machine with valid name, should succeed")
         machine_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
@@ -147,11 +147,11 @@ class ExtendedTests(BasicACLTest):
         self.assertEqual(self.api.cloudapi.machines.get(machineId=machine_id)['status'], 'HALTED')
 
         self.lg('4- Try to clone created machine with empty name, should fail')
-        try:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.clone(machineId=machine_id, name='')
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 400)
+
+        self.lg('- expected error raised %s' % e.message)
+        self.assertEqual(e.status_code, 400)
 
         self.lg('%s ENDED' % self._testID)
 
@@ -189,11 +189,11 @@ class ExtendedTests(BasicACLTest):
         self.assertFalse([True for d in disks if d['id'] == disk_id])
 
         self.lg('Delete non existing disk, should fail.')
-        try:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.disks.delete(diskId=disk_id+9, detach=False)
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 404)
+
+        self.lg('- expected error raised %s' % e.message)
+        self.assertEqual(e.status_code, 404)
 
         self.lg('Delete DS1, should succeed.')
         response = self.api.cloudapi.disks.delete(diskId=disk_id, detach=False)
@@ -229,29 +229,29 @@ class ExtendedTests(BasicACLTest):
         VM1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
 
         self.lg("Attach non existing disk to VM1, should fail")
-        try:
+        with self.assertRaises(HTTPError) as e:
             response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id+9)
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 404)
+
+        self.lg('- expected error raised %s' % e.message)
+        self.assertEqual(e.status_code, 404)
 
         self.lg("Attach DS1 to VM1, should succeed")
         response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id)
         self.assertTrue(response)
 
         self.lg("Delete DS1 without detaching it, should fail")
-        try:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.disks.delete(diskId=disk_id, detach=False)
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 409)
+
+        self.lg('- expected error raised %s' % e.message)
+        self.assertEqual(e.status_code, 409)
 
         self.lg("Detach non existing disk, should fail")
-        try:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id+9)
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 404)
+
+        self.lg('- expected error raised %s' % e.message)
+        self.assertEqual(e.status_code, 404)
 
         self.lg("Detach DS1, should succeed")
         response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id)

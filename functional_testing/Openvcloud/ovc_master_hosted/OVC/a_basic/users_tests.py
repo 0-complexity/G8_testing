@@ -11,7 +11,7 @@ class UsersBasicTests(BasicACLTest):
 
     def setUp(self):
         super(UsersBasicTests, self).setUp()
-        self.acl_setup()
+        self.acl_setup(create_default_cloudspace=False)
 
     def test001_authenticate_user(self):
         """ OVC-031
@@ -192,12 +192,15 @@ class UsersBasicTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
             self.api.cloudbroker.user.create(username=user1_name, emailaddress=user2_emailaddress,
                                              password=user1_name, groups=[])
-            self.assertEqual(e.status_code, 409)
+                                             
+        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.assertEqual(e.exception.status_code, 409)
 
         self.lg("Create User3 with same Email as User1 , should fail . ")
         user3_name = str(uuid.uuid4()).replace('-', '')[0:10]
         with self.assertRaises(HTTPError) as e:
             self.api.cloudbroker.user.create(username=user3_name, emailaddress=user1_emailaddress,
                                              password=user3_name, groups=[])
-            self.lg('- expected error raised %s' % e.status_code)
-            self.assertEqual(e.status_code, 409)
+
+        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.assertEqual(e.exception.status_code, 409)

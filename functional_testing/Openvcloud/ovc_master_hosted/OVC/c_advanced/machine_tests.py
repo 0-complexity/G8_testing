@@ -285,11 +285,11 @@ class MachineTests(BasicACLTest):
         self.assertTrue(response)
 
         self.lg('Attach DS1 to VM2, should fail.')
-        try:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.attachDisk(machineId=VM2_id, diskId=disk_id)
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 400)
+
+        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.assertEqual(e.exception.status_code, 400)
 
         self.lg('Delete disk after detaching it, should succeed')
         response = self.api.cloudapi.disks.delete(diskId=disk_id, detach=True)
@@ -319,11 +319,11 @@ class MachineTests(BasicACLTest):
         bd_id = self.api.cloudapi.machines.get(machineId=VM1_id)['disks'][0]['id']
 
         self.lg("Detach VM1's boot disk (BD1), should fail")
-        try:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.detachDisk(machineId=VM1_id, diskId=bd_id)
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 400)
+
+        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.assertEqual(e.exception.status_code, 400)
 
         self.lg('Stop VM1')
         self.api.cloudapi.machines.stop(machineId=VM1_id)
@@ -335,11 +335,11 @@ class MachineTests(BasicACLTest):
         self.assertFalse(self.api.cloudapi.machines.get(machineId=VM1_id)['disks'])
 
         self.lg("Start VM1, should fail")
-        try:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.start(machineId=VM1_id)
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 400)
+
+        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.assertEqual(e.exception.status_code, 400)
 
         self.lg("Attach BD1 to VM1, should succeed.")
         response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=bd_id)
