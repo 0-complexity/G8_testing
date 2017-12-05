@@ -259,8 +259,8 @@ class MachineTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.attachDisk(machineId=VM2_id, diskId=disk_id)
 
-        self.lg('- expected error raised %s' % e.message)
-        self.assertEqual(e.status_code, 400)
+        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.assertEqual(e.exception.status_code, 400)
 
         self.lg('Delete disk after detaching it, should succeed')
         response = self.api.cloudapi.disks.delete(diskId=disk_id, detach=True)
@@ -293,8 +293,8 @@ class MachineTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.detachDisk(machineId=VM1_id, diskId=bd_id)
 
-        self.lg('- expected error raised %s' % e.message)
-        self.assertEqual(e.status_code, 400)
+        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.assertEqual(e.exception.status_code, 400)
 
         self.lg('Stop VM1')
         self.api.cloudapi.machines.stop(machineId=VM1_id)
@@ -309,8 +309,8 @@ class MachineTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.start(machineId=VM1_id)
 
-        self.lg('- expected error raised %s' % e.message)
-        self.assertEqual(e.status_code, 400)
+        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.assertEqual(e.exception.status_code, 400)
 
         self.lg("Attach BD1 to VM1, should succeed.")
         response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=bd_id)

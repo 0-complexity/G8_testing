@@ -60,8 +60,8 @@ class CloudspaceTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.cloudspaces.delete(cloudspaceId=cloudspace_id)
             
-        self.lg('- expected error raised %s' % e.message)
-        self.assertEqual(e.status_code, 409)
+        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.assertEqual(e.exception.status_code, 409)
 
         self.lg('4- Delete the cloudspace with destroy, should succeed')
         self.api.cloudbroker.cloudspace.destroy(accountId= self.account_id,
