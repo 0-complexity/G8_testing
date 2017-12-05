@@ -561,45 +561,53 @@ class MachineTests(BasicACLTest):
         """
 
         self.lg('Create virtual machine (VM1), should succeed')
-        machineId = self.cloudapi_create_machine(self.cloudspace_id)
-        machine_info = self.api.cloudapi.machines.get(machineId=machineId)
+        machine_id = self.cloudapi_create_machine(self.cloudspace_id)
+        machine_info = self.api.cloudapi.machines.get(machineId=machine_id)
 
         self.lg('Attach external network to virtual machine (VM1), should succeed')
-        response = self.api.cloudbroker.machine.attachExternalNetwork(machineId=machineId)
+        response = self.api.cloudbroker.machine.attachExternalNetwork(machineId=machine_id)
         self.assertTrue(response)
 
         self.lg('Create disk (DS1)')
-        diskId = self.create_disk(self.account_id)
-        self.assertTrue(diskId)
+        disk_id = self.create_disk(self.account_id)
+        self.assertTrue(disk_id)
 
         self.lg('Attach disk (DS1) to virtual machine (VM1), should succeed')
-        response = self.api.cloudapi.machines.attachDisk(machineId=machineId, diskId=diskId)
+        response = self.api.cloudapi.machines.attachDisk(machineId=machine_id, diskId=disk_id)
         self.assertTrue(response)
 
         self.lg('Detach external network from virtual machine (VM1), should succeed')
-        response = self.api.cloudapi.machines.detachDisk(machineId=machineId, diskId=diskId)
+        response = self.api.cloudapi.machines.detachDisk(machineId=machine_id, diskId=disk_id)
         self.assertTrue(response)
 
         self.lg('Stop virtual machine (VM1), should succeed')
-        response = self.api.cloudapi.machines.stop(machineId=machineId)
+        response = self.api.cloudapi.machines.stop(machineId=machine_id)
         self.assertTrue(response)
+
+        self.wait_for_status('HALTED', self.api.cloudapi.machines.get, machineId=machine_id)
 
         self.lg('Resize virtual machine (VM1), should succeed')
         available_sizes = range(1, 7)
         current_size_id = machine_info['sizeid']
         available_sizes.remove(current_size_id)
         new_size_id = random.choice(available_sizes)
-        response = self.api.cloudapi.machines.resize(machineId=machineId, sizeId=new_size_id)
+        response = self.api.cloudapi.machines.resize(machineId=machine_id, sizeId=new_size_id)
         self.assertTrue(response)
 
         self.lg('Start virtual machine (VM1), should succeed')
-        response = self.api.cloudapi.machines.start(machineId=machineId)
+        response = self.api.cloudapi.machines.start(machineId=machine_id)
         self.assertTrue(response)
 
+        self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machine_id)
+    
         self.lg('Check that virtual machine (VM1) is sized with right size in MB unit')
-        machine_connection = self.get_vm_connection(machineId, wait_vm_ip=False)
+        machine_connection = self.get_vm_connection(machine_id, wait_vm_ip=False)
         response = machine_connection.run('free -m | grep Mem')
-        machine_size = response['result'].split(' ')[1]
+        machine_memory = int(response.split()[1])
+        expected_machine_memory  = [x['memory'] for x in self.api.cloudapi.sizes.list(location=self.location) if x['id'] == new_size_id][0]
+        self.assertAlmostEqual(machine_memory, expected_machine_memory, delta=(0.1 * expected_machine_memory))
+
+
 
 
 
