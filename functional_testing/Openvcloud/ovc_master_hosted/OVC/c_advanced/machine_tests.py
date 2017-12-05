@@ -544,7 +544,7 @@ class MachineTests(BasicACLTest):
 
 
     def test013_memory_size_after_attaching_external_network(self):
-        """ OVC-029
+        """ OVC-043
         *Test case for memory size after attaching external network*
 
         **Test Scenario:**
@@ -601,22 +601,8 @@ class MachineTests(BasicACLTest):
         self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machine_id)
     
         self.lg('Check that virtual machine (VM1) is sized with right size in MB unit')
-        machine_connection = self.get_vm_connection(machine_id, wait_vm_ip=False)
+        machine_connection = self.get_vm_connection(machine_id, wait_vm_ip=True)
         response = machine_connection.run('free -m | grep Mem')
         machine_memory = int(response.split()[1])
         expected_machine_memory  = [x['memory'] for x in self.api.cloudapi.sizes.list(location=self.location) if x['id'] == new_size_id][0]
         self.assertAlmostEqual(machine_memory, expected_machine_memory, delta=(0.1 * expected_machine_memory))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
