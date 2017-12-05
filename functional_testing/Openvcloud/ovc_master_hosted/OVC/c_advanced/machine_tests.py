@@ -577,7 +577,7 @@ class MachineTests(BasicACLTest):
         self.assertTrue(response)
 
         self.lg('Detach external network from virtual machine (VM1), should succeed')
-        response = self.api.cloudapi.machines.detachDisk(machineId=machine_id, diskId=disk_id)
+        response = self.api.cloudapi.machines.detachExternalNetwork(machineId=machine_id)
         self.assertTrue(response)
 
         self.lg('Stop virtual machine (VM1), should succeed')
