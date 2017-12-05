@@ -6,6 +6,7 @@ from JumpScale.baselib.http_client.HttpClient import HTTPError
 import time
 import threading
 import os
+import paramiko
 
 class MachineTests(BasicACLTest):
     def setUp(self):
@@ -541,3 +542,70 @@ class MachineTests(BasicACLTest):
 
         with self.assertRaises(HTTPError) as e:
              self.api.cloudapi.machines.rollbackSnapshot(machineId=cloned_vm_id, epoch=snapshotEpoch)
+
+    def test013_check_IP_conflict(self):
+        """ OVC-043
+        *Test case for checking machine connectivity through external network*
+
+        **Test Scenario:**
+
+        #. Create CS1, should succeed
+        #. Create VM1,VM2 to CS1,should succeed.
+        #. Attach VM1,VM2 to an external networks , should succeed.
+        #. Assign IP to VM1's and VM2's external netowrk interface, should succeed.
+        #. Check if VM1 and VM2 can ping google.should succeed.
+        #  Check if VM1 and VM2 can Ping EN1's Gateway ip, should fail.
+        #. Delete VM2 ext network ip , and give it same ip as vm1.
+        #. Check that VM1 still can work normally, should succeed.
+        #. Check that you can't connect to VM2 with it's new ext network ip ,should succeed .
+
+        """
+        self.lg('%s STARTED' % self._testID)
+        self.lg("Create VM1,VM2,should succeed.")
+
+        self.lg("Create VM1,VM2,should succeed.")
+        vm1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+        vm2_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+
+        self.lg("Attach VM1,VM2 to an external networks, should succeed.")
+        response = self.api.cloudbroker.machine.attachExternalNetwork(machineId=vm1_id)
+        self.assertTrue(response)
+
+        reponse = self.api.cloudbroker.machine.attachExternalNetwork(machineId=vm2_id)
+        self.assertTrue(reponse)
+
+        self.lg("Assign IP to VM1's and VM2's external netowrk interface, should succeed.")
+        vm1_ext_ip = self.assign_IP_to_vm_external_netowrk(vm1_id)
+        vm2_ext_ip = self.assign_IP_to_vm_external_netowrk(vm2_id)
+
+        vm_nics = self.api.cloudapi.machines.get(machineId=vm_id)["interfaces"]
+        params = [x for x in vm_nics if "externalnetworkId" in x["params"]][0]["params"]
+        gateway_ip = params[params.find(":")+1:params.find("/")]
+
+        ssh_client1 = self.get_vm_ssh_client(vm1_id)
+        ssh_client2 = self.get_vm_ssh_client(vm2_id)
+
+        self.lg("Check if VM1 and VM2 can Ping EN1's Gateway ip, should fail.")
+        self.assertNotIn(', 0% packet loss', ssh_client1.exec_command("ping -c 1 %s"%gateway_ip)[1].read())
+        self.assertNotIn(', 0% packet loss', ssh_client2.exec_command("ping -c 1 %s"%gateway_ip)[1].read())
+
+        self.lg(" Check if VM1 and VM2 can ping google.should succeed.")
+        self.assertIn(', 0% packet loss', ssh_client1.exec_command("ping -c 1 8.8.8.8")[1].read())
+        self.assertIn(', 0% packet loss', ssh_client2.exec_command("ping -c 1 8.8.8.8")[1].read())
+
+        self.lg("Delete VM2 ext network ip , and give it same ip as vm1.")
+        vm2_password =self.api.cloudapi.machines.get(machineId=vm2_id)['accounts'][0]['password']
+        stdin, stdout, stderr = ssh_client2.exec_command("sudo -S ip a d %s dev eth1"%vm2_ext_ip)
+        stdin.write(vm2_password +'\n')
+        vm2_conn = self.get_vm_connection(vm2_id)
+        vm2_conn.sudo("ip a a %s dev eth1"%vm1_ext_ip)
+        vm2_conn.sudo("nohup bash -c 'ip l s dev eth1 up </dev/null >/dev/null 2>&1 & '")
+
+        self.lg(" Check that VM1 still can work normally,should succeed.")
+        self.assertIn(', 0% packet loss', ssh_client1.exec_command("ping -c 1 8.8.8.8")[1].read())
+
+        self.lg("Check that you can't connect to VM2 ,should succeed ")
+        try:
+            self.get_vm_ssh_client(vm2_id, vm_ip=vm1_ext_ip)
+        except paramiko.AuthenticationException, e:
+            self.assertIn("Authentication failed", e.message)

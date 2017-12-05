@@ -10,7 +10,6 @@ from nose.tools import TimeExpired
 from testconfig import config
 import random
 import imaplib
-import socket
 import paramiko
 
 SESSION_DATA = {'vms': []}
@@ -292,18 +291,6 @@ class BaseTest(unittest.TestCase):
             resource = func(**kwargs)  # get resource
         self.assertEqual(resource['status'], status)
 
-    def wait_for_machine_to_get_ip(self, machineId, timeout=300):
-        for _ in range(timeout):
-            machine_info = self.api.cloudapi.machines.get(machineId=machineId)
-            ip_address = machine_info['interfaces'][0]['ipAddress']
-            if ip_address != 'Undefined':
-                return ip_address
-            else:
-                time.sleep(1)
-        else:
-            return None
-
-
     def add_user_to_account(self, account_id, user, accesstype, api=''):
         api = api or self.api
         api.cloudapi.accounts.addUser(accountId=account_id,
@@ -438,26 +425,35 @@ class BaseTest(unittest.TestCase):
         vm1_conn.run('sshpass -p%s scp -o \'StrictHostKeyChecking=no\' %s  %s@%s:'
                      %(account2['password'], file_loc, account2['login'], vm2_ip))
 
-    def get_vm_connection(self, vm_id, wait_vm_ip=True, password=None, login=None, pb_port=None):
+    def get_vm_connection(self, vm_id, wait_vm_ip=True, password=None, login=None):
         vm = self.api.cloudapi.machines.get(machineId=vm_id)
         cloudspace_publicip = self.api.cloudapi.cloudspaces.get(cloudspaceId=vm['cloudspaceid'])['publicipaddress']
         password = password or vm['accounts'][0]['password']
         login = login or vm['accounts'][0]['login']
-        cloudspace_publicport = pb_port or self.get_vm_ssh_publicport(vm_id, wait_vm_ip=wait_vm_ip)
-        for i in range(5):
-            try:
-                connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)
-                connection.user(vm['accounts'][0]['login'])
-                connection.fabric.state.output["running"] = False
-                connection.fabric.state.output["stdout"] = False
-                connection.run('ls')
-                break
-            except socket.error, ex:
-                print(ex)
-                continue
+        cloudspace_publicport = self.get_vm_ssh_publicport(vm_id, wait_vm_ip=wait_vm_ip)
+        connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)
+        connection.user(vm['accounts'][0]['login'])
+        connection.fabric.state.output["running"] = False
+        connection.fabric.state.output["stdout"] = False
         return connection
 
+<<<<<<< 0e963ff7345e877e03a7330f8827d8f4d20b52c8
     def get_vm_public_ssh_client(self, vm_id, vm_ip=None , password=None, login= None):
+=======
+    def assign_IP_to_vm_external_netowrk(self, vm_id):
+        vm_nics = self.api.cloudapi.machines.get(machineId=vm_id)["interfaces"]
+        vm_ext_nic = [x for x in vm_nics if "externalnetworkId" in x["params"]][0]
+        self.assertTrue(vm_ext_nic)
+        vm_ext_ip = vm_ext_nic["ipAddress"]
+        gateway_ip = vm_ext_nic["params"][vm_ext_nic["params"].find(":")+1:vm_ext_nic["params"].find(" ")]
+        vm_conn = self.get_vm_connection(vm_id)
+        vm_conn.sudo("ip a a %s dev eth1"%vm_ext_ip)
+        vm_conn.sudo("nohup bash -c 'ip l s dev eth1 up </dev/null >/dev/null 2>&1 & '")
+        vm_ext_ip = vm_ext_ip[:vm_ext_ip.find('/')]
+        return vm_ext_ip
+
+    def get_vm_ssh_client(self, vm_id, vm_ip=None , password=None, login= None):
+>>>>>>> ip conflict
         vm = self.api.cloudapi.machines.get(machineId=vm_id)
         if not vm_ip:
             vm_nics = vm["interfaces"]
@@ -483,7 +479,7 @@ class BaseTest(unittest.TestCase):
             node = scl.node.get(int(nodeId))
             if node.active:
                 return stackId
-        return False
+        return -1
 
     def get_physical_node_id(self, cloudspaceID):
         # This function take the cloudspace ID and return its physical node ID
