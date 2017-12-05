@@ -599,8 +599,6 @@ class MachineTests(BasicACLTest):
         self.assertTrue(response)
 
         self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machine_id)
-
-        time.sleep(60)
     
         self.lg('Check that virtual machine (VM1) is sized with right size in MB unit')
         machine_connection = self.get_vm_connection(machine_id, wait_vm_ip=True)
