@@ -586,19 +586,21 @@ class MachineTests(BasicACLTest):
 
         self.wait_for_status('HALTED', self.api.cloudapi.machines.get, machineId=machine_id)
 
-        # self.lg('Resize virtual machine (VM1), should succeed')
-        # available_sizes = range(1, 7)
-        # current_size_id = machine_info['sizeid']
-        # available_sizes.remove(current_size_id)
-        # new_size_id = random.choice(available_sizes)
-        # response = self.api.cloudapi.machines.resize(machineId=machine_id, sizeId=new_size_id)
-        # self.assertTrue(response)
+        self.lg('Resize virtual machine (VM1), should succeed')
+        available_sizes = range(1, 7)
+        current_size_id = machine_info['sizeid']
+        available_sizes.remove(current_size_id)
+        new_size_id = random.choice(available_sizes)
+        response = self.api.cloudapi.machines.resize(machineId=machine_id, sizeId=new_size_id)
+        self.assertTrue(response)
 
         self.lg('Start virtual machine (VM1), should succeed')
         response = self.api.cloudapi.machines.start(machineId=machine_id)
         self.assertTrue(response)
 
         self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machine_id)
+
+        time.sleep(60)
     
         self.lg('Check that virtual machine (VM1) is sized with right size in MB unit')
         machine_connection = self.get_vm_connection(machine_id, wait_vm_ip=True)
