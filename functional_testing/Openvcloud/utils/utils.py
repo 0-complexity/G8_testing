@@ -452,7 +452,7 @@ class BaseTest(unittest.TestCase):
                 connection.fabric.state.output["stdout"] = False
                 connection.run('ls')
                 break
-            except socket.error, ex:''
+            except socket.error, ex:
                 print(ex)
                 continue
         return connection
