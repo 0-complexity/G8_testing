@@ -461,9 +461,8 @@ class BaseTest(unittest.TestCase):
         vm_ext_nic = [x for x in vm_nics if "externalnetworkId" in x["params"]][0]
         self.assertTrue(vm_ext_nic)
         vm_ext_ip = vm_ext_nic["ipAddress"]
-        gateway_ip = vm_ext_nic["params"][vm_ext_nic["params"].find(":")+1:vm_ext_nic["params"].find(" ")]
         vm_conn = self.get_vm_connection(vm_id)
-        vm_conn.sudo("ip a a %s dev eth1"%vm_ext_ip)
+        vm_conn.sudo("ip a a %s dev eth1" % vm_ext_ip)
         vm_conn.sudo("nohup bash -c 'ip l s dev eth1 up </dev/null >/dev/null 2>&1 & '")
         vm_ext_ip = vm_ext_ip[:vm_ext_ip.find('/')]
         return vm_ext_ip
