@@ -3,22 +3,18 @@ sudo: true
 dist: trusty
 matrix:
   include:
-  - python: "2.7"
-    env: 
-    - testsuite_title=ACL
-    - testsuite_home_dir=G8_testing/functional_testing/Openvcloud
-    - testsuite_run_dir=${acl_testsuite_dir}
+    - python: "2.7"
+      script: bash functional_testing/Openvcloud/tools/travis_script.sh test acl ${acl_testsuite_dir}
 
-  - python: "2.7"
-    env:
-    - testsuite_title=OVC 
-    - testsuite_home_dir=G8_testing/functional_testing/Openvcloud
-    - testsuite_run_dir=${ovc_testsuite_dir}
+    - python: "2.7"
+      script: bash functional_testing/Openvcloud/tools/travis_script.sh test ovc ${ovc_testsuite_dir}
 
+    - python: "3.5"
+      script: bash functional_testing/Openvcloud/tools/travis_script.sh test portal ${portal_testsuite_dir}
+      
 install:
   - sudo apt install git sshpass -y
   - curl -s https://install.zerotier.com/ | sudo bash
 
-script: bash functional_testing/Openvcloud/tools/travis_script.sh test
 before_script: bash functional_testing/Openvcloud/tools/travis_script.sh before
 after_script: bash functional_testing/Openvcloud/tools/travis_script.sh after
