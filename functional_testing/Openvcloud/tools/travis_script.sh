@@ -32,11 +32,10 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
         if echo "${jobs}" | grep -q "${testsuite}"; then
 
             echo "[+] Executing testsuite: ${testsuite}, from path: ${testsuite_path}"
-            export PYTHONPATH=${python_path}
 
             if [[ "${testsuite}" == "acl" || "${testsuite}" == "ovc" ]]; then
 
-                cmd="cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud; nosetests -s -v ${testsuite_path} --tc-file config.ini --tc=main.environment:${environment}"
+                cmd="export PYTHONPATH=${python_path}; cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud; nosetests -s -v ${testsuite_path} --tc-file config.ini --tc=main.environment:${environment}"
                 sshpass -p ${ctrl_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_root_user}@${ctrl_ipaddress} "${cmd}"
 
             elif [[ "${testsuite}" == "portal" ]]; then
