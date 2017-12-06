@@ -32,7 +32,7 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
         if echo "${jobs}" | grep -q "${testsuite}"; then
 
             echo "[+] Executing testsuite: ${testsuite}, from path: ${testsuite_path}"
-            export PYTHONPATH=${python_path}
+            export PYTHONPATH="${python_path}"
 
             if [[ "${testsuite}" == "acl" || "${testsuite}" == "ovc" ]]; then
 
