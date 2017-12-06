@@ -27,12 +27,11 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
         testsuite=${2}
         testsuite_path=${3}
-        python_path="/opt/jumpscale7/lib:/opt/jumpscale7/lib/lib-dynload/:/opt/jumpscale7/bin:/opt/jumpscale7/lib/python.zip:/opt/jumpscale7/lib/plat-x86_64-linux-gnu"
     
         if echo "${jobs}" | grep -q "${testsuite}"; then
 
             echo "[+] Executing testsuite: ${testsuite}, from path: ${testsuite_path}"
-            export PYTHONPATH="${python_path}"
+            export PYTHONPATH="/opt/jumpscale7/lib:/opt/jumpscale7/lib/lib-dynload/:/opt/jumpscale7/bin:/opt/jumpscale7/lib/python.zip:/opt/jumpscale7/lib/plat-x86_64-linux-gnu"
 
             if [[ "${testsuite}" == "acl" || "${testsuite}" == "ovc" ]]; then
 
