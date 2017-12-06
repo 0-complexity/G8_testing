@@ -2,8 +2,7 @@ action=$1
 
 if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
-    testsuite_repo_path="/tmp/travis.buid.${TRAVIS_JOB_NUMBER}"
-    python_path="export PYTHONPATH=/opt/jumpscale7/lib:/opt/jumpscale7/lib/lib-dynload/:/opt/jumpscale7/bin:/opt/jumpscale7/lib/python.zip:/opt/jumpscale7/lib/plat-x86_64-linux-gnu"
+    testsuite_repo_path="/tmp/travis.build.${TRAVIS_JOB_NUMBER}"
 
     if [[ ${action} == "before" ]]; then
 
@@ -28,7 +27,8 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
         testsuite=${2}
         testsuite_path=${3}
-
+        python_path="/opt/jumpscale7/lib:/opt/jumpscale7/lib/lib-dynload/:/opt/jumpscale7/bin:/opt/jumpscale7/lib/python.zip:/opt/jumpscale7/lib/plat-x86_64-linux-gnu"
+    
         if echo "${jobs}" | grep -q "${testsuite}"; then
 
             echo "[+] Executing testsuite: ${testsuite}, from path: ${testsuite_path}"
@@ -47,9 +47,7 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
             fi
 
         else
-
-            echo "============================ JOB IS SKIPPED ================================"
-
+            echo "======================================== JOB IS SKIPPED =========================================="
         fi
 
     elif [[ ${action} == "after" ]]; then
