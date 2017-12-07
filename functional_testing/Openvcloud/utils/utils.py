@@ -587,3 +587,66 @@ class BasicACLTest(BaseTest):
                 self.lg('Teardown -- delete group: %s' % group)
                 self.api.system.usermanager.deleteGroup(id=group)
         super(BasicACLTest, self).tearDown()
+
+
+class VMClient:
+    def __init__(self, vmid, login=None, password=None, port=None, ip=None, external_network=False, timeout=30):
+        self.api = API()
+        self.machine = self.api.cloudapi.machines.get(vmid)
+        self.cloudspace = self.api.cloudapi.cloudspaces.get(self.machine['cloudspaceid'])
+        self.login = login or self.machine['accounts'][0]['login']
+        self.password = password or self.machine['accounts'][0]['password']
+        self.cs_public_ip = str(netaddr.IPNetwork(self.cloudspace['publicipaddress']).ip)
+        self.ip = ip or self.cs_public_ip
+        self.port = port or self.get_vm_ssh_port()
+        
+        if external_network:
+            self.ip =  self.get_machine_ip(external_network)
+
+        self.client = paramiko.SSHClient()
+        self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+        for _ in range(timeout):
+            try:
+                self.client.connect(self.ip, port=self.port, username=self.login, password=self.password)
+                break
+            except socket.error:
+                time.sleep(1)
+        else:
+            raise socket.error
+
+    def get_machine_ip(self, external_network):
+        nics = self.machine['interfaces']
+        if external_network:
+            external_network_nic = [x for x in nics if "externalnetworkId" in x["params"]]
+            unittest.assertNotFalse(external_network_nic, "Can't find external network interface")
+            vmip = external_network_nic["ipAddress"]
+            return  vmip[:vmip.find('/')]
+        else:
+            return nics[0]['ipAddress']
+
+    def get_vm_ssh_port(self):
+        machine_id = self.machine['id']
+        cloudspace_id = self.cloudspace['id']
+        port_forwards = self.api.cloudapi.portforwarding.list(cloudspace_id, machine_id)
+        vm_cs_publicports = [pf['publicPort'] for pf in port_forwards if pf['localPort'] == '22']
+        if vm_cs_publicports:
+            vm_cs_publicport = vm_cs_publicports[0]
+        else:
+            vm_cs_publicport = random.randint(50000, 65000)
+            self.api.cloudapi.portforwarding.create(
+                cloudspaceId=cloudspace_id,
+                publicIp=self.cs_public_ip,
+                publicPort=vm_cs_publicport,
+                machineId=machine_id,
+                localPort=22,
+                protocol='tcp'
+            )
+
+        return vm_cs_publicport
+
+    def execute(self, cmd, timeout=None, sudo=False):
+        if sudo and self.login != 'root':
+            cmd = 'echo "{}" | sudo -S {}'.format(self.password, cmd)
+        
+        return self.client.exec_command(cmd , timeout=timeout, get_pty=True)
