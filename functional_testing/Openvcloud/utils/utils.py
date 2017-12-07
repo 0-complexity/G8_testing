@@ -623,6 +623,7 @@ class VMClient:
         else:
             raise
 
+
     def get_machine_ip(self, external_network):
         nics = self.machine['interfaces']
         if external_network:
