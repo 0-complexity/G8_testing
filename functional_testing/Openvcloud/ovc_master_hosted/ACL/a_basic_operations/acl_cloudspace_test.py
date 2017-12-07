@@ -2,7 +2,7 @@
 from time import sleep
 import random
 import unittest
-
+import uuid
 from ....utils.utils import BasicACLTest
 from JumpScale import j
 from JumpScale.portal.portal.PortalClient2 import ApiError
