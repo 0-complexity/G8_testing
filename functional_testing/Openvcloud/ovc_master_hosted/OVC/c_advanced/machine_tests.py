@@ -1,5 +1,5 @@
 import unittest, random, uuid
-from ....utils.utils import BasicACLTest
+from ....utils.utils import BasicACLTest, VMClient
 from nose_parameterized import parameterized
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
@@ -601,8 +601,8 @@ class MachineTests(BasicACLTest):
         self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machine_id)
     
         self.lg('Check that virtual machine (VM1) is sized with right size in MB unit')
-        machine_connection = self.get_vm_connection(machine_id, wait_vm_ip=True)
-        response = machine_connection.run('free -m | grep Mem')
+        vm_client = VMClient(machine_id)
+        stdin, stdout, stderr = vm_client.execute('free -m | grep Mem')
         machine_memory = int(response.split()[1])
         expected_machine_memory  = [x['memory'] for x in self.api.cloudapi.sizes.list(location=self.location) if x['id'] == new_size_id][0]
         self.assertAlmostEqual(machine_memory, expected_machine_memory, delta=(0.1 * expected_machine_memory))
