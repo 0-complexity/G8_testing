@@ -72,7 +72,10 @@ class BasicTests(BasicACLTest):
         image = [image for image in images if image['name'] == image_name][0]
         self.lg('- using image [%s]' % image_name)
         self.lg('2- get all available sizes to use and choose one random, should succeed')
-        size = random.choice(self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id))
+        sizes = self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id)
+        sizes = [size for size in sizes if size['id'] in range(1, 7)]
+        size = random.choice(sizes)
+
         self.lg('- using image [%s] with memory size [%s]' % (image_name, size['memory']))
         if 'Windows' in image_name:
             while True:
@@ -123,6 +126,7 @@ class BasicTests(BasicACLTest):
 
         self.lg('1- Get all available sizes to use and choose one random and create vm with it , should succeed')
         sizes = self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id)
+        sizes = [size for size in sizes if size['id'] in range(1, 7)]
         selected_size = random.choice(sizes)
         disksize = random.choice(selected_size['disks'])
 
@@ -173,6 +177,7 @@ class BasicTests(BasicACLTest):
 
         self.lg('1- Get all available sizes to use and choose one random and create vm with it , should succeed')
         sizes = self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id)
+        sizes = [size for size in sizes if size['id'] in range(1, 7)]
         selected_size = random.choice(sizes)
         disksize = random.choice(selected_size['disks'])
 
@@ -232,7 +237,10 @@ class BasicTests(BasicACLTest):
         image = [image for image in images if image['name'] == image_name][0]
         self.lg('- using image [%s]' % image_name)
         self.lg('2- get all available sizes to use and choose one random, should succeed')
-        size = random.choice(self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id))
+        sizes = self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id)
+        sizes = [size for size in sizes if size['id'] in range(1, 7)]
+        size = random.choice(sizes)
+
         disksize = random.choice(size['disks'])
         if image_name == 'Windows 2012r2 Standard':
            while disksize < 25:
@@ -507,7 +515,10 @@ class BasicTests(BasicACLTest):
         self.assertEqual(self.api.cloudapi.cloudspaces.get(cloudspaceId=self.cloudspaceId)['id'], self.cloudspaceId)
 
         self.lg('- create virtual machine with %s name' % (language))
-        size = random.choice(self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id))
+        sizes = self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id)
+        sizes = [size for size in sizes if size['id'] in range(1, 7)]
+        size = random.choice(sizes)
+
         sizeId = size['id']      
         disksize = random.choice(size['disks'])
         self.machineId = self.api.cloudapi.machines.create(cloudspaceId=self.cloudspaceId, name=language,

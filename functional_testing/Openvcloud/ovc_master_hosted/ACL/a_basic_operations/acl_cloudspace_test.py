@@ -804,8 +804,9 @@ class Write(ACLCLOUDSPACE):
         sleep(2)
 
         self.lg('4- Resize the machine with new user [user], should succeed')
-        sizesAva = len(self.api.cloudapi.sizes.list(self.cloudspace_id))
-        resizeId = randint(1,sizesAva)
+        sizes = self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id)
+        sizes = [size for size in sizes if size['id'] in range(1, 7)]
+        resizeId = random.choice(sizes)['id']
         self.lg("resize with size ID  %s"%resizeId)
         self.account_owner_api.cloudapi.machines.resize(machineId=machine_id,
                                                sizeId=resizeId)
