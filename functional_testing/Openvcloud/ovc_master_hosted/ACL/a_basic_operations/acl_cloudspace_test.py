@@ -1,7 +1,6 @@
 # coding=utf-8
 from time import sleep
-from random import randint
-import uuid
+import random
 import unittest
 
 from ....utils.utils import BasicACLTest
