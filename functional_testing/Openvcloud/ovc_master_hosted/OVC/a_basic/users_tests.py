@@ -6,6 +6,7 @@ from JumpScale.baselib.http_client.HttpClient import HTTPError
 import email
 import imaplib
 import mailbox
+import json
 
 class UsersBasicTests(BasicACLTest):
 
@@ -54,7 +55,6 @@ class UsersBasicTests(BasicACLTest):
         accounts_list = user1_key.cloudapi.accounts.list()
         self.assertEqual(accounts_list, [])
 
-    @unittest.skip("https://github.com/0-complexity/openvcloud/issues/952")
     def test002_get_user_info(self):
         """ OVC-032
         * Test case for check get user information.*
@@ -82,13 +82,13 @@ class UsersBasicTests(BasicACLTest):
         self.assertIn(user1_email, response["emailaddresses"])
 
         self.lg("- Set data for U1 with /cloudapi/users/setData API, Should succeed.")
-        data = str(uuid.uuid4()).replace('-', '')[0:10]
-        response = user1_key.cloudapi.users.setData(data=data)
+        data = {"key":"value"}
+        response = user1_key.cloudapi.users.setData(data=json.dumps(data))
         self.assertTrue(response)
 
         self.lg(' Check that this data has been added to U1 info ,should succeed.')
-        response = user1_key.cloudapi.users.get(user1)
-        self.assertIn(data, response["data"])
+        response = user1_key.cloudapi.users.get(username=user1)
+        self.assertDictEqual(data, response["data"])
 
     def test003_check_matching_users(self):
         """ OVC-033
