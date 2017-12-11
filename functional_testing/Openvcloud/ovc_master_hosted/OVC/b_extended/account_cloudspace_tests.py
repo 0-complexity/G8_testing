@@ -278,7 +278,7 @@ class ExtendedTests(BasicACLTest):
 
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1073')
     def test004_getting_account_resources(self):
-        """ OVC-000
+        """ OVC-045
         *Test case for checking account's resources retrieval*
 
         **Test Scenario:**
