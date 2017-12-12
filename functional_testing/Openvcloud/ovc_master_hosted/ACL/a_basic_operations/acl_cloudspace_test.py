@@ -1,9 +1,8 @@
 # coding=utf-8
 from time import sleep
-from random import randint
-import uuid
+import random
 import unittest
-
+import uuid
 from ....utils.utils import BasicACLTest
 from JumpScale import j
 from JumpScale.portal.portal.PortalClient2 import ApiError
@@ -504,7 +503,7 @@ class Write(ACLCLOUDSPACE):
             self.assertEqual(e.message, '404 Not Found')
 
         self.lg('%s ENDED' % self._testID)
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/745')
+
     def test005_cloudspace_create_clone_delete_machine(self):
         """ ACL-33
         *Test case for create/clone/delete machine api with user has write access on cloud space level.*
@@ -804,8 +803,9 @@ class Write(ACLCLOUDSPACE):
         sleep(2)
 
         self.lg('4- Resize the machine with new user [user], should succeed')
-        sizesAva = len(self.api.cloudapi.sizes.list(self.cloudspace_id))
-        resizeId = randint(1,sizesAva)
+        sizes = self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id)
+        sizes = [size for size in sizes if size['id'] in range(1, 7)]
+        resizeId = random.choice(sizes)['id']
         self.lg("resize with size ID  %s"%resizeId)
         self.account_owner_api.cloudapi.machines.resize(machineId=machine_id,
                                                sizeId=resizeId)

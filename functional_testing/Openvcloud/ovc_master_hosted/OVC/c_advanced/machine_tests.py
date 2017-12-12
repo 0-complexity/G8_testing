@@ -285,11 +285,11 @@ class MachineTests(BasicACLTest):
         self.assertTrue(response)
 
         self.lg('Attach DS1 to VM2, should fail.')
-        try:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.attachDisk(machineId=VM2_id, diskId=disk_id)
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 400)
+
+        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.assertEqual(e.exception.status_code, 400)
 
         self.lg('Delete disk after detaching it, should succeed')
         response = self.api.cloudapi.disks.delete(diskId=disk_id, detach=True)
@@ -319,11 +319,11 @@ class MachineTests(BasicACLTest):
         bd_id = self.api.cloudapi.machines.get(machineId=VM1_id)['disks'][0]['id']
 
         self.lg("Detach VM1's boot disk (BD1), should fail")
-        try:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.detachDisk(machineId=VM1_id, diskId=bd_id)
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 400)
+
+        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.assertEqual(e.exception.status_code, 400)
 
         self.lg('Stop VM1')
         self.api.cloudapi.machines.stop(machineId=VM1_id)
@@ -335,11 +335,11 @@ class MachineTests(BasicACLTest):
         self.assertFalse(self.api.cloudapi.machines.get(machineId=VM1_id)['disks'])
 
         self.lg("Start VM1, should fail")
-        try:
+        with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.start(machineId=VM1_id)
-        except (HTTPError, ApiError) as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.status_code, 400)
+
+        self.lg('- expected error raised %s' % e.exception.status_code)
+        self.assertEqual(e.exception.status_code, 400)
 
         self.lg("Attach BD1 to VM1, should succeed.")
         response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=bd_id)
@@ -496,10 +496,12 @@ class MachineTests(BasicACLTest):
         #. Check that file (F1) exists.
         #. Rollback (VM2_C) to snapshot (SS1), should fail.
         """
+        self.lg('%s STARTED' % self._testID)
+
         self.lg('Create (VM1), should succeed')
         machineId = self.cloudapi_create_machine(self.cloudspace_id)
         machine_1_ipaddress = self.wait_for_machine_to_get_ip(machineId)
-        self.assertNotEqual(machine_1_ipaddress, 'Undefined')
+        self.assertTrue(machine_1_ipaddress)
 
         self.lg('Create portforward to ssh port for (VM1)')
         self.get_vm_ssh_publicport(machineId, wait_vm_ip=False)
@@ -518,7 +520,7 @@ class MachineTests(BasicACLTest):
         self.lg('Clone VM1 as (VM2_C), should succeed')
         cloned_vm_id = self.api.cloudapi.machines.clone(machineId=machineId, name='test')
         cloned_machine_ipaddress = self.wait_for_machine_to_get_ip(cloned_vm_id)
-        self.assertNotEqual(cloned_machine_ipaddress, 'Undefined')
+        self.assertTrue(cloned_machine_ipaddress)
 
         self.lg('Start (VM1), should succeed')
         self.api.cloudapi.machines.start(machineId=machineId)
@@ -616,3 +618,57 @@ class MachineTests(BasicACLTest):
         machine_memory = int(stdout.read().split()[1])
         expected_machine_memory = [x['memory'] for x in self.api.cloudapi.sizes.list(location=self.location) if x['id'] == new_size_id][0]
         self.assertAlmostEqual(machine_memory, expected_machine_memory, delta=(0.1 * expected_machine_memory))
+        self.lg('%s ENDED' % self._testID)
+
+    def test014_check_disk_iops_limit(self):
+        """ OVC-046
+        *Test case for checking cloned VM ip, portforwards and credentials*
+        **Test Scenario:**
+        #. Create virtual machine (VM1), should succeed.
+        #. Attach data disk (DD1) to VM1 and set MaxIOPS to iops1.
+        #. Run fio on DD1, iops should be less than iops1.
+        #. Change DD1's MaxIOPS limit to iops2 which is double iops1.
+        #. Run fio on DD1 again, iops should be between iops1 and iops2.
+        """
+        self.lg('%s STARTED' % self._testID)
+
+        def get_iops(vm_connection, run_name):
+            fio_cmd = "fio --ioengine=libaio --group_reporting --direct=1 --filename=/dev/vdb "\
+                      "--runtime=30 --readwrite=rw --rwmixwrite=5 --size=500M --name=test{0} "\
+                      "--output={0}".format(run_name)
+            vm1_conn.sudo(fio_cmd)
+            out1 = vm1_conn.sudo("cat %s | grep -o 'iops=[0-9]\{1,\}' | cut -d '=' -f 2" % run_name)
+            iops_list = out1.split('\r\n')
+            return iops_list
+
+        self.lg("Create virtual machine (VM1), should succeed.")
+        images = self.api.cloudapi.images.list()
+        image_id = [i['id'] for i in images if 'Ubuntu' in i['name']]
+        if not image_id:
+            self.skipTest('No Ubuntu image found')
+        vm1_id = self.cloudapi_create_machine(self.cloudspace_id, image_id=image_id[0])
+        vm1_ip = self.wait_for_machine_to_get_ip(vm1_id)
+        self.assertTrue(vm1_ip)
+
+        self.lg("Attach data disk (DD1) to VM1 and set MaxIOPS to iops1.")
+        maxiops = 500
+        disk_id = self.create_disk(self.account_id, maxiops=maxiops)
+        response = self.api.cloudapi.machines.attachDisk(machineId=vm1_id, diskId=disk_id)
+        self.assertTrue(response)
+
+        self.lg("Run fio on DD1, iops should be less than iops1.")
+        vm1_conn = self.get_vm_connection(vm1_id, wait_vm_ip=False)
+        vm1_conn.sudo('apt-get update')
+        vm1_conn.sudo('apt-get install fio -y')
+        iops_list = get_iops(vm1_conn, 'b1')
+        self.assertFalse([True for i in iops_list if int(i) > maxiops])
+
+        self.lg("Change DD1's MaxIOPS limit to iops2 which is double iops1.")
+        response = self.api.cloudapi.disks.limitIO(diskId=disk_id, iops=2 * maxiops)
+        self.assertTrue(response)
+
+        self.lg("Run fio on DD1 again, iops should be between iops1 and iops2.")
+        iops_list = get_iops(vm1_conn, 'b2')
+        self.assertTrue([True for i in iops_list if maxiops < int(i) < 2 * maxiops])
+
+        self.lg('%s ENDED' % self._testID)
