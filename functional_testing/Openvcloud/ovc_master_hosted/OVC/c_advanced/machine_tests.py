@@ -1,5 +1,5 @@
 import unittest, random, uuid
-from ....utils.utils import BasicACLTest
+from ....utils.utils import BasicACLTest, VMClient
 from nose_parameterized import parameterized
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
@@ -544,6 +544,80 @@ class MachineTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
              self.api.cloudapi.machines.rollbackSnapshot(machineId=cloned_vm_id, epoch=snapshotEpoch)
 
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1061')
+    def test013_memory_size_after_attaching_external_network(self):
+        """ OVC-043
+        *Test case for memory size after attaching external network*
+
+        **Test Scenario:**
+
+        #. Create virtual machine (VM1), should succeed.
+        #. Attach external network to virtual machine (VM1), should succeed.
+        #. Add new disk (DS1), should succeed.
+        #. Attach disk (DS1) to virtual machine (VM1), should succeed.
+        #. Detach external network from virtual machine (VM1), should succeed.
+        #. Stop virtual machine (VM1), should succeed.
+        #. Resize virtual machine (VM1), should succeed.
+        #. Start virtual machine (VM1), should succeed.
+        #. Check that virtual machine (VM1) is sized with right size in MB unit.
+        """
+
+        self.lg('Create virtual machine (VM1), should succeed')
+        images = self.api.cloudapi.images.list()
+        image_id = [x['id'] for x in images if 'Ubuntu' in x['name']]
+
+        if not image_id:
+            self.skipTest('No Ubuntu image was found in the environment')
+
+        machine_id = self.cloudapi_create_machine(self.cloudspace_id, image_id=image_id[0])
+        machine_info = self.api.cloudapi.machines.get(machineId=machine_id)
+
+        self.lg('Attach external network to virtual machine (VM1), should succeed')
+        response = self.api.cloudbroker.machine.attachExternalNetwork(machineId=machine_id)
+        self.assertTrue(response)
+
+        self.lg('Create disk (DS1)')
+        disk_id = self.create_disk(self.account_id)
+        self.assertTrue(disk_id)
+
+        self.lg('Attach disk (DS1) to virtual machine (VM1), should succeed')
+        response = self.api.cloudapi.machines.attachDisk(machineId=machine_id, diskId=disk_id)
+        self.assertTrue(response)
+
+        self.lg('Detach external network from virtual machine (VM1), should succeed')
+        response = self.api.cloudapi.machines.detachExternalNetwork(machineId=machine_id)
+        self.assertTrue(response)
+
+        self.lg('Stop virtual machine (VM1), should succeed')
+        response = self.api.cloudapi.machines.stop(machineId=machine_id)
+        self.assertTrue(response)
+
+        self.wait_for_status('HALTED', self.api.cloudapi.machines.get, machineId=machine_id)
+
+        time.sleep(10)
+
+        self.lg('Resize virtual machine (VM1), should succeed')
+        available_sizes = range(1, 7)
+        current_size_id = machine_info['sizeid']
+        available_sizes.remove(current_size_id)
+        new_size_id = random.choice(available_sizes)
+        response = self.api.cloudapi.machines.resize(machineId=machine_id, sizeId=new_size_id)
+        self.assertTrue(response)
+
+        time.sleep(10)
+
+        self.lg('Start virtual machine (VM1), should succeed')
+        response = self.api.cloudapi.machines.start(machineId=machine_id)
+        self.assertTrue(response)
+
+        self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machine_id)
+    
+        self.lg('Check that virtual machine (VM1) is sized with right size in MB unit')
+        vm_client = VMClient(machine_id)
+        stdin, stdout, stderr = vm_client.execute('free -m | grep Mem')
+        machine_memory = int(stdout.read().split()[1])
+        expected_machine_memory = [x['memory'] for x in self.api.cloudapi.sizes.list(location=self.location) if x['id'] == new_size_id][0]
+        self.assertAlmostEqual(machine_memory, expected_machine_memory, delta=(0.1 * expected_machine_memory))
         self.lg('%s ENDED' % self._testID)
 
     def test014_check_disk_iops_limit(self):
