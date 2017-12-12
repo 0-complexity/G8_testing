@@ -598,7 +598,6 @@ class VMClient:
         for _ in range(timeout):
             try:
                 self.client.connect(self.ip, port=self.port, username=self.login, password=self.password)
-                self.session = self.client.get_transport().open_session()
                 break
             except:
                 time.sleep(1)
@@ -640,4 +639,4 @@ class VMClient:
         if sudo and self.login != 'root':
             cmd = 'echo "{}" | sudo -S {}'.format(self.password, cmd)
         
-        return self.session.exec_command(cmd , timeout=timeout, get_pty=True)
+        return self.client.exec_command(cmd , timeout=timeout, get_pty=True)
