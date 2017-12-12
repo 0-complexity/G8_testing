@@ -561,7 +561,7 @@ class MachineTests(BasicACLTest):
         """
 
         self.lg('Create virtual machine (VM1), should succeed')
-        machine_id = self.cloudapi_create_machine(self.cloudspace_id)
+        machine_id = self.cloudapi_create_machine(self.cloudspace_id, image_id=1)
         machine_info = self.api.cloudapi.machines.get(machineId=machine_id)
 
         self.lg('Attach external network to virtual machine (VM1), should succeed')
