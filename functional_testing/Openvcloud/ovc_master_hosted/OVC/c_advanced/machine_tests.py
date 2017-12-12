@@ -570,6 +570,8 @@ class MachineTests(BasicACLTest):
         self.lg("Create virtual machine (VM1), should succeed.")
         images = self.api.cloudapi.images.list()
         image_id = [i['id'] for i in images if 'Ubuntu' in i['name']][0]
+        if not image_id:
+            self.skipTest('No Ubuntu image found')
         vm1_id = self.cloudapi_create_machine(self.cloudspace_id, image_id=image_id)
         vm1_ip = self.wait_for_machine_to_get_ip(vm1_id)
         self.assertTrue(vm1_ip)
