@@ -561,7 +561,13 @@ class MachineTests(BasicACLTest):
         """
 
         self.lg('Create virtual machine (VM1), should succeed')
-        machine_id = self.cloudapi_create_machine(self.cloudspace_id, image_id=1)
+        images = self.api.cloudapi.images.list()
+        image_id = [x['id'] for x in images if 'Ubuntu' in x['name']]
+
+        if not image_id:
+            self.skipTest('No Ubuntu image was found in the environment')
+
+        machine_id = self.cloudapi_create_machine(self.cloudspace_id, image_id=image_id[0])
         machine_info = self.api.cloudapi.machines.get(machineId=machine_id)
 
         self.lg('Attach external network to virtual machine (VM1), should succeed')
