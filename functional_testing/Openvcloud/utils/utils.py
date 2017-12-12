@@ -580,6 +580,15 @@ class BasicACLTest(BaseTest):
 
 class VMClient:
     def __init__(self, vmid, login=None, password=None, port=None, ip=None, external_network=False, timeout=30):
+        """
+        param: vmid: virtual machine id.
+        param: login: virtual machine username.
+        param: password: virtual machine password.
+        param: port: virtual machine ssh port.
+        param: ip: virtual machine ip (default: cloudspace public ip).
+        param: external_network: if True param ip will be vm's ip of the external network interface.
+        param: timeout: max retries to get vm connection default(30 second). 
+        """
         self.api = API()
         self.machine = self.api.cloudapi.machines.get(vmid)
         self.cloudspace = self.api.cloudapi.cloudspaces.get(self.machine['cloudspaceid'])
