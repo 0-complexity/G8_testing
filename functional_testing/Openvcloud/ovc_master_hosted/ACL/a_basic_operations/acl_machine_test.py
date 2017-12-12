@@ -78,7 +78,6 @@ class Read(ACLMACHINE):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/972')
     def test004_machine_getConsoleUrl_listSnapshots_getHistory(self):
         """ ACL-53
         *Test case for getConsoleUrl/listSnapshots/getHistory machine api with user has read access on machine level.*
@@ -144,8 +143,9 @@ class Read(ACLMACHINE):
         self.lg('- getHistory of created machine with new user [user], should succeed')
         histories = self.user_api.cloudapi.machines.getHistory(machineId=self.machine_id,
                                                                size=10)
-        self.assertIn('Created', [history['message'] for history in histories])
-        self.assertIn('Snapshot created', [history['message'] for history in histories])
+
+        self.assertIn('User {} called machines/create'.format(self.account_owner), [history['message'] for history in histories])
+        self.assertIn('User {} called machines/snapshot'.format(self.account_owner), [history['message'] for history in histories])
 
         self.lg('%s ENDED' % self._testID)
 

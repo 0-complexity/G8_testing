@@ -409,13 +409,13 @@ class BaseTest(unittest.TestCase):
         nodeId = ccl.stack.get(stackId).referenceId
         return scl.node.get(int(nodeId)).gid
 
-    def create_disk(self, account_id, gid=None, size=10, disk_type='D'):
+    def create_disk(self, account_id, gid=None, size=10, disk_type='D', maxiops=2000):
         if not gid:
             stackId = self.get_running_stackId()
             gid = self.get_node_gid(stackId)
         disk_id = self.api.cloudapi.disks.create(accountId=account_id, gid=gid,
                                                  name=str(uuid.uuid4())[0:8], description='test',
-                                                 size=size, type=disk_type)
+                                                 size=size, type=disk_type, iops=maxiops)
         return disk_id
 
     def get_vm_ssh_publicport(self, vm_id, wait_vm_ip=True):
