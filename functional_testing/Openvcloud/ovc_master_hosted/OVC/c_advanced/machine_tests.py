@@ -542,7 +542,7 @@ class MachineTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
              self.api.cloudapi.machines.rollbackSnapshot(machineId=cloned_vm_id, epoch=snapshotEpoch)
 
-    # @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1061')
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1061')
     def test013_memory_size_after_attaching_external_network(self):
         """ OVC-043
         *Test case for memory size after attaching external network*
@@ -604,5 +604,5 @@ class MachineTests(BasicACLTest):
         vm_client = VMClient(machine_id)
         stdin, stdout, stderr = vm_client.execute('free -m | grep Mem')
         machine_memory = int(stdout.read().split()[1])
-        expected_machine_memory  = [x['memory'] for x in self.api.cloudapi.sizes.list(location=self.location) if x['id'] == new_size_id][0]
+        expected_machine_memory = [x['memory'] for x in self.api.cloudapi.sizes.list(location=self.location) if x['id'] == new_size_id][0]
         self.assertAlmostEqual(machine_memory, expected_machine_memory, delta=(0.1 * expected_machine_memory))

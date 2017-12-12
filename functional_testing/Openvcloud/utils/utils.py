@@ -598,18 +598,20 @@ class VMClient:
         for _ in range(timeout):
             try:
                 self.client.connect(self.ip, port=self.port, username=self.login, password=self.password)
+                self.session = self.client.get_transport().open_session()
                 break
-            except socket.error:
+            except:
                 time.sleep(1)
         else:
-            raise socket.error
+            raise
 
     def get_machine_ip(self, external_network):
         nics = self.machine['interfaces']
         if external_network:
             external_network_nic = [x for x in nics if "externalnetworkId" in x["params"]]
-            unittest.assertNotFalse(external_network_nic, "Can't find external network interface")
-            vmip = external_network_nic["ipAddress"]
+            if not external_network_nic:
+                raise AssertionError("Can't find external network interface")
+            vmip = external_network_nic[0]["ipAddress"]
             return  vmip[:vmip.find('/')]
         else:
             return nics[0]['ipAddress']
@@ -638,4 +640,4 @@ class VMClient:
         if sudo and self.login != 'root':
             cmd = 'echo "{}" | sudo -S {}'.format(self.password, cmd)
         
-        return self.client.exec_command(cmd , timeout=timeout, get_pty=True)
+        return self.session.exec_command(cmd , timeout=timeout, get_pty=True)
