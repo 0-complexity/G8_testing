@@ -64,10 +64,9 @@ class MachineTests(BasicACLTest):
         else:
             target_ip = machine_2_ipaddress
 
-        with self.assertRaises(SystemExit):
-            cmd = 'ping -w3 {}'.format(target_ip)
-            stdin, stdout, stderr = machine_1_client.execute(cmd)
-            self.assertIn(', 100% packet loss', stdout.read())
+        cmd = 'ping -w3 {}'.format(target_ip)
+        stdin, stdout, stderr = machine_1_client.execute(cmd)
+        self.assertIn(', 100% packet loss', stdout.read())
 
         machine_2_client = VMClient(machine_2_id)
 
@@ -200,7 +199,7 @@ class MachineTests(BasicACLTest):
 
 
     @parameterized.expand(['Linux', 'Windows'])
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/940')
+    # @unittest.skip('https://github.com/0-complexity/openvcloud/issues/940')
     def test005_cheching_vm_specs_after_rebooting(self, image_type):
         """ OVC-028
         *Test case for checking VM's ip and credentials after rebooting*
@@ -254,7 +253,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/938 & 941')
+    # @unittest.skip('https://github.com/0-complexity/openvcloud/issues/938 & 941')
     def test006_attach_same_disk_to_two_vms(self):
         """ OVC-024
         *Test case for attaching same disk to two different vms*
