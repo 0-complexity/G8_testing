@@ -1,4 +1,3 @@
-
 import unittest, random, uuid, socket
 from ....utils.utils import BasicACLTest, VMClient
 from nose_parameterized import parameterized
@@ -753,3 +752,4 @@ class MachineTests(BasicACLTest):
         self.lg("Check that you can't connect to VM1 with it's new ext network ip, should succeed")
         with self.assertRaises(socket.error):
             VMClient(vm1_id,ip=cs_ip, external_network=True, timeout=1)
+        self.lg('%s ENDED' % self._testID)
