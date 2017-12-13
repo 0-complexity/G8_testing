@@ -468,7 +468,7 @@ class BaseTest(unittest.TestCase):
         ext_interface_name=ext_interface_name[:ext_interface_name.find("\r")]
         vmclient.execute("ip a a %s dev %s" % (vm_ext_ip,ext_interface_name),sudo= True) 
         vmclient.execute("nohup bash -c 'ip l s dev %s up </dev/null >/dev/null 2>&1 & '"%ext_interface_name,sudo=True)
-        time.sleep(2)
+        time.sleep(5)
         vm_ext_ip = vm_ext_ip[:vm_ext_ip.find('/')]
         return vm_ext_ip,ext_interface_name
 
