@@ -577,15 +577,13 @@ class MachineTests(BasicACLTest):
         self.assertTrue(reponse)
 
         self.lg("Assign IPs to (VM1) and (VM2) external network's interfaces, should succeed")
-        vm1_ext_ip = self.assign_IP_to_vm_external_netowrk(vm1_id)
-        vm2_ext_ip = self.assign_IP_to_vm_external_netowrk(vm2_id)
+        
+        vm1_ext_ip,ext_interface_name1 = self.assign_IP_to_vm_external_netowrk(vm1_id)
+        vm2_ext_ip,ext_interface_name2 = self.assign_IP_to_vm_external_netowrk(vm2_id)
 
         vm_nics = self.api.cloudapi.machines.get(machineId=vm1_id)["interfaces"]
         params = [x for x in vm_nics if "externalnetworkId" in x["params"]][0]["params"]
         gateway_ip = params[params.find(":")+1:params.find(" ")]
-
-        vm_1_client = VMClient(vm1_id)
-        vm_2_client = VMClient(vm2_id)
 
         vm_1_ext_client = VMClient(vm1_id, external_network=True)
         vm_2_ext_client = VMClient(vm2_id, external_network=True)
@@ -599,24 +597,27 @@ class MachineTests(BasicACLTest):
         self.assertIn(', 0% packet loss', vm_2_ext_client.execute("ping -c 1 {}".format(gateway_ip))[1].read())
 
         self.lg("Delete (VM2) external network ip, and give it the same ip of (VM1)")
-        vm_2_ext_client.execute("ip a d {} dev eth1".format(vm2_ext_ip), sudo=True)
-        vm_2_client.execute("ip a a {} dev eth1".format(vm1_ext_ip), sudo=True)
-        vm_2_client.execute("nohup bash -c 'ip l s dev eth1 up </dev/null >/dev/null 2>&1 & '", sudo=True)
+        vm_2_ext_client.execute("ip a d {} dev {}".format(vm2_ext_ip,ext_interface_name2), sudo=True)
+        vm_2_client = VMClient(vm2_id)
+        
+        vm_2_client.execute("ip a a {} dev {}".format(vm1_ext_ip,ext_interface_name2), sudo=True)
+        vm_2_client.execute("nohup bash -c 'ip l s dev {} up </dev/null >/dev/null 2>&1 & '".format(ext_interface_name2), sudo=True)
 
         self.lg("Check that (VM1) still can work normally, should succeed")
         self.assertIn(', 0% packet loss', vm_1_ext_client.execute("ping -c 1 {}".format(gateway_ip))[1].read())
 
         self.lg("Check that you can't connect to (VM2) with it's new external network ip, should succeed")
-        with self.assertRaises(socket.error):
-            VMClient(vm2_id, external_network=True, timeout=1)
+        with self.assertRaises(paramiko.AuthenticationException):
+            VMClient(vm2_id, ip=vm1_ext_ip, external_network=True, timeout=1)
 
         self.lg("Delete (VM1) external network ip, and give it the same ip if (CS1)")
         cs_ip = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)["publicipaddress"]
 
-        vm_1_ext_client.execute("ip a d {} dev eth1".format(vm1_ext_ip), sudo=True)
-        vm_2_client.execute("ip a a {} dev eth1".format(cs_ip), sudo=True)
-        vm_2_client.execute("nohup bash -c 'ip l s dev eth1 up </dev/null >/dev/null 2>&1 & '", sudo=True)
+        vm_1_ext_client.execute("ip a d {} dev {}".format(vm1_ext_ip,ext_interface_name1), sudo=True)
+        vm_1_client = VMClient(vm1_id)        
+        vm_1_client.execute("ip a a {} dev {}".format(cs_ip,ext_interface_name1), sudo=True)
+        vm_1_client.execute("nohup bash -c 'ip l s dev {} up </dev/null >/dev/null 2>&1 & '".format(ext_interface_name1), sudo=True)
 
         self.lg("Check that you can't connect to VM1 with it's new ext network ip, should succeed")
         with self.assertRaises(socket.error):
-            VMClient(vm1_id, external_network=True, timeout=1)
+            VMClient(vm1_id,ip=cs_ip, external_network=True, timeout=1)
