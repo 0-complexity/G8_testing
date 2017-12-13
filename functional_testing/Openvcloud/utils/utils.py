@@ -213,15 +213,18 @@ class BaseTest(unittest.TestCase):
         api = api or self.api
         name = name or str(uuid.uuid4())
         sizeId = size_id or self.get_size(cloudspace_id)['id']
-        imageId = image_id or self.get_image()['id']
+
+        images = api.cloudapi.images.list()
+        imageId = image_id or [i['id'] for i in images if 'Ubuntu' in i['name']]
+        self.assertTrue(imageId)
 
         if not stackId:
             machine_id = api.cloudapi.machines.create(cloudspaceId=cloudspace_id, name=name,
-                                                      sizeId=sizeId, imageId=imageId,
+                                                      sizeId=sizeId, imageId=imageId[0],
                                                       disksize=disksize, datadisks=datadisks)
         else:
             machine_id = api.cloudbroker.machine.createOnStack(cloudspaceId=cloudspace_id, name=name,
-                                                               sizeId=sizeId, imageId=imageId,
+                                                               sizeId=sizeId, imageId=imageId[0],
                                                                disksize=disksize, stackid=stackId)
         self.assertTrue(machine_id)
         if wait:
