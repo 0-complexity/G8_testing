@@ -52,11 +52,11 @@ class MachineTests(BasicACLTest):
         machine_3_ipaddress = self.wait_for_machine_to_get_ip(machine_3_id)
         self.assertTrue(machine_3_ipaddress)
 
-        machine_1_connection = self.get_vm_connection(machine_1_id, wait_vm_ip=False)
+        machine_1_client = VMClient(machine_1_id)
 
         self.lg('From VM1 ping google, should succeed')
-        response = machine_1_connection.run('ping -w3 8.8.8.8')
-        self.assertIn(', 0% packet loss', response)
+        stdin, stdout, stderr = machine_1_client.execute('ping -w3 8.8.8.8')
+        self.assertIn(', 0% packet loss', stdout.read())
 
         self.lg('From VM1 ping VM3 or VM2, should fail')
         if machine_1_ipaddress == machine_2_ipaddress:
@@ -66,15 +66,15 @@ class MachineTests(BasicACLTest):
 
         with self.assertRaises(SystemExit):
             cmd = 'ping -w3 {}'.format(target_ip)
-            response = machine_1_connection.run(cmd)
-            self.assertIn(', 100% packet loss', response)
+            stdin, stdout, stderr = machine_1_client.execute(cmd)
+            self.assertIn(', 100% packet loss', stdout.read())
 
-        machine_2_connection = self.get_vm_connection(machine_2_id, wait_vm_ip=False)
+        machine_2_client = VMClient(machine_2_id)
 
         self.lg('From VM2 ping VM3, should succeed')
         cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
-        response = machine_2_connection.run(cmd)
-        self.assertIn(', 0% packet loss', response)
+        stdin, stdout, stderr = machine_2_client.execute(cmd)
+        self.assertIn(', 0% packet loss', stdout.read())
 
 
     def test002_check_network_data_integrity(self):
@@ -95,17 +95,17 @@ class MachineTests(BasicACLTest):
         VM2_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
 
         self.lg('create a file F1 inside VM1')
-        vm1_conn = self.get_vm_connection(VM1_id)
+        vm1_client = VMClient(VM1_id)
         text = str(uuid.uuid4())[0:8]
-        vm1_conn.run('echo %s >> test.txt' % text)
+        vm1_client.execute('echo %s >> test.txt' % text)
 
         self.lg('From VM1 send F1 to VM2, should succeed')
-        self.send_file_from_vm_to_another(vm1_conn, VM2_id, 'test.txt')
+        self.send_file_from_vm_to_another(vm1_client, VM2_id, 'test.txt')
 
         self.lg('Check that F1 has been sent to vm2 without data loss')
-        vm2_conn = self.get_vm_connection(VM2_id)
-        response = vm2_conn.run('cat test.txt')
-        self.assertEqual(response, text)
+        vm2_client = VMClient(VM2_id)
+        stdin, stdout, stderr = vm2_client.execute('cat test.txt')
+        self.assertEqual(stdout.read(), text)
 
         self.lg('%s ENDED' % self._testID)
 
@@ -137,9 +137,9 @@ class MachineTests(BasicACLTest):
         vm1_nic = [x for x in vm1_nics if "externalnetworkId" in x["params"]][0]
         self.assertTrue(vm1_nic)
         vm1_ext_ip = vm1_nic["ipAddress"]
-        vm1_conn = self.get_vm_connection(vm1_id)
-        vm1_conn.sudo("ip a a %s dev eth1"%vm1_ext_ip)
-        vm1_conn.sudo("nohup bash -c 'ip l s dev eth1 up </dev/null >/dev/null 2>&1 & '")
+        vm1_client = VMClient(vm1_id)
+        vm1_client.execute("ip a a %s dev eth1"%vm1_ext_ip, sudo=True)
+        vm1_client.execute("nohup bash -c 'ip l s dev eth1 up </dev/null >/dev/null 2>&1 & '", sudo=True)
 
         self.lg("Check if you can ping VM1 from outside, should succeed")
         vm1_ext_ip = vm1_ext_ip[:vm1_ext_ip.find('/')]
@@ -147,9 +147,9 @@ class MachineTests(BasicACLTest):
         self.assertFalse(response)
 
         self.lg("Check that you can connect to vm with new ip ,should succeed.")
-        ssh_client = self.get_vm_public_ssh_client(vm1_id)
-        ssh_stdin, ssh_stdout, ssh_stderr = ssh_client.exec_command("ls /")
-        self.assertIn('bin', ssh_stdout.read())
+        vm1_client = VMClient(vm1_id, external_network=True)
+        stdin, stdout, stderr = vm1_client.execute("ls /")
+        self.assertIn('bin', stdout.read())
 
 
     def test004_migrate_vm_in_middle_of_writing_file(self):
@@ -174,9 +174,9 @@ class MachineTests(BasicACLTest):
         second_node = self.get_running_stackId(current_stackId)
         if not second_node:
             self.skipTest('[*] No running nodes ')
-        vm1_conn = self.get_vm_connection(vm1_id)
+        vm1_client = VMClient(vm1_id)
         cmd = "yes 'Some text' | head -n 200000000 > largefile.txt"
-        t = threading.Thread(target=vm1_conn.run, args=(cmd, ))
+        t = threading.Thread(target=vm1_client.execute, args=(cmd, ))
         t.start()
         time.sleep(7)
 
@@ -189,12 +189,12 @@ class MachineTests(BasicACLTest):
         self.lg("Make sure that VM1 is running.")
         self.assertEqual(vm1['status'], 'RUNNING')
         t.join()
-        vm1_conn = self.get_vm_connection(vm1_id)
-        self.assertIn('bin', vm1_conn.run('ls /'))
+        vm1_client = VMClient(vm1_id)
+        self.assertIn('bin', vm1_client.execute('ls /'))
 
         self.lg('Check if the file has been written correctly after vm live migration')
-        hash_val = vm1_conn.run('md5sum largefile.txt | cut -d " " -f 1')
-        self.assertEqual(hash_val, 'cd96e05cf2a42e587c78544d19145a7e')
+        stdin, stdout, stderr = vm1_client.execute('md5sum largefile.txt | cut -d " " -f 1')
+        self.assertEqual(stdout.read(), 'cd96e05cf2a42e587c78544d19145a7e')
 
         self.lg('%s ENDED' % self._testID)
 
@@ -348,8 +348,9 @@ class MachineTests(BasicACLTest):
         self.lg('Start VM1 and make sure it is running.')
         self.api.cloudapi.machines.start(machineId=VM1_id)
         self.assertEqual(self.api.cloudapi.machines.get(machineId=VM1_id)['status'], 'RUNNING')
-        vm1_conn = self.get_vm_connection(VM1_id, wait_vm_ip=False)
-        self.assertIn('bin', vm1_conn.run('ls /'))
+        vm1_client = VMClient(VM1_id)
+        stdin, stdout, stderr = vm1_client.execute('ls /')
+        self.assertIn('bin', stdout.read())
 
         self.lg('%s ENDED' % self._testID)
 
@@ -403,8 +404,9 @@ class MachineTests(BasicACLTest):
         vm2 = self.api.cloudapi.machines.get(machineId=VM2_id)
         password = vm2['accounts'][0]['password']
         login = vm2['accounts'][0]['login']
-        vm1_conn = self.get_vm_connection(VM1_id, wait_vm_ip=True, password=password, login=login)
-        self.assertIn('bin', vm1_conn.run('ls /'))
+        vm1_client = VMClient(VM1_id, password=password, login=login)
+        stdin, stdout, stderr = vm1_client.execute('ls /')
+        self.assertIn('bin', stdout.read())
 
         self.lg('%s ENDED' % self._testID)
 
@@ -468,15 +470,17 @@ class MachineTests(BasicACLTest):
 
         self.lg("Make sure that VM1 is running.")
         self.assertEqual(self.api.cloudapi.machines.get(machineId=vm1_id)['status'], 'RUNNING')
-        vm1_conn = self.get_vm_connection(vm1_id)
-        self.assertIn('bin', vm1_conn.run('ls /'))
+        vm1_client = VMClient(vm1_id)
+        stdin, stdout, stderr = vm1_client.execute('ls /')
+        self.assertIn('bin', stdout.read())
 
         self.lg("Restart VM1 and make sure it is still running.")
         self.api.cloudapi.machines.reset(machineId=vm1_id)
         time.sleep(2)
         self.assertEqual(self.api.cloudapi.machines.get(machineId=vm1_id)['status'], 'RUNNING')
-        vm1_conn = self.get_vm_connection(vm1_id)
-        self.assertIn('bin', vm1_conn.run('ls /'))
+        vm1_client = VMClient(vm1_id)
+        stdin, stdout, stderr = vm1_client.execute('ls /')
+        self.assertIn('bin', stdout.read())
 
         self.lg('%s ENDED' % self._testID)
 
@@ -511,8 +515,8 @@ class MachineTests(BasicACLTest):
         snapshotEpoch = self.api.cloudapi.machines.listSnapshots(machineId=machineId)[0]['epoch']
 
         self.lg('Write file to (VM1)')
-        machine_1_connection = self.get_vm_connection(machineId, wait_vm_ip=False)
-        machine_1_connection.run('touch helloWorld.txt')
+        machine_1_client = VMClient(machineId)
+        machine_1_client.execute('touch helloWorld.txt')
 
         self.lg('Stop (VM1), should succeed')
         self.api.cloudapi.machines.stop(machineId=machineId)
@@ -533,9 +537,9 @@ class MachineTests(BasicACLTest):
         self.assertEqual(portforwarding, [])
 
         self.lg('Check that file (F1) exists')
-        cloned_machine_connection = self.get_vm_connection(cloned_vm_id, wait_vm_ip=False)
-        response = cloned_machine_connection.run('ls | grep helloWorld.txt')
-        self.assertIn('helloWorld.txt', response)
+        cloned_machine_client = VMClient(cloned_vm_id)
+        stdin, stdout, stderr = cloned_machine_client.execute('ls | grep helloWorld.txt')
+        self.assertIn('helloWorld.txt', stdout.read())
 
         self.lg('Rollback (VM2_C) to snapshot (SS1), shoud fail')
         snapshots = self.api.cloudapi.machines.listSnapshots(machineId=cloned_vm_id)
@@ -632,12 +636,12 @@ class MachineTests(BasicACLTest):
         """
         self.lg('%s STARTED' % self._testID)
 
-        def get_iops(vm_connection, run_name):
+        def get_iops(vm1_client, run_name):
             fio_cmd = "fio --ioengine=libaio --group_reporting --direct=1 --filename=/dev/vdb "\
                       "--runtime=30 --readwrite=rw --rwmixwrite=5 --size=500M --name=test{0} "\
                       "--output={0}".format(run_name)
-            vm1_conn.sudo(fio_cmd)
-            out1 = vm1_conn.sudo("cat %s | grep -o 'iops=[0-9]\{1,\}' | cut -d '=' -f 2" % run_name)
+            vm1_client.execute(fio_cmd, sudo=True)
+            out1 = vm1_client.execute("cat %s | grep -o 'iops=[0-9]\{1,\}' | cut -d '=' -f 2" % run_name, sudo=True)
             iops_list = out1.split('\r\n')
             return iops_list
 
@@ -657,10 +661,10 @@ class MachineTests(BasicACLTest):
         self.assertTrue(response)
 
         self.lg("Run fio on DD1, iops should be less than iops1.")
-        vm1_conn = self.get_vm_connection(vm1_id, wait_vm_ip=False)
-        vm1_conn.sudo('apt-get update')
-        vm1_conn.sudo('apt-get install fio -y')
-        iops_list = get_iops(vm1_conn, 'b1')
+        vm1_client = VMClient(vm1_id)
+        vm1_client.execute('apt-get update', sudo=True)
+        vm1_client.execute('apt-get install fio -y', sudo=True)
+        iops_list = get_iops(vm1_client, 'b1')
         self.assertFalse([True for i in iops_list if int(i) > maxiops])
 
         self.lg("Change DD1's MaxIOPS limit to iops2 which is double iops1.")
@@ -668,7 +672,7 @@ class MachineTests(BasicACLTest):
         self.assertTrue(response)
 
         self.lg("Run fio on DD1 again, iops should be between iops1 and iops2.")
-        iops_list = get_iops(vm1_conn, 'b2')
+        iops_list = get_iops(vm1_client, 'b2')
         self.assertTrue([True for i in iops_list if maxiops < int(i) < 2 * maxiops])
 
         self.lg('%s ENDED' % self._testID)
