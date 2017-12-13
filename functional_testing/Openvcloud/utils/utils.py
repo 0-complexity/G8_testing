@@ -213,7 +213,7 @@ class BaseTest(unittest.TestCase):
         api = api or self.api
         name = name or str(uuid.uuid4())
         sizeId = size_id or self.get_size(cloudspace_id)['id']
-        imageId = image_id or self.get_image()['id']
+        imageId = 1 #image_id or self.get_image()['id']
 
         if not stackId:
             machine_id = api.cloudapi.machines.create(cloudspaceId=cloudspace_id, name=name,
@@ -302,7 +302,6 @@ class BaseTest(unittest.TestCase):
                 time.sleep(1)
         else:
             return None
-
 
     def add_user_to_account(self, account_id, user, accesstype, api=''):
         api = api or self.api
@@ -447,7 +446,7 @@ class BaseTest(unittest.TestCase):
         for i in range(5):
             try:
                 connection = j.remote.cuisine.connect(cloudspace_publicip, cloudspace_publicport, password, login)
-                connection.user(login)
+                connection.user(vm['accounts'][0]['login'])
                 connection.fabric.state.output["running"] = False
                 connection.fabric.state.output["stdout"] = False
                 connection.run('ls')
@@ -456,6 +455,22 @@ class BaseTest(unittest.TestCase):
                 print(ex)
                 continue
         return connection
+
+    def assign_IP_to_vm_external_netowrk(self, vm_id):
+        vm_nics = self.api.cloudapi.machines.get(machineId=vm_id)["interfaces"]
+        vm_ext_nic = [x for x in vm_nics if "externalnetworkId" in x["params"]][0]
+        self.assertTrue(vm_ext_nic)
+        vm_ext_ip = vm_ext_nic["ipAddress"]
+        ext_mac_addr = vm_ext_nic["macAddress"]
+        vmclient=VMClient(vm_id)
+        response=  vmclient.execute("ifconfig -a |grep  %s| cut -f1  -d ' '"%ext_mac_addr)
+        ext_interface_name = response[1].read()
+        ext_interface_name=ext_interface_name[:ext_interface_name.find("\r")]
+        vmclient.execute("ip a a %s dev %s" % (vm_ext_ip,ext_interface_name),sudo= True) 
+        vmclient.execute("nohup bash -c 'ip l s dev %s up </dev/null >/dev/null 2>&1 & '"%ext_interface_name,sudo=True)
+        time.sleep(5)
+        vm_ext_ip = vm_ext_ip[:vm_ext_ip.find('/')]
+        return vm_ext_ip,ext_interface_name
 
     def get_vm_public_ssh_client(self, vm_id, vm_ip=None , password=None, login= None):
         vm = self.api.cloudapi.machines.get(machineId=vm_id)
@@ -578,7 +593,7 @@ class BasicACLTest(BaseTest):
                 self.api.system.usermanager.deleteGroup(id=group)
         super(BasicACLTest, self).tearDown()
 
-class VMClient:
+class VMClient():
     def __init__(self, vmid, login=None, password=None, port=None, ip=None, external_network=False, timeout=30):
         """
         param: vmid: virtual machine id.
@@ -599,19 +614,24 @@ class VMClient:
         self.port = port or self.get_vm_ssh_port()
         
         if external_network:
-            self.ip =  self.get_machine_ip(external_network)
+            self.ip =  ip or self.get_machine_ip(external_network)
+            self.port = port or ''
 
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
         for _ in range(timeout):
             try:
-                self.client.connect(self.ip, port=self.port, username=self.login, password=self.password)
+                if self.port:
+                    self.client.connect(self.ip, port=self.port, username=self.login, password=self.password)
+                else:
+                    self.client.connect(self.ip, username=self.login, password=self.password)
+
                 break
             except:
                 time.sleep(1)
         else:
-            raise
+            raise 
 
     def get_machine_ip(self, external_network):
         nics = self.machine['interfaces']
@@ -619,6 +639,7 @@ class VMClient:
             external_network_nic = [x for x in nics if "externalnetworkId" in x["params"]]
             if not external_network_nic:
                 raise AssertionError("Can't find external network interface")
+
             vmip = external_network_nic[0]["ipAddress"]
             return  vmip[:vmip.find('/')]
         else:
@@ -630,7 +651,7 @@ class VMClient:
         port_forwards = self.api.cloudapi.portforwarding.list(cloudspace_id, machine_id)
         vm_cs_publicports = [pf['publicPort'] for pf in port_forwards if pf['localPort'] == '22']
         if vm_cs_publicports:
-            vm_cs_publicport = vm_cs_publicports[0]
+            vm_cs_publicport = int(vm_cs_publicports[0])
         else:
             vm_cs_publicport = random.randint(50000, 65000)
             self.api.cloudapi.portforwarding.create(
