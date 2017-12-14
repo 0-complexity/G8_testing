@@ -672,3 +672,77 @@ class MachineTests(BasicACLTest):
         self.assertTrue([True for i in iops_list if maxiops < int(i) < 2 * maxiops])
 
         self.lg('%s ENDED' % self._testID)
+
+    # @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1082')
+    def test015_export_import_vm(self):
+        """ OVC-047
+        *Test case for checking cloned VM ip, portforwards and credentials*
+        **Test Scenario:**
+        #. Create virtual machine (VM1), should succeed.
+        #. Install owncloud server on (VM1) should succeed.
+        #. Create virtual machine (VM2), should succeed.
+        #. Write file (F1) on virtual machine (VM2), should succeed.
+        #. Export virtual machine (VM2), should succeed.
+        #. Import virtual machine (VM2), should succeed.
+        #. Check that file (F1) exists in the imported virtual machine.
+        """
+        self.lg('Create virtual machine (VM1), should succeed')
+        machine_1_id = self.cloudapi_create_machine(self.cloudspace_id)
+
+        self.lg('Install owncloud server on (VM1) should succeed')
+        machine_1_client = VMClient(machine_1_id)
+        cmds = [
+            'apt update', 
+            'apt install -y docker.io', 
+            'docker run -d -p 80:80 -e OWNCLOUD_ADMIN_USERNAM=admin -e OWNCLOUD_ADMIN_PASSWORD=admin owncloud'
+        ]
+        
+        for cmd in cmds:
+            stdin, stdout, stderr = machine_1_client.execute(cmd, sudo=True)
+            if stderr:
+                self.fail('error when installing owncloud server: {}'.format(stderr))
+        
+        response = self.add_portforwarding(machine_id=machine_1_id,
+                                           cs_publicport=8080, 
+                                           vm_port=80)
+        self.assertTrue(response)
+
+        web_dav_link = 'http://{}:8080/remote.php/webdav/'.format(machine_1_client.cs_public_ip)
+
+        self.lg('Create virtual machine (VM2), should succeed')
+        machine_2_id = self.cloudapi_create_machine(self.cloudspace_id)
+
+        self.lg('Write file (F1) on virtual machine (VM2), should succeed')
+        machine_2_client = VMClient(machine_2_id)
+        machine_2_client.execute('echo "helloWorld" > test.txt')
+
+        self.lg('Export virtual machine (VM2), should succeed')
+        self.api.cloudapi.machines.exportOVF(link=web_dav_link,
+                                             machineId=machine_2_id,
+                                             username='admin',
+                                             passwd='admin',
+                                             path='/')
+
+        import ipdb; ipdb.set_trace()
+
+        time.sleep(360)
+
+        self.lg('Import virtual machine (VM2), should succeed')
+        imported_vm_id = self.api.cloudapi.machines.importOVF(link=web_dav_link,
+                                                              username='admin',
+                                                              passwd='admin',
+                                                              path='/',
+                                                              cloudspaceId=self.cloudspace_id,
+                                                              name="imported_vm",
+                                                              sizeId=2)
+
+        self.lg('Check that file (F1) exists in the imported virtual machine')
+        imported_vm_client = VMClient(imported_vm_id)
+        stdin, stdout, stderr = imported_vm_client.execute('cat test.txt')
+        self.assertIn('helloWorld', stdout.read())
+
+        
+
+
+
+
