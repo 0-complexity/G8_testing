@@ -208,25 +208,25 @@ class BaseTest(unittest.TestCase):
         self.assertTrue(sizes)
         return sizes[0]
 
-    def cloudapi_create_machine(self, cloudspace_id, api='', name='', size_id=0, image_id=0,
+    def cloudapi_create_machine(self, cloudspace_id, api='', name='', size_id=0, image_id=None,
                                 disksize=10, datadisks=[], wait=True, stackId=None):
         api = api or self.api
         name = name or str(uuid.uuid4())
         sizeId = size_id or self.get_size(cloudspace_id)['id']
 
-        if not imageId:
+        if image_id == None:
             images = api.cloudapi.images.list()
-            imageId = [i['id'] for i in images if 'Ubuntu' in i['name']]
-            self.assertTrue(imageId)
-            imageId = imageId[0]
+            image_id = [i['id'] for i in images if 'Ubuntu' in i['name']]
+            self.assertTrue(image_id)
+            image_id = imageId[0]
 
         if not stackId:
             machine_id = api.cloudapi.machines.create(cloudspaceId=cloudspace_id, name=name,
-                                                      sizeId=sizeId, imageId=imageId,
+                                                      sizeId=sizeId, imageId=image_id,
                                                       disksize=disksize, datadisks=datadisks)
         else:
             machine_id = api.cloudbroker.machine.createOnStack(cloudspaceId=cloudspace_id, name=name,
-                                                               sizeId=sizeId, imageId=imageId,
+                                                               sizeId=sizeId, imageId=image_id,
                                                                disksize=disksize, stackid=stackId)
         self.assertTrue(machine_id)
         if wait:
@@ -236,16 +236,16 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(machine['status'], 'RUNNING')
         return machine_id
 
-    def cloudbroker_create_machine(self, cloudspace_id, api='', name='', size_id=0, image_id=0,
+    def cloudbroker_create_machine(self, cloudspace_id, api='', name='', size_id=0, image_id=None,
                                 disksize=10, datadisks=[], wait=True, stackId=None):
         api = api or self.api
         name = name or str(uuid.uuid4())
         sizeId = size_id or self.get_size(cloudspace_id)['id']
-        if not imageId:
+        if image_id == None:
             images = api.cloudapi.images.list()
-            imageId = [i['id'] for i in images if 'Ubuntu' in i['name']]
-            self.assertTrue(imageId)
-            imageId = imageId[0]
+            image_id = [i['id'] for i in images if 'Ubuntu' in i['name']]
+            self.assertTrue(image_id)
+            image_id = image_id[0]
 
         if not stackId:
             machine_id = api.cloudbroker.machine.create(cloudspaceId=cloudspace_id, name=name,
