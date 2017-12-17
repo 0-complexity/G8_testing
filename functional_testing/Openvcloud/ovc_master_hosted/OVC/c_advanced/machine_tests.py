@@ -722,7 +722,7 @@ class MachineTests(BasicACLTest):
                                              machineId=machine_2_id,
                                              username='admin',
                                              passwd='admin',
-                                             path='/')
+                                             path='Documents')
 
         import ipdb; ipdb.set_trace()
 
@@ -732,7 +732,7 @@ class MachineTests(BasicACLTest):
         imported_vm_id = self.api.cloudapi.machines.importOVF(link=web_dav_link,
                                                               username='admin',
                                                               passwd='admin',
-                                                              path='/',
+                                                              path='Documents',
                                                               cloudspaceId=self.cloudspace_id,
                                                               name="imported_vm",
                                                               sizeId=2)
