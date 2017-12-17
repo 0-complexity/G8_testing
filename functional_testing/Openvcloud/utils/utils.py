@@ -50,6 +50,10 @@ class BaseTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         self.api = API()
         self.environment = config['main']['environment']
+        self.owncloud_user = config['main']['owncloud_user']
+        self.owncloud_password = config['main']['owncloud_password']
+        self.owncloud_url = config['main']['owncloud_url']
+        
         self.test_email = config['main']['email']
         self.email_password = config['main']['email_password']
         super(BaseTest, self).__init__(*args, **kwargs)

@@ -679,52 +679,39 @@ class MachineTests(BasicACLTest):
         *Test case for checking cloned VM ip, portforwards and credentials*
         **Test Scenario:**
         #. Create virtual machine (VM1), should succeed.
-        #. Install owncloud server on (VM1) should succeed.
-        #. Create virtual machine (VM2), should succeed.
-        #. Write file (F1) on virtual machine (VM2), should succeed.
-        #. Export virtual machine (VM2), should succeed.
-        #. Import virtual machine (VM2), should succeed.
+        #. Write file (F1) on virtual machine (VM1), should succeed.
+        #. Export virtual machine (VM1), should succeed.
+        #. Import virtual machine (VM1), should succeed.
         #. Check that file (F1) exists in the imported virtual machine.
         """
         self.lg('Create virtual machine (VM1), should succeed')
         machine_1_id = self.cloudapi_create_machine(self.cloudspace_id)
 
-        self.lg('Install owncloud server on (VM1) should succeed')
+        self.lg('Write file (F1) on virtual machine (VM1), should succeed')
         machine_1_client = VMClient(machine_1_id)
-        cmds = ['apt update','apt install -y docker.io','docker run -d -p 80:80 owncloud']
-        for cmd in cmds:
-            stdin, stdout, stderr = machine_1_client.execute(cmd, sudo=True)
-            err = stderr.read()
-            if err:
-                self.fail('error when installing owncloud server: {}'.format(err))
+        machine_1_client.execute('echo "helloWorld" > test.txt')
 
-        response = self.add_portforwarding(machine_id=machine_1_id, cs_publicport=8080, vm_port=80)
-        self.assertTrue(response)
+        folder_name = str(uuid.uuid4()).replace('-', '')[:10]        
+        owncloud_auth = (self.owncloud_user, self.owncloud_password)
 
-        time.sleep(5)
-        
-        owncloud_url = 'http://{}:8080'.format(machine_1_client.cs_public_ip)
-        
-        url = owncloud_url + '/index.php'
-        data = {'adminlogin':'admin', 'adminpass':'admin', 'install':'true'}
-        requests.post(url=url, data=data)
+        web_dav_link = self.owncloud_url + '/remote.php/dav/'
 
-        web_dav_link = owncloud_url + '/remote.php/webdav/'
+        folder_url = '{url}/remote.php/dav/files/{user}/{folder}'.format(
+            url=self.owncloud_url, 
+            user=self.owncloud_user, 
+            folder=folder_name
+        )
 
-        self.lg('Create virtual machine (VM2), should succeed')
-        machine_2_id = self.cloudapi_create_machine(self.cloudspace_id)
+        self.lg('Create folder in owncloud')
+        requests.request('MKCOL', url=folder_url, auth=owncloud_auth)
 
-        self.lg('Write file (F1) on virtual machine (VM2), should succeed')
-        machine_2_client = VMClient(machine_2_id)
-        machine_2_client.execute('echo "helloWorld" > test.txt')
-
-        self.lg('Export virtual machine (VM2), should succeed')
+        self.lg('Export virtual machine (VM1), should succeed')
         response = self.api.cloudapi.machines.exportOVF(
             link=web_dav_link,
-            machineId=machine_2_id,
-            username='admin',
-            passwd='admin',
-            path='Documents'
+            machineId=machine_1_id,
+            username=self.owncloud_user,
+            passwd=self.owncloud_password,
+            path=folder_name
         )
 
         self.assertTrue(response)
@@ -733,9 +720,9 @@ class MachineTests(BasicACLTest):
 
         self.lg('Import virtual machine (VM2), should succeed')
         imported_vm_id = self.api.cloudapi.machines.importOVF(link=web_dav_link,
-                                                              username='admin',
-                                                              passwd='admin',
-                                                              path='Documents',
+                                                              username=self.owncloud_user,
+                                                              passwd=self.owncloud_password,
+                                                              path=folder_name,
                                                               cloudspaceId=self.cloudspace_id,
                                                               name="imported_vm",
                                                               sizeId=2)
@@ -744,6 +731,10 @@ class MachineTests(BasicACLTest):
         imported_vm_client = VMClient(imported_vm_id)
         stdin, stdout, stderr = imported_vm_client.execute('cat test.txt')
         self.assertIn('helloWorld', stdout.read())
+
+        self.lg('Delete folder in owncloud')
+        requests.request('DELETE', url=folder_url, auth=owncloud_auth)
+
 
         
 
