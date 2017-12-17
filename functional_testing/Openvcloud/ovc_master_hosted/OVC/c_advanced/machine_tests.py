@@ -673,7 +673,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    # @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1082')
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1088')
     def test015_export_import_vm(self):
         """ OVC-047
         *Test case for checking cloned VM ip, portforwards and credentials*
