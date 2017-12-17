@@ -33,7 +33,7 @@ class MachineLongTests(BasicACLTest):
         folder_name = str(uuid.uuid4()).replace('-', '')[:10]        
         owncloud_auth = (self.owncloud_user, self.owncloud_password)
 
-        web_dav_link = self.owncloud_url + '/remote.php/dav/'
+        web_dav_link = self.owncloud_url + '/remote.php/webdav/'
 
         folder_url = '{url}/remote.php/dav/files/{user}/{folder}'.format(
             url=self.owncloud_url, 
