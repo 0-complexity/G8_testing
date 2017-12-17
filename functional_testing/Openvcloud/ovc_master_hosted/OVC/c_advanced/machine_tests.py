@@ -691,7 +691,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('Install owncloud server on (VM1) should succeed')
         machine_1_client = VMClient(machine_1_id)
-        cmds = ['apt update','apt install -y docker.io','docker run -d -p 80:80']
+        cmds = ['apt update','apt install -y docker.io','docker run -d -p 80:80 owncloud']
         for cmd in cmds:
             stdin, stdout, stderr = machine_1_client.execute(cmd, sudo=True)
             err = stderr.read()
