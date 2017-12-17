@@ -697,17 +697,19 @@ class MachineTests(BasicACLTest):
             err = stderr.read()
             if err:
                 self.fail('error when installing owncloud server: {}'.format(err))
-        
-        time.sleep(5)
-
-        url = 'http://{}:8080/index.php'.format(machine_1_client.cs_public_ip)
-        data = {'adminlogin':'admin', 'adminpass':'admin', 'install':'true'}
-        requests.post(url=url, data=data)
 
         response = self.add_portforwarding(machine_id=machine_1_id, cs_publicport=8080, vm_port=80)
         self.assertTrue(response)
 
-        web_dav_link = 'http://{}:8080/remote.php/webdav/'.format(machine_1_client.cs_public_ip)
+        time.sleep(5)
+        
+        owncloud_url = 'http://{}:8080'.format(machine_1_client.cs_public_ip)
+        
+        url = owncloud_url + '/index.php'
+        data = {'adminlogin':'admin', 'adminpass':'admin', 'install':'true'}
+        requests.post(url=url, data=data)
+
+        web_dav_link = owncloud_url + '/remote.php/webdav/'
 
         self.lg('Create virtual machine (VM2), should succeed')
         machine_2_id = self.cloudapi_create_machine(self.cloudspace_id)
