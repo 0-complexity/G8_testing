@@ -720,12 +720,15 @@ class MachineTests(BasicACLTest):
         import ipdb; ipdb.set_trace()
 
         self.lg('Export virtual machine (VM2), should succeed')
-        self.api.cloudapi.machines.exportOVF(link=web_dav_link,
-                                             machineId=machine_2_id,
-                                             username='admin',
-                                             passwd='admin',
-                                             path='Documents')
+        response = self.api.cloudapi.machines.exportOVF(
+            link=web_dav_link,
+            machineId=machine_2_id,
+            username='admin',
+            passwd='admin',
+            path='Documents'
+        )
 
+        self.assertTrue(response)
 
         time.sleep(360)
 
