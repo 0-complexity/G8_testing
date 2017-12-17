@@ -218,7 +218,7 @@ class BaseTest(unittest.TestCase):
             images = api.cloudapi.images.list()
             image_id = [i['id'] for i in images if 'Ubuntu' in i['name']]
             self.assertTrue(image_id)
-            image_id = imageId[0]
+            image_id = image_id[0]
 
         if not stackId:
             machine_id = api.cloudapi.machines.create(cloudspaceId=cloudspace_id, name=name,
