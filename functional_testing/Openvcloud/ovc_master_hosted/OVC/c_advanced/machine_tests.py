@@ -5,7 +5,7 @@ from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
 import time
 import threading
-import os
+import os, requests
 
 class MachineTests(BasicACLTest):
     def setUp(self):
@@ -691,21 +691,20 @@ class MachineTests(BasicACLTest):
 
         self.lg('Install owncloud server on (VM1) should succeed')
         machine_1_client = VMClient(machine_1_id)
-        cmds = [
-            'apt update', 
-            'apt install -y docker.io', 
-            'docker run -d -p 80:80 -e OWNCLOUD_ADMIN_USERNAM=admin -e OWNCLOUD_ADMIN_PASSWORD=admin owncloud'
-        ]
-        
+        cmds = ['apt update','apt install -y docker.io','docker run -d -p 80:80']
         for cmd in cmds:
             stdin, stdout, stderr = machine_1_client.execute(cmd, sudo=True)
             err = stderr.read()
             if err:
                 self.fail('error when installing owncloud server: {}'.format(err))
         
-        response = self.add_portforwarding(machine_id=machine_1_id,
-                                           cs_publicport=8080, 
-                                           vm_port=80)
+        time.sleep(5)
+
+        url = 'http://{}:8080/index.php'.format(machine_1_client.cs_public_ip)
+        data = {'adminlogin':'admin', 'adminpass':'admin', 'install':'true'}
+        requests.post(url=url, data=data)
+
+        response = self.add_portforwarding(machine_id=machine_1_id, cs_publicport=8080, vm_port=80)
         self.assertTrue(response)
 
         web_dav_link = 'http://{}:8080/remote.php/webdav/'.format(machine_1_client.cs_public_ip)
@@ -716,8 +715,6 @@ class MachineTests(BasicACLTest):
         self.lg('Write file (F1) on virtual machine (VM2), should succeed')
         machine_2_client = VMClient(machine_2_id)
         machine_2_client.execute('echo "helloWorld" > test.txt')
-
-        import ipdb; ipdb.set_trace()
 
         self.lg('Export virtual machine (VM2), should succeed')
         response = self.api.cloudapi.machines.exportOVF(
@@ -730,7 +727,7 @@ class MachineTests(BasicACLTest):
 
         self.assertTrue(response)
 
-        time.sleep(360)
+        time.sleep(400)
 
         self.lg('Import virtual machine (VM2), should succeed')
         imported_vm_id = self.api.cloudapi.machines.importOVF(link=web_dav_link,
