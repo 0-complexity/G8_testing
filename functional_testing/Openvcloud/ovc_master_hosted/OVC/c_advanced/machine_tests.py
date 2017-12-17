@@ -699,8 +699,9 @@ class MachineTests(BasicACLTest):
         
         for cmd in cmds:
             stdin, stdout, stderr = machine_1_client.execute(cmd, sudo=True)
-            if stderr:
-                self.fail('error when installing owncloud server: {}'.format(stderr))
+            err = stderr.read()
+            if err:
+                self.fail('error when installing owncloud server: {}'.format(err))
         
         response = self.add_portforwarding(machine_id=machine_1_id,
                                            cs_publicport=8080, 
