@@ -488,7 +488,6 @@ class MachineTests(BasicACLTest):
         *Test case for checking cloned VM ip, portforwards and credentials*
         **Test Scenario:**
         #. Create (VM1), should succeed.
-        #. Create portforward to ssh port for (VM1).
         #. Take a snapshot (SS0) for (VM1).
         #. Write file (F1) on (VM1).
         #. Stop (VM1), should succeed.
@@ -505,9 +504,6 @@ class MachineTests(BasicACLTest):
         machineId = self.cloudapi_create_machine(self.cloudspace_id)
         machine_1_ipaddress = self.wait_for_machine_to_get_ip(machineId)
         self.assertTrue(machine_1_ipaddress)
-
-        self.lg('Create portforward to ssh port for (VM1)')
-        self.get_vm_ssh_publicport(machineId, wait_vm_ip=False)
 
         self.lg('Take a snapshot (SS0) for (VM1)')
         snapshotId = self.api.cloudapi.machines.snapshot(machineId=machineId, name='test-snapshot')
@@ -640,8 +636,8 @@ class MachineTests(BasicACLTest):
                       "--runtime=30 --readwrite=rw --rwmixwrite=5 --size=500M --name=test{0} "\
                       "--output={0}".format(run_name)
             vm1_client.execute(fio_cmd, sudo=True)
-            out1 = vm1_client.execute("cat %s | grep -o 'iops=[0-9]\{1,\}' | cut -d '=' -f 2" % run_name, sudo=True)
-            iops_list = out1.split('\r\n')
+            stdin, stdout, stderr = vm1_client.execute("cat %s | grep -o 'iops=[0-9]\{1,\}' | cut -d '=' -f 2" % run_name, sudo=True)
+            iops_list = stdout.read().split('\r\n')
             return iops_list
 
         self.lg("Create virtual machine (VM1), should succeed.")
