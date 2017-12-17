@@ -717,6 +717,8 @@ class MachineTests(BasicACLTest):
         machine_2_client = VMClient(machine_2_id)
         machine_2_client.execute('echo "helloWorld" > test.txt')
 
+        import ipdb; ipdb.set_trace()
+
         self.lg('Export virtual machine (VM2), should succeed')
         self.api.cloudapi.machines.exportOVF(link=web_dav_link,
                                              machineId=machine_2_id,
@@ -724,7 +726,6 @@ class MachineTests(BasicACLTest):
                                              passwd='admin',
                                              path='Documents')
 
-        import ipdb; ipdb.set_trace()
 
         time.sleep(360)
 
