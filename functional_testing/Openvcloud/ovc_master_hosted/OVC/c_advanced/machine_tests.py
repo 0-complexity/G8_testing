@@ -100,6 +100,8 @@ class MachineTests(BasicACLTest):
         self.lg('From VM1 send F1 to VM2, should succeed')
         self.send_file_from_vm_to_another(vm1_client, VM2_id, 'test.txt')
 
+        time.sleep(3)
+
         self.lg('Check that F1 has been sent to vm2 without data loss')
         vm2_client = VMClient(VM2_id)
         stdin, stdout, stderr = vm2_client.execute('cat test.txt')
@@ -188,11 +190,12 @@ class MachineTests(BasicACLTest):
         self.assertEqual(vm1['status'], 'RUNNING')
         t.join()
         vm1_client = VMClient(vm1_id)
-        self.assertIn('bin', vm1_client.execute('ls /'))
+        stdin, stdout, stderr = vm1_client.execute('ls /')
+        self.assertIn('bin', stdout.read())
 
         self.lg('Check if the file has been written correctly after vm live migration')
         stdin, stdout, stderr = vm1_client.execute('md5sum largefile.txt | cut -d " " -f 1')
-        self.assertEqual(stdout.read(), 'cd96e05cf2a42e587c78544d19145a7e')
+        self.assertEqual(stdout.read().strip(), 'cd96e05cf2a42e587c78544d19145a7e')
 
         self.lg('%s ENDED' % self._testID)
 
