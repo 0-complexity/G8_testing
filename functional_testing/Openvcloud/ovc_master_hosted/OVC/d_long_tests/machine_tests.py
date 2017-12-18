@@ -39,10 +39,14 @@ class MachineLongTests(BasicACLTest):
 
         self.lg('Write file (F1) on the boot disk of the virtual machine (VM1), should succeed')
         machine_1_client = VMClient(machine_1_id)
-        machine_1_client.execute('echo "helloWorld" > test.txt')
+        machine_1_client.execute('echo "helloWorld" > test1.txt')
 
         self.lg('Write file (F2) on the data disk of the virtual machine (VM1), should succeed')
-        machine_1_client.execute('mkdir data; mount /dev/vdc data; echo "helloWorld" > data/test.txt')
+        machine_1_client.execute('mkfs.ext4 /dev/vdb', sudo=True)
+        machine_1_client.execute('mkdir data', sudo=True)
+        machine_1_client.execute('mount /dev/vdb data', sudo=True)
+        machine_1_client.execute('echo "helloWorld" > test2.txt', sudo=True)
+        
 
         folder_name = str(uuid.uuid4()).replace('-', '')[:10]        
         owncloud_auth = (self.owncloud_user, self.owncloud_password)
@@ -85,11 +89,11 @@ class MachineLongTests(BasicACLTest):
 
             self.lg('Check that file (F1) exists in the imported virtual machine')
             imported_vm_client = VMClient(imported_vm_id)
-            stdin, stdout, stderr = imported_vm_client.execute('cat test.txt')
+            stdin, stdout, stderr = imported_vm_client.execute('cat test1.txt')
             self.assertIn('helloWorld', stdout.read())
 
             self.lg('Check that file (F2) exists in the imported virtual machine\'s data disk (DD1)')
-            stdin, stdout, stderr = imported_vm_client.execute('mkdir data; mount /dev/vdc data; cat data/test.txt')
+            stdin, stdout, stderr = imported_vm_client.execute('cat data/test2.txt')
             self.assertIn('helloWorld', stdout.read())
 
         except:
