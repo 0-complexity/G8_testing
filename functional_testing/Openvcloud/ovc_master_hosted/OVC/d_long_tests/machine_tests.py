@@ -48,7 +48,7 @@ class MachineLongTests(BasicACLTest):
         time.sleep(1)
         machine_1_client.execute('mount /dev/vdb data', sudo=True)
         time.sleep(1)
-        machine_1_client.execute('echo "helloWorld" > /data/test2.txt', sudo=True)
+        machine_1_client.execute('echo "helloWorld" > data/test2.txt', sudo=True)
         
 
         folder_name = str(uuid.uuid4()).replace('-', '')[:10]        
