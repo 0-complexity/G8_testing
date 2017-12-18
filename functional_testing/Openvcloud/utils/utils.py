@@ -443,7 +443,7 @@ class BaseTest(unittest.TestCase):
         vm2 = self.api.cloudapi.machines.get(machineId=vm2_id)
         account2 = vm2['accounts'][0]
         vm2_ip = vm2['interfaces'][0]['ipAddress']
-        vm1_client.execute('install sshpass', sudo=True)
+        vm1_client.execute('apt install sshpass -y', sudo=True)
         vm1_client.execute('sshpass -p%s scp -o \'StrictHostKeyChecking=no\' %s  %s@%s:'
                      %(account2['password'], file_loc, account2['login'], vm2_ip))
 
