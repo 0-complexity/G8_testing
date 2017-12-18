@@ -276,7 +276,7 @@ class ExtendedTests(BasicACLTest):
             self.lg('- expected error raised %s' % e.message)
             self.assertEqual(e.message, '400 Bad Request')
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1073')
+    #@unittest.skip('https://github.com/0-complexity/openvcloud/issues/1073')
     def test004_getting_account_resources(self):
         """ OVC-045
         *Test case for checking account's resources retrieval*
@@ -505,8 +505,8 @@ class ExtendedTests(BasicACLTest):
 
             self.assertEqual(cs1_id, css_ids[c1])
             self.assertEqual(cs2_id, css_ids[c2])
-            self.assertEqual(cs1_vms_nums, vms_cs_count[c1])
-            self.assertEqual(cs2_vms_nums, vms_cs_count[c2])
+            self.assertEqual(cs1_vms_nums, vms_cs_count[c1] + 1)
+            self.assertEqual(cs2_vms_nums, vms_cs_count[c2] + 1)
             self.assertEqual(cs1_total_mem, total_mem_cs[c1])
             self.assertEqual(cs2_total_mem, total_mem_cs[c2])
             self.assertEqual(cs1_total_vcpu, total_cpu_cs[c1])
