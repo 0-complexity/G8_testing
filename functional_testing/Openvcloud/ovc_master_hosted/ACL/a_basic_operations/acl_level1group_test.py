@@ -325,7 +325,7 @@ class level1_group(ACLACCOUNT):
         """
         self.lg('%s STARTED' % self._testID)
         self.user1_groups=['admin','level1']
-        self.user2_groups= ['admin','level1','level2','user','finance','ovs_admin']
+        self.user2_groups= ['admin','level1','level2','user','ovs_admin']
         self.lg('create user1  with level1 + admin group')
         self.user1 = self.cloudbroker_user_create(group = self.user1_groups )
         self.user1_api = self.get_authenticated_user_api(self.user1)
