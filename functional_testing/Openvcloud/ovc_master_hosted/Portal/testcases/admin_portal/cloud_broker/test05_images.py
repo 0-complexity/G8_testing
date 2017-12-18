@@ -130,9 +130,7 @@ class ImagesTests(Framework):
                            'GridID',
                            'Name',
                            'Status',
-                           'Reference ID',
-                           'Type',
-                           'Description'])
+                           'Reference ID'])
     def test07_search_boxes_in_stack_in_image_page_test(self, column):
         """ PRTL-047
         *Test case to make sure that search boxes of stack table  image page are working as expected*
