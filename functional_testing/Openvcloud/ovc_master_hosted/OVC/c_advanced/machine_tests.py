@@ -74,7 +74,6 @@ class MachineTests(BasicACLTest):
         stdin, stdout, stderr = machine_2_client.execute(cmd)
         self.assertIn(', 0% packet loss', stdout.read())
 
-
     def test002_check_network_data_integrity(self):
         """ OVC-036
         *Test case for checking network data integrity through VMS*
@@ -151,7 +150,7 @@ class MachineTests(BasicACLTest):
         stdin, stdout, stderr = vm1_client.execute("ls /")
         self.assertIn('bin', stdout.read())
 
-
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1113')
     def test004_migrate_vm_in_middle_of_writing_file(self):
         """ OVC-039
         *Test case for checking data integrity after migrating vm in the middle of writing a file*
@@ -198,7 +197,6 @@ class MachineTests(BasicACLTest):
         self.assertEqual(stdout.read().strip(), 'cd96e05cf2a42e587c78544d19145a7e')
 
         self.lg('%s ENDED' % self._testID)
-
 
     @parameterized.expand(['Linux', 'Windows'])
     # @unittest.skip('https://github.com/0-complexity/openvcloud/issues/940')
@@ -355,59 +353,32 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    def test008_swap_vms_boot_disks(self):
+    def test008_detach_boot_disks(self):
         """ OVC-035
         * Test case for swapping vms boot disks.
 
         **Test Scenario:**
 
-        #. Create virtual machines (VM1) and (VM2).
-        #. Stop VM1 and VM2, should succeed.
-        #. Detach VM1's boot disk (BD1) and VM2's boot disk (BD2).
-        #. Attach BD1 to VM2, should succeed.
-        #. Attach BD2 to VM1, should succeed.
-        #. Start VM1 and VM2 and make sure they are working.
+        #. Create virtual machines (VM1).
+        #. Stop VM1, should succeed.
+        #. Detach VM1's boot disk, should fail.
         """
-
         self.lg('%s STARTED' % self._testID)
 
-        self.lg('Create virtual machines (VM1) and (VM2)')
-        VM1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
-        VM2_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+        self.lg('Create virtual machines (VM1)')
+        machine_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
 
-        self.lg('Stop VM1 and VM2, should succeed')
-        self.api.cloudapi.machines.stop(machineId=VM1_id)
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=VM1_id)['status'], 'HALTED')
-        self.api.cloudapi.machines.stop(machineId=VM2_id)
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=VM2_id)['status'], 'HALTED')
+        self.lg('Stop VM1, should succeed')
+        self.api.cloudapi.machines.stop(machineId=machine_id)
+        self.assertEqual(self.api.cloudapi.machines.get(machineId=machine_id)['status'], 'HALTED')
 
-        self.lg("Detach VM1's boot disk (BD1) and VM2's boot disk (BD2)")
-        bd1_id = self.api.cloudapi.machines.get(machineId=VM1_id)['disks'][0]['id']
-        bd2_id = self.api.cloudapi.machines.get(machineId=VM2_id)['disks'][0]['id']
-        response = self.api.cloudapi.machines.detachDisk(machineId=VM1_id, diskId=bd1_id)
-        self.assertTrue(response)
-        response = self.api.cloudapi.machines.detachDisk(machineId=VM1_id, diskId=bd2_id)
-        self.assertTrue(response)
+        self.lg("Detach VM1's boot disk, should fail")
+        disk_id = self.api.cloudapi.machines.get(machineId=machine_id)['disks'][0]['id']
 
-        self.lg('Attach BD1 to VM2, should succeed')
-        response = self.api.cloudapi.machines.attachDisk(machineId=VM2_id, diskId=bd1_id)
-        self.assertTrue(response)
+        with self.assertRaises(HTTPError) as e:
+            self.api.cloudapi.machines.detachDisk(machineId=machine_id, diskId=disk_id)
 
-        self.lg('Attach BD2 to VM1, should succeed')
-        response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=bd2_id)
-        self.assertTrue(response)
-
-        self.lg('Start VM1 and VM2 and make sure they are working')
-        self.api.cloudapi.machines.start(machineId=VM1_id)
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=VM1_id)['status'], 'RUNNING')
-        self.api.cloudapi.machines.start(machineId=VM2_id)
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=VM2_id)['status'], 'RUNNING')
-        vm2 = self.api.cloudapi.machines.get(machineId=VM2_id)
-        password = vm2['accounts'][0]['password']
-        login = vm2['accounts'][0]['login']
-        vm1_client = VMClient(VM1_id, password=password, login=login)
-        stdin, stdout, stderr = vm1_client.execute('ls /')
-        self.assertIn('bin', stdout.read())
+        self.assertTrue(e.exception.status_code, 400)
 
         self.lg('%s ENDED' % self._testID)
 
