@@ -103,7 +103,7 @@ class MachineTests(BasicACLTest):
         self.lg('Check that F1 has been sent to vm2 without data loss')
         vm2_client = VMClient(VM2_id)
         stdin, stdout, stderr = vm2_client.execute('cat test.txt')
-        self.assertEqual(stdout.read(), text)
+        self.assertEqual(text, stdout.read().strip())
 
         self.lg('%s ENDED' % self._testID)
 

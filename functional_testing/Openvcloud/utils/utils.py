@@ -441,11 +441,13 @@ class BaseTest(unittest.TestCase):
 
     def send_file_from_vm_to_another(self, vm1_client, vm2_id, file_loc):
         vm2 = self.api.cloudapi.machines.get(machineId=vm2_id)
-        account2 = vm2['accounts'][0]
+        vm_2_login = vm2['accounts'][0]['login']
+        vm_2_password = vm2['accounts'][0]['password']
         vm2_ip = vm2['interfaces'][0]['ipAddress']
         vm1_client.execute('apt install sshpass -y', sudo=True)
-        vm1_client.execute('sshpass -p%s scp -o \'StrictHostKeyChecking=no\' %s  %s@%s:'
-                     %(account2['password'], file_loc, account2['login'], vm2_ip))
+        time.sleep(20)
+        cmd = "sshpass -p {} scp -o StrictHostKeyChecking=no '{}' {}@{}:".format(vm_2_password, file_loc, vm_2_login, vm2_ip)
+        vm1_client.execute(cmd)
 
     def get_vm_connection(self, vm_id, wait_vm_ip=True, password=None, login=None, pb_port=None):
         vm = self.api.cloudapi.machines.get(machineId=vm_id)
