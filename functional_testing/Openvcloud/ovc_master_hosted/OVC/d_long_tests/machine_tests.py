@@ -12,7 +12,7 @@ class MachineLongTests(BasicACLTest):
         super(MachineLongTests, self).setUp()
         self.default_setup()
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1088')
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1082')
     def test01_export_import_vm(self):
         """ OVC-047
         *Test case for checking cloned VM ip, portforwards and credentials*
@@ -45,7 +45,7 @@ class MachineLongTests(BasicACLTest):
         machine_1_client.execute('mkfs.ext4 /dev/vdb', sudo=True)
         machine_1_client.execute('mkdir data', sudo=True)
         machine_1_client.execute('mount /dev/vdb data', sudo=True)
-        machine_1_client.execute('echo "helloWorld" > test2.txt', sudo=True)
+        machine_1_client.execute('echo "helloWorld" > /data/test2.txt', sudo=True)
         
 
         folder_name = str(uuid.uuid4()).replace('-', '')[:10]        
