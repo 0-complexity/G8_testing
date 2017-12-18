@@ -18,17 +18,31 @@ class MachineLongTests(BasicACLTest):
         *Test case for checking cloned VM ip, portforwards and credentials*
         **Test Scenario:**
         #. Create virtual machine (VM1), should succeed.
-        #. Write file (F1) on virtual machine (VM1), should succeed.
+        #. Create data disk (DD1), should succeed.
+        #. Attach disk (DD1) to virtual machine (VM1), should succeed.
+        #. Write file (F1) on the boot disk of the virtual machine (VM1), should succeed.
+        #. Write file (F2) on the data disk of the virtual machine (VM1), should succeed.
         #. Export virtual machine (VM1), should succeed.
         #. Import virtual machine (VM1), should succeed.
         #. Check that file (F1) exists in the imported virtual machine.
+        #. Check that file (F2) exists in the imported virtual machine's data disk (DD1).
         """
         self.lg('Create virtual machine (VM1), should succeed')
         machine_1_id = self.cloudapi_create_machine(self.cloudspace_id)
 
-        self.lg('Write file (F1) on virtual machine (VM1), should succeed')
+        self.lg('Create data disk (DD1), should succeed')
+        disk_id = self.create_disk(self.account_id)
+
+        self.lg('Attach disk (DD1) to virtual machine (VM1), should succeed')
+        response = self.api.cloudapi.machines.attachDisk(machineId=machine_1_id, diskId=disk_id)
+        self.assertTrue(response)
+
+        self.lg('Write file (F1) on the boot disk of the virtual machine (VM1), should succeed')
         machine_1_client = VMClient(machine_1_id)
         machine_1_client.execute('echo "helloWorld" > test.txt')
+
+        self.lg('Write file (F2) on the data disk of the virtual machine (VM1), should succeed')
+        machine_1_client.execute('mkdir data; mount /dev/vdc data; echo "helloWorld" > data/test.txt')
 
         folder_name = str(uuid.uuid4()).replace('-', '')[:10]        
         owncloud_auth = (self.owncloud_user, self.owncloud_password)
@@ -44,32 +58,43 @@ class MachineLongTests(BasicACLTest):
         self.lg('Create folder in owncloud')
         requests.request('MKCOL', url=folder_url, auth=owncloud_auth)
 
-        self.lg('Export virtual machine (VM1), should succeed')
-        response = self.api.cloudapi.machines.exportOVF(
-            link=web_dav_link,
-            machineId=machine_1_id,
-            username=self.owncloud_user,
-            passwd=self.owncloud_password,
-            path=folder_name
-        )
+        try:
+            self.lg('Export virtual machine (VM1), should succeed')
+            response = self.api.cloudapi.machines.exportOVF(
+                link=web_dav_link,
+                machineId=machine_1_id,
+                username=self.owncloud_user,
+                passwd=self.owncloud_password,
+                path=folder_name
+            )
 
-        self.assertTrue(response)
+            self.assertTrue(response)
 
-        time.sleep(400)
+            time.sleep(500)
 
-        self.lg('Import virtual machine (VM2), should succeed')
-        imported_vm_id = self.api.cloudapi.machines.importOVF(link=web_dav_link,
-                                                              username=self.owncloud_user,
-                                                              passwd=self.owncloud_password,
-                                                              path=folder_name,
-                                                              cloudspaceId=self.cloudspace_id,
-                                                              name="imported_vm",
-                                                              sizeId=2)
+            self.lg('Import virtual machine (VM2), should succeed')
+            imported_vm_id = self.api.cloudapi.machines.importOVF(
+                link=web_dav_link,
+                username=self.owncloud_user,
+                passwd=self.owncloud_password,
+                path=folder_name,
+                cloudspaceId=self.cloudspace_id,
+                name="imported_vm",
+                sizeId=2
+            )
 
-        self.lg('Check that file (F1) exists in the imported virtual machine')
-        imported_vm_client = VMClient(imported_vm_id)
-        stdin, stdout, stderr = imported_vm_client.execute('cat test.txt')
-        self.assertIn('helloWorld', stdout.read())
+            self.lg('Check that file (F1) exists in the imported virtual machine')
+            imported_vm_client = VMClient(imported_vm_id)
+            stdin, stdout, stderr = imported_vm_client.execute('cat test.txt')
+            self.assertIn('helloWorld', stdout.read())
 
-        self.lg('Delete folder in owncloud')
-        requests.request('DELETE', url=folder_url, auth=owncloud_auth)
+            self.lg('Check that file (F2) exists in the imported virtual machine\'s data disk (DD1)')
+            stdin, stdout, stderr = imported_vm_client.execute('mkdir data; mount /dev/vdc data; cat data/test.txt')
+            self.assertIn('helloWorld', stdout.read())
+
+        except:
+            raise
+        
+        finally:
+            self.lg('Delete folder in owncloud')
+            requests.request('DELETE', url=folder_url, auth=owncloud_auth)
