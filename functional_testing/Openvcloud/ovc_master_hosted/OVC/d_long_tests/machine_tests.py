@@ -43,8 +43,11 @@ class MachineLongTests(BasicACLTest):
 
         self.lg('Write file (F2) on the data disk of the virtual machine (VM1), should succeed')
         machine_1_client.execute('mkfs.ext4 /dev/vdb', sudo=True)
+        time.sleep(5)
         machine_1_client.execute('mkdir data', sudo=True)
+        time.sleep(1)
         machine_1_client.execute('mount /dev/vdb data', sudo=True)
+        time.sleep(1)
         machine_1_client.execute('echo "helloWorld" > /data/test2.txt', sudo=True)
         
 
