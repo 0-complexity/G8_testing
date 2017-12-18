@@ -677,7 +677,6 @@ class MachineTests(BasicACLTest):
     def test015_check_IP_conflict(self):
         """ OVC-047
         *Test case for checking machine connectivity through external network*
-
         **Test Scenario:**
 
         #. Create cloudspace (CS1), should succeed.
@@ -698,7 +697,7 @@ class MachineTests(BasicACLTest):
         self.lg("Create two virtual machines (VM1) & (VM2) in cloudspace (CS1),should succeed")
         vm1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
         vm2_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
-        vm2_password =self.api.cloudapi.machines.get(machineId=vm2_id)['accounts'][0]['password']
+        vm2_password = self.api.cloudapi.machines.get(machineId=vm2_id)['accounts'][0]['password']
 
         self.lg("Attach (VM1) & (VM2) to external networks (EN1), should succeed")
         response = self.api.cloudbroker.machine.attachExternalNetwork(machineId=vm1_id)

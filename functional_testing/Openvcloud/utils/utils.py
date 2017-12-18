@@ -201,7 +201,7 @@ class BaseTest(unittest.TestCase):
     def get_image(self):
         images = self.api.cloudapi.images.list()
         for image in images:
-            if 'Ubuntu'in image['name']:
+            if 'Ubuntu' in image['name']:
                 return image
         else:
             raise Exception("There is no Ubuntu images available. ")
