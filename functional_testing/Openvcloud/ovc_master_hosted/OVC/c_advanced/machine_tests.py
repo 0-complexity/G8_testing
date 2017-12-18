@@ -689,7 +689,7 @@ class MachineTests(BasicACLTest):
         #. Delete (VM2) external network ip, and give it the same ip of (VM1).
         #. Check that (VM1) still can work normally, should succeed.
         #. Check that you can't connect to (VM2) with it's new external network ip, should succeed.
-        #. Delete (VM1) external network ip, and give it the same ip if (CS1).
+        #. Delete (VM1) external network ip, and give it the same ip of (CS1).
         #. Check that you can't connect to VM1 with it's new ext network ip, should succeed.
         """
 
@@ -741,7 +741,7 @@ class MachineTests(BasicACLTest):
         with self.assertRaises(paramiko.AuthenticationException):
             VMClient(vm2_id, ip=vm1_ext_ip, external_network=True, timeout=1)
 
-        self.lg("Delete (VM1) external network ip, and give it the same ip if (CS1)")
+        self.lg("Delete (VM1) external network ip, and give it the same ip of (CS1)")
         cs_ip = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)["publicipaddress"]
 
         vm_1_ext_client.execute("ip a d {} dev {}".format(vm1_ext_ip,ext_interface_name1), sudo=True)

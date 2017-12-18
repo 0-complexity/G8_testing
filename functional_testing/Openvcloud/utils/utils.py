@@ -200,12 +200,11 @@ class BaseTest(unittest.TestCase):
 
     def get_image(self):
         images = self.api.cloudapi.images.list()
-        image_list = ["Ubuntu 15.10 x64", "Ubuntu 16.04 x64","Ubuntu 14.04 x64"]
-        for i in range(len(images)):
-            if images[i]['name'] in image_list:
-                return images[i]
+        for image in images:
+            if 'Ubuntu'in image['name']:
+                return image
         else:
-            raise Exception("there is no available images ")
+            raise Exception("There is no Ubuntu images available. ")
 
     def get_size(self, cloudspace_id):
         sizes = self.api.cloudapi.sizes.list(cloudspaceId=cloudspace_id)
@@ -621,17 +620,13 @@ class VMClient():
         
         if external_network:
             self.ip =  ip or self.get_machine_ip(external_network)
-
+            self.port = 22
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
         for _ in range(timeout):
             try:
-                if not external_network:
-                    self.client.connect(self.ip, port=self.port, username=self.login, password=self.password)
-                else:
-                    self.client.connect(self.ip, username=self.login, password=self.password)
-
+                self.client.connect(self.ip, port=self.port, username=self.login, password=self.password)
                 break
             except:
                 time.sleep(1)
