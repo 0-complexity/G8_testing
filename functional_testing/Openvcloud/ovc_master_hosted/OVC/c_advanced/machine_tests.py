@@ -199,7 +199,6 @@ class MachineTests(BasicACLTest):
         self.lg('%s ENDED' % self._testID)
 
     @parameterized.expand(['Linux', 'Windows'])
-    # @unittest.skip('https://github.com/0-complexity/openvcloud/issues/940')
     def test005_cheching_vm_specs_after_rebooting(self, image_type):
         """ OVC-028
         *Test case for checking VM's ip and credentials after rebooting*
@@ -253,7 +252,6 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    # @unittest.skip('https://github.com/0-complexity/openvcloud/issues/938 & 941')
     def test006_attach_same_disk_to_two_vms(self):
         """ OVC-024
         *Test case for attaching same disk to two different vms*
@@ -296,64 +294,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/969 & 937')
-    def test007_detach_boot_from_running_machine(self):
-        """ OVC-025
-        * Test case for detaching boot disk from a running machine.
-
-        **Test Scenario:**
-
-        #. Create virtual machine (VM1).
-        #. Detach VM1's boot disk (BD1), should fail.
-        #. Stop VM1.
-        #. Detach VM1's boot disk again, should succeed.
-        #. Start VM1, should fail.
-        #. Attach BD1 to VM1, should succeed.
-        #. Start VM1 and make sure it is running.
-        """
-        self.lg('%s STARTED' % self._testID)
-
-        self.lg('Create virtual machine (VM1)')
-        VM1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
-        bd_id = self.api.cloudapi.machines.get(machineId=VM1_id)['disks'][0]['id']
-
-        self.lg("Detach VM1's boot disk (BD1), should fail")
-        with self.assertRaises(HTTPError) as e:
-            self.api.cloudapi.machines.detachDisk(machineId=VM1_id, diskId=bd_id)
-
-        self.lg('- expected error raised %s' % e.exception.status_code)
-        self.assertEqual(e.exception.status_code, 400)
-
-        self.lg('Stop VM1')
-        self.api.cloudapi.machines.stop(machineId=VM1_id)
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=VM1_id)['status'], 'HALTED')
-
-        self.lg("Detach VM1's boot disk again, should succeed")
-        response = self.api.cloudapi.machines.detachDisk(machineId=VM1_id, diskId=bd_id)
-        self.assertTrue(response)
-        self.assertFalse(self.api.cloudapi.machines.get(machineId=VM1_id)['disks'])
-
-        self.lg("Start VM1, should fail")
-        with self.assertRaises(HTTPError) as e:
-            self.api.cloudapi.machines.start(machineId=VM1_id)
-
-        self.lg('- expected error raised %s' % e.exception.status_code)
-        self.assertEqual(e.exception.status_code, 400)
-
-        self.lg("Attach BD1 to VM1, should succeed.")
-        response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=bd_id)
-        self.assertTrue(response)
-
-        self.lg('Start VM1 and make sure it is running.')
-        self.api.cloudapi.machines.start(machineId=VM1_id)
-        self.assertEqual(self.api.cloudapi.machines.get(machineId=VM1_id)['status'], 'RUNNING')
-        vm1_client = VMClient(VM1_id)
-        stdin, stdout, stderr = vm1_client.execute('ls /')
-        self.assertIn('bin', stdout.read())
-
-        self.lg('%s ENDED' % self._testID)
-
-    def test008_detach_boot_disks(self):
+    def test007_detach_boot_disks(self):
         """ OVC-035
         * Test case for swapping vms boot disks.
 
@@ -383,7 +324,7 @@ class MachineTests(BasicACLTest):
         self.lg('%s ENDED' % self._testID)
 
     @unittest.skip('Not Implemented')
-    def test009_connection_bet_VM_CS_ExternalNetwork(self):
+    def test008_connection_bet_VM_CS_ExternalNetwork(self):
         """ OVC-000
         * Test case for connection between virtual machines, cloudspaces and externel networks.
 
@@ -399,7 +340,7 @@ class MachineTests(BasicACLTest):
         """
 
     @unittest.skip('Not Implemented')
-    def test010_node_maintenance_migrateVMs(self):
+    def test009_node_maintenance_migrateVMs(self):
         """ OVC-000
         *Test case for putting node in maintenance with action migrate all vms.*
 
@@ -412,7 +353,8 @@ class MachineTests(BasicACLTest):
         #. Enable the node back, should succeed.
         """
 
-    def test011_restart_vm_after_migration(self):
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1113')
+    def test010_restart_vm_after_migration(self):
         """ OVC_037
         *Test case for checking VM status after restarting it after migration*
 
@@ -456,7 +398,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    def test012_check_cloned_vm(self):
+    def test011_check_cloned_vm(self):
         """ OVC-029
         *Test case for checking cloned VM ip, portforwards and credentials*
         **Test Scenario:**
@@ -517,7 +459,7 @@ class MachineTests(BasicACLTest):
              self.api.cloudapi.machines.rollbackSnapshot(machineId=cloned_vm_id, epoch=snapshotEpoch)
 
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1061')
-    def test013_memory_size_after_attaching_external_network(self):
+    def test012_memory_size_after_attaching_external_network(self):
         """ OVC-043
         *Test case for memory size after attaching external network*
 
@@ -592,7 +534,7 @@ class MachineTests(BasicACLTest):
         self.assertAlmostEqual(machine_memory, expected_machine_memory, delta=(0.1 * expected_machine_memory))
         self.lg('%s ENDED' % self._testID)
 
-    def test014_check_disk_iops_limit(self):
+    def test013_check_disk_iops_limit(self):
         """ OVC-046
         *Test case for checking cloned VM ip, portforwards and credentials*
         **Test Scenario:**
@@ -609,6 +551,7 @@ class MachineTests(BasicACLTest):
                       "--runtime=30 --readwrite=rw --rwmixwrite=5 --size=500M --name=test{0} "\
                       "--output={0}".format(run_name)
             vm1_client.execute(fio_cmd, sudo=True)
+            
             stdin, stdout, stderr = vm1_client.execute("cat %s | grep -o 'iops=[0-9]\{1,\}' | cut -d '=' -f 2" % run_name, sudo=True)
             iops_list = stdout.read().split('\r\n')
             return iops_list
