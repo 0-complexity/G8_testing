@@ -147,7 +147,7 @@ elements = {
             'accounts': ['XPATH', ".//*[@id='collapse-2']/li[1]/a"],
             'grid_sub_jumpsacale': ['XPATH', ".//*[@id='collapse-4']/li[5]/a"],
             'grid_portal_header1': ['XPATH', 'html/body/div[2]/div/div/ul/li[1]'],
-            'user_search': ['XPATH', ".//*[@id='table_system_user_filter']/label/input"],
+            'user_search': ['XPATH', "//*[@id='table_system_user']/tfoot/td[1]/input"],
             'knowledge_base_line6_tab_line2': ['XPATH',
                                                ".//*[@id='wrap']/div/tour/div[3]/div[2]/div/div/div/div[2]/p[3]"],
             'machine_take_snapshot': ['XPATH', ".//*[@id='actions']/div/div[2]/ul/li[7]/a"],
