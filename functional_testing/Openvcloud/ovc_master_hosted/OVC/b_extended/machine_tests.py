@@ -258,7 +258,6 @@ class ExtendedTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/954')
     def test006_attach_disk_to_vm_of_another_account(self):
         """ OVC-030
         *Test case for attaching disk to a vm of another account*
@@ -325,7 +324,7 @@ class ExtendedTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1015')
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1119')
     def test008_disk_resize(self):
         """ OVC-041
         *Test case for disk resizing*

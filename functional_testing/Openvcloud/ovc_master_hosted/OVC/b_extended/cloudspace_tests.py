@@ -58,7 +58,7 @@ class CloudspaceTests(BasicACLTest):
         self.lg('3- Try to delete the cloudspace with delete, should fail with 409 conflict')
         with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.cloudspaces.delete(cloudspaceId=cloudspace_id)
-            
+
         self.lg('- expected error raised %s' % e.exception.status_code)
         self.assertEqual(e.exception.status_code, 409)
 
@@ -74,7 +74,7 @@ class CloudspaceTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/942 943')
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1121')
     def test002_add_remove_AllowedSize_to_cloudspace(self):
         """ OVC-027
         *Test case for adding and removing  allowed size to a cloudspace.*
@@ -94,14 +94,16 @@ class CloudspaceTests(BasicACLTest):
         selected_size = random.choice(location_sizes)
 
         self.lg('2- Add random size to CS1, should succeed')
-        self.api.cloudapi.cloudspaces.addAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])
+        response = self.api.cloudapi.cloudspaces.addAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])
+        self.assertTrue(response)
 
         self.lg('3- Check if the size has been added successfully to CS1')
         cloudspace_sizes = self.api.cloudapi.sizes.list(location=self.location, cloudspaceId=self.cloudspace_id)
         self.assertIn(selected_size, cloudspace_sizes)
 
         self.lg('4- Remove this size from CS1, should succeed')
-        self.api.cloudapi.cloudspaces.removeAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])
+        response = self.api.cloudapi.cloudspaces.removeAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])
+        self.assertTrue(response)
 
         self.lg('5- check if the size has been removed successfully from CS1')
         cloudspace_sizes = self.api.cloudapi.sizes.list(location=self.location, cloudspaceId=self.cloudspace_id)
@@ -163,7 +165,7 @@ class CloudspaceTests(BasicACLTest):
         """
 
         self.lg('Create virtual machine (VM1)')
-        machineId = self.cloudapi_create_machine(self.cloudspace_id) 
+        machineId = self.cloudapi_create_machine(self.cloudspace_id)
         self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machineId)
 
         self.lg('Disable cloudspace (CS1), should succeed')
@@ -185,7 +187,7 @@ class CloudspaceTests(BasicACLTest):
         self.lg('Try to start virtual machine (VM1), should fail')
         with self.assertRaises(ApiError) as e:
             user_api.cloudapi.machines.start(machineId=machineId)
-        
+
         self.lg('Enable cloudspace (CS1), should succeed')
         self.assertTrue(self.api.cloudapi.cloudspaces.enable(cloudspaceId=self.cloudspace_id, reason='test'))
 
