@@ -42,18 +42,19 @@ class MachineTests(BasicACLTest):
         machine_1_ipaddress = self.wait_for_machine_to_get_ip(machine_1_id)
         self.assertTrue(machine_1_ipaddress)
 
+        machine_1_client = VMClient(machine_1_id)
+
         self.lg('Create VM2 in cloudspace CS2')
         machine_2_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_2_id)
         machine_2_ipaddress = self.wait_for_machine_to_get_ip(machine_2_id)
         self.assertTrue(machine_2_ipaddress)
 
+        machine_2_client = VMClient(machine_2_id)
+
         self.lg('Create VM3 in cloudspace CS2')
         machine_3_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_2_id)
         machine_3_ipaddress = self.wait_for_machine_to_get_ip(machine_3_id)
         self.assertTrue(machine_3_ipaddress)
-
-        machine_1_client = VMClient(machine_1_id)
-        machine_2_client = VMClient(machine_2_id)
 
         self.lg('From VM1 ping google, should succeed')
         stdin, stdout, stderr = machine_1_client.execute('ping -w3 8.8.8.8')
@@ -68,6 +69,8 @@ class MachineTests(BasicACLTest):
         cmd = 'ping -w3 {}'.format(target_ip)
         stdin, stdout, stderr = machine_1_client.execute(cmd)
         self.assertIn(', 100% packet loss', stdout.read())
+
+        time.sleep(10)
 
         self.lg('From VM2 ping VM3, should succeed')
         cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
@@ -91,20 +94,18 @@ class MachineTests(BasicACLTest):
         VM1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
         VM2_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
 
-        self.lg('create a file F1 inside VM1')
         vm1_client = VMClient(VM1_id)
-        text = str(uuid.uuid4())[0:8]
-        vm1_client.execute('echo %s >> test.txt' % text)
+        vm2_client = VMClient(VM2_id)
+
+        self.lg('create a file F1 inside VM1')
+        vm1_client.execute('echo "helloWorld" > test.txt')
 
         self.lg('From VM1 send F1 to VM2, should succeed')
         self.send_file_from_vm_to_another(vm1_client, VM2_id, 'test.txt')
 
-        time.sleep(3)
-
         self.lg('Check that F1 has been sent to vm2 without data loss')
-        vm2_client = VMClient(VM2_id)
         stdin, stdout, stderr = vm2_client.execute('cat test.txt')
-        self.assertEqual(text, stdout.read().strip())
+        self.assertEqual("helloWorld", stdout.read().strip())
 
         self.lg('%s ENDED' % self._testID)
 
@@ -145,7 +146,7 @@ class MachineTests(BasicACLTest):
         response = os.system("ping -c 1 %s"%vm1_ext_ip)
         self.assertFalse(response)
 
-        self.lg("Check that you can connect to vm with new ip ,should succeed.")
+        self.lg("Check that you can connect to vm with new ip ,should succeed")
         vm1_client = VMClient(vm1_id, external_network=True)
         stdin, stdout, stderr = vm1_client.execute("ls /")
         self.assertIn('bin', stdout.read())

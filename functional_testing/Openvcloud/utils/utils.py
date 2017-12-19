@@ -305,7 +305,7 @@ class BaseTest(unittest.TestCase):
         for _ in range(timeout):
             machine_info = self.api.cloudapi.machines.get(machineId=machineId)
             ip_address = machine_info['interfaces'][0]['ipAddress']
-            if ip_address != 'Undefined':
+            if ip_address:
                 return ip_address
             else:
                 time.sleep(1)
@@ -445,7 +445,6 @@ class BaseTest(unittest.TestCase):
         vm_2_password = vm2['accounts'][0]['password']
         vm2_ip = vm2['interfaces'][0]['ipAddress']
         vm1_client.execute('apt install sshpass -y', sudo=True)
-        time.sleep(20)
         cmd = "sshpass -p {} scp -o StrictHostKeyChecking=no '{}' {}@{}:".format(vm_2_password, file_loc, vm_2_login, vm2_ip)
         vm1_client.execute(cmd)
 
@@ -660,7 +659,7 @@ class VMClient:
             cmd = 'echo "{}" | sudo -S {}'.format(self.password, cmd)
         
         stdin, stdout, stderr = self.client.exec_command(cmd , timeout=timeout, get_pty=True)
-        
+
         if wait:
             stdout.channel.recv_exit_status()
 
