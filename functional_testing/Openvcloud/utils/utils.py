@@ -610,7 +610,7 @@ class VMClient:
         
         if external_network:
             self.ip =  ip or self.get_machine_ip(external_network)
-            self.ip = 22
+            self.port = 22
 
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
