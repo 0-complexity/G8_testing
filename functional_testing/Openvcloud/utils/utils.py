@@ -655,8 +655,13 @@ class VMClient:
 
         return vm_cs_publicport
 
-    def execute(self, cmd, timeout=None, sudo=False):
+    def execute(self, cmd, timeout=None, sudo=False, wait=True):
         if sudo and self.login != 'root':
             cmd = 'echo "{}" | sudo -S {}'.format(self.password, cmd)
         
-        return self.client.exec_command(cmd , timeout=timeout, get_pty=True)
+        stdin, stdout, stderr = self.client.exec_command(cmd , timeout=timeout, get_pty=True)
+        
+        if wait:
+            stdout.channel.recv_exit_status()
+
+        return stdin, stdout, stderr
