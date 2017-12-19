@@ -551,10 +551,8 @@ class MachineTests(BasicACLTest):
                       "--output={0}".format(run_name)
             vm1_client.execute(fio_cmd, sudo=True)
             
-            stdin, stdout, stderr = vm1_client.execute("cat %s | grep -o 'iops=[0-9]\{1,\}' | cut -d '=' -f 2" % run_name, sudo=True)
-            output = stdout.read()
-            output = output[output.find(':')+1:]
-            iops_list = output.split('\r\n')
+            stdin, stdout, stderr = vm1_client.execute("cat %s | grep -o 'iops=[0-9]\{1,\}' | cut -d '=' -f 2" % run_name)
+            iops_list = stdout.read().split()
             return iops_list
 
         self.lg("Create virtual machine (VM1), should succeed.")
