@@ -12,3 +12,4 @@ pytractor
 chromedriver_installer
 netaddr
 pyotp>=2.2.1
+xlrd

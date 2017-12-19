@@ -50,6 +50,10 @@ class BaseTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         self.api = API()
         self.environment = config['main']['environment']
+        self.owncloud_user = config['main']['owncloud_user']
+        self.owncloud_password = config['main']['owncloud_password']
+        self.owncloud_url = config['main']['owncloud_url']
+        
         self.test_email = config['main']['email']
         self.email_password = config['main']['email_password']
         super(BaseTest, self).__init__(*args, **kwargs)
@@ -200,8 +204,11 @@ class BaseTest(unittest.TestCase):
 
     def get_image(self):
         images = self.api.cloudapi.images.list()
-        self.assertTrue(images)
-        return images[0]
+        for image in images:
+            if 'Ubuntu' in image['name']:
+                return image
+        else:
+            raise Exception("There is no Ubuntu images available. ")
 
     def get_size(self, cloudspace_id):
         sizes = self.api.cloudapi.sizes.list(cloudspaceId=cloudspace_id)
@@ -213,10 +220,11 @@ class BaseTest(unittest.TestCase):
         api = api or self.api
         name = name or str(uuid.uuid4())
         sizeId = size_id or self.get_size(cloudspace_id)['id']
-
+        
         if image_id == None:
             images = api.cloudapi.images.list()
-            image_id = [i['id'] for i in images if 'Ubuntu' in i['name']]
+            image_id = image_id or [i['id'] for i in images if 'Ubuntu' in i['name']]
+
             self.assertTrue(image_id)
             image_id = image_id[0]
 
@@ -249,11 +257,11 @@ class BaseTest(unittest.TestCase):
 
         if not stackId:
             machine_id = api.cloudbroker.machine.create(cloudspaceId=cloudspace_id, name=name,
-                                                      sizeId=sizeId, imageId=imageId,
+                                                      sizeId=sizeId, imageId=image_id,
                                                       disksize=disksize, datadisks=datadisks)
         else:
             machine_id = api.cloudbroker.machine.createOnStack(cloudspaceId=cloudspace_id, name=name,
-                                                               sizeId=sizeId, imageId=imageId,
+                                                               sizeId=sizeId, imageId=image_id,
                                                                disksize=disksize, stackid=stackId)
         self.assertTrue(machine_id)
         if wait:
@@ -467,6 +475,23 @@ class BaseTest(unittest.TestCase):
                 continue
         return connection
 
+
+    def assign_IP_to_vm_external_netowrk(self, vm_id):
+        vm_nics = self.api.cloudapi.machines.get(machineId=vm_id)["interfaces"]
+        vm_ext_nic = [x for x in vm_nics if "externalnetworkId" in x["params"]][0]
+        self.assertTrue(vm_ext_nic)
+        vm_ext_ip = vm_ext_nic["ipAddress"]
+        ext_mac_addr = vm_ext_nic["macAddress"]
+        vmclient=VMClient(vm_id)
+        response=  vmclient.execute("ifconfig -a |grep  %s| cut -f1  -d ' '"%ext_mac_addr)
+        ext_interface_name = response[1].read()
+        ext_interface_name=ext_interface_name[:ext_interface_name.find("\r")]
+        vmclient.execute("ip a a %s dev %s" % (vm_ext_ip,ext_interface_name),sudo= True) 
+        vmclient.execute("nohup bash -c 'ip l s dev %s up </dev/null >/dev/null 2>&1 & '"%ext_interface_name,sudo=True)
+        time.sleep(5)
+        vm_ext_ip = vm_ext_ip[:vm_ext_ip.find('/')]
+        return vm_ext_ip,ext_interface_name
+
     def get_vm_public_ssh_client(self, vm_id, vm_ip=None , password=None, login= None):
         vm = self.api.cloudapi.machines.get(machineId=vm_id)
         if not vm_ip:
@@ -588,7 +613,7 @@ class BasicACLTest(BaseTest):
                 self.api.system.usermanager.deleteGroup(id=group)
         super(BasicACLTest, self).tearDown()
 
-class VMClient:
+class VMClient():
     def __init__(self, vmid, login=None, password=None, port=None, ip=None, external_network=False, timeout=30):
         """
         param: vmid: virtual machine id.
@@ -622,7 +647,7 @@ class VMClient:
             except:
                 time.sleep(1)
         else:
-            raise
+            raise 
 
     def get_machine_ip(self, external_network):
         nics = self.machine['interfaces']
@@ -630,6 +655,7 @@ class VMClient:
             external_network_nic = [x for x in nics if "externalnetworkId" in x["params"]]
             if not external_network_nic:
                 raise AssertionError("Can't find external network interface")
+
             vmip = external_network_nic[0]["ipAddress"]
             return  vmip[:vmip.find('/')]
         else:
@@ -641,7 +667,7 @@ class VMClient:
         port_forwards = self.api.cloudapi.portforwarding.list(cloudspace_id, machine_id)
         vm_cs_publicports = [pf['publicPort'] for pf in port_forwards if pf['localPort'] == '22']
         if vm_cs_publicports:
-            vm_cs_publicport = vm_cs_publicports[0]
+            vm_cs_publicport = int(vm_cs_publicports[0])
         else:
             vm_cs_publicport = random.randint(50000, 65000)
             self.api.cloudapi.portforwarding.create(
