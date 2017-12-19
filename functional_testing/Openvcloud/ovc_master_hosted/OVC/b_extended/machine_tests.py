@@ -325,7 +325,7 @@ class ExtendedTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    #@unittest.skip('https://github.com/0-complexity/openvcloud/issues/1015')
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1119')
     def test008_disk_resize(self):
         """ OVC-041
         *Test case for disk resizing*
