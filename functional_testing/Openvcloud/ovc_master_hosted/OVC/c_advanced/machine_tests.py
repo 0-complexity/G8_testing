@@ -5,7 +5,7 @@ from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
 import time
 import threading
-import os
+import os, requests
 import paramiko
 
 class MachineTests(BasicACLTest):
