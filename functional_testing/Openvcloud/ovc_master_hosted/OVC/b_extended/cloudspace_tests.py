@@ -75,7 +75,7 @@ class CloudspaceTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    #@unittest.skip('https://github.com/0-complexity/openvcloud/issues/942 943')
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1121')
     def test002_add_remove_AllowedSize_to_cloudspace(self):
         """ OVC-027
         *Test case for adding and removing  allowed size to a cloudspace.*
@@ -95,14 +95,16 @@ class CloudspaceTests(BasicACLTest):
         selected_size = random.choice(location_sizes)
 
         self.lg('2- Add random size to CS1, should succeed')
-        self.api.cloudapi.cloudspaces.addAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])
+        response = self.api.cloudapi.cloudspaces.addAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])
+        self.assertTrue(response)
 
         self.lg('3- Check if the size has been added successfully to CS1')
         cloudspace_sizes = self.api.cloudapi.sizes.list(location=self.location, cloudspaceId=self.cloudspace_id)
         self.assertIn(selected_size, cloudspace_sizes)
 
         self.lg('4- Remove this size from CS1, should succeed')
-        self.api.cloudapi.cloudspaces.removeAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])
+        response = self.api.cloudapi.cloudspaces.removeAllowedSize(cloudspaceId=self.cloudspace_id, sizeId=selected_size['id'])
+        self.assertTrue(response)
 
         self.lg('5- check if the size has been removed successfully from CS1')
         cloudspace_sizes = self.api.cloudapi.sizes.list(location=self.location, cloudspaceId=self.cloudspace_id)
