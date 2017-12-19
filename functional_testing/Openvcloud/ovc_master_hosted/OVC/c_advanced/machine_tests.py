@@ -612,7 +612,7 @@ class MachineTests(BasicACLTest):
         self.assertTrue(response)
 
         self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machine_id)
-    
+
         self.lg('Check that virtual machine (VM1) is sized with right size in MB unit')
         vm_client = VMClient(machine_id)
         stdin, stdout, stderr = vm_client.execute('free -m | grep Mem')
@@ -707,7 +707,7 @@ class MachineTests(BasicACLTest):
         self.assertTrue(reponse)
 
         self.lg("Assign IPs to (VM1) and (VM2) external network's interfaces, should succeed")
-        
+
         vm1_ext_ip,ext_interface_name1 = self.assign_IP_to_vm_external_netowrk(vm1_id)
         vm2_ext_ip,ext_interface_name2 = self.assign_IP_to_vm_external_netowrk(vm2_id)
 
@@ -729,7 +729,7 @@ class MachineTests(BasicACLTest):
         self.lg("Delete (VM2) external network ip, and give it the same ip of (VM1)")
         vm_2_ext_client.execute("ip a d {} dev {}".format(vm2_ext_ip,ext_interface_name2), sudo=True)
         vm_2_client = VMClient(vm2_id)
-        
+
         vm_2_client.execute("ip a a {} dev {}".format(vm1_ext_ip,ext_interface_name2), sudo=True)
         vm_2_client.execute("nohup bash -c 'ip l s dev {} up </dev/null >/dev/null 2>&1 & '".format(ext_interface_name2), sudo=True)
 
@@ -744,11 +744,52 @@ class MachineTests(BasicACLTest):
         cs_ip = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)["publicipaddress"]
 
         vm_1_ext_client.execute("ip a d {} dev {}".format(vm1_ext_ip,ext_interface_name1), sudo=True)
-        vm_1_client = VMClient(vm1_id)        
+        vm_1_client = VMClient(vm1_id)
         vm_1_client.execute("ip a a {} dev {}".format(cs_ip,ext_interface_name1), sudo=True)
         vm_1_client.execute("nohup bash -c 'ip l s dev {} up </dev/null >/dev/null 2>&1 & '".format(ext_interface_name1), sudo=True)
 
         self.lg("Check that you can't connect to VM1 with it's new ext network ip, should succeed")
         with self.assertRaises(socket.error):
             VMClient(vm1_id,ip=cs_ip, external_network=True, timeout=1)
+        self.lg('%s ENDED' % self._testID)
+
+    def test016_resize_disk_online(self):
+        """ OVC-047
+        *Test case for resizing disk online*
+        **Test Scenario:**
+
+        #. Create virtual machine (VM1), should succeeed
+        #. Attach data disk (DS1) with size (S1), should succeed
+        #. Resize DS1 to S2, should succeed
+        #. Make sure DS1's size has been changed on the vm itself
+        #. Resize VM1's metadata disk, should fail
+        """
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg('Create virtual machine (VM1), should succeeed')
+        vm1_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id)
+
+        self.lg('Attach data disk (DS1) with size (S1), should succeed')
+        s1 = random.randint(10, 50)
+        disk_id = self.create_disk(self.account_id, size=s1)
+        self.assertTrue(disk_id)
+        response = self.api.cloudapi.machines.attachDisk(machineId=vm1_id, diskId=disk_id)
+        self.assertTrue(response)
+
+        self.lg('Resize DS1 to S2, should succeed')
+        self.api.cloudapi.disks.resize(diskId=disk_id, size=s1 + 1)
+
+        self.lg("Make sure DS1's size has been changed on the vm itself")
+        vm1_client = VMClient(vm1_id)
+        stdin, stdout, stderr = vm1_client.execute("lsblk | grep vdb | awk '{print $4}'", sudo=True)
+        self.assertIn(str(s1 + 1), stdout.read())
+
+        self.lg("Resize VM1's metadata disk, should fail")
+        vm1 = self.api.cloudapi.machines.get(vm1_id)
+        meta_disk_id = [d['id'] for d in vm1['disks'] if d['type'] == 'M'][0]
+        with self.assertRaises(HTTPError) as e:
+            self.api.cloudapi.disks.resize(diskId=meta_disk_id, size=s1)
+        self.lg('- expected error raised %s' % e.exception.msg)
+        self.assertEqual(e.exception.status_code, 400)
+
         self.lg('%s ENDED' % self._testID)
