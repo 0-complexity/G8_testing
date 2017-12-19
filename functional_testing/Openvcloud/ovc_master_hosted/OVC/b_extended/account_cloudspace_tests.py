@@ -479,7 +479,6 @@ class ExtendedTests(BasicACLTest):
             file = zipfile.ZipFile(BytesIO(response.content))
             file.extractall('{}/resourcetracking'.format(cwd))
             os.system('cd {}; python export_acc.py'.format(cwd))
-            os.system('mv example.xls {}'.format(cwd))
 
             self.lg('Extracting info from xls file')
             wb = open_workbook("{}/example.xls".format(cwd))
