@@ -14,7 +14,7 @@ class MachineLongTests(BasicACLTest):
 
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1130')
     def test01_export_import_vm(self):
-        """ OVC-047
+        """ OVC-048
         *Test case for checking cloned VM ip, portforwards and credentials*
         **Test Scenario:**
         #. Create virtual machine (VM1), should succeed.
@@ -117,7 +117,7 @@ class MachineLongTests(BasicACLTest):
 
 
     def test002_node_maintenance_migrateVMs(self):
-        """ OVC-48
+        """ OVC-49
         *Test case for putting node in maintenance with action migrate all vms.*
 
         **Test Scenario:**
