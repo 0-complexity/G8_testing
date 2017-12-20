@@ -158,5 +158,5 @@ class MachineLongTests(BasicACLTest):
         except:
             raise
         finally:
-           response = self.api.cloudbroker.computenode.enable(id=stackId, gid=gridId)
+           response = self.api.cloudbroker.computenode.enable(id=stackId, gid=gridId, message='test')
            self.assertTrue(response)
