@@ -111,20 +111,24 @@ class BasicTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    def test003_create_machine_with_resize(self):
+    @parameterized.expand(['online',
+                           'offline'
+                           ])
+    def test003_create_machine_with_resize(self, machine_status):
         """ OVC-003
         *Test case for testing resize operation with all combinations*
 
         **Test Scenario:**
 
         #. Creating machine with random disksize and random size
-        #. Stop the machine
+        #. Stop the machine, if offline resize.
         #. Resize the machine with all possible combinations, should succeed
-        #. Start the machine
+        #. Start the machine, if offline resize.
         #. Check that the machine is updated
+        
         """
 
-        self.lg('1- Get all available sizes to use and choose one random and create vm with it , should succeed')
+        self.lg('- Get all available sizes to use and choose one random and create vm with it , should succeed')
         sizes = self.api.cloudapi.sizes.list(cloudspaceId=self.cloudspace_id)
         sizes = [size for size in sizes if size['id'] in range(1, 7)]
         selected_size = random.choice(sizes)
@@ -141,20 +145,28 @@ class BasicTests(BasicACLTest):
 
             if size['id'] not in range(1, 7):
                 continue
-            
-            self.lg('3- Stop the machine')
-            self.account_owner_api.cloudapi.machines.stop(machineId=machineId)
+            if machine_status == "online":
+                if size['memory'] < selected_size['memory']:
+                    self.lg('resize running machine with memory size less than selected size, should fail')
+                    with self.assertRaises(ApiError) as e:
+                        self.account_owner_api.cloudapi.machines.resize(machineId=machineId, sizeId=size['id'])
+                    self.assertEqual(e.exception.message, '400 Bad Request')
+                    continue
 
-            machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
-            self.assertEqual(machineInfo['status'], 'HALTED')
+            if machine_status == "offline":
+                self.lg('- Stop the machine')
+                self.account_owner_api.cloudapi.machines.stop(machineId=machineId)
+                machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
+                self.assertEqual(machineInfo['status'], 'HALTED')
 
-            self.lg('Resize the machine with all possible combinations, should succeed')
+            self.lg('- Resize the machine with {} status with all possible combinations, should succeed'.format(machine_status))
             self.account_owner_api.cloudapi.machines.resize(machineId=machineId, sizeId=size['id'])
 
-            self.lg('4- Start the machine')
-            self.account_owner_api.cloudapi.machines.start(machineId=machineId)
+            if machine_status == "offline":                
+                self.lg('- Start the machine')
+                self.account_owner_api.cloudapi.machines.start(machineId=machineId)
             
-            self.lg('Check that the machine is updated')
+            self.lg('- Check that the machine is updated')
             machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
             self.assertEqual(machineInfo['status'], 'RUNNING')
             self.assertEqual(machineInfo['sizeid'], size['id'])
