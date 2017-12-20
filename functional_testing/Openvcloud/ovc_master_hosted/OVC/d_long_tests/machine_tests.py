@@ -141,6 +141,10 @@ class MachineLongTests(BasicACLTest):
         self.assertTrue(response)
 
         try:
+            self.lg('Check that the 2 VMs have been migrated')
+            self.assertEqual(stackId, self.get_machine_stackId(machine_1_id))
+            self.assertEqual(stackId, self.get_machine_stackId(machine_2_id))
+
             self.lg('Check that the 2 VMs are in running state')
             machine_1_info = self.api.cloudapi.machines.get(machine_1_id)
             machine_2_info = self.api.cloudapi.machines.get(machine_2_id)
@@ -154,9 +158,9 @@ class MachineLongTests(BasicACLTest):
             machine_2_client = VMClient(machine_2_id)
             stdin, stdout, stderr = machine_2_client.execute('uname')
             self.assertIn('Linux', stdout.read())
-
         except:
             raise
         finally:
-           response = self.api.cloudbroker.computenode.enable(id=stackId, gid=gridId, message='test')
-           self.assertTrue(response)
+            self.lg('Enable the node back, should succeed')
+            response = self.api.cloudbroker.computenode.enable(id=stackId, gid=gridId, message='test')
+            self.assertTrue(response)

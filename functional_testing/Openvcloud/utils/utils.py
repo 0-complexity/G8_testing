@@ -527,6 +527,12 @@ class BaseTest(unittest.TestCase):
         nodeID = ccl.stack.get(stackID).referenceId
         return int(nodeID)
 
+    def get_machine_stackId(self, machineId):
+        ccl = j.clients.osis.getNamespace('cloudbroker')
+        machine = ccl.vmachine.get(machineId)
+        stackId = machine.stackId
+        return stackId
+
     def get_email_data(self, Email, password):
         mail = imaplib.IMAP4_SSL('imap.gmail.com')
         mail.login(Email, password)
