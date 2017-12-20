@@ -137,9 +137,9 @@ class MachineLongTests(BasicACLTest):
         machine_2_id = self.cloudbroker_create_machine(self.cloudspace_id, stackId=stackId)
 
         self.lg('Put node in maintenance with migrate all vms, should succeed')
-        response = self.api.cloudbroker.computenode.maintenance(id=stackId, gid=gridId, vmaction='move', message='test')
-        self.assertTrue(response)
-
+        self.api.cloudbroker.computenode.maintenance(id=stackId, gid=gridId, vmaction='move', message='test')
+        self.assertTrue(self.wait_for_stack_status(stackId, 'MAINTENANCE'))
+        
         try:
             self.lg('Check that the 2 VMs have been migrated')
             self.assertNotEqual(stackId, self.get_machine_stackId(machine_1_id))
@@ -162,5 +162,5 @@ class MachineLongTests(BasicACLTest):
             raise
         finally:
             self.lg('Enable the node back, should succeed')
-            response = self.api.cloudbroker.computenode.enable(id=stackId, gid=gridId, message='test')
-            self.assertTrue(response)
+            self.api.cloudbroker.computenode.enable(id=stackId, gid=gridId, message='test')
+            self.assertTrue(self.wait_for_stack_status(stackId, 'ENABLED'))

@@ -309,6 +309,16 @@ class BaseTest(unittest.TestCase):
             resource = func(**kwargs)  # get resource
         self.assertEqual(resource['status'], status)
 
+    def wait_for_stack_status(self, stackId, status, timeout=30):
+        ccl = j.clients.osis.getNamespace('cloudbroker')
+        for _ in range(timeout):
+            if ccl.stack.get(stackId).status == status:
+                return True
+            else:
+                time.sleep(3)
+
+        return False
+
     def get_machine_ipaddress(self, machineId):
         machine_info = self.api.cloudapi.machines.get(machineId=machineId)
         ip_address = machine_info['interfaces'][0]['ipAddress']
