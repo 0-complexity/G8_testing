@@ -126,6 +126,7 @@ class MachineLongTests(BasicACLTest):
         #. Put node in maintenance with migrate all vms, should succeed.
         #. Check that the 2 VMs have been migrated.
         #. Check that the 2 VMs are in running state.
+        #. Check that the 2 VMs are working well, should succeed.
         #. Enable the node back, should succeed.
         """
         stackId = self.get_running_stackId()
@@ -141,11 +142,21 @@ class MachineLongTests(BasicACLTest):
 
         try:
             self.lg('Check that the 2 VMs are in running state')
-            machine_1_info = self.api.cloudapi.machines(machine_1_id)
-            machine_2_info = self.api.cloudapi.machines(machine_2_id)
+            machine_1_info = self.api.cloudapi.machines.get(machine_1_id)
+            machine_2_info = self.api.cloudapi.machines.get(machine_2_id)
             self.assertTrue(machine_1_info['status'], 'RUNNING')
             self.assertTrue(machine_2_info['status'], 'RUNNING')
+
+            self.lg('Check that the 2 VMs are working well, should succeed')
+            machine_1_client = VMClient(machine_1_id)
+            stdin, stdout, stderr = machine_1_client.execute('uname')
+            self.assertIn('Linux', stdout.read())
+            machine_2_client = VMClient(machine_2_id)
+            stdin, stdout, stderr = machine_2_client.execute('uname')
+            self.assertIn('Linux', stdout.read())
+
         except:
             raise
         finally:
-           self.api.scloudbroker.computenode.enable(id=stackId, gid=gridId)
+           response = self.api.scloudbroker.computenode.enable(id=stackId, gid=gridId)
+           self.assertTrue(response)
