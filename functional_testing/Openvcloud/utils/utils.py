@@ -309,16 +309,10 @@ class BaseTest(unittest.TestCase):
             resource = func(**kwargs)  # get resource
         self.assertEqual(resource['status'], status)
 
-    def wait_for_machine_to_get_ip(self, machineId, timeout=300):
-        for _ in range(timeout):
-            machine_info = self.api.cloudapi.machines.get(machineId=machineId)
-            ip_address = machine_info['interfaces'][0]['ipAddress']
-            if ip_address:
-                return ip_address
-            else:
-                time.sleep(1)
-        else:
-            return None
+    def get_machine_ipaddress(self, machineId):
+        machine_info = self.api.cloudapi.machines.get(machineId=machineId)
+        ip_address = machine_info['interfaces'][0]['ipAddress']
+        return ip_address
 
 
     def add_user_to_account(self, account_id, user, accesstype, api=''):
@@ -645,7 +639,7 @@ class VMClient():
                 self.client.connect(self.ip, port=self.port, username=self.login, password=self.password)
                 break
             except:
-                time.sleep(1)
+                time.sleep(3)
         else:
             raise 
 

@@ -40,19 +40,19 @@ class MachineTests(BasicACLTest):
 
         self.lg('Create VM1 in cloudspace CS1')
         machine_1_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_1_id)
-        machine_1_ipaddress = self.wait_for_machine_to_get_ip(machine_1_id)
+        machine_1_ipaddress = self.get_machine_ipaddress(machine_1_id)
         self.assertTrue(machine_1_ipaddress)
         machine_1_client = VMClient(machine_1_id)
 
         self.lg('Create VM2 in cloudspace CS2')
         machine_2_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_2_id)
-        machine_2_ipaddress = self.wait_for_machine_to_get_ip(machine_2_id)
+        machine_2_ipaddress = self.get_machine_ipaddress(machine_2_id)
         self.assertTrue(machine_2_ipaddress)
         machine_2_client = VMClient(machine_2_id)
 
         self.lg('Create VM3 in cloudspace CS2')
         machine_3_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_2_id)
-        machine_3_ipaddress = self.wait_for_machine_to_get_ip(machine_3_id)
+        machine_3_ipaddress = self.get_machine_ipaddress(machine_3_id)
         self.assertTrue(machine_3_ipaddress)
         machine_3_client = VMClient(machine_3_id)
 
@@ -401,7 +401,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('Create (VM1), should succeed')
         machineId = self.cloudapi_create_machine(self.cloudspace_id)
-        machine_1_ipaddress = self.wait_for_machine_to_get_ip(machineId)
+        machine_1_ipaddress = self.get_machine_ipaddress(machineId)
         self.assertTrue(machine_1_ipaddress)
 
         self.lg('Take a snapshot (SS0) for (VM1)')
@@ -417,7 +417,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('Clone VM1 as (VM2_C), should succeed')
         cloned_vm_id = self.api.cloudapi.machines.clone(machineId=machineId, name='test')
-        cloned_machine_ipaddress = self.wait_for_machine_to_get_ip(cloned_vm_id)
+        cloned_machine_ipaddress = self.get_machine_ipaddress(cloned_vm_id)
         self.assertTrue(cloned_machine_ipaddress)
 
         self.lg('Start (VM1), should succeed')
@@ -546,7 +546,7 @@ class MachineTests(BasicACLTest):
         if not image_id:
             self.skipTest('No Ubuntu image found')
         vm1_id = self.cloudapi_create_machine(self.cloudspace_id, image_id=image_id[0])
-        vm1_ip = self.wait_for_machine_to_get_ip(vm1_id)
+        vm1_ip = self.get_machine_ipaddress(vm1_id)
         self.assertTrue(vm1_ip)
 
         self.lg("Attach data disk (DD1) to VM1 and set MaxIOPS to iops1.")
