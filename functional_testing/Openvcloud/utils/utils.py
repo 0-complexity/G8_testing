@@ -639,7 +639,7 @@ class VMClient():
                 self.client.connect(self.ip, port=self.port, username=self.login, password=self.password)
                 break
             except:
-                time.sleep(1)
+                time.sleep(3)
         else:
             raise 
 
