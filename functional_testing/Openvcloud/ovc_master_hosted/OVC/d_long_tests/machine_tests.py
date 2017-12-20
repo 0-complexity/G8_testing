@@ -114,3 +114,38 @@ class MachineLongTests(BasicACLTest):
         finally:
             self.lg('Delete folder in owncloud')
             requests.request('DELETE', url=folder_url, auth=owncloud_auth)
+
+
+    def test002_node_maintenance_migrateVMs(self):
+        """ OVC-48
+        *Test case for putting node in maintenance with action migrate all vms.*
+
+        **Test Scenario:**
+
+        #. Create 2 VMs, should succeed.
+        #. Put node in maintenance with migrate all vms, should succeed.
+        #. Check that the 2 VMs have been migrated.
+        #. Check that the 2 VMs are in running state.
+        #. Enable the node back, should succeed.
+        """
+        stackId = self.get_running_stackId()
+        gridId = self.get_node_gid(stackId)
+        
+        self.lg('Create 2 VMs, should succeed')
+        machine_1_id = self.cloudbroker_create_machine(self.cloudspace_id, stackId=stackId)
+        machine_2_id = self.cloudbroker_create_machine(self.cloudspace_id, stackId=stackId)
+
+        self.lg('Put node in maintenance with migrate all vms, should succeed')
+        response = self.api.cloudbroker.computenode.maintenance(id=stackId, gid=gridId, vmaction='move', message='test')
+        self.assertTrue(response)
+
+        try:
+            self.lg('Check that the 2 VMs are in running state')
+            machine_1_info = self.api.cloudapi.machines(machine_1_id)
+            machine_2_info = self.api.cloudapi.machines(machine_2_id)
+            self.assertTrue(machine_1_info['status'], 'RUNNING')
+            self.assertTrue(machine_2_info['status'], 'RUNNING')
+        except:
+            raise
+        finally:
+           self.api.scloudbroker.computenode.enable(id=stackId, gid=gridId)
