@@ -309,6 +309,16 @@ class BaseTest(unittest.TestCase):
             resource = func(**kwargs)  # get resource
         self.assertEqual(resource['status'], status)
 
+    def wait_for_stack_status(self, stackId, status, timeout=30):
+        ccl = j.clients.osis.getNamespace('cloudbroker')
+        for _ in range(timeout):
+            if ccl.stack.get(stackId).status == status:
+                return True
+            else:
+                time.sleep(3)
+
+        return False
+
     def get_machine_ipaddress(self, machineId):
         machine_info = self.api.cloudapi.machines.get(machineId=machineId)
         ip_address = machine_info['interfaces'][0]['ipAddress']
@@ -526,6 +536,12 @@ class BaseTest(unittest.TestCase):
         stackID = machine.stackId
         nodeID = ccl.stack.get(stackID).referenceId
         return int(nodeID)
+
+    def get_machine_stackId(self, machineId):
+        ccl = j.clients.osis.getNamespace('cloudbroker')
+        machine = ccl.vmachine.get(machineId)
+        stackId = machine.stackId
+        return stackId
 
     def get_email_data(self, Email, password):
         mail = imaplib.IMAP4_SSL('imap.gmail.com')

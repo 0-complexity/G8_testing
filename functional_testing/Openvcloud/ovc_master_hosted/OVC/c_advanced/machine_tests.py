@@ -323,20 +323,6 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('Not Implemented')
-    def test008_node_maintenance_migrateVMs(self):
-        """ OVC-000
-        *Test case for putting node in maintenance with action migrate all vms.*
-
-        **Test Scenario:**
-
-        #. Create 3 VMs, should succeed.
-        #. Put node in maintenance with migrate all vms, should succeed.
-        #. Check that the 3 VMs have been migrated.
-        #. Check that the 3 VMs are in running state.
-        #. Enable the node back, should succeed.
-        """
-
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1113')
     def test009_restart_vm_after_migration(self):
         """ OVC_037
