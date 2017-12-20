@@ -625,11 +625,10 @@ class MachineTests(BasicACLTest):
         self.assertIn(', 0% packet loss', vm_2_ext_client.execute("ping -c 1 {}".format(gateway_ip))[1].read())
 
         self.lg("Delete (VM2) external network ip, and give it the same ip of (VM1)")
-        vm_2_ext_client.execute("ip a d {} dev {}".format(vm2_ext_ip,ext_interface_name2), sudo=True)
+        vm_2_ext_client.execute("ip a d {} dev {}".format(vm2_ext_ip,ext_interface_name2), sudo=True , wait =False)
         vm_2_client = VMClient(vm2_id)
-        
         vm_2_client.execute("ip a a {} dev {}".format(vm1_ext_ip,ext_interface_name2), sudo=True)
-        vm_2_client.execute("nohup bash -c 'ip l s dev {} up </dev/null >/dev/null 2>&1 & '".format(ext_interface_name2), sudo=True)
+        vm_2_client.execute("nohup bash -c 'ip l s dev {} up </dev/null >/dev/null 2>&1 & '".format(ext_interface_name2), sudo=True, wait =False)
 
         self.lg("Check that (VM1) still can work normally, should succeed")
         self.assertIn(', 0% packet loss', vm_1_ext_client.execute("ping -c 1 {}".format(gateway_ip))[1].read())
@@ -641,10 +640,10 @@ class MachineTests(BasicACLTest):
         self.lg("Delete (VM1) external network ip, and give it the same ip of (CS1)")
         cs_ip = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)["publicipaddress"]
 
-        vm_1_ext_client.execute("ip a d {} dev {}".format(vm1_ext_ip,ext_interface_name1), sudo=True)
+        vm_1_ext_client.execute("ip a d {} dev {}".format(vm1_ext_ip,ext_interface_name1), sudo=True, wait =False)
         vm_1_client = VMClient(vm1_id)        
         vm_1_client.execute("ip a a {} dev {}".format(cs_ip,ext_interface_name1), sudo=True)
-        vm_1_client.execute("nohup bash -c 'ip l s dev {} up </dev/null >/dev/null 2>&1 & '".format(ext_interface_name1), sudo=True)
+        vm_1_client.execute("nohup bash -c 'ip l s dev {} up </dev/null >/dev/null 2>&1 & '".format(ext_interface_name1), sudo=True, wait =False)
 
         self.lg("Check that you can't connect to VM1 with it's new ext network ip, should succeed")
         with self.assertRaises(socket.error):
