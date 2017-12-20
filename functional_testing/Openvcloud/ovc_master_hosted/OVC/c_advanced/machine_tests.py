@@ -324,23 +324,7 @@ class MachineTests(BasicACLTest):
         self.lg('%s ENDED' % self._testID)
 
     @unittest.skip('Not Implemented')
-    def test008_connection_bet_VM_CS_ExternalNetwork(self):
-        """ OVC-000
-        * Test case for connection between virtual machines, cloudspaces and externel networks.
-
-        **Test Scenario:**
-
-        #. Create two cloudspace (CS1) and (CS2) with external network (EN1).
-        #. Create a virtual machine (VM1) on CS1, should succeed.
-        #. Attach VM1 to EN1, should succeed (Not implemented yet).
-        #. Assign CS1's ip to VM1 external network interface, should succeed.
-        #. Ping EN1's Gateway ip, should fail.
-        #. Assign CS2's ip to VM1 external network interface, should succeed.
-        #. Ping EN1's Gateway ip again, should fail.
-        """
-
-    @unittest.skip('Not Implemented')
-    def test009_node_maintenance_migrateVMs(self):
+    def test008_node_maintenance_migrateVMs(self):
         """ OVC-000
         *Test case for putting node in maintenance with action migrate all vms.*
 
@@ -354,7 +338,7 @@ class MachineTests(BasicACLTest):
         """
 
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1113')
-    def test010_restart_vm_after_migration(self):
+    def test009_restart_vm_after_migration(self):
         """ OVC_037
         *Test case for checking VM status after restarting it after migration*
 
@@ -398,7 +382,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    def test011_check_cloned_vm(self):
+    def test010_check_cloned_vm(self):
         """ OVC-029
         *Test case for checking cloned VM ip, portforwards and credentials*
         **Test Scenario:**
@@ -459,7 +443,7 @@ class MachineTests(BasicACLTest):
              self.api.cloudapi.machines.rollbackSnapshot(machineId=cloned_vm_id, epoch=snapshotEpoch)
 
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1061')
-    def test012_memory_size_after_attaching_external_network(self):
+    def test011_memory_size_after_attaching_external_network(self):
         """ OVC-043
         *Test case for memory size after attaching external network*
 
@@ -534,7 +518,7 @@ class MachineTests(BasicACLTest):
         self.assertAlmostEqual(machine_memory, expected_machine_memory, delta=(0.1 * expected_machine_memory))
         self.lg('%s ENDED' % self._testID)
 
-    def test013_check_disk_iops_limit(self):
+    def test012_check_disk_iops_limit(self):
         """ OVC-046
         *Test case for checking cloned VM ip, portforwards and credentials*
         **Test Scenario:**
@@ -588,7 +572,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    def test015_check_IP_conflict(self):
+    def test013_check_IP_conflict(self):
         """ OVC-047
         *Test case for checking machine connectivity through external network*
         **Test Scenario:**
