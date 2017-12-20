@@ -220,9 +220,11 @@ class BaseTest(unittest.TestCase):
         api = api or self.api
         name = name or str(uuid.uuid4())
         sizeId = size_id or self.get_size(cloudspace_id)['id']
+        
         if image_id == None:
             images = api.cloudapi.images.list()
             image_id = image_id or [i['id'] for i in images if 'Ubuntu' in i['name']]
+
             self.assertTrue(image_id)
             image_id = image_id[0]
 
@@ -249,7 +251,7 @@ class BaseTest(unittest.TestCase):
         sizeId = size_id or self.get_size(cloudspace_id)['id']
         if image_id == None:
             images = api.cloudapi.images.list()
-            image_id = image_id or [i['id'] for i in images if 'Ubuntu' in i['name']]
+            image_id = [i['id'] for i in images if 'Ubuntu' in i['name']]
             self.assertTrue(image_id)
             image_id = image_id[0]
 
@@ -311,7 +313,7 @@ class BaseTest(unittest.TestCase):
         for _ in range(timeout):
             machine_info = self.api.cloudapi.machines.get(machineId=machineId)
             ip_address = machine_info['interfaces'][0]['ipAddress']
-            if ip_address != 'Undefined':
+            if ip_address:
                 return ip_address
             else:
                 time.sleep(1)
@@ -445,13 +447,14 @@ class BaseTest(unittest.TestCase):
                                     cs_publicport=vm_cs_publicport, wait_vm_ip=wait_vm_ip)
         return vm_cs_publicport
 
-    def send_file_from_vm_to_another(self, vm1_conn, vm2_id, file_loc):
+    def send_file_from_vm_to_another(self, vm1_client, vm2_id, file_loc):
         vm2 = self.api.cloudapi.machines.get(machineId=vm2_id)
-        account2 = vm2['accounts'][0]
+        vm_2_login = vm2['accounts'][0]['login']
+        vm_2_password = vm2['accounts'][0]['password']
         vm2_ip = vm2['interfaces'][0]['ipAddress']
-        vm1_conn.apt_get('install sshpass')
-        vm1_conn.run('sshpass -p%s scp -o \'StrictHostKeyChecking=no\' %s  %s@%s:'
-                     %(account2['password'], file_loc, account2['login'], vm2_ip))
+        vm1_client.execute('apt install sshpass -y', sudo=True)
+        cmd = "sshpass -p {} scp -o StrictHostKeyChecking=no '{}' {}@{}:".format(vm_2_password, file_loc, vm_2_login, vm2_ip)
+        vm1_client.execute(cmd)
 
     def get_vm_connection(self, vm_id, wait_vm_ip=True, password=None, login=None, pb_port=None):
         vm = self.api.cloudapi.machines.get(machineId=vm_id)
@@ -633,6 +636,7 @@ class VMClient():
         if external_network:
             self.ip =  ip or self.get_machine_ip(external_network)
             self.port = 22
+
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
@@ -677,8 +681,13 @@ class VMClient():
 
         return vm_cs_publicport
 
-    def execute(self, cmd, timeout=None, sudo=False):
+    def execute(self, cmd, timeout=None, sudo=False, wait=True):
         if sudo and self.login != 'root':
             cmd = 'echo "{}" | sudo -S {}'.format(self.password, cmd)
         
-        return self.client.exec_command(cmd , timeout=timeout, get_pty=True)
+        stdin, stdout, stderr = self.client.exec_command(cmd , timeout=timeout, get_pty=True)
+
+        if wait:
+            stdout.channel.recv_exit_status()
+
+        return stdin, stdout, stderr
