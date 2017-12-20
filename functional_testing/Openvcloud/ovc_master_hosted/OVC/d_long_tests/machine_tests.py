@@ -142,8 +142,8 @@ class MachineLongTests(BasicACLTest):
 
         try:
             self.lg('Check that the 2 VMs have been migrated')
-            self.assertEqual(stackId, self.get_machine_stackId(machine_1_id))
-            self.assertEqual(stackId, self.get_machine_stackId(machine_2_id))
+            self.assertNotEqual(stackId, self.get_machine_stackId(machine_1_id))
+            self.assertNotEqual(stackId, self.get_machine_stackId(machine_2_id))
 
             self.lg('Check that the 2 VMs are in running state')
             machine_1_info = self.api.cloudapi.machines.get(machine_1_id)
