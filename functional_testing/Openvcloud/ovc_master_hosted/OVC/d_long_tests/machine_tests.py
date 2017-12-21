@@ -12,7 +12,7 @@ class MachineLongTests(BasicACLTest):
         super(MachineLongTests, self).setUp()
         self.default_setup()
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1130')
+    # @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1130')
     def test01_export_import_vm(self):
         """ OVC-048
         *Test case for checking cloned VM ip, portforwards and credentials*
@@ -74,7 +74,7 @@ class MachineLongTests(BasicACLTest):
 
             self.assertTrue(response)
 
-            time.sleep(500)
+            time.sleep(300)
 
             self.lg('Import virtual machine (VM2), should succeed')
             self.api.cloudapi.machines.importOVF(
@@ -93,13 +93,20 @@ class MachineLongTests(BasicACLTest):
             if not imported_vm_id:
                 self.fail("can't import vm")
 
+            # work around (see https://github.com/0-complexity/openvcloud/issues/1130)
             self.lg('Check that file (F1) exists in the imported virtual machine')
-            imported_vm_client = VMClient(
-                imported_vm_id[0],
-                login=machine_1_client.login,
-                password=machine_1_client.password,
-                timeout=120
-            )
+            for _ in range(60):
+                try:
+                    imported_vm_client = VMClient(
+                        imported_vm_id[0],
+                        login=machine_1_client.login,
+                        password=machine_1_client.password,
+                        timeout=120
+                    )
+                except:
+                    time.sleep(4)
+            else:
+                self.fail("can't connect to the imported vm")
 
             stdin, stdout, stderr = imported_vm_client.execute('cat test1.txt')
             self.assertIn('helloWorld', stdout.read())
