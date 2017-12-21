@@ -160,34 +160,63 @@
   <h1>Source code for functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">unittest</span>
 <span class="kn">from</span> <span class="nn">....utils.utils</span> <span class="k">import</span> <span class="n">BasicACLTest</span>
-
-
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">JumpScale.baselib.http_client.HttpClient</span> <span class="k">import</span> <span class="n">HTTPError</span>
+<span class="kn">import</span> <span class="nn">email</span>
+<span class="kn">import</span> <span class="nn">imaplib</span>
+<span class="kn">import</span> <span class="nn">mailbox</span>
+<span class="kn">import</span> <span class="nn">json</span>
 
 <div class="viewcode-block" id="UsersBasicTests"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests.UsersBasicTests">[docs]</a><span class="k">class</span> <span class="nc">UsersBasicTests</span><span class="p">(</span><span class="n">BasicACLTest</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">UsersBasicTests</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">acl_setup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acl_setup</span><span class="p">(</span><span class="n">create_default_cloudspace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<div class="viewcode-block" id="UsersBasicTests.test001_authenticate_user"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests.UsersBasicTests.test001_authenticate_user">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test001_authenticate_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<div class="viewcode-block" id="UsersBasicTests.test001_authenticate_user"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests.UsersBasicTests.test001_authenticate_user">[docs]</a>    <span class="k">def</span> <span class="nf">test001_authenticate_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-031</span>
 <span class="sd">        * Test case for check user authentication and passsword update. *</span>
 
 <span class="sd">        **Test Scenario:**</span>
 
 <span class="sd">        #. Create user (U1) with admin access.</span>
-<span class="sd">        #. Authenticate U1 with POST /cloudapi/users/authenticate API,should return session key[user1_key] .</span>
+<span class="sd">        #. Authenticate U1,should return session key[user1_key] .</span>
 <span class="sd">        #. Use U1&#39;s key to list the accounts for U1, should succeed.</span>
 <span class="sd">        #. Use U1&#39;s key to update U1&#39;s password, should succeed.</span>
 <span class="sd">        #. Check that user1&#39;s password has been reset successfully.</span>
 <span class="sd">        #. Use U1&#39;s key again to list the accounts for U1, should succeed.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
-<div class="viewcode-block" id="UsersBasicTests.test002_get_user_info"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests.UsersBasicTests.test002_get_user_info">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test002_get_user_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- Create user1 with admin access &#39;</span><span class="p">)</span>
+        <span class="n">old_password</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+        <span class="n">user1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudbroker_user_create</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">old_password</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;- Authenticate U1 ,should return session key[user1_key] .&quot;</span><span class="p">)</span>
+        <span class="n">user1_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_authenticated_user_api</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user1</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">old_password</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">user1_key</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;-  Use U1&#39;s key to list the accounts for U1, should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">accounts_list</span> <span class="o">=</span> <span class="n">user1_key</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">accounts_list</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;- Use U1&#39;s key to update U1&#39;s password, should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">new_password</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">user1_key</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">updatePassword</span><span class="p">(</span><span class="n">oldPassword</span><span class="o">=</span><span class="n">old_password</span><span class="p">,</span> <span class="n">newPassword</span><span class="o">=</span><span class="n">new_password</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s2">&quot;Your password has been changed.&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;- Check that user1&#39;s password has been reset successfully.&quot;</span><span class="p">)</span>
+        <span class="n">user1_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_authenticated_user_api</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user1</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">new_password</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">user1_key</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;- Use U1&#39;s key again to list the accounts for U1, should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">accounts_list</span> <span class="o">=</span> <span class="n">user1_key</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">accounts_list</span><span class="p">,</span> <span class="p">[])</span></div>
+
+<div class="viewcode-block" id="UsersBasicTests.test002_get_user_info"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests.UsersBasicTests.test002_get_user_info">[docs]</a>    <span class="k">def</span> <span class="nf">test002_get_user_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-032</span>
 <span class="sd">        * Test case for check get user information.*</span>
 
 <span class="sd">        **Test Scenario:**</span>
@@ -198,11 +227,31 @@
 <span class="sd">        #. Set data for U1 with /cloudapi/users/setData API, Should succeed.</span>
 <span class="sd">        #. Check that this data has been added to U1 info ,should succeed.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- Create user (U1) with admin access and Email &#39;</span><span class="p">)</span>
+        <span class="n">user1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudbroker_user_create</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s1">&#39;admin&#39;</span><span class="p">)</span>
+        <span class="n">user1_email</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">@example.com&quot;</span><span class="o">%</span><span class="n">user1</span>
 
-<div class="viewcode-block" id="UsersBasicTests.test003_check_matching_users"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests.UsersBasicTests.test003_check_matching_users">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test003_check_matching_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;- Authenticate U1 ,sould succeed .&quot;</span><span class="p">)</span>
+        <span class="n">user1_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_authenticated_user_api</span><span class="p">(</span><span class="n">user1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">user1_key</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;- Get U1 info with /cloudapi/users/get Api, should succeed&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">user1_key</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">user1_email</span><span class="p">,</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;emailaddresses&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;- Set data for U1 with /cloudapi/users/setData API, Should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span><span class="s2">&quot;value&quot;</span><span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">user1_key</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39; Check that this data has been added to U1 info ,should succeed.&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">user1_key</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertDictEqual</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="UsersBasicTests.test003_check_matching_users"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests.UsersBasicTests.test003_check_matching_users">[docs]</a>    <span class="k">def</span> <span class="nf">test003_check_matching_users</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-033</span>
 <span class="sd">        * Test case for check get matching usernames.</span>
 
 <span class="sd">        **Test Scenario:**</span>
@@ -210,14 +259,45 @@
 <span class="sd">        #. Create user1 with random name user1.</span>
 <span class="sd">        #. Create user2 with name in which user1 name is part of it .</span>
 <span class="sd">        #. Use user1 name to get matching usernames with /cloudapi/users/getMatchingUsernames Api,sould succeed.</span>
-<span class="sd">        #. Check that userr1 and user2 in matching list, should succeed.</span>
+<span class="sd">        #. Check that userr1 ,user2   in matching list, should succeed.</span>
 <span class="sd">        #. Delete user1 and user2 and make sure that they can&#39;t be listed.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
-        <span class="c1">#Note: add users with upper case &amp; special characters as well.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
-<div class="viewcode-block" id="UsersBasicTests.test004_password_reset"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests.UsersBasicTests.test004_password_reset">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- Create user1 with random name . &#39;</span><span class="p">)</span>
+        <span class="n">user1_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cloudbroker_user_create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user1_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;- Authenticate U1 ,sould succeed .&quot;</span><span class="p">)</span>
+        <span class="n">user1_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_authenticated_user_api</span><span class="p">(</span><span class="n">user1_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">user1_key</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;- Create user2 with name in which user1 name is part of it&quot;</span><span class="p">)</span>
+        <span class="n">user2_name</span> <span class="o">=</span> <span class="s2">&quot;match</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">user1_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cloudbroker_user_create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user2_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;- Use user1 name to get matching usernames with /cloudapi/users/getMatchingUsernames Api,sould succeed.&quot;</span><span class="p">)</span>
+        <span class="n">limit</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="n">matching_users_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">getMatchingUsernames</span><span class="p">(</span><span class="n">usernameregex</span><span class="o">=</span><span class="n">user1_name</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;- Check that user2 and user1  in matching list, should succeed.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">matching_users_names</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span><span class="o">==</span><span class="n">user2_name</span> <span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">matching_users_names</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span><span class="o">==</span><span class="n">user1_name</span> <span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;- Delete user1 and user2 and make sure that they can&#39;t be listed.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user1_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user2_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">CLEANUP</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">user1_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CLEANUP</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">user2_name</span><span class="p">)</span>
+
+        <span class="n">matching_users_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">getMatchingUsernames</span><span class="p">(</span><span class="n">usernameregex</span> <span class="o">=</span> <span class="n">user2_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">matching_users_names</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span><span class="o">==</span><span class="n">user2_name</span> <span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">matching_users_names</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span><span class="o">==</span><span class="n">user1_name</span> <span class="p">])</span></div>
+
+<div class="viewcode-block" id="UsersBasicTests.test004_password_reset"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests.UsersBasicTests.test004_password_reset">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;https://github.com/0-complexity/openvcloud/issues/955&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test004_password_reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+        <span class="sd">&quot;&quot;&quot; OVC-035</span>
 <span class="sd">        * Test case for check password reset.</span>
 
 <span class="sd">        **Test Scenario:**</span>
@@ -228,12 +308,32 @@
 <span class="sd">        #. Use received  ResetPassword token to  reset password, should succeed.</span>
 <span class="sd">        #. Check that password of user1 has been reset successfully.</span>
 
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Create user1 with Email (E1).&quot;</span><span class="p">)</span>
+        <span class="n">user1_email</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_email</span>
+        <span class="n">user1_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudbroker_user_create</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">user1_email</span><span class="p">)</span>
 
-<span class="sd">        &quot;&quot;&quot;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Send ResetPasswordLink to E1 with cloudapi/users/sendResetPasswordLink API,should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">sendResetPasswordLink</span><span class="p">(</span><span class="n">emailaddress</span><span class="o">=</span><span class="n">user1_email</span><span class="p">)</span>
 
-<div class="viewcode-block" id="UsersBasicTests.test005_create_users_with_same_specs"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests.UsersBasicTests.test005_create_users_with_same_specs">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test005_create_users_with_same_specs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s2">&quot;Reset password email send&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_email_data</span><span class="p">(</span><span class="n">user1_email</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_password</span><span class="p">)</span>
+        <span class="n">password_token</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;token=&quot;</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Check validation of received ResetPassword token with /cloudapi/users/getResetPasswordInformation API,should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">getResetPasswordInformation</span><span class="p">(</span><span class="n">resettoken</span><span class="o">=</span><span class="n">password_token</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s2">&quot; valid token&quot;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot; Use received  ResetPassword token to  reset password, should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">newpassword</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">resetPassword</span><span class="p">(</span><span class="n">resettoken</span><span class="o">=</span><span class="n">password_token</span><span class="p">,</span> <span class="n">newpassword</span><span class="o">=</span><span class="n">newpassword</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Check that password of user1 has been reset successfully.&quot;</span><span class="p">)</span>
+        <span class="n">user1_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_authenticated_user_api</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user1_name</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">newpassword</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">user1_key</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UsersBasicTests.test005_create_users_with_same_specs"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.a_basic.users_tests.UsersBasicTests.test005_create_users_with_same_specs">[docs]</a>    <span class="k">def</span> <span class="nf">test005_create_users_with_same_specs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-034</span>
 <span class="sd">        * Test case for check creation of more than one user with same specs .</span>
 
 <span class="sd">        **Test Scenario:**</span>
@@ -242,7 +342,28 @@
 <span class="sd">        #. Create User2 with same name as user1, should fail .</span>
 <span class="sd">        #. Create User3 with same Email as User1 , should fail .</span>
 
-<span class="sd">        &quot;&quot;&quot;</span></div></div>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- Create user1 with random name user1. &#39;</span><span class="p">)</span>
+        <span class="n">user1_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudbroker_user_create</span><span class="p">()</span>
+        <span class="n">user1_emailaddress</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">@example.com&quot;</span><span class="o">%</span><span class="n">user1_name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;- Create User2 with same name as user1, should fail&quot;</span><span class="p">)</span>
+        <span class="n">user2_emailaddress</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">@example.com&quot;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user1_name</span><span class="p">,</span> <span class="n">emailaddress</span><span class="o">=</span><span class="n">user2_emailaddress</span><span class="p">,</span>
+                                             <span class="n">password</span><span class="o">=</span><span class="n">user1_name</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[])</span>
+                                             
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">409</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Create User3 with same Email as User1 , should fail . &quot;</span><span class="p">)</span>
+        <span class="n">user3_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">user3_name</span><span class="p">,</span> <span class="n">emailaddress</span><span class="o">=</span><span class="n">user1_emailaddress</span><span class="p">,</span>
+                                             <span class="n">password</span><span class="o">=</span><span class="n">user3_name</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">409</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

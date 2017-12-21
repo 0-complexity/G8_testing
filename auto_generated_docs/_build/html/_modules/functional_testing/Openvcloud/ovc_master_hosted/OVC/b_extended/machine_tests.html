@@ -160,11 +160,11 @@
   <h1>Source code for functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">unittest</span>
 <span class="kn">from</span> <span class="nn">nose_parameterized</span> <span class="k">import</span> <span class="n">parameterized</span>
-<span class="kn">from</span> <span class="nn">....utils.utils</span> <span class="k">import</span> <span class="n">BasicACLTest</span>
-
+<span class="kn">from</span> <span class="nn">....utils.utils</span> <span class="k">import</span> <span class="n">BasicACLTest</span><span class="p">,</span><span class="n">VMClient</span>
 <span class="kn">from</span> <span class="nn">JumpScale.portal.portal.PortalClient2</span> <span class="k">import</span> <span class="n">ApiError</span>
 <span class="kn">from</span> <span class="nn">JumpScale.baselib.http_client.HttpClient</span> <span class="k">import</span> <span class="n">HTTPError</span>
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">uuid</span>
+
 
 <div class="viewcode-block" id="ExtendedTests"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests">[docs]</a><span class="k">class</span> <span class="nc">ExtendedTests</span><span class="p">(</span><span class="n">BasicACLTest</span><span class="p">):</span>
 
@@ -201,8 +201,13 @@
             <span class="k">if</span> <span class="n">size</span><span class="p">[</span><span class="s1">&#39;memory&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">random_sizes</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- using image [</span><span class="si">%s</span><span class="s1">] with memory size [</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">image_name</span><span class="p">,</span> <span class="n">size</span><span class="p">[</span><span class="s1">&#39;memory&#39;</span><span class="p">]))</span>
-            <span class="n">disk_sizes</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">250</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="mi">2000</span><span class="p">]</span>
-            <span class="n">random_disks</span><span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">disk_sizes</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="s1">&#39;disks&#39;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">sample</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="s1">&#39;disks&#39;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sample</span> <span class="o">=</span> <span class="mi">3</span>
+
+            <span class="n">random_disks</span><span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="s1">&#39;disks&#39;</span><span class="p">],</span> <span class="n">sample</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">disk</span> <span class="ow">in</span> <span class="n">random_disks</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- using image [</span><span class="si">%s</span><span class="s1">] with memory size [</span><span class="si">%s</span><span class="s1">] with disk &#39;</span>
@@ -236,6 +241,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;1- get a running node to create VMs on&#39;</span><span class="p">)</span>
         <span class="n">stackId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_running_stackId</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stackId</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s1">&#39;[*] No running nodes &#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">stackId</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;No active node to create VMs on&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;2- create 2 VMs, should succeed&#39;</span><span class="p">)</span>
@@ -281,15 +288,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;1- Try to create machine with empty name, should fail&#39;</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span>
                                               <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
                                               <span class="n">sizeId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
                                               <span class="n">imageId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_image</span><span class="p">()[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
                                               <span class="n">disksize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        <span class="k">except</span> <span class="p">(</span><span class="n">HTTPError</span><span class="p">,</span> <span class="n">ApiError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>                         
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;2- Create normal machine with valid name, should succeed&quot;</span><span class="p">)</span>
         <span class="n">machine_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
@@ -300,44 +306,224 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">)[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="s1">&#39;HALTED&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;4- Try to clone created machine with empty name, should fail&#39;</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="p">(</span><span class="n">HTTPError</span><span class="p">,</span> <span class="n">ApiError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>                         
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExtendedTests.test004_disk_create_delete"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests.test004_disk_create_delete">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test004_disk_create_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">test004_disk_create_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disk_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-022</span>
 <span class="sd">        *Test case for creating and deleting disks*</span>
 
 <span class="sd">        **Test Scenario:**</span>
 
-<span class="sd">        #. Create a disk DS1, should succeed.</span>
-<span class="sd">        #. Create a disk with the same name of DS1, should fail.</span>
-<span class="sd">        #. List the disks, DS1 should be found.</span>
+<span class="sd">        #. Create a data disk DS1, should succeed.</span>
+<span class="sd">        #. List the data disks, DS1 should be found.</span>
+<span class="sd">        #. List the Boot disks, DS1 shouldn&#39;t be found</span>
 <span class="sd">        #. Delete non existing disk, should fail.</span>
 <span class="sd">        #. Delete DS1, should succeed.</span>
 <span class="sd">        #. List the disks, DS1 shouldn&#39;t be there.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        #. Repeat the above steps for a boot Disk</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ExtendedTests.test005_attaching_detaching_disks"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests.test005_attaching_detaching_disks">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test005_attaching_detaching_disks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39; Create a </span><span class="si">%s</span><span class="s1"> disk DS1, should succeed&#39;</span><span class="o">%</span> <span class="n">disk_type</span><span class="p">)</span>
+        <span class="n">disk_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_disk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span> <span class="n">disk_type</span><span class="o">=</span><span class="n">disk_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">disk_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;List the </span><span class="si">%s</span><span class="s1"> disks, DS1 should be found.&#39;</span><span class="o">%</span> <span class="n">disk_type</span><span class="p">)</span>
+        <span class="n">disks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">accountId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">disk_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">([</span><span class="kc">True</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">disks</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">disk_id</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">disk_type</span> <span class="o">==</span> <span class="s1">&#39;D&#39;</span><span class="p">:</span>
+            <span class="n">d_type</span> <span class="o">=</span> <span class="s1">&#39;B&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d_type</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;List the </span><span class="si">%s</span><span class="s2"> disks, DS1 shouldn&#39;t be found.&quot;</span><span class="o">%</span> <span class="n">d_type</span><span class="p">)</span>
+        <span class="n">disks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">accountId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">d_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">([</span><span class="kc">True</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">disks</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">disk_id</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Delete non existing disk, should fail.&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="o">+</span><span class="mi">9</span><span class="p">,</span> <span class="n">detach</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>                         
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">404</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Delete DS1, should succeed.&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">,</span> <span class="n">detach</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;List the </span><span class="si">%s</span><span class="s2"> disks, DS1 shouldn&#39;t be there.&quot;</span><span class="o">%</span> <span class="n">disk_type</span><span class="p">)</span>
+        <span class="n">disks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">accountId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">disk_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">([</span><span class="kc">True</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">disks</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">disk_id</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ExtendedTests.test005_attaching_detaching_disks"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests.test005_attaching_detaching_disks">[docs]</a>    <span class="k">def</span> <span class="nf">test005_attaching_detaching_disks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-023</span>
 <span class="sd">        *Test case for attaching and detaching disks to a virtual machine*</span>
 
 <span class="sd">        **Test Scenario:**</span>
 
 <span class="sd">        #. Create a disk DS1, should succeed.</span>
-<span class="sd">        #. Create VM1, should succeed</span>
+<span class="sd">        #. Create VM1</span>
 <span class="sd">        #. Attach non existing disk to VM1, should fail</span>
 <span class="sd">        #. Attach DS1 to VM1, should succeed</span>
 <span class="sd">        #. Delete DS1 without detaching it, should fail</span>
 <span class="sd">        #. Detach non existing disk, should fail</span>
 <span class="sd">        #. Detach DS1, should succeed</span>
-<span class="sd">        &quot;&quot;&quot;</span></div></div>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Create a disk DS1, should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">disk_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_disk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">disk_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Create VM1&quot;</span><span class="p">)</span>
+        <span class="n">VM1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Attach non existing disk to VM1, should fail&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">attachDisk</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">VM1_id</span><span class="p">,</span> <span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="o">+</span><span class="mi">9</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>                         
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">404</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Attach DS1 to VM1, should succeed&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">attachDisk</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">VM1_id</span><span class="p">,</span> <span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Delete DS1 without detaching it, should fail&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">,</span> <span class="n">detach</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>                         
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">409</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Detach non existing disk, should fail&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">attachDisk</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">VM1_id</span><span class="p">,</span> <span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="o">+</span><span class="mi">9</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>                         
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">404</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Detach DS1, should succeed&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">attachDisk</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">VM1_id</span><span class="p">,</span> <span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExtendedTests.test006_attach_disk_to_vm_of_another_account"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests.test006_attach_disk_to_vm_of_another_account">[docs]</a>    <span class="k">def</span> <span class="nf">test006_attach_disk_to_vm_of_another_account</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-030</span>
+<span class="sd">        *Test case for attaching disk to a vm of another account*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create account (AC1), should succeed.</span>
+<span class="sd">        #. Create a disk (DS1) for account (AC1), should succeed.</span>
+<span class="sd">        #. Create account (AC2), should succeed.</span>
+<span class="sd">        #. Create cloud space (CS2) and virtual machine (VM2) for AC2, should succeed.</span>
+<span class="sd">        #. Attach DS1 to VM2, should fail.</span>
+<span class="sd">        #. Delete DS1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create account (AC1), should succeed&#39;</span><span class="p">)</span>
+        <span class="n">ac1_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
+        <span class="n">ac1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudbroker_account_create</span><span class="p">(</span><span class="n">ac1_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create a disk (DS1) for account (AC1), should succeed&#39;</span><span class="p">)</span>
+        <span class="n">disk_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_disk</span><span class="p">(</span><span class="n">ac1_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">disk_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create account (AC2), should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create cloud space (CS2) and virtual machine (VM2) for AC2, should succeed&#39;</span><span class="p">)</span>
+        <span class="n">VM1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Attach DS1 to VM2, should fail&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">attachDisk</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">VM1_id</span><span class="p">,</span> <span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_error</span><span class="p">,</span> <span class="mi">409</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Delete DS1&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">,</span> <span class="n">detach</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExtendedTests.test007_create_vm_with_unallowed_size"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests.test007_create_vm_with_unallowed_size">[docs]</a>    <span class="k">def</span> <span class="nf">test007_create_vm_with_unallowed_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-026</span>
+<span class="sd">        *Test case for creating vm with unallowed size*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create cloudspace CS1, should succeed.</span>
+<span class="sd">        #. Create VM1 with unallowed size, should fail.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;1- Create cloudspace CS1, should succeed&#39;</span><span class="p">)</span>
+        <span class="n">allowed_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">sizes</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)]</span>
+        <span class="n">unallowed_size</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">allowed_sizes</span><span class="p">)</span>
+        <span class="n">allowed_sizes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">unallowed_size</span><span class="p">)</span>
+        <span class="n">cloudspaceId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_cloudspace_create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">account_owner</span><span class="p">,</span>
+                                                       <span class="n">allowedVMSizes</span><span class="o">=</span><span class="n">allowed_sizes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;2- Create VM1 with unallowed size, should fail&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="n">cloudspaceId</span><span class="p">,</span> <span class="n">size_id</span><span class="o">=</span><span class="n">unallowed_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExtendedTests.test008_disk_resize"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.machine_tests.ExtendedTests.test008_disk_resize">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;https://github.com/0-complexity/openvcloud/issues/1119&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test008_disk_resize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-041</span>
+<span class="sd">        *Test case for disk resizing*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create a Disk (DS1) with size (S1).</span>
+<span class="sd">        #. Resize DS1 to a size less than S1, should fail.</span>
+<span class="sd">        #. Resize DS1 to a size greater than S1, should succeed.</span>
+<span class="sd">        #. Resize DS1 to a very large size, should fail.</span>
+<span class="sd">        #. Delete DS1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create a Disk (DS1) with size (S1)&#39;</span><span class="p">)</span>
+        <span class="n">s1</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="n">disk_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_disk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">s1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">disk_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Resize DS1 to a size less than S1, should fail&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">s1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Resize DS1 to a size greater than S1, should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">s1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">new_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">)[</span><span class="s1">&#39;sizeMax&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">new_size</span><span class="p">,</span> <span class="n">s1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Resize DS1 to a very large size, should fail&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">90000000000</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Delete DS1&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">,</span> <span class="n">detach</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

@@ -161,9 +161,7 @@
 <span></span><span class="c1"># coding=utf-8</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">unittest</span>
-
-<span class="kn">from</span> <span class="nn">....utils.utils</span> <span class="k">import</span> <span class="n">BasicACLTest</span>
-
+<span class="kn">from</span> <span class="nn">....utils.utils</span> <span class="k">import</span> <span class="n">BasicACLTest</span><span class="p">,</span> <span class="n">VMClient</span>
 <span class="kn">from</span> <span class="nn">JumpScale.portal.portal.PortalClient2</span> <span class="k">import</span> <span class="n">ApiError</span>
 <span class="kn">from</span> <span class="nn">JumpScale.baselib.http_client.HttpClient</span> <span class="k">import</span> <span class="n">HTTPError</span>
 
@@ -218,11 +216,11 @@
                              <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">cloudspaceId</span><span class="o">=</span><span class="n">cloudspace_id</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;3- Try to delete the cloudspace with delete, should fail with 409 conflict&#39;</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">cloudspaces</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="n">cloudspace_id</span><span class="p">)</span>
-        <span class="k">except</span> <span class="p">(</span><span class="n">HTTPError</span><span class="p">,</span> <span class="n">ApiError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">409</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">409</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;4- Delete the cloudspace with destroy, should succeed&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">cloudspace</span><span class="o">.</span><span class="n">destroy</span><span class="p">(</span><span class="n">accountId</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span>
@@ -236,42 +234,130 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CloudspaceTests.test002_add_remove_AllowedSize_to_cloudspace"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.cloudspace_tests.CloudspaceTests.test002_add_remove_AllowedSize_to_cloudspace">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="CloudspaceTests.test002_add_remove_AllowedSize_to_cloudspace"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.cloudspace_tests.CloudspaceTests.test002_add_remove_AllowedSize_to_cloudspace">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;https://github.com/0-complexity/openvcloud/issues/1121&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test002_add_remove_AllowedSize_to_cloudspace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+        <span class="sd">&quot;&quot;&quot; OVC-027</span>
 <span class="sd">        *Test case for adding and removing  allowed size to a cloudspace.*</span>
 
 <span class="sd">        **Test Scenario:**</span>
 <span class="sd">        #. Create new cloudspace CS1.</span>
 <span class="sd">        #. Get list of available sizes in location, should succeed.</span>
-<span class="sd">        #. Add random size to CS1 with /cloudapi/cloudspaces/addAllowedSize API ,should succeed.</span>
+<span class="sd">        #. Add random size to CS1, should succeed.</span>
 <span class="sd">        #. Check if the size has been added successfully to CS1.</span>
-<span class="sd">        #. Remove this size from CS1 with /cloudapi/cloudspaces/removeAllowedSize API, should succeed.</span>
+<span class="sd">        #. Remove this size from CS1, should succeed.</span>
 <span class="sd">        #. check if the size has been removed successfully from CS1.</span>
 <span class="sd">        #. Remove this size again, should fail.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="CloudspaceTests.test003_executeRouterOSScript"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.cloudspace_tests.CloudspaceTests.test003_executeRouterOSScript">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test003_executeRouterOSScript</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;1- Get list of available sizes in location, should succeed.&#39;</span><span class="p">)</span>
+        <span class="n">location_sizes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">sizes</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+        <span class="n">selected_size</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">location_sizes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;2- Add random size to CS1, should succeed&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">cloudspaces</span><span class="o">.</span><span class="n">addAllowedSize</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span> <span class="n">sizeId</span><span class="o">=</span><span class="n">selected_size</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;3- Check if the size has been added successfully to CS1&#39;</span><span class="p">)</span>
+        <span class="n">cloudspace_sizes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">sizes</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">selected_size</span><span class="p">,</span> <span class="n">cloudspace_sizes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;4- Remove this size from CS1, should succeed&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">cloudspaces</span><span class="o">.</span><span class="n">removeAllowedSize</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span> <span class="n">sizeId</span><span class="o">=</span><span class="n">selected_size</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;5- check if the size has been removed successfully from CS1&#39;</span><span class="p">)</span>
+        <span class="n">cloudspace_sizes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">sizes</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotIn</span><span class="p">(</span><span class="n">selected_size</span><span class="p">,</span> <span class="n">cloudspace_sizes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;6- Remove this size again, should fail&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">ApiError</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">cloudspaces</span><span class="o">.</span><span class="n">removeAllowedSize</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span> <span class="n">sizeId</span><span class="o">=</span><span class="n">selected_size</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="CloudspaceTests.test003_executeRouterOSScript"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.cloudspace_tests.CloudspaceTests.test003_executeRouterOSScript">[docs]</a>    <span class="k">def</span> <span class="nf">test003_executeRouterOSScript</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-040</span>
 <span class="sd">        *Test case for test execute script in routeros.*</span>
 
 <span class="sd">        **Test Scenario:**</span>
-<span class="sd">        #. Create new cloudspace CS1.</span>
-<span class="sd">        #. Excute script in routeros of CS1, should succeed.</span>
-<span class="sd">        #. Check that script executeed , should succeed.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        #. Create new cloudspace (CS1).</span>
+<span class="sd">        #. Create virtual machine (VM1).</span>
+<span class="sd">        #. Execute script on routeros of CS1 to create portforward (PF1), should succeed.</span>
+<span class="sd">        #. Connect to VM1 through PF1 , should succeed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CloudspaceTests.test004_get_OpenVPN_config_file"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.cloudspace_tests.CloudspaceTests.test004_get_OpenVPN_config_file">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test004_get_OpenVPN_config_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
-<span class="sd">        *Test case for getting OpenVPN config file for cloudspace.*</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create virtual machine (VM1)&#39;</span><span class="p">)</span>
+        <span class="n">vm_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Execute script on routeros of CS1 to create portforward (PF1), should succeed&#39;</span><span class="p">)</span>
+        <span class="n">vm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm_id</span><span class="p">)</span>
+        <span class="n">cs_ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">cloudspaces</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="n">vm</span><span class="p">[</span><span class="s1">&#39;cloudspaceid&#39;</span><span class="p">])[</span><span class="s1">&#39;publicipaddress&#39;</span><span class="p">]</span>
+        <span class="n">vm_ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_machine_ipaddress</span><span class="p">(</span><span class="n">vm_id</span><span class="p">)</span>
+        <span class="n">pb_port</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">50000</span><span class="p">,</span> <span class="mi">60000</span><span class="p">)</span>
+        <span class="n">script</span> <span class="o">=</span> <span class="s1">&#39;/ip firewall nat add chain=dstnat action=dst-nat to-addresses=</span><span class="si">%s</span><span class="s1"> to-ports=22 protocol=tcp dst-address=</span><span class="si">%s</span><span class="s1"> dst-port=</span><span class="si">%s</span><span class="s1"> comment=cloudbroker&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vm_ip</span><span class="p">,</span> <span class="n">cs_ip</span><span class="p">,</span> <span class="n">pb_port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">cloudspaces</span><span class="o">.</span><span class="n">executeRouterOSScript</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span> <span class="n">script</span><span class="o">=</span><span class="n">script</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Connect to VM1 through PF1 , should succeed&#39;</span><span class="p">)</span>
+        <span class="n">vm1_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">vm_id</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">pb_port</span><span class="p">)</span>
+        <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">vm1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;ls /&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;bin&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CloudspaceTests.test004_disable_cloudspace"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.cloudspace_tests.CloudspaceTests.test004_disable_cloudspace">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;https://github.com/0-complexity/openvcloud/issues/1039&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test004_disable_cloudspace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-04x</span>
+<span class="sd">        *Test case for test disable cloudspace.*</span>
 
 <span class="sd">        **Test Scenario:**</span>
-<span class="sd">        #. Create new cloudspace CS1.</span>
-<span class="sd">        #. Get OpenVPN config file for CS1, should succeed .. with /cloudapi/cloudspaces/getOpenvpnConfig API, should succeed.</span>
-<span class="sd">        #. Check that Config file is correct.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div></div>
+<span class="sd">        #. Create new cloudspace (CS1).</span>
+<span class="sd">        #. Create virtual machine (VM1).</span>
+<span class="sd">        #. Disable cloudspace (CS1), should succeed.</span>
+<span class="sd">        #. Check virtual machine (VM1) status, should be halted.</span>
+<span class="sd">        #. Create user without Admin access.</span>
+<span class="sd">        #. Authenticate (U1), should succeed.</span>
+<span class="sd">        #. Add user (U1) to cloudsapce (CS1), should succeed.</span>
+<span class="sd">        #. Try to start virtual machine (VM1) using user (U1), should fail.</span>
+<span class="sd">        #. Enable cloudspace (CS1), should succeed.</span>
+<span class="sd">        #. Try to start virtual machine (VM1) using user (U1), should succeed.</span>
+<span class="sd">        #. Disable cloudspace (CS1) again, should succeed.</span>
+<span class="sd">        #. Delete cloudspace (CS1) should succeed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create virtual machine (VM1)&#39;</span><span class="p">)</span>
+        <span class="n">machineId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_status</span><span class="p">(</span><span class="s1">&#39;RUNNING&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Disable cloudspace (CS1), should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">cloudspaces</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Check virtual machine (VM1) status, should be halted&#39;</span><span class="p">)</span>
+        <span class="n">machine_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">machine_info</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="s1">&#39;HALTED&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create user (U1) without Admin access&#39;</span><span class="p">)</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudbroker_user_create</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Authenticate (U1), should succeed&quot;</span><span class="p">)</span>
+        <span class="n">user_api</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_authenticated_user_api</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Add user (U1) to cloudsapce (CS1), should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_user_to_cloudspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="s1">&#39;ACDRUX&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Try to start virtual machine (VM1), should fail&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">ApiError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">user_api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Enable cloudspace (CS1), should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">cloudspaces</span><span class="o">.</span><span class="n">enable</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Try to start virtual machine (VM1) using user (U1), should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Disable cloudspace (CS1) again, should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">cloudspaces</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Delete cloudspace (CS1) should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

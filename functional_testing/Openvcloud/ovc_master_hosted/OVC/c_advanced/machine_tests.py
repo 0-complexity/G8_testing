@@ -80,7 +80,9 @@ class MachineTests(BasicACLTest):
     def test002_check_network_data_integrity(self):
         """ OVC-036
         *Test case for checking network data integrity through VMS*
+
         **Test Scenario:**
+
         #. Create a cloudspace CS1, should succeed.
         #. Create VM1 and VM2 inside CS1, should succeed.
         #. Create a file F1 inside VM1.
@@ -371,7 +373,9 @@ class MachineTests(BasicACLTest):
     def test010_check_cloned_vm(self):
         """ OVC-029
         *Test case for checking cloned VM ip, portforwards and credentials*
+
         **Test Scenario:**
+
         #. Create (VM1), should succeed.
         #. Take a snapshot (SS0) for (VM1).
         #. Write file (F1) on (VM1).
@@ -507,7 +511,9 @@ class MachineTests(BasicACLTest):
     def test012_check_disk_iops_limit(self):
         """ OVC-046
         *Test case for checking cloned VM ip, portforwards and credentials*
+
         **Test Scenario:**
+
         #. Create virtual machine (VM1), should succeed.
         #. Attach data disk (DD1) to VM1 and set MaxIOPS to iops1.
         #. Run fio on DD1, iops should be less than iops1.
@@ -561,6 +567,7 @@ class MachineTests(BasicACLTest):
     def test013_check_IP_conflict(self):
         """ OVC-047
         *Test case for checking machine connectivity through external network*
+
         **Test Scenario:**
 
         #. Create cloudspace (CS1), should succeed.
@@ -568,7 +575,7 @@ class MachineTests(BasicACLTest):
         #. Attach (VM1) & (VM2) to external networks (EN1), should succeed.
         #. Assign IPs to (VM1) and (VM2) external network's interfaces, should succeed.
         #. Check if (VM1) and (VM2) can ping google.com, should succeed.
-        #  Check if (VM1) and (VM2) can ping external network (EN1)'s gateway ip, should succeed.
+        #. Check if (VM1) and (VM2) can ping external network (EN1)'s gateway ip, should succeed.
         #. Delete (VM2) external network ip, and give it the same ip of (VM1).
         #. Check that (VM1) still can work normally, should succeed.
         #. Check that you can't connect to (VM2) with it's new external network ip, should succeed.
