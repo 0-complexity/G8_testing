@@ -47,6 +47,8 @@ class MachineLongTests(BasicACLTest):
         machine_1_client.execute('mount /dev/vdb data', sudo=True)
         machine_1_client.execute('chown ${USER}:${USER} data', sudo=True)
         machine_1_client.execute('echo "helloWorld" > data/test2.txt')
+
+        time.sleep(30)
         
         folder_name = str(uuid.uuid4()).replace('-', '')[:10]        
         owncloud_auth = (self.owncloud_user, self.owncloud_password)
@@ -113,6 +115,7 @@ class MachineLongTests(BasicACLTest):
             self.assertIn('helloWorld', stdout.read())
 
             self.lg('Check that file (F2) exists in the imported virtual machine\'s data disk (DD1)')
+            imported_vm_client.execute('mount /dev/vdb data', sudo=True)
             stdin, stdout, stderr = imported_vm_client.execute('cat data/test2.txt')
             self.assertIn('helloWorld', stdout.read())
 
