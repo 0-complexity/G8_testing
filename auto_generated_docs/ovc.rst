@@ -209,10 +209,25 @@ Extended Machine Tests
     :undoc-members:
     :show-inheritance:
 
+
+Advanced Tests
+==============
+
 Advanced Machine Tests
 ^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests
 .. autoclass:: functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Long Tests
+==============
+
+Long Machine Tests
+^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: functional_testing.Openvcloud.ovc_master_hosted.OVC.d_long_tests.machine_tests
+.. autoclass:: functional_testing.Openvcloud.ovc_master_hosted.OVC.d_long_tests.machine_tests.MachineLongTests
     :members:
     :undoc-members:
     :show-inheritance:

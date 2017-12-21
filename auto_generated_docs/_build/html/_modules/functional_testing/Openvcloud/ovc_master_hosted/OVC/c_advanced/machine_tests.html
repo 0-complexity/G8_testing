@@ -158,46 +158,120 @@
            <div itemprop="articleBody">
             
   <h1>Source code for functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">unittest</span>
-<span class="kn">from</span> <span class="nn">....utils.utils</span> <span class="k">import</span> <span class="n">BasicACLTest</span>
-
-
+<span></span><span class="kn">import</span> <span class="nn">unittest</span><span class="o">,</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">uuid</span><span class="o">,</span> <span class="nn">socket</span>
+<span class="kn">from</span> <span class="nn">....utils.utils</span> <span class="k">import</span> <span class="n">BasicACLTest</span><span class="p">,</span> <span class="n">VMClient</span>
+<span class="kn">from</span> <span class="nn">nose_parameterized</span> <span class="k">import</span> <span class="n">parameterized</span>
+<span class="kn">from</span> <span class="nn">JumpScale.portal.portal.PortalClient2</span> <span class="k">import</span> <span class="n">ApiError</span>
+<span class="kn">from</span> <span class="nn">JumpScale.baselib.http_client.HttpClient</span> <span class="k">import</span> <span class="n">HTTPError</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">paramiko</span>
 
 <div class="viewcode-block" id="MachineTests"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests">[docs]</a><span class="k">class</span> <span class="nc">MachineTests</span><span class="p">(</span><span class="n">BasicACLTest</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MachineTests</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_setup</span><span class="p">()</span>
 
-<div class="viewcode-block" id="MachineTests.test001_check_machines_networking"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test001_check_machines_networking">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test001_check_machines_networking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<div class="viewcode-block" id="MachineTests.test001_check_machines_networking"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test001_check_machines_networking">[docs]</a>    <span class="k">def</span> <span class="nf">test001_check_machines_networking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-038</span>
 <span class="sd">        *Test case for checking machines networking*</span>
 
 <span class="sd">        **Test Scenario:**</span>
 
-<span class="sd">        #. Create cloudspace CS1, should succeed</span>
-<span class="sd">        #. Create cloudspace CS2, should succeed</span>
-<span class="sd">        #. Create VM1 in CS1</span>
-<span class="sd">        #. From VM1 ping google, should succeed</span>
-<span class="sd">        #. Create VM2 and VM3 in CS2</span>
-<span class="sd">        #. From VM2 ping VM3, should succeed</span>
-<span class="sd">        #. From VM2 ping VM1, should fail</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        #. Create cloudspace CS1, should succeed.</span>
+<span class="sd">        #. Create cloudspace CS2, should succeed.</span>
+<span class="sd">        #. Create VM1 in cloudspace CS1.</span>
+<span class="sd">        #. Create VM2 and VM3 in cloudspace CS2.</span>
+<span class="sd">        #. From VM1 ping google, should succeed.</span>
+<span class="sd">        #. From VM1 ping VM3, should fail.</span>
+<span class="sd">        #. From VM2 ping VM3, should succeed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MachineTests.test002_check_network_data_integrity"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test002_check_network_data_integrity">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test002_check_network_data_integrity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create cloudspace CS1, should succeed&#39;</span><span class="p">)</span>
+        <span class="n">cloudspace_1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create cloudspace CS2, should succeed&#39;</span><span class="p">)</span>
+        <span class="n">cloudspace_2_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_cloudspace_create</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">account_owner</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create VM1 in cloudspace CS1&#39;</span><span class="p">)</span>
+        <span class="n">machine_1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="n">cloudspace_1_id</span><span class="p">)</span>
+        <span class="n">machine_1_ipaddress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_machine_ipaddress</span><span class="p">(</span><span class="n">machine_1_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">machine_1_ipaddress</span><span class="p">)</span>
+        <span class="n">machine_1_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">machine_1_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create VM2 in cloudspace CS2&#39;</span><span class="p">)</span>
+        <span class="n">machine_2_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="n">cloudspace_2_id</span><span class="p">)</span>
+        <span class="n">machine_2_ipaddress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_machine_ipaddress</span><span class="p">(</span><span class="n">machine_2_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">machine_2_ipaddress</span><span class="p">)</span>
+        <span class="n">machine_2_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">machine_2_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create VM3 in cloudspace CS2&#39;</span><span class="p">)</span>
+        <span class="n">machine_3_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="n">cloudspace_2_id</span><span class="p">)</span>
+        <span class="n">machine_3_ipaddress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_machine_ipaddress</span><span class="p">(</span><span class="n">machine_3_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">machine_3_ipaddress</span><span class="p">)</span>
+        <span class="n">machine_3_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">machine_3_id</span><span class="p">)</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;From VM1 ping google, should succeed&#39;</span><span class="p">)</span>
+        <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">machine_1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;ping -w3 8.8.8.8&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;, 0% packet loss&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;From VM1 ping VM3 or VM2, should fail&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">machine_1_ipaddress</span> <span class="o">==</span> <span class="n">machine_2_ipaddress</span><span class="p">:</span>
+            <span class="n">target_ip</span> <span class="o">=</span> <span class="n">machine_3_ipaddress</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">target_ip</span> <span class="o">=</span> <span class="n">machine_2_ipaddress</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;ping -w3 </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">target_ip</span><span class="p">)</span>
+        <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">machine_1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;, 100% packet loss&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;From VM2 ping VM3, should succeed&#39;</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;ping -w3 </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">machine_3_ipaddress</span><span class="p">)</span>
+        <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">machine_2_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;, 0% packet loss&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="MachineTests.test002_check_network_data_integrity"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test002_check_network_data_integrity">[docs]</a>    <span class="k">def</span> <span class="nf">test002_check_network_data_integrity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-036</span>
 <span class="sd">        *Test case for checking network data integrity through VMS*</span>
 
 <span class="sd">        **Test Scenario:**</span>
 
-<span class="sd">        #. Create a cloudspace CS1, should succeed</span>
-<span class="sd">        #. Create VM1 and VM2 inside CS1, should succeed</span>
-<span class="sd">        #. create a file F1 inside VM1</span>
-<span class="sd">        #. From VM1 send F1 to VM2, should succeed</span>
-<span class="sd">        #. Check that F1 has been sent to vm2 without data loss</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        #. Create a cloudspace CS1, should succeed.</span>
+<span class="sd">        #. Create VM1 and VM2 inside CS1, should succeed.</span>
+<span class="sd">        #. Create a file F1 inside VM1.</span>
+<span class="sd">        #. From VM1 send F1 to VM2, should succeed.</span>
+<span class="sd">        #. Check that F1 has been sent to vm2 without data loss.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MachineTests.test003_check_connectivity_through_external_network"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test003_check_connectivity_through_external_network">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test003_check_connectivity_through_external_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create VM1 and VM2 inside CS1, should succeed&#39;</span><span class="p">)</span>
+        <span class="n">machine_1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+        <span class="n">machine_2_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+
+        <span class="n">machine_1_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">machine_1_id</span><span class="p">)</span>
+        <span class="n">machine_2_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">machine_2_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;create a file F1 inside VM1&#39;</span><span class="p">)</span>
+        <span class="n">machine_1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;echo &quot;helloWorld&quot; &gt; test.txt&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;From VM1 send F1 to VM2, should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_file_from_vm_to_another</span><span class="p">(</span><span class="n">machine_1_client</span><span class="p">,</span> <span class="n">machine_2_id</span><span class="p">,</span> <span class="s1">&#39;test.txt&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Check that F1 has been sent to vm2 without data loss&#39;</span><span class="p">)</span>
+        <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">machine_2_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;cat test.txt&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s2">&quot;helloWorld&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MachineTests.test003_check_connectivity_through_external_network"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test003_check_connectivity_through_external_network">[docs]</a>    <span class="k">def</span> <span class="nf">test003_check_connectivity_through_external_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-042</span>
 <span class="sd">        *Test case for checking machine connectivity through external network*</span>
 
 <span class="sd">        **Test Scenario:**</span>
@@ -207,142 +281,527 @@
 <span class="sd">        #. Attach VM1 to an external network, should succeed</span>
 <span class="sd">        #. Assign IP to VM1&#39;s external netowrk interface, should succeed.</span>
 <span class="sd">        #. Check if you can ping VM1 from outside, should succeed</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        #. Check that you can connect to vm with new ip ,should succeed.</span>
 
-<div class="viewcode-block" id="MachineTests.test004_migrate_vm_in_middle_of_writing_file"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test004_migrate_vm_in_middle_of_writing_file">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Create VM1,should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">vm1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Attach VM1 to an external network, should succeed&quot;</span><span class="p">)</span>
+        <span class="n">reponse</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">machine</span><span class="o">.</span><span class="n">attachExternalNetwork</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">reponse</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Assign IP to VM1&#39;s external netowrk interface, should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">vm1_nics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">)[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span>
+        <span class="n">vm1_nic</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vm1_nics</span> <span class="k">if</span> <span class="s2">&quot;externalnetworkId&quot;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">vm1_nic</span><span class="p">)</span>
+        <span class="n">vm1_ext_ip</span> <span class="o">=</span> <span class="n">vm1_nic</span><span class="p">[</span><span class="s2">&quot;ipAddress&quot;</span><span class="p">]</span>
+        <span class="n">vm1_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">vm1_id</span><span class="p">)</span>
+        <span class="n">vm1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ip a a </span><span class="si">%s</span><span class="s2"> dev eth1&quot;</span><span class="o">%</span><span class="n">vm1_ext_ip</span><span class="p">,</span> <span class="n">sudo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">vm1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;nohup bash -c &#39;ip l s dev eth1 up &lt;/dev/null &gt;/dev/null 2&gt;&amp;1 &amp; &#39;&quot;</span><span class="p">,</span> <span class="n">sudo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Check if you can ping VM1 from outside, should succeed&quot;</span><span class="p">)</span>
+        <span class="n">vm1_ext_ip</span> <span class="o">=</span> <span class="n">vm1_ext_ip</span><span class="p">[:</span><span class="n">vm1_ext_ip</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)]</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;ping -c 1 </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">vm1_ext_ip</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Check that you can connect to vm with new ip ,should succeed&quot;</span><span class="p">)</span>
+        <span class="n">vm1_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">vm1_id</span><span class="p">,</span> <span class="n">external_network</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">vm1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ls /&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;bin&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="MachineTests.test004_migrate_vm_in_middle_of_writing_file"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test004_migrate_vm_in_middle_of_writing_file">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;https://github.com/0-complexity/openvcloud/issues/1113&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test004_migrate_vm_in_middle_of_writing_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+        <span class="sd">&quot;&quot;&quot; OVC-039</span>
 <span class="sd">        *Test case for checking data integrity after migrating vm in the middle of writing a file*</span>
 
 <span class="sd">        **Test Scenario:**</span>
 
 <span class="sd">        #. Create a cloudspace CS1, should succeed</span>
-<span class="sd">        #. Create VM1</span>
+<span class="sd">        #. Create VM1, should succeed</span>
 <span class="sd">        #. Write a big file FS1 on VM1</span>
 <span class="sd">        #. Migrate VM1 in the middle of writing a file, should succeed</span>
 <span class="sd">        #. Check if the file has been written correctly after vm live migration</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
-        <span class="c1"># Note: this testcase may be hard to be implemented from here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MachineTests.test005_cheching_vm_specs_after_rebooting"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test005_cheching_vm_specs_after_rebooting">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test005_cheching_vm_specs_after_rebooting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Create VM1,should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">vm1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Write a big file FS1 on VM1&#39;</span><span class="p">)</span>
+        <span class="n">current_stackId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">machine</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">)[</span><span class="s2">&quot;stackId&quot;</span><span class="p">]</span>
+        <span class="n">second_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_running_stackId</span><span class="p">(</span><span class="n">current_stackId</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">second_node</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s1">&#39;[*] No running nodes &#39;</span><span class="p">)</span>
+        <span class="n">vm1_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">vm1_id</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;yes &#39;Some text&#39; | head -n 200000000 &gt; largefile.txt&quot;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">vm1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="p">))</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Migrate VM1 to another node, should succeed.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">machine</span><span class="o">.</span><span class="n">moveToDifferentComputeNode</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+                                                                <span class="n">targetStackId</span><span class="o">=</span><span class="n">second_node</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">vm1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">machine</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">vm1</span><span class="p">[</span><span class="s2">&quot;stackId&quot;</span><span class="p">],</span> <span class="n">second_node</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Make sure that VM1 is running.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">vm1</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="s1">&#39;RUNNING&#39;</span><span class="p">)</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="n">vm1_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">vm1_id</span><span class="p">)</span>
+        <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">vm1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;ls /&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;bin&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Check if the file has been written correctly after vm live migration&#39;</span><span class="p">)</span>
+        <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">vm1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;md5sum largefile.txt | cut -d &quot; &quot; -f 1&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="s1">&#39;cd96e05cf2a42e587c78544d19145a7e&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s1">&#39;Linux&#39;</span><span class="p">,</span> <span class="s1">&#39;Windows&#39;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">test005_cheching_vm_specs_after_rebooting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-028</span>
 <span class="sd">        *Test case for checking VM&#39;s ip and credentials after rebooting*</span>
 
 <span class="sd">        **Test Scenario:**</span>
 
-<span class="sd">        #. Create a cloudspace CS1, should succeed</span>
-<span class="sd">        #. Create virtual machine VM1 with windows image</span>
-<span class="sd">        #. Reboot VM1, should succeed</span>
+<span class="sd">        #. Create virtual machine VM1 with windows image.</span>
+<span class="sd">        #. Get machine VM1 info, should succeed.</span>
+<span class="sd">        #. Reboot VM1, should succeed.</span>
+<span class="sd">        #. Get machine VM1 info, should succeed.</span>
 <span class="sd">        #. Check if VM1&#39;s ip is the same as before rebooting.</span>
-<span class="sd">        #. Check if VM1&#39;s credentials are the same as well</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        #. Check if VM1&#39;s credentials are the same as well.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MachineTests.test006_attach_same_disk_to_two_vms"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test006_attach_same_disk_to_two_vms">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test006_attach_same_disk_to_two_vms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;1- Create virtual machine VM1 with </span><span class="si">{}</span><span class="s1"> image&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">image_type</span><span class="p">))</span>
+        <span class="n">target_images</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">list</span><span class="p">()</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">image_type</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target_images</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s1">&#39;No image with type </span><span class="si">{}</span><span class="s1"> is avalilable&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">image_type</span><span class="p">))</span>
+
+        <span class="n">selected_image_id</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">target_images</span><span class="p">)</span>
+
+        <span class="n">machineId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner_api</span><span class="p">,</span> <span class="n">image_id</span><span class="o">=</span><span class="n">selected_image_id</span><span class="p">,</span> <span class="n">disksize</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;2- Get machine VM1 info, should succeed&#39;</span><span class="p">)</span>
+        <span class="n">machine_info_before_reboot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;3- Reboot VM1, should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">reboot</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;4- Get machine VM1 info, should succeed&#39;</span><span class="p">)</span>
+        <span class="n">machine_info_after_reboot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;5- Check if VM1&#39;s ip is the same as before rebooting&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">machine_info_before_reboot</span><span class="p">[</span><span class="s1">&#39;interfaces&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;ipAddress&#39;</span><span class="p">],</span>
+            <span class="n">machine_info_after_reboot</span><span class="p">[</span><span class="s1">&#39;interfaces&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;ipAddress&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;6- Check if VM1&#39;s credentials are the same as well&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">machine_info_before_reboot</span><span class="p">[</span><span class="s1">&#39;accounts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;login&#39;</span><span class="p">],</span>
+            <span class="n">machine_info_after_reboot</span><span class="p">[</span><span class="s1">&#39;accounts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;login&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">machine_info_before_reboot</span><span class="p">[</span><span class="s1">&#39;accounts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;password&#39;</span><span class="p">],</span>
+            <span class="n">machine_info_after_reboot</span><span class="p">[</span><span class="s1">&#39;accounts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MachineTests.test006_attach_same_disk_to_two_vms"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test006_attach_same_disk_to_two_vms">[docs]</a>    <span class="k">def</span> <span class="nf">test006_attach_same_disk_to_two_vms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-024</span>
 <span class="sd">        *Test case for attaching same disk to two different vms*</span>
 
 <span class="sd">        **Test Scenario:**</span>
 
+<span class="sd">        #. Create VM1 and VM2.</span>
 <span class="sd">        #. Create disk DS1.</span>
-<span class="sd">        #. Create cloudspace CS1.</span>
-<span class="sd">        #. Create VM1 and VM2 on CS1.</span>
 <span class="sd">        #. Attach DS1 to VM1, should succeed.</span>
 <span class="sd">        #. Attach DS1 to VM2, should fail.</span>
+<span class="sd">        #. Detach DS1 from VM2, should fail.</span>
 <span class="sd">        #. Delete disk after detaching it, should succeed</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Note: try this scenario for data and boot disks</span>
 
-<div class="viewcode-block" id="MachineTests.test007_detach_boot_from_running_machine"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test007_detach_boot_from_running_machine">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test007_detach_boot_from_running_machine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
-<span class="sd">        * Test case for detaching boot disk from a running machine.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
-<span class="sd">        **Test Scenario:**</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create VM1 and VM2&#39;</span><span class="p">)</span>
+        <span class="n">VM1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+        <span class="n">VM2_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
 
-<span class="sd">        #. Create virtual machine (VM1).</span>
-<span class="sd">        #. Detach VM1&#39;s boot disk (BD1), should fail.</span>
-<span class="sd">        #. Stop VM1.</span>
-<span class="sd">        #. Detach VM1&#39;s boot disk again, should succeed.</span>
-<span class="sd">        #. Start VM1, should fail.</span>
-<span class="sd">        #. Attach BD1 to VM1, should succeed.</span>
-<span class="sd">        #. Start VM1 and make sure it is running.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39; Create disk DS1.&#39;</span><span class="p">)</span>
+        <span class="n">disk_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_disk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">disk_id</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MachineTests.test008_swap_vms_boot_disks"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test008_swap_vms_boot_disks">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test008_swap_vms_boot_disks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Attach DS1 to VM1, should succeed.&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">attachDisk</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">VM1_id</span><span class="p">,</span> <span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Attach DS1 to VM2, should fail.&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">attachDisk</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">VM2_id</span><span class="p">,</span> <span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Delete disk after detaching it, should succeed&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">,</span> <span class="n">detach</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MachineTests.test007_detach_boot_disks"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test007_detach_boot_disks">[docs]</a>    <span class="k">def</span> <span class="nf">test007_detach_boot_disks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-035</span>
 <span class="sd">        * Test case for swapping vms boot disks.</span>
 
 <span class="sd">        **Test Scenario:**</span>
 
-<span class="sd">        #. Create virtual machines (VM1) and (VM2).</span>
-<span class="sd">        #. Stop VM1 and VM2, should succeed.</span>
-<span class="sd">        #. Detach VM1&#39;s boot disk (BD1) and VM2&#39;s boot disk (BD2).</span>
-<span class="sd">        #. Attach BD1 to VM2, should succeed.</span>
-<span class="sd">        #. Start VM2 and make sure it is working.</span>
-<span class="sd">        #. Attach BD2 to VM1, should succeed.</span>
-<span class="sd">        #. Start VM1 and make sure it is working.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        #. Create virtual machines (VM1).</span>
+<span class="sd">        #. Stop VM1, should succeed.</span>
+<span class="sd">        #. Detach VM1&#39;s boot disk, should fail.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MachineTests.test009_connection_bet_VM_CS_ExternalNetwork"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test009_connection_bet_VM_CS_ExternalNetwork">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test009_connection_bet_VM_CS_ExternalNetwork</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
-<span class="sd">        * Test case for connection between virtual machines, cloudspaces and externel networks.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create virtual machines (VM1)&#39;</span><span class="p">)</span>
+        <span class="n">machine_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
 
-<span class="sd">        **Test Scenario:**</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Stop VM1, should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">)[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="s1">&#39;HALTED&#39;</span><span class="p">)</span>
 
-<span class="sd">        #. Create two cloudspace (CS1) and (CS2) with external network (EN1).</span>
-<span class="sd">        #. Create a virtual machine (VM1) on CS1, should succeed.</span>
-<span class="sd">        #. Attach VM1 to EN1, should succeed (Not implemented yet).</span>
-<span class="sd">        #. Assign CS1&#39;s ip to VM1 external network interface, should succeed.</span>
-<span class="sd">        #. Ping EN1&#39;s Gateway ip, should fail.</span>
-<span class="sd">        #. Assign CS2&#39;s ip to VM1 external network interface, should succeed.</span>
-<span class="sd">        #. Ping EN1&#39;s Gateway ip again, should fail.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Detach VM1&#39;s boot disk, should fail&quot;</span><span class="p">)</span>
+        <span class="n">disk_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">)[</span><span class="s1">&#39;disks&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="MachineTests.test010_node_maintenance_migrateVMs"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test010_node_maintenance_migrateVMs">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test010_node_maintenance_migrateVMs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
-<span class="sd">        *Test case for putting node in maintenance with action migrate all vms.*</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">detachDisk</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">,</span> <span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">)</span>
 
-<span class="sd">        **Test Scenario:**</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
 
-<span class="sd">        #. Create 3 VMs, should succeed.</span>
-<span class="sd">        #. Put node in maintenance with migrate all vms, should succeed.</span>
-<span class="sd">        #. Check that the 3 VMs have been migrated.</span>
-<span class="sd">        #. Check that the 3 VMs are in running state.</span>
-<span class="sd">        #. Enable the node back, should succeed.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MachineTests.test011_restart_vm_after_migration"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test011_restart_vm_after_migration">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test011_restart_vm_after_migration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<div class="viewcode-block" id="MachineTests.test009_restart_vm_after_migration"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test009_restart_vm_after_migration">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;https://github.com/0-complexity/openvcloud/issues/1113&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test009_restart_vm_after_migration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC_037</span>
 <span class="sd">        *Test case for checking VM status after restarting it after migration*</span>
 
 <span class="sd">        **Test Scenario:**</span>
 
 <span class="sd">        #. Create a cloudspace CS1, should succeed.</span>
-<span class="sd">        #. Create VM1.</span>
+<span class="sd">        #. Create VM1,should succeed.</span>
 <span class="sd">        #. Migrate VM1 to another node, should succeed.</span>
 <span class="sd">        #. Make sure that VM1 is running.</span>
 <span class="sd">        #. Restart VM1 and make sure it is still running.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="MachineTests.test012_check_cloned_vm"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test012_check_cloned_vm">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test012_check_cloned_vm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Create VM1,should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">vm1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">vm1_id</span><span class="p">)</span>
+        <span class="n">current_stackId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">machine</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">)[</span><span class="s2">&quot;stackId&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Migrate VM1 to another node, should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">second_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_running_stackId</span><span class="p">(</span><span class="n">current_stackId</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">second_node</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s1">&#39;[*] Not enough running nodes &#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">machine</span><span class="o">.</span><span class="n">moveToDifferentComputeNode</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+                                                                <span class="n">targetStackId</span><span class="o">=</span><span class="n">second_node</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">machine</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">)[</span><span class="s2">&quot;stackId&quot;</span><span class="p">],</span> <span class="n">second_node</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Make sure that VM1 is running.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">)[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="s1">&#39;RUNNING&#39;</span><span class="p">)</span>
+        <span class="n">vm1_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">vm1_id</span><span class="p">)</span>
+        <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">vm1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;ls /&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;bin&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Restart VM1 and make sure it is still running.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">)[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="s1">&#39;RUNNING&#39;</span><span class="p">)</span>
+        <span class="n">vm1_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">vm1_id</span><span class="p">)</span>
+        <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">vm1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;ls /&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;bin&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MachineTests.test010_check_cloned_vm"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test010_check_cloned_vm">[docs]</a>    <span class="k">def</span> <span class="nf">test010_check_cloned_vm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-029</span>
 <span class="sd">        *Test case for checking cloned VM ip, portforwards and credentials*</span>
 
 <span class="sd">        **Test Scenario:**</span>
 
-<span class="sd">        #. Create (VM1).</span>
+<span class="sd">        #. Create (VM1), should succeed.</span>
+<span class="sd">        #. Take a snapshot (SS0) for (VM1).</span>
+<span class="sd">        #. Write file (F1) on (VM1).</span>
+<span class="sd">        #. Stop (VM1), should succeed.</span>
 <span class="sd">        #. Clone VM1 as (VM2_C), should succeed.</span>
+<span class="sd">        #. Start (VM1), should succeed</span>
 <span class="sd">        #. Make sure VM2_C got a new ip.</span>
-<span class="sd">        #. Check that VM2 got different credentials from VM1.</span>
 <span class="sd">        #. Make sure no portforwards have been created.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div></div>
+<span class="sd">        #. Check that file (F1) exists.</span>
+<span class="sd">        #. Rollback (VM2_C) to snapshot (SS1), should fail.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create (VM1), should succeed&#39;</span><span class="p">)</span>
+        <span class="n">machineId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+        <span class="n">machine_1_ipaddress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_machine_ipaddress</span><span class="p">(</span><span class="n">machineId</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">machine_1_ipaddress</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Take a snapshot (SS0) for (VM1)&#39;</span><span class="p">)</span>
+        <span class="n">snapshotId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">snapshot</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;test-snapshot&#39;</span><span class="p">)</span>
+        <span class="n">snapshotEpoch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">listSnapshots</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;epoch&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Write file to (VM1)&#39;</span><span class="p">)</span>
+        <span class="n">machine_1_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">machineId</span><span class="p">)</span>
+        <span class="n">machine_1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;touch helloWorld.txt&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Stop (VM1), should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Clone VM1 as (VM2_C), should succeed&#39;</span><span class="p">)</span>
+        <span class="n">cloned_vm_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+        <span class="n">cloned_machine_ipaddress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_machine_ipaddress</span><span class="p">(</span><span class="n">cloned_vm_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">cloned_machine_ipaddress</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Start (VM1), should succeed&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machineId</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Make sure VM2_C got a new ip&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">machine_1_ipaddress</span><span class="p">,</span> <span class="n">cloned_machine_ipaddress</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Make sure no portforwards have been created&quot;</span><span class="p">)</span>
+        <span class="n">portforwarding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">portforwarding</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span> <span class="n">machineId</span><span class="o">=</span><span class="n">cloned_vm_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">portforwarding</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Check that file (F1) exists&#39;</span><span class="p">)</span>
+        <span class="n">cloned_machine_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">cloned_vm_id</span><span class="p">)</span>
+        <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">cloned_machine_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;ls | grep helloWorld.txt&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;helloWorld.txt&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Rollback (VM2_C) to snapshot (SS1), shoud fail&#39;</span><span class="p">)</span>
+        <span class="n">snapshots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">listSnapshots</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">cloned_vm_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">snapshots</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">HTTPError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+             <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">rollbackSnapshot</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">cloned_vm_id</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=</span><span class="n">snapshotEpoch</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MachineTests.test011_memory_size_after_attaching_external_network"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test011_memory_size_after_attaching_external_network">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;https://github.com/0-complexity/openvcloud/issues/1061&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test011_memory_size_after_attaching_external_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-043</span>
+<span class="sd">        *Test case for memory size after attaching external network*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create virtual machine (VM1), should succeed.</span>
+<span class="sd">        #. Attach external network to virtual machine (VM1), should succeed.</span>
+<span class="sd">        #. Add new disk (DS1), should succeed.</span>
+<span class="sd">        #. Attach disk (DS1) to virtual machine (VM1), should succeed.</span>
+<span class="sd">        #. Detach external network from virtual machine (VM1), should succeed.</span>
+<span class="sd">        #. Stop virtual machine (VM1), should succeed.</span>
+<span class="sd">        #. Resize virtual machine (VM1), should succeed.</span>
+<span class="sd">        #. Start virtual machine (VM1), should succeed.</span>
+<span class="sd">        #. Check that virtual machine (VM1) is sized with right size in MB unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create virtual machine (VM1), should succeed&#39;</span><span class="p">)</span>
+        <span class="n">images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+        <span class="n">image_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">images</span> <span class="k">if</span> <span class="s1">&#39;Ubuntu&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">image_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s1">&#39;No Ubuntu image was found in the environment&#39;</span><span class="p">)</span>
+
+        <span class="n">machine_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span> <span class="n">image_id</span><span class="o">=</span><span class="n">image_id</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">machine_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Attach external network to virtual machine (VM1), should succeed&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">machine</span><span class="o">.</span><span class="n">attachExternalNetwork</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create disk (DS1)&#39;</span><span class="p">)</span>
+        <span class="n">disk_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_disk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">disk_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Attach disk (DS1) to virtual machine (VM1), should succeed&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">attachDisk</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">,</span> <span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Detach external network from virtual machine (VM1), should succeed&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">detachExternalNetwork</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Stop virtual machine (VM1), should succeed&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_status</span><span class="p">(</span><span class="s1">&#39;HALTED&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">)</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Resize virtual machine (VM1), should succeed&#39;</span><span class="p">)</span>
+        <span class="n">available_sizes</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+        <span class="n">current_size_id</span> <span class="o">=</span> <span class="n">machine_info</span><span class="p">[</span><span class="s1">&#39;sizeid&#39;</span><span class="p">]</span>
+        <span class="n">available_sizes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">current_size_id</span><span class="p">)</span>
+        <span class="n">new_size_id</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">available_sizes</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">,</span> <span class="n">sizeId</span><span class="o">=</span><span class="n">new_size_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Start virtual machine (VM1), should succeed&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_status</span><span class="p">(</span><span class="s1">&#39;RUNNING&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">machineId</span><span class="o">=</span><span class="n">machine_id</span><span class="p">)</span>
+    
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Check that virtual machine (VM1) is sized with right size in MB unit&#39;</span><span class="p">)</span>
+        <span class="n">vm_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">machine_id</span><span class="p">)</span>
+        <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">vm_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;free -m | grep Mem&#39;</span><span class="p">)</span>
+        <span class="n">machine_memory</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">expected_machine_memory</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;memory&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">sizes</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">new_size_id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">machine_memory</span><span class="p">,</span> <span class="n">expected_machine_memory</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="p">(</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">expected_machine_memory</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MachineTests.test012_check_disk_iops_limit"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test012_check_disk_iops_limit">[docs]</a>    <span class="k">def</span> <span class="nf">test012_check_disk_iops_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-046</span>
+<span class="sd">        *Test case for checking cloned VM ip, portforwards and credentials*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create virtual machine (VM1), should succeed.</span>
+<span class="sd">        #. Attach data disk (DD1) to VM1 and set MaxIOPS to iops1.</span>
+<span class="sd">        #. Run fio on DD1, iops should be less than iops1.</span>
+<span class="sd">        #. Change DD1&#39;s MaxIOPS limit to iops2 which is double iops1.</span>
+<span class="sd">        #. Run fio on DD1 again, iops should be between iops1 and iops2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">get_iops</span><span class="p">(</span><span class="n">vm1_client</span><span class="p">,</span> <span class="n">run_name</span><span class="p">):</span>
+            <span class="n">fio_cmd</span> <span class="o">=</span> <span class="s2">&quot;fio --ioengine=libaio --group_reporting --direct=1 --filename=/dev/vdb &quot;</span>\
+                      <span class="s2">&quot;--runtime=30 --readwrite=rw --rwmixwrite=5 --size=500M --name=test</span><span class="si">{0}</span><span class="s2"> &quot;</span>\
+                      <span class="s2">&quot;--output=</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run_name</span><span class="p">)</span>
+            <span class="n">vm1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">fio_cmd</span><span class="p">,</span> <span class="n">sudo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+            <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">vm1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;cat </span><span class="si">%s</span><span class="s2"> | grep -o &#39;iops=[0-9]\{1,\}&#39; | cut -d &#39;=&#39; -f 2&quot;</span> <span class="o">%</span> <span class="n">run_name</span><span class="p">)</span>
+            <span class="n">iops_list</span> <span class="o">=</span> <span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">iops_list</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Create virtual machine (VM1), should succeed.&quot;</span><span class="p">)</span>
+        <span class="n">images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+        <span class="n">image_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">images</span> <span class="k">if</span> <span class="s1">&#39;Ubuntu&#39;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">image_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skipTest</span><span class="p">(</span><span class="s1">&#39;No Ubuntu image found&#39;</span><span class="p">)</span>
+        <span class="n">vm1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">,</span> <span class="n">image_id</span><span class="o">=</span><span class="n">image_id</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">vm1_ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_machine_ipaddress</span><span class="p">(</span><span class="n">vm1_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">vm1_ip</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Attach data disk (DD1) to VM1 and set MaxIOPS to iops1.&quot;</span><span class="p">)</span>
+        <span class="n">maxiops</span> <span class="o">=</span> <span class="mi">500</span>
+        <span class="n">disk_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_disk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span> <span class="n">maxiops</span><span class="o">=</span><span class="n">maxiops</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">attachDisk</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">,</span> <span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Run fio on DD1, iops should be less than iops1.&quot;</span><span class="p">)</span>
+        <span class="n">vm1_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">vm1_id</span><span class="p">)</span>
+        <span class="n">vm1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;apt-get update&#39;</span><span class="p">,</span> <span class="n">sudo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">vm1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;apt-get install fio -y&#39;</span><span class="p">,</span> <span class="n">sudo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">iops_list</span> <span class="o">=</span> <span class="n">get_iops</span><span class="p">(</span><span class="n">vm1_client</span><span class="p">,</span> <span class="s1">&#39;b1&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">([</span><span class="kc">True</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">iops_list</span> <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">maxiops</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Change DD1&#39;s MaxIOPS limit to iops2 which is double iops1.&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">disks</span><span class="o">.</span><span class="n">limitIO</span><span class="p">(</span><span class="n">diskId</span><span class="o">=</span><span class="n">disk_id</span><span class="p">,</span> <span class="n">iops</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">maxiops</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Run fio on DD1 again, iops should be between iops1 and iops2.&quot;</span><span class="p">)</span>
+        <span class="n">iops_list</span> <span class="o">=</span> <span class="n">get_iops</span><span class="p">(</span><span class="n">vm1_client</span><span class="p">,</span> <span class="s1">&#39;b2&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">([</span><span class="kc">True</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">iops_list</span> <span class="k">if</span> <span class="n">maxiops</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">maxiops</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MachineTests.test013_check_IP_conflict"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.c_advanced.machine_tests.MachineTests.test013_check_IP_conflict">[docs]</a>    <span class="k">def</span> <span class="nf">test013_check_IP_conflict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-047</span>
+<span class="sd">        *Test case for checking machine connectivity through external network*</span>
+
+<span class="sd">        **Test Scenario:**</span>
+
+<span class="sd">        #. Create cloudspace (CS1), should succeed.</span>
+<span class="sd">        #. Create two virtual machines (VM1) &amp; (VM2) in cloudspace (CS1),should succeed.</span>
+<span class="sd">        #. Attach (VM1) &amp; (VM2) to external networks (EN1), should succeed.</span>
+<span class="sd">        #. Assign IPs to (VM1) and (VM2) external network&#39;s interfaces, should succeed.</span>
+<span class="sd">        #. Check if (VM1) and (VM2) can ping google.com, should succeed.</span>
+<span class="sd">        #. Check if (VM1) and (VM2) can ping external network (EN1)&#39;s gateway ip, should succeed.</span>
+<span class="sd">        #. Delete (VM2) external network ip, and give it the same ip of (VM1).</span>
+<span class="sd">        #. Check that (VM1) still can work normally, should succeed.</span>
+<span class="sd">        #. Check that you can&#39;t connect to (VM2) with it&#39;s new external network ip, should succeed.</span>
+<span class="sd">        #. Delete (VM1) external network ip, and give it the same ip of (CS1).</span>
+<span class="sd">        #. Check that you can&#39;t connect to VM1 with it&#39;s new ext network ip, should succeed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Create two virtual machines (VM1) &amp; (VM2) in cloudspace (CS1),should succeed&quot;</span><span class="p">)</span>
+        <span class="n">vm1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+        <span class="n">vm2_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cloudspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)</span>
+        <span class="n">vm2_password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm2_id</span><span class="p">)[</span><span class="s1">&#39;accounts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Attach (VM1) &amp; (VM2) to external networks (EN1), should succeed&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">machine</span><span class="o">.</span><span class="n">attachExternalNetwork</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="n">reponse</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">machine</span><span class="o">.</span><span class="n">attachExternalNetwork</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm2_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">reponse</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Assign IPs to (VM1) and (VM2) external network&#39;s interfaces, should succeed&quot;</span><span class="p">)</span>
+        
+        <span class="n">vm1_ext_ip</span><span class="p">,</span><span class="n">ext_interface_name1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assign_IP_to_vm_external_netowrk</span><span class="p">(</span><span class="n">vm1_id</span><span class="p">)</span>
+        <span class="n">vm2_ext_ip</span><span class="p">,</span><span class="n">ext_interface_name2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assign_IP_to_vm_external_netowrk</span><span class="p">(</span><span class="n">vm2_id</span><span class="p">)</span>
+
+        <span class="n">vm_nics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">)[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vm_nics</span> <span class="k">if</span> <span class="s2">&quot;externalnetworkId&quot;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;params&quot;</span><span class="p">]</span>
+        <span class="n">gateway_ip</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">params</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">params</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)]</span>
+
+        <span class="n">vm_1_ext_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">vm1_id</span><span class="p">,</span> <span class="n">external_network</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">vm_2_ext_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">vm2_id</span><span class="p">,</span> <span class="n">external_network</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Check if (VM1) and (VM2) can ping google.com, should succeed&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;, 0% packet loss&#39;</span><span class="p">,</span> <span class="n">vm_1_ext_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ping -c 1 8.8.8.8&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;, 0% packet loss&#39;</span><span class="p">,</span> <span class="n">vm_2_ext_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ping -c 1 8.8.8.8&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Check if (VM1) and (VM2) can ping external network (EN1)&#39;s gateway ip, should succeed&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;, 0% packet loss&#39;</span><span class="p">,</span> <span class="n">vm_1_ext_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ping -c 1 </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gateway_ip</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;, 0% packet loss&#39;</span><span class="p">,</span> <span class="n">vm_2_ext_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ping -c 1 </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gateway_ip</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Delete (VM2) external network ip, and give it the same ip of (VM1)&quot;</span><span class="p">)</span>
+        <span class="n">vm_2_ext_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ip a d </span><span class="si">{}</span><span class="s2"> dev </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vm2_ext_ip</span><span class="p">,</span><span class="n">ext_interface_name2</span><span class="p">),</span> <span class="n">sudo</span><span class="o">=</span><span class="kc">True</span> <span class="p">,</span> <span class="n">wait</span> <span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">vm_2_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">vm2_id</span><span class="p">)</span>
+        <span class="n">vm_2_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ip a a </span><span class="si">{}</span><span class="s2"> dev </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vm1_ext_ip</span><span class="p">,</span><span class="n">ext_interface_name2</span><span class="p">),</span> <span class="n">sudo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">vm_2_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;nohup bash -c &#39;ip l s dev </span><span class="si">{}</span><span class="s2"> up &lt;/dev/null &gt;/dev/null 2&gt;&amp;1 &amp; &#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext_interface_name2</span><span class="p">),</span> <span class="n">sudo</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">wait</span> <span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Check that (VM1) still can work normally, should succeed&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;, 0% packet loss&#39;</span><span class="p">,</span> <span class="n">vm_1_ext_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ping -c 1 </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gateway_ip</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Check that you can&#39;t connect to (VM2) with it&#39;s new external network ip, should succeed&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AuthenticationException</span><span class="p">):</span>
+            <span class="n">VMClient</span><span class="p">(</span><span class="n">vm2_id</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">vm1_ext_ip</span><span class="p">,</span> <span class="n">external_network</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Delete (VM1) external network ip, and give it the same ip of (CS1)&quot;</span><span class="p">)</span>
+        <span class="n">cs_ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">cloudspaces</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cloudspace_id</span><span class="p">)[</span><span class="s2">&quot;publicipaddress&quot;</span><span class="p">]</span>
+
+        <span class="n">vm_1_ext_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ip a d </span><span class="si">{}</span><span class="s2"> dev </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vm1_ext_ip</span><span class="p">,</span><span class="n">ext_interface_name1</span><span class="p">),</span> <span class="n">sudo</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">wait</span> <span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">vm_1_client</span> <span class="o">=</span> <span class="n">VMClient</span><span class="p">(</span><span class="n">vm1_id</span><span class="p">)</span>        
+        <span class="n">vm_1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;ip a a </span><span class="si">{}</span><span class="s2"> dev </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cs_ip</span><span class="p">,</span><span class="n">ext_interface_name1</span><span class="p">),</span> <span class="n">sudo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">vm_1_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;nohup bash -c &#39;ip l s dev </span><span class="si">{}</span><span class="s2"> up &lt;/dev/null &gt;/dev/null 2&gt;&amp;1 &amp; &#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext_interface_name1</span><span class="p">),</span> <span class="n">sudo</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">wait</span> <span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Check that you can&#39;t connect to VM1 with it&#39;s new ext network ip, should succeed&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">):</span>
+            <span class="n">VMClient</span><span class="p">(</span><span class="n">vm1_id</span><span class="p">,</span><span class="n">ip</span><span class="o">=</span><span class="n">cs_ip</span><span class="p">,</span> <span class="n">external_network</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

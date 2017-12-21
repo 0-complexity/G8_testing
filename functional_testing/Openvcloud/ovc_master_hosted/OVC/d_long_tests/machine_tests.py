@@ -16,7 +16,9 @@ class MachineLongTests(BasicACLTest):
     def test01_export_import_vm(self):
         """ OVC-048
         *Test case for checking cloned VM ip, portforwards and credentials*
+
         **Test Scenario:**
+        
         #. Create virtual machine (VM1), should succeed.
         #. Create data disk (DD1), should succeed.
         #. Attach disk (DD1) to virtual machine (VM1), should succeed.

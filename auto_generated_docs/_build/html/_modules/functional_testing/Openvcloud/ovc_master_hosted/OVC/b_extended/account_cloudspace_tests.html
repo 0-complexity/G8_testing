@@ -159,6 +159,13 @@
             
   <h1>Source code for functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">from</span> <span class="nn">xlrd</span> <span class="k">import</span> <span class="n">open_workbook</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">BytesIO</span>
 <span class="kn">from</span> <span class="nn">....utils.utils</span> <span class="k">import</span> <span class="n">BasicACLTest</span>
 <span class="kn">from</span> <span class="nn">JumpScale.portal.portal.PortalClient2</span> <span class="k">import</span> <span class="n">ApiError</span>
 <span class="kn">from</span> <span class="nn">JumpScale.baselib.http_client.HttpClient</span> <span class="k">import</span> <span class="n">HTTPError</span>
@@ -429,9 +436,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;- expected error raised </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s1">&#39;400 Bad Request&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ExtendedTests.test004_getting_account_resources"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests.ExtendedTests.test004_getting_account_resources">[docs]</a>    <span class="nd">@unittest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s1">&#39;Not Implemented&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">test004_getting_account_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; OVC-000</span>
+<div class="viewcode-block" id="ExtendedTests.test004_getting_account_resources"><a class="viewcode-back" href="../../../../../../ovc.html#functional_testing.Openvcloud.ovc_master_hosted.OVC.b_extended.account_cloudspace_tests.ExtendedTests.test004_getting_account_resources">[docs]</a>    <span class="k">def</span> <span class="nf">test004_getting_account_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; OVC-045</span>
 <span class="sd">        *Test case for checking account&#39;s resources retrieval*</span>
 
 <span class="sd">        **Test Scenario:**</span>
@@ -439,12 +445,238 @@
 <span class="sd">        #. Create account.</span>
 <span class="sd">        #. Create cloudspaces CS1 and CS2.</span>
 <span class="sd">        #. Create VM1 on CS1 and VM2 &amp; VM3 on CS2 with certain specs.</span>
-<span class="sd">        #. Trigger jumscript on the controller to collect account&#39;s information.</span>
-<span class="sd">        #. Trigger jumscript on the master to collect account&#39;s information</span>
 <span class="sd">        #. Get the account information binary file.</span>
 <span class="sd">        #. Convert binary file to .xls file to be able extract account&#39;s information.</span>
 <span class="sd">        #. Check if the account&#39;s information in the .xls file matches the vms and cloudspaces information.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div></div>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> STARTED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create account&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudbroker_account_create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_owner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account_owner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create cloudspaces CS1 and CS2&#39;</span><span class="p">)</span>
+        <span class="n">cs1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_cloudspace_create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">account_owner</span><span class="p">)</span>
+        <span class="n">cs2_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_cloudspace_create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">account_owner</span><span class="p">)</span>
+        <span class="n">css_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">cs1_id</span><span class="p">,</span> <span class="n">cs2_id</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Create VM1 on CS1 and VM2 &amp; VM3 on CS2 with certain specs&#39;</span><span class="p">)</span>
+        <span class="n">bdisk_size</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">used_size</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">vm1_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cs1_id</span><span class="p">,</span> <span class="n">size_id</span><span class="o">=</span><span class="n">used_size</span><span class="p">,</span> <span class="n">disksize</span><span class="o">=</span><span class="n">bdisk_size</span><span class="p">)</span>
+        <span class="n">vm2_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cs2_id</span><span class="p">,</span> <span class="n">size_id</span><span class="o">=</span><span class="n">used_size</span><span class="p">,</span> <span class="n">disksize</span><span class="o">=</span><span class="n">bdisk_size</span><span class="p">)</span>
+        <span class="n">vm3_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudapi_create_machine</span><span class="p">(</span><span class="n">cs2_id</span><span class="p">,</span> <span class="n">size_id</span><span class="o">=</span><span class="n">used_size</span><span class="p">,</span> <span class="n">disksize</span><span class="o">=</span><span class="n">bdisk_size</span><span class="p">)</span>
+        <span class="n">vms_cs1_count</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">vms_cs2_count</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">vms_cs_count</span> <span class="o">=</span> <span class="p">[</span><span class="n">vms_cs1_count</span><span class="p">,</span> <span class="n">vms_cs2_count</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Determine cpu, mem and boot disk sizes for cs1 and cs2&#39;</span><span class="p">)</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudapi</span><span class="o">.</span><span class="n">sizes</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">cloudspaceId</span><span class="o">=</span><span class="n">cs1_id</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sizes</span> <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">used_size</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">total_mem_cs</span> <span class="o">=</span> <span class="p">[</span><span class="n">vms_cs1_count</span> <span class="o">*</span> <span class="n">size</span><span class="p">[</span><span class="s1">&#39;memory&#39;</span><span class="p">],</span> <span class="n">vms_cs2_count</span> <span class="o">*</span> <span class="n">size</span><span class="p">[</span><span class="s1">&#39;memory&#39;</span><span class="p">]]</span>
+        <span class="n">total_cpu_cs</span> <span class="o">=</span> <span class="p">[</span><span class="n">vms_cs1_count</span> <span class="o">*</span> <span class="n">size</span><span class="p">[</span><span class="s1">&#39;vcpus&#39;</span><span class="p">],</span> <span class="n">vms_cs2_count</span> <span class="o">*</span> <span class="n">size</span><span class="p">[</span><span class="s1">&#39;vcpus&#39;</span><span class="p">]]</span>
+        <span class="n">total_diskz_cs</span> <span class="o">=</span> <span class="p">[</span><span class="n">vms_cs1_count</span> <span class="o">*</span> <span class="n">bdisk_size</span><span class="p">,</span> <span class="n">vms_cs2_count</span> <span class="o">*</span> <span class="n">bdisk_size</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Trigger jumscript on the controller to collect account&#39;s information.&quot;</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">3</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">now</span> <span class="o">+</span> <span class="n">delta</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">delta</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cloudbroker_user_create</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">)</span>
+        <span class="n">user_api</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_authenticated_user_api</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">)</span>
+        <span class="n">stackId</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">cloudbroker</span><span class="o">.</span><span class="n">machine</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machineId</span><span class="o">=</span><span class="n">vm1_id</span><span class="p">)[</span><span class="s2">&quot;stackId&quot;</span><span class="p">]</span>
+        <span class="n">gid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node_gid</span><span class="p">(</span><span class="n">stackId</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">user_api</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">agentcontroller</span><span class="o">.</span><span class="n">executeJumpscript</span><span class="p">(</span><span class="n">organization</span><span class="o">=</span><span class="s1">&#39;jumpscale&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;resmonitoring&#39;</span><span class="p">,</span>
+                                                                <span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s1">&#39;controller&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">],</span> <span class="s1">&#39;OK&#39;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Trigger jumscript on the master to collect account&#39;s information&quot;</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">user_api</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">agentcontroller</span><span class="o">.</span><span class="n">executeJumpscript</span><span class="p">(</span><span class="n">organization</span><span class="o">=</span><span class="s1">&#39;greenitglobe&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;aggregate_account_data&#39;</span><span class="p">,</span>
+                                                                <span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="s1">&#39;master&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">],</span> <span class="s1">&#39;OK&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Download the account information binary file&#39;</span><span class="p">)</span>
+        <span class="n">credential</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span> <span class="s1">&#39;secret&#39;</span><span class="p">:</span> <span class="n">password</span><span class="p">}</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://&#39;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.demo.greenitglobe.com&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">environment</span><span class="p">)</span>
+        <span class="n">login_url</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="s1">&#39;/restmachine/system/usermanager/authenticate&#39;</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">login_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">credential</span><span class="p">)</span>
+        <span class="n">api_url</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="s1">&#39;/restmachine/cloudapi/accounts/getConsumption?accountId=</span><span class="si">{}</span><span class="s1">&amp;start=</span><span class="si">{}</span><span class="s1">&amp;end=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">api_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Writing capnp schema into a file&#39;</span><span class="p">)</span>
+        <span class="n">first_part</span> <span class="o">=</span> <span class="s1">&#39;        @0x934efea7f327fff0;&#39;</span>
+        <span class="n">second_part</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        struct CloudSpace {</span>
+<span class="s2">          cloudSpaceId @0 :Int32;</span>
+<span class="s2">          accountId @1 :Int32;</span>
+<span class="s2">          machines @2 :List(VMachine);</span>
+<span class="s2">          state @3 :Text;</span>
+<span class="s2">          struct VMachine {</span>
+<span class="s2">            id @0 :Int32;</span>
+<span class="s2">            type @1 :Text;</span>
+<span class="s2">            vcpus @2 :Int8;</span>
+<span class="s2">            cpuMinutes @3 :Float32;</span>
+<span class="s2">            mem @4 :Float32;</span>
+<span class="s2">            networks @5 :List(Nic);</span>
+<span class="s2">            disks @6 :List(Disk);</span>
+<span class="s2">            imageName @7 :Text;</span>
+<span class="s2">            status @8 :Text;</span>
+<span class="s2">            struct Nic {</span>
+<span class="s2">              id @0 :Int32;</span>
+<span class="s2">              type @1 :Text;</span>
+<span class="s2">              tx @2 :Float32;</span>
+<span class="s2">              rx @3 :Float32;</span>
+<span class="s2">            }</span>
+<span class="s2">            struct Disk {</span>
+<span class="s2">                id @0 :Int32;</span>
+<span class="s2">                size @1 :Float32;</span>
+<span class="s2">                iopsRead  @2 :Float32;</span>
+<span class="s2">                iopsWrite  @3 :Float32;</span>
+<span class="s2">                iopsReadMax @4 :Float32;</span>
+<span class="s2">                iopsWriteMax @5 :Float32;</span>
+<span class="s2">            }</span>
+<span class="s2">          }</span>
+<span class="s2">        }</span>
+<span class="s2">        struct Account {</span>
+<span class="s2">          accountId @0  :UInt32;</span>
+<span class="s2">          cloudspaces @1 :List(CloudSpace);</span>
+<span class="s2">        }</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+        <span class="n">res_mon_schema</span> <span class="o">=</span> <span class="n">first_part</span> <span class="o">+</span> <span class="n">second_part</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/resource_mang&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/resource_mang&#39;</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/resourcetracking&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cwd</span><span class="p">))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;touch </span><span class="si">{}</span><span class="s2">/resourcemonitoring.capnp&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cwd</span><span class="p">))</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/resourcemonitoring.capnp&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cwd</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">res_mon_schema</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s2">&quot;Convert binary file to .xls file to be able extract account&#39;s information.&quot;</span><span class="p">)</span>
+            <span class="n">bin_to_xls_script</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            from JumpScale import j</span>
+<span class="s2">            import argparse</span>
+<span class="s2">            import os</span>
+<span class="s2">            import xlwt</span>
+<span class="s2">            import pprint</span>
+<span class="s2">            import capnp</span>
+<span class="s2">            from datetime import datetime</span>
+<span class="s2">            from os import listdir</span>
+<span class="s2">            capnp.remove_import_hook()</span>
+<span class="s2">            schemapath = os.path.join(&#39;</span><span class="si">{0}</span><span class="s2">&#39;, &#39;resourcemonitoring.capnp&#39;)</span>
+<span class="s2">            resources_capnp = capnp.load(schemapath)</span>
+<span class="s2">            root_path = &#39;</span><span class="si">{0}</span><span class="s2">/resourcetracking&#39;</span>
+<span class="s2">            accounts = listdir(root_path)</span>
+<span class="s2">            book = xlwt.Workbook(encoding=&#39;utf-8&#39;)</span>
+<span class="s2">            nosheets = True</span>
+<span class="s2">            for dirpath, subdirs, files in os.walk(root_path):</span>
+<span class="s2">                for x in files:</span>
+<span class="s2">                    file_path = os.path.join(dirpath, x)</span>
+<span class="s2">            for account in accounts:</span>
+<span class="s2">                nosheets = False</span>
+<span class="s2">                sheet = book.add_sheet(&#39;account </span><span class="si">%s</span><span class="s2">&#39; % account)</span>
+<span class="s2">                sheet.write(0, 0, &#39;Cloud Space ID&#39;)</span>
+<span class="s2">                sheet.write(0, 1, &#39;Machine Count&#39;)</span>
+<span class="s2">                sheet.write(0, 2, &#39;Total Memory&#39;)</span>
+<span class="s2">                sheet.write(0, 3, &#39;Total VCPUs&#39;)</span>
+<span class="s2">                sheet.write(0, 4, &#39;Disk Size&#39;)</span>
+<span class="s2">                sheet.write(0, 5, &#39;Disk IOPS Read&#39;)</span>
+<span class="s2">                sheet.write(0, 6, &#39;Disk IOPS Write&#39;)</span>
+<span class="s2">                sheet.write(0, 7, &#39;NICs TX&#39;)</span>
+<span class="s2">                sheet.write(0, 8, &#39;NICs RX&#39;)</span>
+<span class="s2">                with open(file_path, &#39;rb&#39;) as f:</span>
+<span class="s2">                    account_obj = resources_capnp.Account.read(f)</span>
+<span class="s2">                    for idx, cs in enumerate(account_obj.cloudspaces):</span>
+<span class="s2">                        cs_id = cs.cloudSpaceId</span>
+<span class="s2">                        machines = len(cs.machines)</span>
+<span class="s2">                        vcpus = 0</span>
+<span class="s2">                        mem = 0</span>
+<span class="s2">                        disksize = 0</span>
+<span class="s2">                        disk_iops_read = 0</span>
+<span class="s2">                        disk_iops_write = 0</span>
+<span class="s2">                        nics_tx = 0</span>
+<span class="s2">                        nics_rx = 0</span>
+<span class="s2">                        for machine in cs.machines:</span>
+<span class="s2">                            vcpus += machine.vcpus</span>
+<span class="s2">                            mem += machine.mem</span>
+<span class="s2">                            for disk in machine.disks:</span>
+<span class="s2">                                disk_iops_read += disk.iopsRead</span>
+<span class="s2">                                disk_iops_write += disk.iopsWrite</span>
+<span class="s2">                                disksize += disk.size</span>
+<span class="s2">                            for nic in machine.networks:</span>
+<span class="s2">                                nics_tx += nic.tx</span>
+<span class="s2">                                nics_rx += nic.rx</span>
+<span class="s2">                        sheet.write(idx + 1, 0, cs_id)</span>
+<span class="s2">                        sheet.write(idx + 1, 1, machines)</span>
+<span class="s2">                        sheet.write(idx + 1, 2, mem)</span>
+<span class="s2">                        sheet.write(idx + 1, 3, vcpus)</span>
+<span class="s2">                        sheet.write(idx + 1, 4, disksize)</span>
+<span class="s2">                        sheet.write(idx + 1, 5, disk_iops_read)</span>
+<span class="s2">                        sheet.write(idx + 1, 6, disk_iops_write)</span>
+<span class="s2">                        sheet.write(idx + 1, 7, nics_tx)</span>
+<span class="s2">                        sheet.write(idx + 1, 8, nics_rx)</span>
+<span class="s2">            if nosheets is False:</span>
+<span class="s2">                book.save(&#39;example.xls&#39;)</span>
+<span class="s2">            else:</span>
+<span class="s2">                print(&#39;No data found&#39;)</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cwd</span><span class="p">)</span>
+
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;touch </span><span class="si">{}</span><span class="s2">/export_acc.py&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cwd</span><span class="p">))</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/export_acc.py&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cwd</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bin_to_xls_script</span><span class="p">))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;sed -i &#39;s/            //&#39; </span><span class="si">{}</span><span class="s2">/export_acc.py&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cwd</span><span class="p">))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;sed -i &#39;s/            //&#39; </span><span class="si">{}</span><span class="s2">/resourcemonitoring.capnp&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cwd</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Extracting .xls zip file&#39;</span><span class="p">)</span>
+            <span class="n">file</span> <span class="o">=</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/resourcetracking&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cwd</span><span class="p">))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;cd </span><span class="si">{}</span><span class="s1">; python export_acc.py&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cwd</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;Extracting info from xls file&#39;</span><span class="p">)</span>
+            <span class="n">wb</span> <span class="o">=</span> <span class="n">open_workbook</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/example.xls&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cwd</span><span class="p">))</span>
+            <span class="n">wb</span><span class="o">.</span><span class="n">sheet_by_index</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">wb</span><span class="o">.</span><span class="n">sheet_by_index</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">cs1_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">cs1_vms_nums</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">cs1_total_mem</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">cs1_total_vcpu</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">cs1_Disk_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+            <span class="n">cs2_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">cs2_vms_nums</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">cs2_total_mem</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">cs2_total_vcpu</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">cs2_Disk_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">cs1_id</span> <span class="o">==</span> <span class="n">css_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">c1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">c2</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">c1</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">c2</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">cs1_id</span><span class="p">,</span> <span class="n">css_ids</span><span class="p">[</span><span class="n">c1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">cs2_id</span><span class="p">,</span> <span class="n">css_ids</span><span class="p">[</span><span class="n">c2</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">cs1_vms_nums</span><span class="p">,</span> <span class="n">vms_cs_count</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">cs2_vms_nums</span><span class="p">,</span> <span class="n">vms_cs_count</span><span class="p">[</span><span class="n">c2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">cs1_total_mem</span><span class="p">,</span> <span class="n">total_mem_cs</span><span class="p">[</span><span class="n">c1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">cs2_total_mem</span><span class="p">,</span> <span class="n">total_mem_cs</span><span class="p">[</span><span class="n">c2</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">cs1_total_vcpu</span><span class="p">,</span> <span class="n">total_cpu_cs</span><span class="p">[</span><span class="n">c1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">cs2_total_vcpu</span><span class="p">,</span> <span class="n">total_cpu_cs</span><span class="p">[</span><span class="n">c2</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">cs1_Disk_size</span><span class="p">,</span> <span class="n">total_diskz_cs</span><span class="p">[</span><span class="n">c1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">cs2_Disk_size</span><span class="p">,</span> <span class="n">total_diskz_cs</span><span class="p">[</span><span class="n">c2</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;rm -rf </span><span class="si">{}</span><span class="s2">/resource_mang&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> ENDED&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testID</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>
