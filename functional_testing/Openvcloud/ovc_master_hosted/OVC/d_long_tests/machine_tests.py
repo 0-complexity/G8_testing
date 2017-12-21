@@ -95,7 +95,7 @@ class MachineLongTests(BasicACLTest):
 
             # work around (see https://github.com/0-complexity/openvcloud/issues/1130)
             self.lg('Check that file (F1) exists in the imported virtual machine')
-            for _ in range(60):
+            for _ in range(10):
                 try:
                     imported_vm_client = VMClient(
                         imported_vm_id[0],
@@ -103,8 +103,9 @@ class MachineLongTests(BasicACLTest):
                         password=machine_1_client.password,
                         timeout=120
                     )
+                    break
                 except:
-                    time.sleep(4)
+                    time.sleep(30)
             else:
                 self.fail("can't connect to the imported vm")
 
