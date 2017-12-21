@@ -12,7 +12,7 @@ class MachineLongTests(BasicACLTest):
         super(MachineLongTests, self).setUp()
         self.default_setup()
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1130')
+    # @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1130')
     def test01_export_import_vm(self):
         """ OVC-048
         *Test case for checking cloned VM ip, portforwards and credentials*
@@ -47,6 +47,8 @@ class MachineLongTests(BasicACLTest):
         machine_1_client.execute('mount /dev/vdb data', sudo=True)
         machine_1_client.execute('chown ${USER}:${USER} data', sudo=True)
         machine_1_client.execute('echo "helloWorld" > data/test2.txt')
+
+        time.sleep(30)
         
         folder_name = str(uuid.uuid4()).replace('-', '')[:10]        
         owncloud_auth = (self.owncloud_user, self.owncloud_password)
@@ -74,7 +76,7 @@ class MachineLongTests(BasicACLTest):
 
             self.assertTrue(response)
 
-            time.sleep(500)
+            time.sleep(300)
 
             self.lg('Import virtual machine (VM2), should succeed')
             self.api.cloudapi.machines.importOVF(
@@ -93,18 +95,27 @@ class MachineLongTests(BasicACLTest):
             if not imported_vm_id:
                 self.fail("can't import vm")
 
+            # work around (see https://github.com/0-complexity/openvcloud/issues/1130)
             self.lg('Check that file (F1) exists in the imported virtual machine')
-            imported_vm_client = VMClient(
-                imported_vm_id[0],
-                login=machine_1_client.login,
-                password=machine_1_client.password,
-                timeout=120
-            )
+            for _ in range(10):
+                try:
+                    imported_vm_client = VMClient(
+                        imported_vm_id[0],
+                        login=machine_1_client.login,
+                        password=machine_1_client.password,
+                        timeout=120
+                    )
+                    break
+                except:
+                    time.sleep(30)
+            else:
+                self.fail("can't connect to the imported vm")
 
             stdin, stdout, stderr = imported_vm_client.execute('cat test1.txt')
             self.assertIn('helloWorld', stdout.read())
 
             self.lg('Check that file (F2) exists in the imported virtual machine\'s data disk (DD1)')
+            imported_vm_client.execute('mount /dev/vdb data', sudo=True)
             stdin, stdout, stderr = imported_vm_client.execute('cat data/test2.txt')
             self.assertIn('helloWorld', stdout.read())
 
