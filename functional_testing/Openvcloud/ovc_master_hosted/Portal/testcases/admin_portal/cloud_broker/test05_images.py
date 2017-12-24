@@ -2,7 +2,7 @@ import time
 import unittest
 from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework import Framework
 from nose_parameterized import parameterized
-from random import randint
+from random import *
 
 
 class ImagesTests(Framework):
@@ -95,7 +95,8 @@ class ImagesTests(Framework):
         self.lg('- go to Images page')
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
-        self.Images.open_image_page()
+        image = choice(['Ubuntu', 'Windows'])
+        self.Images.open_image_page(image=image)
         self.lg('-  try paging from the available page numbers and verify it should succeed ')
         self.assertTrue(self.Tables.check_show_list('stacks'))
         self.lg('- sorting of all fields of stack table, should be working as expected')
@@ -118,7 +119,8 @@ class ImagesTests(Framework):
         self.lg('1- go to Images page')
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
-        self.Images.open_image_page()
+        image = choice(['Ubuntu', 'Windows'])
+        self.Images.open_image_page(image=image)
         self.lg('-  try paging from the available page numbers and verify it should succeed ')
         self.assertTrue(self.Tables.check_show_list('machines'))
         self.lg('- sorting of all fields of stack table, should be working as expected')
@@ -147,7 +149,8 @@ class ImagesTests(Framework):
             self.skipTest('https://github.com/0-complexity/openvcloud/issues/696')
         self.lg('1- go to Images page')
         self.Images.get_it()
-        self.Images.open_image_page()
+        image = choice(['Ubuntu', 'Windows'])
+        self.Images.open_image_page(image=image)
         self.lg('try the search box in every column and verfiy it return the right value')
         self.assertTrue(self.Tables.check_data_filters('stacks', column))
 
@@ -172,6 +175,7 @@ class ImagesTests(Framework):
         self.lg('1- go to Images page')
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
-        self.Images.open_image_page()
+        image = choice(['Ubuntu', 'Windows'])
+        self.Images.open_image_page(image=image)
         self.lg('3-try the search box in every column and verfiy it return the right value')
         self.assertTrue(self.Tables.check_data_filters('machines', column))
