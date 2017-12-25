@@ -3,7 +3,7 @@ import unittest
 import uuid
 import random
 import time
-from ....utils.utils import BasicACLTest
+from ....utils.utils import BasicACLTest, VMClient
 from nose_parameterized import parameterized
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
@@ -125,7 +125,7 @@ class BasicTests(BasicACLTest):
         #. Resize the machine with all possible combinations, should succeed
         #. Start the machine, if offline resize.
         #. Check that the machine is updated
-        
+
         """
 
         self.lg('- Get all available sizes to use and choose one random and create vm with it , should succeed')
@@ -136,8 +136,8 @@ class BasicTests(BasicACLTest):
 
         self.lg('- using memory size [%s] with disk [%s]' % (selected_size['memory'], disksize))
         machineId = self.cloudapi_create_machine(
-            cloudspace_id=self.cloudspace_id, 
-            size_id=selected_size['id'], 
+            cloudspace_id=self.cloudspace_id,
+            size_id=selected_size['id'],
             disksize=disksize
         )
 
@@ -162,16 +162,27 @@ class BasicTests(BasicACLTest):
             self.lg('- Resize the machine with {} status with all possible combinations, should succeed'.format(machine_status))
             self.account_owner_api.cloudapi.machines.resize(machineId=machineId, sizeId=size['id'])
 
-            if machine_status == "offline":                
+            if machine_status == "offline":
                 self.lg('- Start the machine')
                 self.account_owner_api.cloudapi.machines.start(machineId=machineId)
-            
+                time.sleep(5)
+
             self.lg('- Check that the machine is updated')
             machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
             self.assertEqual(machineInfo['status'], 'RUNNING')
             self.assertEqual(machineInfo['sizeid'], size['id'])
+            vm_client = VMClient(machineId)
+            response = vm_client.execute(" cat /proc/meminfo")
+            meminfo = response[1].read()
+            mem_total = int(meminfo[meminfo.find("MemTotal")+9:meminfo.find("kB")])/1024
+            if size["id"] == 5:
+                self.assertAlmostEqual(mem_total, size['memory'], delta=2000)
+            else:
+                self.assertAlmostEqual(mem_total, size['memory'], delta= 400)
+            response = vm_client.execute(" grep -c ^processor /proc/cpuinfo ")
+            self.assertEqual(int(response[1].read()), size['vcpus'])
 
-        self.lg('%s ENDED' % self._testID)
+            self.lg('%s ENDED' % self._testID)
 
     def test004_create_machine_with_resize_in_halted(self):
         """ OVC-004
@@ -195,8 +206,8 @@ class BasicTests(BasicACLTest):
 
         self.lg('2- using memory size [%s] with disk [%s]' % (selected_size['memory'], disksize))
         machineId = self.cloudapi_create_machine(
-            cloudspace_id=self.cloudspace_id, 
-            size_id=selected_size['id'], 
+            cloudspace_id=self.cloudspace_id,
+            size_id=selected_size['id'],
             disksize=disksize
         )
 
@@ -207,7 +218,7 @@ class BasicTests(BasicACLTest):
 
             if size['id'] not in range(1, 7):
                 continue
-            
+
             machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
             self.assertEqual(machineInfo['status'], 'HALTED')
 
@@ -216,14 +227,13 @@ class BasicTests(BasicACLTest):
 
         self.lg('5- Start the machine')
         self.account_owner_api.cloudapi.machines.start(machineId=machineId)
-        
+
         self.lg('6- Check that the machine is updated')
         machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
         self.assertEqual(machineInfo['status'], 'RUNNING')
         self.assertEqual(machineInfo['sizeid'], 6)
 
         self.lg('%s ENDED' % self._testID)
-
 
     @parameterized.expand(['Ubuntu 14.04 x64',
                            'Ubuntu 15.10 x64',
@@ -531,7 +541,7 @@ class BasicTests(BasicACLTest):
         sizes = [size for size in sizes if size['id'] in range(1, 7)]
         size = random.choice(sizes)
 
-        sizeId = size['id']      
+        sizeId = size['id']
         disksize = random.choice(size['disks'])
         self.machineId = self.api.cloudapi.machines.create(cloudspaceId=self.cloudspaceId, name=language,
                                                            sizeId=sizeId,
@@ -569,7 +579,7 @@ class BasicTests(BasicACLTest):
         self.wait_for_status('DESTROYED', self.api.cloudapi.accounts.get,
                              accountId=self.accountId,
                              timeout=120)
-                             
+
         self.lg('%s ENDED' % self._testID)
 
     def test009_access_docker_on_vm(self):
