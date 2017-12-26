@@ -134,7 +134,7 @@ class ExtendedTests(BasicACLTest):
                                               sizeId=self.get_size(self.cloudspace_id)['id'],
                                               imageId=self.get_image()['id'],
                                               disksize=10)
-        self.lg('- expected error raised %s' % e.exception.status_code)                         
+        self.lg('- expected error raised %s' % e.exception.status_code)
         self.assertEqual(e.exception.status_code, 400)
 
         self.lg("2- Create normal machine with valid name, should succeed")
@@ -149,7 +149,7 @@ class ExtendedTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.clone(machineId=machine_id, name='')
 
-        self.lg('- expected error raised %s' % e.exception.status_code)                         
+        self.lg('- expected error raised %s' % e.exception.status_code)
         self.assertEqual(e.exception.status_code, 400)
 
         self.lg('%s ENDED' % self._testID)
@@ -191,7 +191,7 @@ class ExtendedTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.disks.delete(diskId=disk_id+9, detach=False)
 
-        self.lg('- expected error raised %s' % e.exception.status_code)                         
+        self.lg('- expected error raised %s' % e.exception.status_code)
         self.assertEqual(e.exception.status_code, 404)
 
         self.lg('Delete DS1, should succeed.')
@@ -231,7 +231,7 @@ class ExtendedTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
             response = self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id+9)
 
-        self.lg('- expected error raised %s' % e.exception.status_code)                         
+        self.lg('- expected error raised %s' % e.exception.status_code)
         self.assertEqual(e.exception.status_code, 404)
 
         self.lg("Attach DS1 to VM1, should succeed")
@@ -242,14 +242,14 @@ class ExtendedTests(BasicACLTest):
         with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.disks.delete(diskId=disk_id, detach=False)
 
-        self.lg('- expected error raised %s' % e.exception.status_code)                         
+        self.lg('- expected error raised %s' % e.exception.status_code)
         self.assertEqual(e.exception.status_code, 409)
 
         self.lg("Detach non existing disk, should fail")
         with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.machines.attachDisk(machineId=VM1_id, diskId=disk_id+9)
 
-        self.lg('- expected error raised %s' % e.exception.status_code)                         
+        self.lg('- expected error raised %s' % e.exception.status_code)
         self.assertEqual(e.exception.status_code, 404)
 
         self.lg("Detach DS1, should succeed")
@@ -324,7 +324,6 @@ class ExtendedTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1119')
     def test008_disk_resize(self):
         """ OVC-041
         *Test case for disk resizing*
