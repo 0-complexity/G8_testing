@@ -754,13 +754,13 @@ class MachineTests(BasicACLTest):
         self.lg('%s ENDED' % self._testID)
 
     def test016_resize_disk_online(self):
-        """ OVC-047
+        """ OVC-050
         *Test case for resizing disk online*
         **Test Scenario:**
 
         #. Create virtual machine (VM1), should succeeed
         #. Attach data disk (DS1) with size (S1), should succeed
-        #. Resize DS1 to S2, should succeed
+        #. Resize DS1 to S2 (>S1), should succeed
         #. Make sure DS1's size has been changed on the vm itself
         #. Resize VM1's metadata disk, should fail
         """
