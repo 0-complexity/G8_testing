@@ -1,7 +1,7 @@
 # coding=utf-8
 import random
 import unittest
-from ....utils.utils import BasicACLTest,VMClient
+from ....utils.utils import BasicACLTest, VMClient
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
 
@@ -131,16 +131,15 @@ class CloudspaceTests(BasicACLTest):
         self.lg('Execute script on routeros of CS1 to create portforward (PF1), should succeed')
         vm = self.api.cloudapi.machines.get(machineId=vm_id)
         cs_ip = self.api.cloudapi.cloudspaces.get(cloudspaceId=vm['cloudspaceid'])['publicipaddress']
-        vm_ip = self.wait_for_machine_to_get_ip(vm_id)
+        vm_ip = self.get_machine_ipaddress(vm_id)
         pb_port = random.randint(50000, 60000)
         script = '/ip firewall nat add chain=dstnat action=dst-nat to-addresses=%s to-ports=22 protocol=tcp dst-address=%s dst-port=%s comment=cloudbroker' % (vm_ip, cs_ip, pb_port)
         self.api.cloudapi.cloudspaces.executeRouterOSScript(self.cloudspace_id, script=script)
 
         self.lg('Connect to VM1 through PF1 , should succeed')
-
-        vm1_conn = VMClient(vm_id, port=pb_port)
-        response = vm1_conn.execute('ls /')
-        self.assertIn('bin', response[1].read())
+        vm1_client = VMClient(vm_id, port=pb_port)
+        stdin, stdout, stderr = vm1_client.execute('ls /')
+        self.assertIn('bin', stdout.read())
 
         self.lg('%s ENDED' % self._testID)
 
