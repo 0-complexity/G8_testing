@@ -126,7 +126,6 @@ class BasicTests(BasicACLTest):
         #. Resize the machine with all possible combinations, should succeed
         #. Start the machine, if offline resize.
         #. Check that the machine is updated.
-
         """
 
         self.lg('- Get all available sizes to use and choose one random and create vm with it , should succeed')
