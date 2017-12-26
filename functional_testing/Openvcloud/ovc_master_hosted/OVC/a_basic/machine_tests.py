@@ -111,6 +111,7 @@ class BasicTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
+    @unittest.skip("https://github.com/0-complexity/openvcloud/issues/1151")
     @parameterized.expand(['online',
                            'offline'
                            ])
@@ -124,7 +125,7 @@ class BasicTests(BasicACLTest):
         #. Stop the machine, if offline resize.
         #. Resize the machine with all possible combinations, should succeed
         #. Start the machine, if offline resize.
-        #. Check that the machine is updated
+        #. Check that the machine is updated.
 
         """
 
@@ -142,9 +143,6 @@ class BasicTests(BasicACLTest):
         )
 
         for size in sizes:
-
-            if size['id'] not in range(1, 7):
-                continue
             if machine_status == "online":
                 if size['memory'] < selected_size['memory']:
                     self.lg('resize running machine with memory size less than selected size, should fail')
@@ -175,10 +173,7 @@ class BasicTests(BasicACLTest):
             response = vm_client.execute(" cat /proc/meminfo")
             meminfo = response[1].read()
             mem_total = int(meminfo[meminfo.find("MemTotal")+9:meminfo.find("kB")])/1024
-            if size["id"] == 5:
-                self.assertAlmostEqual(mem_total, size['memory'], delta=2000)
-            else:
-                self.assertAlmostEqual(mem_total, size['memory'], delta= 400)
+            self.assertAlmostEqual(mem_total, size['memory'], delta=400)
             response = vm_client.execute(" grep -c ^processor /proc/cpuinfo ")
             self.assertEqual(int(response[1].read()), size['vcpus'])
 
