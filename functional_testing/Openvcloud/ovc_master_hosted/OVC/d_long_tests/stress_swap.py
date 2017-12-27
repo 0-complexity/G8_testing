@@ -16,7 +16,7 @@ class StressSwap(BasicACLTest):
         #. Get health detailed status and check the swap value
         #. Make sure that system raise the swap error
         """
-        self.nodeId = self.get_random_running_nodeId()
+        self.nodeId = self.get_nodeId_to_move_VFW_to()
         print(" [*] self.nodeId : %s " % str(self.nodeId))
 
         print(" [*] Install stress-ng")
@@ -25,7 +25,7 @@ class StressSwap(BasicACLTest):
         self.assertIn('stress-ng', self.execute_command_on_physical_node('which stress-ng', self.nodeId))
 
         print(" [*] Execute stress-ng --vm-method rowhammer -r 500")
-        self.execute_command_on_physical_node('stress-ng --vm-method rowhammer -r 500', self.nodeId)
+        self.execute_command_on_physical_node('stress-ng --vm-method rowhammer -r 500&', self.nodeId)
         print(" [*] Wait for 10 minutes")
         time.sleep(600)
 

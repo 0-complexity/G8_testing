@@ -524,17 +524,6 @@ class BaseTest(unittest.TestCase):
                 return stackId
         return False
 
-    def get_random_running_nodeId(self):
-        ccl = j.clients.osis.getNamespace('cloudbroker')
-        scl = j.clients.osis.getNamespace('system')
-        stacks_list = ccl.stack.list()
-        for stackId in stacks_list:
-            nodeId = ccl.stack.get(stackId).referenceId
-            node = scl.node.get(int(nodeId))
-            if node.active:
-                return nodeId
-        return False
-
     def get_physical_node_id(self, cloudspaceID):
         # This function take the cloudspace ID and return its physical node ID
         netID = self.get_cloudspace_network_id(cloudspaceID)
@@ -564,7 +553,7 @@ class BaseTest(unittest.TestCase):
         raw_email = email_data[0][1]
         return raw_email
 
-    def get_nodeId_to_move_VFW_to(self, current_VFW_nodeId):
+    def get_nodeId_to_move_VFW_to(self, current_VFW_nodeId=-1):
         ccl = j.clients.osis.getNamespace('cloudbroker')
         scl = j.clients.osis.getNamespace('system')
         stacks = ccl.stack.list()
