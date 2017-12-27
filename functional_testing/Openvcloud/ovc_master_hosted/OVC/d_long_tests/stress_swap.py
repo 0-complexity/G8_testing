@@ -4,13 +4,13 @@ import time
 
 class StressSwap(BasicACLTest):
     def test01_stress_swap(self):
-        """ OVC-000
+        """ OVC-049
         *Test case for stress swap*
 
         **Test Scenario:**
 
-        #. connect to the node
-        #. Install stress-ng
+        #. Get access to a physical node
+        #. Install stress-ng tool
         #. Run "stress-ng --vm-method rowhammer -r 500"
         #. Wait for 10 minutes
         #. Get health detailed status and check the swap value
