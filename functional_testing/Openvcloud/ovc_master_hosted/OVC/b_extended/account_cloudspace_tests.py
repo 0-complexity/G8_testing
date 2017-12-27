@@ -213,6 +213,8 @@ class ExtendedTests(BasicACLTest):
             self.lg('- expected error raised %s' % e.message)
             self.assertEqual(e.message, '400 Bad Request')
 
+
+
     def test003_resource_limits_on_cloudspace_level(self):
         """ OVC-018
         *Test case for testing basic resource limits on account and cloudspace limits.*
@@ -547,17 +549,17 @@ class ExtendedTests(BasicACLTest):
         self.assertTrue(user_2_api)
 
         self.lg('Add user (U1) to account (AC1) with read access, should succeed')
-        self.api.cloudapi.account.addUser(accountId=self.account_id, userId=user_1_id, accesstype='R')
+        self.api.cloudapi.accounts.addUser(accountId=self.account_id, userId=user_1_id, accesstype='R')
 
         self.lg('Add user (U2) to account (AC1) with read access, should succeed')
-        self.api.cloudapi.account.addUser(accountId=self.account_id, userId=user_2_id, accesstype='ARCXDU')
+        self.api.cloudapi.accounts.addUser(accountId=self.account_id, userId=user_2_id, accesstype='ARCXDU')
 
         self.lg('Try to create cloudspace using user (U1), should fail')
         with self.assertRaises(ApiError) as e:
             self.cloudapi_cloudspace_create(self.account_id, self.location, user_1_id, user_1_api)
 
         self.lg('Update user (U1) access to write, should succeed')
-        self.api.cloudapi.account.updateUser(accountId=self.account_id, userId=user_1_id, accesstype='RCX')
+        self.api.cloudapi.accounts.updateUser(accountId=self.account_id, userId=user_1_id, accesstype='RCX')
 
         self.lg('Try to create cloudspace using user (U1), should succeed')
         response = self.cloudapi_cloudspace_create(self.account_id, self.location, user_1_id, user_1_api)
@@ -569,16 +571,25 @@ class ExtendedTests(BasicACLTest):
         
 
         self.lg('Update user (U1) access to admin, should succeed')
-        self.api.cloudapi.account.updateUser(accountId=self.account_id, userId=user_1_id, accesstype='ARCXDU')
+        self.api.cloudapi.accounts.updateUser(accountId=self.account_id, userId=user_1_id, accesstype='ARCXDU')
 
         self.lg('Try to delete user (U2) from account (AC1) using user (U1), should succeed')
         response = user_1_api.cloudapi.accounts.deleteUser(accountId=self.account_id, userId=user_2_id, recursivedelete=True)
         self.assertTrue(response)
 
-            #. Update user (U1) access to admin, should succeed.
-        #. Try to delete user (U2) from account (AC1) using user (U1), should succeed
+        self.lg('Update account (AC1) user using non-existing account id, should fail')
+        invalid_account_id = random.randint(10000, 20000)
+        with self.assertRaises(HTTPError) as e:
+            self.api.cloudapi.accounts.updateUser(accountId=self.invalid_account_id, userId=user_1_id, accesstype='R')
+        
+        self.lg('Update account (AC1) user using non-existing account id, should fail')
+        invalid_user_id = random.randint(10000, 20000)
+        with self.assertRaises(HTTPError) as e:
+            self.api.cloudapi.accounts.updateUser(accountId=self.account_id, userId=invalid_user_id, accesstype='R')
 
-
+        self.lg('Update user (U1) access to invalid access type, should fail')
+        with self.assertRaises(HTTPError) as e:
+            self.api.cloudapi.accounts.updateUser(accountId=self.account_id, userId=invalid_user_id, accesstype='FAKE')
 
 
 
