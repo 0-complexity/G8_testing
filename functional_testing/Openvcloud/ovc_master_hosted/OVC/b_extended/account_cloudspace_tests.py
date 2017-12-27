@@ -213,8 +213,6 @@ class ExtendedTests(BasicACLTest):
             self.lg('- expected error raised %s' % e.message)
             self.assertEqual(e.message, '400 Bad Request')
 
-
-
     def test003_resource_limits_on_cloudspace_level(self):
         """ OVC-018
         *Test case for testing basic resource limits on account and cloudspace limits.*
@@ -517,3 +515,73 @@ class ExtendedTests(BasicACLTest):
             os.system("rm -rf {}/resource_mang".format(os.getcwd()))
 
         self.lg('%s ENDED' % self._testID)
+
+    def test005_update_account_users(self):
+        """ OVC-018
+        *Test case for testing basic resource limits on account and cloudspace limits.*
+
+        **Test Scenario:**
+
+        #. Create user (U1), should succeed.
+        #. Create user (U2), should succeed.
+        #. Add user (U1) to account (AC1) with read access, should succeed.
+        #. Add user (U2) to account (AC1) with admin access, should succeed.
+        #. Try to create cloudspace using user (U1), should fail.
+        #. Update user (U1) access to write, should succeed.
+        #. Try to create cloudspace using user (U1), should succeed.
+        #. Try to delete user (U2) from account (AC1) using user (U1), should fail.
+        #. Update user (U1) access to admin, should succeed.
+        #. Try to delete user (U2) from account (AC1) using user (U1), should succeed.
+        #. Update account (AC1) user using non-existing account id, should fail.
+        #. Update account (AC1) user using non-existing user id, should fail.
+        #. Update user (U1) access to invalid access type, should fail.
+        """
+        self.lg('Create user (U1), should succeed')
+        user_1_id = self.cloudbroker_user_create()
+        user_1_api = self.get_authenticated_user_api(user_1_id)
+        self.assertTrue(user_1_api)
+
+        self.lg('Create user (U2), should succeed')
+        user_2_id = self.cloudbroker_user_create()
+        user_2_api = self.get_authenticated_user_api(user_2_id)
+        self.assertTrue(user_2_api)
+
+        self.lg('Add user (U1) to account (AC1) with read access, should succeed')
+        self.api.cloudapi.account.addUser(accountId=self.account_id, userId=user_1_id, accesstype='R')
+
+        self.lg('Add user (U2) to account (AC1) with read access, should succeed')
+        self.api.cloudapi.account.addUser(accountId=self.account_id, userId=user_2_id, accesstype='ARCXDU')
+
+        self.lg('Try to create cloudspace using user (U1), should fail')
+        with self.assertRaises(ApiError) as e:
+            self.cloudapi_cloudspace_create(self.account_id, self.location, user_1_id, user_1_api)
+
+        self.lg('Update user (U1) access to write, should succeed')
+        self.api.cloudapi.account.updateUser(accountId=self.account_id, userId=user_1_id, accesstype='RCX')
+
+        self.lg('Try to create cloudspace using user (U1), should succeed')
+        response = self.cloudapi_cloudspace_create(self.account_id, self.location, user_1_id, user_1_api)
+        self.assertTrue(response)
+
+        self.lg('Try to delete user (U2) from account (AC1) using user (U1), should fail')
+        with self.assertRaises(ApiError) as e:
+            user_1_api.cloudapi.accounts.deleteUser(accountId=self.account_id, userId=user_2_id, recursivedelete=True)
+        
+
+        self.lg('Update user (U1) access to admin, should succeed')
+        self.api.cloudapi.account.updateUser(accountId=self.account_id, userId=user_1_id, accesstype='ARCXDU')
+
+        self.lg('Try to delete user (U2) from account (AC1) using user (U1), should succeed')
+        response = user_1_api.cloudapi.accounts.deleteUser(accountId=self.account_id, userId=user_2_id, recursivedelete=True)
+        self.assertTrue(response)
+
+            #. Update user (U1) access to admin, should succeed.
+        #. Try to delete user (U2) from account (AC1) using user (U1), should succeed
+
+
+
+
+
+
+        
+        
