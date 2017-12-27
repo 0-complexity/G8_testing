@@ -461,7 +461,7 @@ class Write(ACLCLOUDSPACE):
         self.lg('Try to connect to the virtual machine (VM1), should succeed')
         machine_client = VMClient(machine_id, port=public_port)        
         stdin, stdout, stderr = machine_client.execute('hostname')
-        self.assertEqual('vm-{}'.format(machine_id), stdout.read().split())
+        self.assertEqual('vm-{}'.format(machine_id), stdout.read().strip())
 
         self.lg('4- Update portforwarding with new ports')
         portforwarding_id = portforwarding[0]['id']
@@ -484,7 +484,7 @@ class Write(ACLCLOUDSPACE):
         self.lg('Try to connect to the virtual machine (VM1), should succeed')
         machine_client = VMClient(machine_id, port=new_cs_publicport)
         stdin, stdout, stderr = machine_client.execute('hostname')
-        self.assertEqual('vm-{}'.format(machine_id), stdout.read().split())
+        self.assertEqual('vm-{}'.format(machine_id), stdout.read().strip())
 
         self.lg('Try to connect to the virtual machine (VM1) using the old public port, should fail')
         with self.assertRaises(VMConnectionError) as e:
