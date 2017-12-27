@@ -466,29 +466,29 @@ class Write(ACLCLOUDSPACE):
         self.lg('4- Update portforwarding with new ports')
         portforwarding_id = portforwarding[0]['id']
         cs_publicip = portforwarding[0]['publicIp']
-        new_cs_publicport = random.randint(1000, 65000)
+        new_public_port = random.randint(1000, 65000)
         new_vm_port = 22
         self.user_api.cloudapi.portforwarding.update(cloudspaceId=self.cloudspace_id,
                                                      id=portforwarding_id,
                                                      publicIp=cs_publicip,
-                                                     publicPort=new_cs_publicport,
+                                                     publicPort=new_public_port,
                                                      machineId=machine_id,
                                                      localPort=new_vm_port,
                                                      protocol='tcp')
 
         portforwarding = self.user_api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id, machineId=machine_id)
         self.assertEqual(len(portforwarding), 1, "Failed to get the port forwarding for machine[%s]" % machine_id)
-        self.assertEqual(int(portforwarding[0]['publicPort']), new_cs_publicport)
+        self.assertEqual(int(portforwarding[0]['publicPort']), new_public_port)
         self.assertEqual(int(portforwarding[0]['localPort']), new_vm_port)
 
         self.lg('Try to connect to the virtual machine (VM1), should succeed')
-        machine_client = VMClient(machine_id, port=new_cs_publicport)
+        machine_client = VMClient(machine_id, port=new_public_port)
         stdin, stdout, stderr = machine_client.execute('hostname')
         self.assertEqual('vm-{}'.format(machine_id), stdout.read().strip())
 
         self.lg('Try to connect to the virtual machine (VM1) using the old public port, should fail')
         with self.assertRaises(VMConnectionError) as e:
-            VMClient(machine_id, port=new_cs_publicport)
+            VMClient(machine_id, port=public_port, timeout=5)
     
 
 
