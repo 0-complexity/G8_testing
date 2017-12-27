@@ -521,7 +521,7 @@ class ExtendedTests(BasicACLTest):
         self.lg('%s ENDED' % self._testID)
 
     def test005_update_account_users(self):
-        """ OVC-018
+        """ OVC-052
         *Test case for testing basic resource limits on account and cloudspace limits.*
 
         **Test Scenario:**
@@ -571,7 +571,6 @@ class ExtendedTests(BasicACLTest):
         with self.assertRaises(ApiError) as e:
             user_1_api.cloudapi.accounts.deleteUser(accountId=self.account_id, userId=user_2_id, recursivedelete=True)
         
-
         self.lg('Update user (U1) access to admin, should succeed')
         self.api.cloudapi.accounts.updateUser(accountId=self.account_id, userId=user_1_id, accesstype='ARCXDU')
 
@@ -583,18 +582,15 @@ class ExtendedTests(BasicACLTest):
         invalid_account_id = random.randint(10000, 20000)
         with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.accounts.updateUser(accountId=invalid_account_id, userId=user_1_id, accesstype='R')
+        self.assertEqual(e.exception.status_code, 404)
         
-        self.lg('Update account (AC1) user using non-existing account id, should fail')
+        self.lg('Update account (AC1) user using non-existing user id, should fail')
         invalid_user_id = random.randint(10000, 20000)
         with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.accounts.updateUser(accountId=self.account_id, userId=invalid_user_id, accesstype='R')
+        self.assertEqual(e.exception.status_code, 404)
 
         self.lg('Update user (U1) access to invalid access type, should fail')
         with self.assertRaises(HTTPError) as e:
             self.api.cloudapi.accounts.updateUser(accountId=self.account_id, userId=user_1_id, accesstype='FAKE')
-
-
-
-
-        
-        
+        self.assertEqual(e.exception.status_code, 400)
