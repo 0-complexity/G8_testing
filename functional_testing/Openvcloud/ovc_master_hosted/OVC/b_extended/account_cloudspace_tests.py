@@ -4,7 +4,6 @@ import os
 import requests
 import uuid
 import zipfile
-import random
 from xlrd import open_workbook
 from io import BytesIO
 from ....utils.utils import BasicACLTest
@@ -17,7 +16,6 @@ class ExtendedTests(BasicACLTest):
         super(ExtendedTests, self).setUp()
         self.location = self.get_location()['locationCode']
         self.account_owner = self.username
-        self.default_setup(create_default_cloudspace=False)
 
     def test001_basic_resource_limits(self):
 
