@@ -53,7 +53,7 @@ class BaseTest(unittest.TestCase):
         self.owncloud_user = config['main']['owncloud_user']
         self.owncloud_password = config['main']['owncloud_password']
         self.owncloud_url = config['main']['owncloud_url']
-        
+
         self.test_email = config['main']['email']
         self.email_password = config['main']['email_password']
         super(BaseTest, self).__init__(*args, **kwargs)
@@ -159,7 +159,7 @@ class BaseTest(unittest.TestCase):
 
         :returns user_api: cloud_api authenticated with the user name and password
         """
-        url = "{}.demo.greenitglobe.com".format(self.environment)
+        url = self.api.cloudapi.locations.getUrl().split('//')[1]
         user_api = j.clients.portal.get2(url, port=443)
         user_api.system.usermanager.authenticate(name=username, secret=password or username)
         return user_api
@@ -220,7 +220,7 @@ class BaseTest(unittest.TestCase):
         api = api or self.api
         name = name or str(uuid.uuid4())
         sizeId = size_id or self.get_size(cloudspace_id)['id']
-        
+
         if image_id == None:
             images = api.cloudapi.images.list()
             image_id = image_id or [i['id'] for i in images if 'Ubuntu' in i['name']]
@@ -490,7 +490,7 @@ class BaseTest(unittest.TestCase):
         response=  vmclient.execute("ifconfig -a |grep  %s| cut -f1  -d ' '"%ext_mac_addr)
         ext_interface_name = response[1].read()
         ext_interface_name=ext_interface_name[:ext_interface_name.find("\r")]
-        vmclient.execute("ip a a %s dev %s" % (vm_ext_ip,ext_interface_name),sudo= True) 
+        vmclient.execute("ip a a %s dev %s" % (vm_ext_ip,ext_interface_name),sudo= True)
         vmclient.execute("nohup bash -c 'ip l s dev %s up </dev/null >/dev/null 2>&1 & '"%ext_interface_name,sudo=True)
         time.sleep(5)
         vm_ext_ip = vm_ext_ip[:vm_ext_ip.find('/')]
@@ -632,7 +632,7 @@ class VMClient():
         param: port: virtual machine ssh port.
         param: ip: virtual machine ip (default: cloudspace public ip).
         param: external_network: if True param ip will be vm's ip of the external network interface.
-        param: timeout: max retries to get vm connection default(30 second). 
+        param: timeout: max retries to get vm connection default(30 second).
         """
         self.api = API()
         self.machine = self.api.cloudapi.machines.get(vmid)
@@ -642,7 +642,7 @@ class VMClient():
         self.cs_public_ip = str(netaddr.IPNetwork(self.cloudspace['publicipaddress']).ip)
         self.ip = ip or self.cs_public_ip
         self.port = port or self.get_vm_ssh_port()
-        
+
         if external_network:
             self.ip =  ip or self.get_machine_ip(external_network)
             self.port = 22
@@ -657,7 +657,7 @@ class VMClient():
             except:
                 time.sleep(3)
         else:
-            raise 
+            raise
 
     def get_machine_ip(self, external_network):
         nics = self.machine['interfaces']
@@ -694,7 +694,7 @@ class VMClient():
     def execute(self, cmd, timeout=None, sudo=False, wait=True):
         if sudo and self.login != 'root':
             cmd = 'echo "{}" | sudo -S {}'.format(self.password, cmd)
-        
+
         stdin, stdout, stderr = self.client.exec_command(cmd , timeout=timeout, get_pty=True)
 
         if wait:
