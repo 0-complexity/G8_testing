@@ -15,9 +15,11 @@ class StressSwap(BasicACLTest):
         #. Make sure that system raise the swap error
         """
         nodeId = self.get_random_running_nodeId()
-        self.execute_command_on_physical_node(command='apt-get install -y stress-ng', nodeid=nodeId)
+        self.execute_command_on_physical_node('apt-get install -y stress-ng', nodeId)
         time.sleep(60)
-        self.execute_command_on_physical_node(command='stress-ng --vm-method rowhammer -r 500', nodeid=nodeId)
+        self.assertIn('stress-ng', self.execute_command_on_physical_node('which stress-ng', nodeId))
+
+        self.execute_command_on_physical_node('stress-ng --vm-method rowhammer -r 500', nodeId)
         time.sleep(600)
 
         response_data = self.api.system.health.getDetailedStatus(nid=nodeId)

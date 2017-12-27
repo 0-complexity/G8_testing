@@ -584,7 +584,7 @@ class BaseTest(unittest.TestCase):
             if 'ERROR' not in output['result'][1]:
                 return output['result'][1]
             else:
-                raise NameError("This command:" + command + "is wrong")
+                raise NameError("This command: " + command + " is wrong")
         else:
             raise NameError("Node result state is not OK")
 
