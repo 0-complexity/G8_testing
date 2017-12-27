@@ -22,13 +22,16 @@ def try_account_read(self, operation='get'):
     elif operation == 'getCreditHistory':
         self.lg('- getCreditHistory account with user1')
         user_account = self.user_api.cloudapi.accounts.getConsumedCloudUnits(accountId=self.account_id)
-        self.assertEqual(user_account['CU_A'], 0)
-        self.assertEqual(user_account['CU_C'], 0)
-        self.assertEqual(user_account['CU_D'], 0)
-        self.assertEqual(user_account['CU_I'], 1)
-        self.assertEqual(user_account['CU_NO'], 0)
-        self.assertEqual(user_account['CU_NP'], 0)
-        self.assertEqual(user_account['CU_S'], 0)
+        options = ['CU_A', 'CU_C', 'CU_D', 'CU_I', 'CU_NO', 'CU_NP', 'CU_S']
+        for opt in options:
+            if opt == 'CU_I':
+                self.assertEqual(user_account[opt], 1)
+                #this line is skipped with https://github.com/0-complexity/openvcloud/issues/1154
+                #self.assertEqual(self.user_api.cloudapi.accounts.getConsumedCloudUnitsByType(accountId=self.account_id, cutype=opt), 1)
+            else:
+                self.assertEqual(user_account[opt], 0)
+                #this line is skipped with https://github.com/0-complexity/openvcloud/issues/1154
+                #self.assertEqual(self.user_api.cloudapi.accounts.getConsumedCloudUnitsByType(accountId=self.account_id, cutype=opt), 0)
     else:
         raise AssertionError('Un-supported operation [%s]' % operation)
 
