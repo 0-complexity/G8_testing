@@ -3,7 +3,8 @@ from time import sleep
 import random
 import unittest
 import uuid
-from ....utils.utils import BasicACLTest
+from socket import error as VMConnectionError
+from ....utils.utils import BasicACLTest, VMClient
 from JumpScale import j
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
@@ -429,48 +430,67 @@ class Write(ACLCLOUDSPACE):
 
         **Test Scenario:**
 
-        #. create 1 machine for account owner
-        #. add user to the cloudspace with write access
-        #. create one portforwarding, should succeed
-        #. update portforwarding with new ports, should succeed
-        #. try update port with non vaild port
-        #. delete cloudspace user2 with user1, should succeed
-        #. try delete non exists portforwarding, should fail '403 Forbidden'
+        #. Create 1 machine for account owner.
+        #. Add user to the cloudspace with write access.
+        #. Create one portforwarding, should succeed.
+        #. Update portforwarding with new ports, should succeed.
+        #. Try to connect to the virtual machine (VM1), should succeed.
+        #. Try to connect to the virtual machine (VM1) using the old public port, should fail
+        #. Try update port with non vaild port.
+        #. Delete cloudspace user2 with user1, should succeed.
+        #. Try delete non exists portforwarding, should fail '403 Forbidden'.
         """
         self.lg('%s STARTED' % self._testID)
-        self.lg('1- Create 1 machine for account owner')
-        machine_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id,
-                                                  api=self.account_owner_api)
+        self.lg('Create 1 machine for account owner')
+        machine_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id, api=self.account_owner_api)
 
-        self.lg('2- add user to the cloudspace created by user1 with write access')
+        self.lg('Add user to the cloudspace created by user1 with write access')
         self.add_user_to_cloudspace(cloudspace_id=self.cloudspace_id, user=self.user, accesstype='CRX')
 
-        self.lg('3- Create one portforwarding')
-        protocol='tcp'
-        self.add_portforwarding(machine_id=machine_id, api=self.user_api)
-        portforwarding = self.user_api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id,
-                                                                    machineId=machine_id)
-        self.assertEqual(len(portforwarding), 1,
-                         "Failed to get the port forwarding for machine[%s]" % machine_id)
+        self.lg('Create one portforwarding')
+        public_port = random.randint(1000, 65000)
+        vm_port = 22
+        self.add_portforwarding(machine_id=machine_id, 
+                                api=self.user_api, 
+                                cs_publicport=public_port, 
+                                vm_port=vm_port)
+
+        portforwarding = self.user_api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id, machineId=machine_id)
+        self.assertEqual(len(portforwarding), 1, "Failed to get the port forwarding for machine[%s]" % machine_id)
+
+        self.lg('Try to connect to the virtual machine (VM1), should succeed')
+        machine_client = VMClient(machine_id, port=public_port)        
+        stdin, stdout, stderr = machine_client.execute('hostname')
+        self.assertEqual('vm-{}'.format(machine_id), stdout.read().split())
 
         self.lg('4- Update portforwarding with new ports')
         portforwarding_id = portforwarding[0]['id']
         cs_publicip = portforwarding[0]['publicIp']
-        new_cs_publicport = 445
-        new_vm_port = 80
+        new_cs_publicport = random.randint(1000, 65000)
+        new_vm_port = 22
         self.user_api.cloudapi.portforwarding.update(cloudspaceId=self.cloudspace_id,
                                                      id=portforwarding_id,
                                                      publicIp=cs_publicip,
                                                      publicPort=new_cs_publicport,
                                                      machineId=machine_id,
                                                      localPort=new_vm_port,
-                                                     protocol=protocol)
-        portforwarding = self.user_api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id,
-                                                                    machineId=machine_id)
-        self.assertEqual(len(portforwarding), 1,
-                         "Failed to get the port forwarding for machine[%s]" % machine_id)
+                                                     protocol='tcp')
+
+        portforwarding = self.user_api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id, machineId=machine_id)
+        self.assertEqual(len(portforwarding), 1, "Failed to get the port forwarding for machine[%s]" % machine_id)
         self.assertEqual(int(portforwarding[0]['publicPort']), new_cs_publicport)
         self.assertEqual(int(portforwarding[0]['localPort']), new_vm_port)
+
+        self.lg('Try to connect to the virtual machine (VM1), should succeed')
+        machine_client = VMClient(machine_id, port=new_cs_publicport)
+        stdin, stdout, stderr = machine_client.execute('hostname')
+        self.assertEqual('vm-{}'.format(machine_id), stdout.read().split())
+
+        self.lg('Try to connect to the virtual machine (VM1) using the old public port, should fail')
+        with self.assertRaises(VMConnectionError) as e:
+            VMClient(machine_id, port=new_cs_publicport)
+    
+
 
         # Skip https://github.com/0-complexity/openvcloud/issues/606
         # self.lg('5- try update port with non vaild port')
@@ -503,6 +523,7 @@ class Write(ACLCLOUDSPACE):
             self.assertEqual(e.message, '404 Not Found')
 
         self.lg('%s ENDED' % self._testID)
+
 
     def test005_cloudspace_create_clone_delete_machine(self):
         """ ACL-33
