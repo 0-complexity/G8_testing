@@ -16,7 +16,7 @@ class StressSwap(BasicACLTest):
         #. Get health detailed status and check the swap value
         #. Make sure that system raise the swap error
         """
-        self.nodeId = self.get_random_running_self.nodeId()
+        self.nodeId = self.get_random_running_nodeId()
         print(" [*] self.nodeId : %s " % str(self.nodeId))
 
         print(" [*] Install stress-ng")
