@@ -553,7 +553,7 @@ class BaseTest(unittest.TestCase):
         raw_email = email_data[0][1]
         return raw_email
 
-    def get_nodeId_to_move_VFW_to(self, current_VFW_nodeId):
+    def get_nodeId_to_move_VFW_to(self, current_VFW_nodeId=-1):
         ccl = j.clients.osis.getNamespace('cloudbroker')
         scl = j.clients.osis.getNamespace('system')
         stacks = ccl.stack.list()
@@ -573,7 +573,7 @@ class BaseTest(unittest.TestCase):
             if 'ERROR' not in output['result'][1]:
                 return output['result'][1]
             else:
-                raise NameError("This command:" + command + "is wrong")
+                raise NameError("This command: " + command + " is wrong")
         else:
             raise NameError("Node result state is not OK")
 
