@@ -9,12 +9,11 @@ class StressSwap(BasicACLTest):
 
         **Test Scenario:**
 
-        #. Get access to a physical node
-        #. Install stress-ng tool
-        #. Run "stress-ng --vm-method rowhammer -r 500"
-        #. Wait for 10 minutes
-        #. Get health detailed status and check the swap value
-        #. Make sure that system raise the swap error
+        #. Get access to a physical node.
+        #. Install stress-ng tool to stress the node.
+        #. Run "stress-ng --vm-method rowhammer -r 500" and wait for 10 mins.
+        #. Get health detailed status and check the swap value.
+        #. Make sure that system raise the swap error.
         """
         self.nodeId = self.get_nodeId_to_move_VFW_to()
         print(" [*] self.nodeId : %s " % str(self.nodeId))
