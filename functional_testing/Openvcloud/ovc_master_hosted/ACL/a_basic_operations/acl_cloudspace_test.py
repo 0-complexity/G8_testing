@@ -469,7 +469,6 @@ class Write(ACLCLOUDSPACE):
         portforwarding_id = portforwarding[0]['id']
         cs_publicip = portforwarding[0]['publicIp']
         new_public_port = random.randint(1000, 65000)
-        new_vm_port = 22
 
         if method == 'byPort':
             self.user_api.cloudapi.portforwarding.updateByPort(cloudspaceId=self.cloudspace_id,
@@ -479,7 +478,7 @@ class Write(ACLCLOUDSPACE):
                                                                 machineId=machine_id,
                                                                 publicIp=cs_publicip,
                                                                 publicPort=new_public_port,
-                                                                localPort=new_vm_port,
+                                                                localPort=vm_port,
                                                                 protocol='tcp')
 
         elif method == 'byId':
@@ -488,14 +487,14 @@ class Write(ACLCLOUDSPACE):
                                                          machineId=machine_id,
                                                          publicIp=cs_publicip,
                                                          publicPort=new_public_port,
-                                                         localPort=new_vm_port,
+                                                         localPort=vm_port,
                                                          protocol='tcp')
 
 
         portforwarding = self.user_api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id, machineId=machine_id)
         self.assertEqual(len(portforwarding), 1, "Failed to get the port forwarding for machine[%s]" % machine_id)
         self.assertEqual(int(portforwarding[0]['publicPort']), new_public_port)
-        self.assertEqual(int(portforwarding[0]['localPort']), new_vm_port)
+        self.assertEqual(int(portforwarding[0]['localPort']), vm_port)
 
         self.lg('Try to connect to the virtual machine (VM1), should succeed')
         machine_client = VMClient(machine_id, port=new_public_port)
