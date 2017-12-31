@@ -8,7 +8,7 @@ from ....utils.utils import BasicACLTest, VMClient
 from JumpScale import j
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
-
+from nose_parameterized import parameterized
 
 class ACLCLOUDSPACE(BasicACLTest):
 
@@ -424,7 +424,9 @@ class Write(ACLCLOUDSPACE):
 
         self.lg('%s ENDED' % self._testID)
 
-    def test004_cloudspace_portforwarding_add_update_delete(self):
+    
+    @parameterized.expand(['byId', 'byPort'])
+    def test004_cloudspace_portforwarding_add_update_delete(self, method):
         """ ACL-32
         *Test case for add/update/delete portforwarding api with user has write access on cloud space level.*
 
@@ -441,6 +443,7 @@ class Write(ACLCLOUDSPACE):
         #. Try delete non exists portforwarding, should fail '403 Forbidden'.
         """
         self.lg('%s STARTED' % self._testID)
+
         self.lg('Create 1 machine for account owner')
         machine_id = self.cloudapi_create_machine(cloudspace_id=self.cloudspace_id, api=self.account_owner_api)
 
@@ -450,10 +453,7 @@ class Write(ACLCLOUDSPACE):
         self.lg('Create one portforwarding')
         public_port = random.randint(1000, 65000)
         vm_port = 22
-        self.add_portforwarding(machine_id=machine_id, 
-                                api=self.user_api, 
-                                cs_publicport=public_port, 
-                                vm_port=vm_port)
+        self.add_portforwarding(machine_id=machine_id, api=self.user_api, cs_publicport=public_port, vm_port=vm_port)
 
         portforwarding = self.user_api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id, machineId=machine_id)
         self.assertEqual(len(portforwarding), 1, "Failed to get the port forwarding for machine[%s]" % machine_id)
@@ -463,23 +463,38 @@ class Write(ACLCLOUDSPACE):
         stdin, stdout, stderr = machine_client.execute('hostname')
         self.assertEqual('vm-{}'.format(machine_id), stdout.read().strip())
 
+
+
         self.lg('4- Update portforwarding with new ports')
         portforwarding_id = portforwarding[0]['id']
         cs_publicip = portforwarding[0]['publicIp']
         new_public_port = random.randint(1000, 65000)
-        new_vm_port = 22
-        self.user_api.cloudapi.portforwarding.update(cloudspaceId=self.cloudspace_id,
-                                                     id=portforwarding_id,
-                                                     publicIp=cs_publicip,
-                                                     publicPort=new_public_port,
-                                                     machineId=machine_id,
-                                                     localPort=new_vm_port,
-                                                     protocol='tcp')
+
+        if method == 'byPort':
+            self.user_api.cloudapi.portforwarding.updateByPort(cloudspaceId=self.cloudspace_id,
+                                                                sourcePublicIp=cs_publicip,
+                                                                sourcePublicPort=public_port,
+                                                                sourceProtocol='tcp',
+                                                                machineId=machine_id,
+                                                                publicIp=cs_publicip,
+                                                                publicPort=new_public_port,
+                                                                localPort=vm_port,
+                                                                protocol='tcp')
+
+        elif method == 'byId':
+            self.user_api.cloudapi.portforwarding.update(cloudspaceId=self.cloudspace_id,
+                                                         id=portforwarding_id,
+                                                         machineId=machine_id,
+                                                         publicIp=cs_publicip,
+                                                         publicPort=new_public_port,
+                                                         localPort=vm_port,
+                                                         protocol='tcp')
+
 
         portforwarding = self.user_api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id, machineId=machine_id)
         self.assertEqual(len(portforwarding), 1, "Failed to get the port forwarding for machine[%s]" % machine_id)
         self.assertEqual(int(portforwarding[0]['publicPort']), new_public_port)
-        self.assertEqual(int(portforwarding[0]['localPort']), new_vm_port)
+        self.assertEqual(int(portforwarding[0]['localPort']), vm_port)
 
         self.lg('Try to connect to the virtual machine (VM1), should succeed')
         machine_client = VMClient(machine_id, port=new_public_port)
@@ -489,38 +504,59 @@ class Write(ACLCLOUDSPACE):
         self.lg('Try to connect to the virtual machine (VM1) using the old public port, should fail')
         with self.assertRaises(VMConnectionError) as e:
             VMClient(machine_id, port=public_port, timeout=5)
-    
 
 
-        # Skip https://github.com/0-complexity/openvcloud/issues/606
+        # skip https://github.com/0-complexity/openvcloud/issues/606
         # self.lg('5- try update port with non vaild port')
-        # try:
-        #     self.user_api.cloudapi.portforwarding.update(cloudspaceId=self.cloudspace_id,
-        #                                                  id=portforwarding_id,
-        #                                                  publicIp=cs_publicip,
-        #                                                  publicPort=new_cs_publicport,
-        #                                                  machineId=machine_id,
-        #                                                  localPort=1000000,
-        #                                                  protocol=protocol)
-        # except ApiError as e:
-        #     self.lg('- expected error raised %s' % e.message)
-        #     self.assertEqual(e.message, '400 Bad Request')
+        # with self.assertRaises(ApiError) as e:
+        #     if method == 'byPort':
+        #         self.user_api.cloudapi.portforwarding.updateByPort(cloudspaceId=self.cloudspace_id,
+        #                                                             sourcePublicIp=cs_publicip,
+        #                                                             sourcePublicPort=public_port,
+        #                                                             sourceProtocol='tcp',
+        #                                                             machineId=machine_id,
+        #                                                             publicIp=cs_publicip,
+        #                                                             publicPort=new_public_port,
+        #                                                             localPort=1000000000,
+        #                                                             protocol='tcp')
+        #     elif method == 'byId':
+        #         self.user_api.cloudapi.portforwarding.update(cloudspaceId=self.cloudspace_id,
+        #                                                     id=portforwarding_id,
+        #                                                     machineId=machine_id,
+        #                                                     publicIp=cs_publicip,
+        #                                                     publicPort=new_public_port,
+        #                                                     localPort=1000000000,
+        #                                                     protocol='tcp')
 
-        self.lg('6- Delete portforwarding')
-        self.user_api.cloudapi.portforwarding.delete(cloudspaceId=self.cloudspace_id,
-                                                     id=portforwarding_id)
-        portforwarding = self.user_api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id,
-                                                                    machineId=machine_id)
-        self.assertEqual(len(portforwarding), 0,
-                         "No port forwarding should be listed on this cloud space anymore")
+        # self.assertEqual(e.exception.message, '400 Bad Request')
+                
+    
+        self.lg('Delete portforwarding')
+        if method == 'byPort':
+            self.user_api.cloudapi.portforwarding.deleteByPort(cloudspaceId=self.cloudspace_id,
+                                                               publicIp=cs_publicip,
+                                                               publicPort=new_public_port,
+                                                               protocol='tcp')
 
-        self.lg('7- try delete non exists portforwarding')
-        try:
-            self.user_api.cloudapi.portforwarding.delete(cloudspaceId=self.cloudspace_id,
-                                                         id=portforwarding_id)
-        except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '404 Not Found')
+        elif method == 'byId':
+            self.user_api.cloudapi.portforwarding.delete(cloudspaceId=self.cloudspace_id, id=portforwarding_id)
+            
+        portforwarding = self.user_api.cloudapi.portforwarding.list(cloudspaceId=self.cloudspace_id, machineId=machine_id)
+        self.assertEqual(len(portforwarding), 0, "No port forwarding should be listed on this cloud space anymore")
+
+        self.lg('Try delete non exists portforwarding')
+        with self.assertRaises(ApiError) as e:
+            if method == 'byPort':
+                fake_port = random.randint(1000, 65000)
+                self.user_api.cloudapi.portforwarding.deleteByPort(cloudspaceId=self.cloudspace_id,
+                                                             publicIp=cs_publicip,
+                                                             publicPort=fake_port,
+                                                             protocol='tcp')
+
+            elif method == 'byId':
+                self.user_api.cloudapi.portforwarding.delete(cloudspaceId=self.cloudspace_id, id=portforwarding_id)
+
+        self.assertEqual(e.exception.message, '404 Not Found')
 
         self.lg('%s ENDED' % self._testID)
 
