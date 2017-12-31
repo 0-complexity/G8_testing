@@ -549,7 +549,7 @@ class Write(ACLCLOUDSPACE):
         with self.assertRaises(ApiError) as e:
             if method == 'byPort':
                 fake_port = random.randint(1000, 65000)
-                self.user_api.cloudapi.portforwarding.delete(cloudspaceId=self.cloudspace_id,
+                self.user_api.cloudapi.portforwarding.deleteByPort(cloudspaceId=self.cloudspace_id,
                                                              publicIp=cs_publicip,
                                                              publicPort=fake_port,
                                                              protocol='tcp')
