@@ -469,10 +469,12 @@ class Write(ACLCLOUDSPACE):
         new_public_port = random.randint(1000, 65000)
         new_vm_port = 22
         self.user_api.cloudapi.portforwarding.update(cloudspaceId=self.cloudspace_id,
-                                                     id=portforwarding_id,
+                                                     sourcePublicIp=cs_publicip,
+                                                     sourcePublicPort=public_port,
+                                                     sourceProtocol='tcp',
+                                                     machineId=machine_id,
                                                      publicIp=cs_publicip,
                                                      publicPort=new_public_port,
-                                                     machineId=machine_id,
                                                      localPort=new_vm_port,
                                                      protocol='tcp')
 
@@ -496,12 +498,14 @@ class Write(ACLCLOUDSPACE):
         # self.lg('5- try update port with non vaild port')
         # try:
         #     self.user_api.cloudapi.portforwarding.update(cloudspaceId=self.cloudspace_id,
-        #                                                  id=portforwarding_id,
-        #                                                  publicIp=cs_publicip,
-        #                                                  publicPort=new_cs_publicport,
+        #                                                  sourcePublicIp=cs_publicip,
+        #                                                  sourcePublicPort=public_port,
+        #                                                  sourceProtocol='tcp',
         #                                                  machineId=machine_id,
-        #                                                  localPort=1000000,
-        #                                                  protocol=protocol)
+        #                                                  publicIp=cs_publicip,
+        #                                                  publicPort=new_public_port,
+        #                                                  localPort=10000000000,
+        #                                                  protocol='tcp')
         # except ApiError as e:
         #     self.lg('- expected error raised %s' % e.message)
         #     self.assertEqual(e.message, '400 Bad Request')
