@@ -381,6 +381,7 @@ class MachineTests(BasicACLTest):
         #. Write file (F1) on (VM1).
         #. Stop (VM1), should succeed.
         #. Clone VM1 as (VM2_C), should succeed.
+        #. Check that the cloned vm has one boot disk and one metadata disk.
         #. Start (VM1), should succeed
         #. Make sure VM2_C got a new ip.
         #. Make sure no portforwards have been created.
@@ -410,6 +411,12 @@ class MachineTests(BasicACLTest):
         cloned_machine_ipaddress = self.get_machine_ipaddress(cloned_vm_id)
         self.assertTrue(cloned_machine_ipaddress)
 
+        self.lg('Check that the cloned vm has one boot disk and one metadata disk')
+        cloned_machine_info = self.api.cloudapi.machines.get(machineId=cloned_vm_id)
+        self.assertEqual(len(cloned_machine_info['disks']), 2)
+        self.assertEqual(len([x for x in cloned_machine_info['disks'] if x['type'] == 'B']), 1)
+        self.assertEqual(len([x for x in cloned_machine_info['disks'] if x['type'] == 'M']), 1)
+    
         self.lg('Start (VM1), should succeed')
         self.api.cloudapi.machines.start(machineId=machineId)
 
