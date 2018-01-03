@@ -50,7 +50,7 @@ class MachineLongTests(BasicACLTest):
         machine_1_client.execute('chown ${USER}:${USER} data', sudo=True)
         machine_1_client.execute('echo "helloWorld" > data/test2.txt')
 
-        time.sleep(30)
+        time.sleep(40)
         
         folder_name = str(uuid.uuid4()).replace('-', '')[:10]        
         owncloud_auth = (self.owncloud_user, self.owncloud_password)
