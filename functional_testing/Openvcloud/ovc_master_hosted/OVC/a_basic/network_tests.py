@@ -235,7 +235,7 @@ class NetworkBasicTests(BasicACLTest):
 
 
     def test005_external_network_with_empty_vlan(self):
-        """ OVC-056
+        """ OVC-051
         * Test case for moving virtual firewall form one node to another
 
         **Test Scenario:**
@@ -255,7 +255,6 @@ class NetworkBasicTests(BasicACLTest):
             startip = base + '.10'
             endip = base + '.20'
             gid = j.application.whoAmI.gid
-
             external_network_id = self.api.cloudbroker.iaas.addExternalNetwork(
                 name=name,
                 subnet=subnet,
@@ -270,10 +269,8 @@ class NetworkBasicTests(BasicACLTest):
             external_network_info = osis_client.externalnetwork.get(external_network_id)
             self.lg("Check that external network (EN1)'s vlan tag equal to 0, should succeed")
             self.assertEqual(external_network_info.vlan, 0)
-
         except:
             raise
-
         finally:
             self.lg('Remove  external network (EN1), should succeed')
             self.api.cloudbroker.iaas.deleteExternalNetwork(external_network_id)
