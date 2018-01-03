@@ -269,7 +269,7 @@ class NetworkBasicTests(BasicACLTest):
             osis_client = j.clients.osis.getNamespace('cloudbroker')
             external_network_info = osis_client.externalnetwork.get(external_network_id)
             self.lg("Check that external network (EN1)'s vlan tag equal to 0, should succeed")
-            self.assertTrue(external_network_info['vlan'], 0)
+            self.assertTrue(external_network_info.vlan, 0)
 
         except:
             raise
