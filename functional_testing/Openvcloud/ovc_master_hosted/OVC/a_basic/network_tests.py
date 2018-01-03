@@ -231,5 +231,51 @@ class NetworkBasicTests(BasicACLTest):
 
         self.wait_for_status('DEPLOYED', self.account_owner_api.cloudapi.cloudspaces.get,
                              cloudspaceId=self.cloudspace_id)
-        self.lg('%s ENDED' % self._testID)        
+        self.lg('%s ENDED' % self._testID)
+
+
+    def test005_external_network_with_empty_vlan(self):
+        """ OVC-056
+        * Test case for moving virtual firewall form one node to another
+
+        **Test Scenario:**
+
+        #. Create external network (EN1) with empty vlan tag, should succeed.
+        #. Get external network (EN1)'s info using osis client.
+        #. Check that external network (EN1)'s vlan tag equal to 0, should succeed.
+        #. Remove external network (EN1), should succeed.
+        """
+
+        try:
+            self.lg('Create external network (EN1) with empty vlan tag, should succeed')
+            name = 'test-external-network'
+            base = '.'.join([str(random.randint(0, 254)) for i in range(3)])
+            subnet = base + '.0/24'
+            gateway = base + '.1'
+            startip = base + '.10'
+            endip = base + '.20'
+            gid = j.application.whoAmI.gid
+
+            external_network_id = self.api.cloudbroker.iaas.addExternalNetwork(
+                name=name,
+                subnet=subnet,
+                gateway=gateway,
+                startip=startip,
+                endip=endip,
+                gid=gid
+            )
+
+            self.lg("Get external network (EN1)'s info using osis client")
+            osis_client = j.clients.osis.getNamespace('cloudbroker')
+            external_network_info = osis_client.externalnetwork.get(external_network_id)
+            self.lg("Check that external network (EN1)'s vlan tag equal to 0, should succeed")
+            self.assertTrue(external_network_info['vlan'], 0)
+
+        except:
+            raise
+
+        finally:
+            self.lg('Remove  external network (EN1), should succeed')
+            self.api.cloudbroker.iaas.deleteExternalNetwork(external_network_id)
+
 
