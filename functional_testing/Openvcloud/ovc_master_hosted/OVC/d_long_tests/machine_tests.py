@@ -78,7 +78,7 @@ class MachineLongTests(BasicACLTest):
 
             self.assertTrue(response)
 
-            time.sleep(500)
+            time.sleep(300)
 
             self.lg('Import virtual machine (VM2), should succeed')
             self.api.cloudapi.machines.importOVF(
