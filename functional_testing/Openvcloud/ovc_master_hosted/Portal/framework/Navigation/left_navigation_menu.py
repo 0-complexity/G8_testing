@@ -41,6 +41,9 @@ class CloudBroker():
     def StorageRouters(self):
         self.framework.open_base_page("cloud_broker","cloudbroker_sub_sr")
 
+    def ZeroAccess(self):
+        self.framework.open_base_page("cloud_broker","cloudbroker_sub_0_access")
+
     def SoftwareVersions(self):
         self.framework.open_base_page("cloud_broker","cloudbroker_sub_sv")
 

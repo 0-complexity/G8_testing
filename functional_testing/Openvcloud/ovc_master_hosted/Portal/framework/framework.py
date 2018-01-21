@@ -14,6 +14,7 @@ from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.workflow.l
 from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.workflow.tables import tables
 from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.pages.admin_portal.cloud_broker.Images import images
 from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.pages.admin_portal.cloud_broker.storagerouters import storagerouters
+from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.pages.admin_portal.cloud_broker.zero_access import zero_access
 
 class Framework(BaseTest):
     def __init__(self, *args, **kwargs):
@@ -29,6 +30,7 @@ class Framework(BaseTest):
         #Pages.AdminPortal.grid
         self.ErrorConditions = errorConditions(self)
         self.StatusOverview = statusOverview(self)
+        self.ZeroAccess = zero_access(self)
 
         #pages.end_user
         self.EUHome = home(self)
