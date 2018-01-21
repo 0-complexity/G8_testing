@@ -236,7 +236,7 @@ class NetworkBasicTests(BasicACLTest):
 
     def test005_external_network_with_empty_vlan(self):
         """ OVC-051
-        * Test case for moving virtual firewall form one node to another
+        * Test case for creating external network with empty vlan tag
 
         **Test Scenario:**
 
@@ -246,15 +246,16 @@ class NetworkBasicTests(BasicACLTest):
         #. Remove external network (EN1), should succeed.
         """
 
+        self.lg('Create external network (EN1) with empty vlan tag, should succeed')
+        name = 'test-external-network'
+        base = '.'.join([str(random.randint(0, 254)) for i in range(3)])
+        subnet = base + '.0/24'
+        gateway = base + '.1'
+        startip = base + '.10'
+        endip = base + '.20'
+        gid = j.application.whoAmI.gid
+    
         try:
-            self.lg('Create external network (EN1) with empty vlan tag, should succeed')
-            name = 'test-external-network'
-            base = '.'.join([str(random.randint(0, 254)) for i in range(3)])
-            subnet = base + '.0/24'
-            gateway = base + '.1'
-            startip = base + '.10'
-            endip = base + '.20'
-            gid = j.application.whoAmI.gid
             external_network_id = self.api.cloudbroker.iaas.addExternalNetwork(
                 name=name,
                 subnet=subnet,
@@ -263,7 +264,6 @@ class NetworkBasicTests(BasicACLTest):
                 endip=endip,
                 gid=gid
             )
-
             self.lg("Get external network (EN1)'s info using osis client")
             osis_client = j.clients.osis.getNamespace('cloudbroker')
             external_network_info = osis_client.externalnetwork.get(external_network_id)
