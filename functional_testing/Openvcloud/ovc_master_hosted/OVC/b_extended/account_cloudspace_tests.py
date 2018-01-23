@@ -149,70 +149,82 @@ class ExtendedTests(BasicACLTest):
 
         **Test Scenario:**
 
-        #. create account with certain limits, should succeed
-        #. create 1st cloudspace that doesn't exceed account limits
-        #. create 2nd cloudspace that doesn't exceed account limits
-        #. create VM on the 1st cloudspace without exceeding account limits , should succeed
-        #. create VM on the 2nd cloudspace, should fail (as total VMs Memory and cores exceeds that of the account)
-        #. create VM on the 2nd cloudspace, should fail (as total VMs disks capacity exceeds that of the account)
-        #. create 2nd VM  on the 2nd cloudspace without exceeding account total limits, should succeed
+        #. Create account with certain limits, should succeed
+        #. Create 1st cloudspace that doesn't exceed account limits, should succeed.
+        #. Create 2nd cloudspace that exceeds account limits, should fail.
+        #. Create 3rd cloudspace with no limits, should succeed.
+        #. Create VM on the 1st cloudspace without exceeding account limits , should succeed.
+        #. Create VM on the 1nd cloudspace, should fail (as total VMs Memory and cores exceeds that of the account).
+        #. Create VM on the 3nd cloudspace, should fail (as total VMs disks capacity exceeds that of the account).
+        #. Create VM on the 3rd cloudspace without exceeding account limits , should succeed.
+        #. Create 2nd VM  on the 2nd cloudspace without exceeding account total limits, should succeed
         #. Add publicip to the 2nd VM, should fail as acoount total IPs=2
-
         """
-        self.lg('- create account with certain limits, should succeed')
-        self.account_id = self.cloudbroker_account_create(self.account_owner, self.account_owner, self.email,
-                                                          maxMemoryCapacity=12,
-                                                          maxVDiskCapacity=250 , maxCPUCapacity=6,
+        
+        self.lg('Create account with certain limits (size id = 2), should succeed')
+        account_size = self.get_size_by_id(5) # memory 8GB, vcpus 4
+        self.account_id = self.cloudbroker_account_create(self.account_owner, 
+                                                          self.account_owner, self.email,
+                                                          maxMemoryCapacity=int(account_size['memory'])/1024,
+                                                          maxCPUCapacity=account_size['vcpus'],
+                                                          maxVDiskCapacity=200, 
                                                           maxNumPublicIP= 2)
+
         self.account_owner_api = self.get_authenticated_user_api(self.account_owner)
 
-        self.lg('- create 1st cloudspace that doesn\'t exceed account limits')
-        cloudspaceId_1 = self.cloudapi_cloudspace_create(account_id=self.account_id,
-                                                       location=self.location,
-                                                       name='cs1', access=self.account_owner,
-                                                       api=self.account_owner_api, maxMemoryCapacity=8,
-                                                       maxDiskCapacity=130, maxCPUCapacity=4,
-                                                       maxNumPublicIP=1)
+        self.lg('Create 1st cloudspace that doesn\'t exceed account limits')
+        cloudspace_1_size = self.get_size_by_id(4) # memory 4GB, vcpus 2
+        cloudspace_1_id = self.cloudapi_cloudspace_create(account_id=self.account_id,
+                                                          location=self.location,
+                                                          access=self.account_owner,
+                                                          api=self.account_owner_api, 
+                                                          maxMemoryCapacity=int(cloudspace_1_size['memory'])/1024,
+                                                          maxCPUCapacity=cloudspace_1_size['vcpus'],
+                                                          maxDiskCapacity=100,
+                                                          maxNumPublicIP=1)
 
-        self.lg('- create 2st cloudspace that doesn\'t exceed account limits')
-        cloudspaceId_2 = self.cloudapi_cloudspace_create(account_id=self.account_id,
-                                                       location=self.location,
-                                                       name='cs2', access=self.account_owner,
-                                                       api=self.account_owner_api, maxMemoryCapacity=4,
-                                                       maxDiskCapacity=120, maxCPUCapacity=2,
-                                                       maxNumPublicIP=1)
 
-        self.lg('- create VM (M=8, C=4, BD=100, DD=[10,10,10]) on the 1st cloudspace, should succeed')
-        self.cloudapi_create_machine(cloudspaceId_1, self.account_owner_api, size_id=4,
-                                     disksize=100, datadisks=[10,10,10])
+        self.lg('Create 2nd cloudspace that exceeds account limits, should fail')
+        with self.assertRaises(ApiError) as e:
+            cloudspace_2_size = self.get_size_by_id(5) # memory 4GB, vcpus 2
+            cloudspace_2_id = self.cloudapi_cloudspace_create(account_id=self.account_id,
+                                                            location=self.location,
+                                                            access=self.account_owner,
+                                                            api=self.account_owner_api, 
+                                                            maxMemoryCapacity=int(cloudspace_2_size['memory'])/1024,
+                                                            maxCPUCapacity=cloudspace_2_size['vcpus'],
+                                                            maxDiskCapacity=100,
+                                                            maxNumPublicIP=1)
 
-        self.lg('- create VM (M=8, C=4) on the 2nd cloudspace, should fail as T_M=16 & T_C=8')
-        try:
-            self.cloudapi_create_machine(cloudspaceId_2, self.account_owner_api, size_id=4)
-        except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '400 Bad Request')
+        self.assertEqual(e.exception.message, '400 Bad Request')
 
-        self.lg('- create VM (M=2, C=2, BD=100, DD=[10,10,10]) on the 2nd cloudspace,'
-                ' should fail as T_VD=260')
-        try:
-            self.cloudapi_create_machine(cloudspaceId_2, self.account_owner_api, size_id=2,
-                                         disksize=100, datadisks=[10,10,10])
-        except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '400 Bad Request')
+        
+        self.lg('Create 3rd cloudspace that exceeds account limits')
+        cloudspace_3_id = self.cloudapi_cloudspace_create(account_id=self.account_id,
+                                                          location=self.location,
+                                                          access=self.account_owner,
+                                                          api=self.account_owner_api)
 
-        self.lg('- create 2nd VM (M=4, C=2, BD=100, DD=[10,10]) on the 2nd cloudspace, should succeed')
-        machineId_2 = self.cloudapi_create_machine(cloudspaceId_2, self.account_owner_api, size_id=3,
-                                                 disksize=100, datadisks=[10,10])
+        self.lg('Create VM on the 1st cloudspace without exceeding account limits , should succeed')
+        machine_1_id = self.cloudapi_create_machine(cloudspace_1_id, self.account_owner_api, size_id=4, disksize=50, datadisks=[20,20,10])
 
-        self.lg('- Add publicip to the 2nd VM, should fail as T_IPs=2')
-        try:
-            self.account_owner_api.cloudapi.machines.attachExternalNetwork(machineId=machineId_2)
-        except ApiError as e:
-            self.lg('- expected error raised %s' % e.message)
-            self.assertEqual(e.message, '400 Bad Request')
+        self.lg('Create VM on the 1st cloudspace, should fail (as total VMs Memory and cores exceeds that of the account)')
+        with self.assertRaises(ApiError) as e:
+            self.cloudapi_create_machine(cloudspace_1_id, self.account_owner_api, size_id=4, disksize=50, datadisks=[20,20,10])
+        self.assertEqual(e.exception.message, '400 Bad Request')
 
+        self.lg('Create VM on the 3rd cloudspace, should fail (as total VMs Memory and cores exceeds that of the account)')
+        with self.assertRaises(ApiError) as e:
+            self.cloudapi_create_machine(cloudspace_3_id, self.account_owner_api, size_id=6, disksize=50, datadisks=[20,20,10])
+        self.assertEqual(e.exception.message, '400 Bad Request')
+
+        self.lg('Create VM on the 3rd cloudspace without exceeding account limits , should succeed')
+        machine_2_id = self.cloudapi_create_machine(cloudspace_3_id, self.account_owner_api, size_id=4, disksize=50, datadisks=[20,20,10])
+
+        self.lg('Add public ip to the 2nd VM, should fail')
+        with self.assertRaises(ApiError) as e:
+            self.account_owner_api.cloudapi.machines.attachExternalNetwork(machineId=machine_2_id)
+        self.assertEqual(e.exception.message, '400 Bad Request')
 
 
     def test003_resource_limits_on_cloudspace_level(self):
@@ -349,7 +361,6 @@ class ExtendedTests(BasicACLTest):
         api_url = url + '/restmachine/cloudapi/accounts/getConsumption?accountId={}&start={}&end={}'.format(self.account_id, start, end)
         response = session.get(url=api_url)
         self.assertEqual(response.status_code, 200)
-        self.assertNotEqual(response.text, '')
 
         self.lg('Writing capnp schema into a file')
         first_part = '        @0x934efea7f327fff0;'
@@ -478,6 +489,7 @@ class ExtendedTests(BasicACLTest):
             self.lg('Extracting .xls zip file')
             file = zipfile.ZipFile(BytesIO(response.content))
             file.extractall('{}/resourcetracking'.format(cwd))
+            self.assertTrue(os.listdir('{}/resourcetracking'.format(cwd)), 'account.zip file is empty')
             os.system('cd {}; python export_acc.py'.format(cwd))
 
             self.lg('Extracting info from xls file')
