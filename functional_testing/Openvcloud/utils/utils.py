@@ -215,6 +215,16 @@ class BaseTest(unittest.TestCase):
         self.assertTrue(sizes)
         return sizes[0]
 
+    def get_size_by_id(self, sizeId):
+        sizes = self.api.cloudapi.sizes.list(location=self.location)
+        size = [size for size in sizes if size['id'] == sizeId]
+        
+        if not size:
+            return None
+
+        return size[0]
+
+
     def cloudapi_create_machine(self, cloudspace_id, api='', name='', size_id=0, image_id=None,
                                 disksize=10, datadisks=[], wait=True, stackId=None):
         api = api or self.api
