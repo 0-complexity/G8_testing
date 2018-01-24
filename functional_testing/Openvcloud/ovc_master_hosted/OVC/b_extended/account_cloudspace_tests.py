@@ -142,7 +142,6 @@ class ExtendedTests(BasicACLTest):
             self.lg('- expected error raised %s' % e.message)
             self.assertEqual(e.message, '400 Bad Request')
 
-
     def test002_resource_limits_on_account_level(self):
         """ OVC-017
         *Test case for testing basic resource limits on account and cloudspace limits.*
@@ -154,21 +153,21 @@ class ExtendedTests(BasicACLTest):
         #. Create 2nd cloudspace that exceeds account limits, should fail.
         #. Create 3rd cloudspace with no limits, should succeed.
         #. Create VM on the 1st cloudspace without exceeding account limits , should succeed.
-        #. Create VM on the 1nd cloudspace, should fail (as total VMs Memory and cores exceeds that of the account).
-        #. Create VM on the 3nd cloudspace, should fail (as total VMs disks capacity exceeds that of the account).
+        #. Create VM on the 1st cloudspace, should fail (as total VMs Memory and cores exceeds that of the account).
+        #. Create VM on the 3rd cloudspace, should fail (as total VMs disks capacity exceeds that of the account).
         #. Create VM on the 3rd cloudspace without exceeding account limits , should succeed.
         #. Create 2nd VM  on the 2nd cloudspace without exceeding account total limits, should succeed
         #. Add publicip to the 2nd VM, should fail as acoount total IPs=2
         """
-        
+
         self.lg('Create account with certain limits (size id = 2), should succeed')
         account_size = self.get_size_by_id(5) # memory 8GB, vcpus 4
-        self.account_id = self.cloudbroker_account_create(self.account_owner, 
+        self.account_id = self.cloudbroker_account_create(self.account_owner,
                                                           self.account_owner, self.email,
                                                           maxMemoryCapacity=int(account_size['memory'])/1024,
                                                           maxCPUCapacity=account_size['vcpus'],
-                                                          maxVDiskCapacity=200, 
-                                                          maxNumPublicIP= 2)
+                                                          maxVDiskCapacity=200,
+                                                          maxNumPublicIP=2)
 
         self.account_owner_api = self.get_authenticated_user_api(self.account_owner)
 
@@ -177,28 +176,26 @@ class ExtendedTests(BasicACLTest):
         cloudspace_1_id = self.cloudapi_cloudspace_create(account_id=self.account_id,
                                                           location=self.location,
                                                           access=self.account_owner,
-                                                          api=self.account_owner_api, 
+                                                          api=self.account_owner_api,
                                                           maxMemoryCapacity=int(cloudspace_1_size['memory'])/1024,
                                                           maxCPUCapacity=cloudspace_1_size['vcpus'],
                                                           maxDiskCapacity=100,
                                                           maxNumPublicIP=1)
 
-
         self.lg('Create 2nd cloudspace that exceeds account limits, should fail')
         with self.assertRaises(ApiError) as e:
             cloudspace_2_size = self.get_size_by_id(5) # memory 4GB, vcpus 2
-            cloudspace_2_id = self.cloudapi_cloudspace_create(account_id=self.account_id,
-                                                            location=self.location,
-                                                            access=self.account_owner,
-                                                            api=self.account_owner_api, 
-                                                            maxMemoryCapacity=int(cloudspace_2_size['memory'])/1024,
-                                                            maxCPUCapacity=cloudspace_2_size['vcpus'],
-                                                            maxDiskCapacity=100,
-                                                            maxNumPublicIP=1)
+            self.cloudapi_cloudspace_create(account_id=self.account_id,
+                                            location=self.location,
+                                            access=self.account_owner,
+                                            api=self.account_owner_api,
+                                            maxMemoryCapacity=int(cloudspace_2_size['memory'])/1024,
+                                            maxCPUCapacity=cloudspace_2_size['vcpus'],
+                                            maxDiskCapacity=100,
+                                            maxNumPublicIP=1)
 
         self.assertEqual(e.exception.message, '400 Bad Request')
 
-        
         self.lg('Create 3rd cloudspace that exceeds account limits')
         cloudspace_3_id = self.cloudapi_cloudspace_create(account_id=self.account_id,
                                                           location=self.location,
@@ -206,20 +203,20 @@ class ExtendedTests(BasicACLTest):
                                                           api=self.account_owner_api)
 
         self.lg('Create VM on the 1st cloudspace without exceeding account limits , should succeed')
-        machine_1_id = self.cloudapi_create_machine(cloudspace_1_id, self.account_owner_api, size_id=4, disksize=50, datadisks=[20,20,10])
+        self.cloudapi_create_machine(cloudspace_1_id, self.account_owner_api, size_id=4, disksize=50, datadisks=[20, 20, 10])
 
         self.lg('Create VM on the 1st cloudspace, should fail (as total VMs Memory and cores exceeds that of the account)')
         with self.assertRaises(ApiError) as e:
-            self.cloudapi_create_machine(cloudspace_1_id, self.account_owner_api, size_id=4, disksize=50, datadisks=[20,20,10])
+            self.cloudapi_create_machine(cloudspace_1_id, self.account_owner_api, size_id=4, disksize=50, datadisks=[20, 20, 10])
         self.assertEqual(e.exception.message, '400 Bad Request')
 
         self.lg('Create VM on the 3rd cloudspace, should fail (as total VMs Memory and cores exceeds that of the account)')
         with self.assertRaises(ApiError) as e:
-            self.cloudapi_create_machine(cloudspace_3_id, self.account_owner_api, size_id=6, disksize=50, datadisks=[20,20,10])
+            self.cloudapi_create_machine(cloudspace_3_id, self.account_owner_api, size_id=6, disksize=50, datadisks=[20, 20, 10])
         self.assertEqual(e.exception.message, '400 Bad Request')
 
         self.lg('Create VM on the 3rd cloudspace without exceeding account limits , should succeed')
-        machine_2_id = self.cloudapi_create_machine(cloudspace_3_id, self.account_owner_api, size_id=4, disksize=50, datadisks=[20,20,10])
+        machine_2_id = self.cloudapi_create_machine(cloudspace_3_id, self.account_owner_api, size_id=4, disksize=50, datadisks=[20, 20, 10])
 
         self.lg('Add public ip to the 2nd VM, should fail')
         with self.assertRaises(ApiError) as e:
@@ -288,6 +285,7 @@ class ExtendedTests(BasicACLTest):
             self.lg('- expected error raised %s' % e.message)
             self.assertEqual(e.message, '400 Bad Request')
 
+    @unittest.skip("https://github.com/0-complexity/openvcloud/issues/1269")
     def test004_getting_account_resources(self):
         """ OVC-045
         *Test case for checking account's resources retrieval*
@@ -529,5 +527,3 @@ class ExtendedTests(BasicACLTest):
             os.system("rm -rf {}/resource_mang".format(os.getcwd()))
 
         self.lg('%s ENDED' % self._testID)
-
-    
