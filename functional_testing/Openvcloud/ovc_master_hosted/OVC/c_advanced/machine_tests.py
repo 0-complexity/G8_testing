@@ -54,13 +54,12 @@ class MachineTests(BasicACLTest):
         machine_3_id = self.cloudapi_create_machine(cloudspace_id=cloudspace_2_id)
         machine_3_ipaddress = self.get_machine_ipaddress(machine_3_id)
         self.assertTrue(machine_3_ipaddress)
-        machine_3_client = VMClient(machine_3_id)
 
         time.sleep(15)
 
         self.lg('From VM1 ping google, should succeed')
         stdin, stdout, stderr = machine_1_client.execute('ping -w3 8.8.8.8')
-        self.assertIn(', 0% packet loss', stdout.read())
+        self.assertIn('3 received', stdout.read())
 
         self.lg('From VM1 ping VM3 or VM2, should fail')
         if machine_1_ipaddress == machine_2_ipaddress:
@@ -75,7 +74,7 @@ class MachineTests(BasicACLTest):
         self.lg('From VM2 ping VM3, should succeed')
         cmd = 'ping -w3 {}'.format(machine_3_ipaddress)
         stdin, stdout, stderr = machine_2_client.execute(cmd)
-        self.assertIn(', 0% packet loss', stdout.read())
+        self.assertIn('3 received', stdout.read())
 
     def test002_check_network_data_integrity(self):
         """ OVC-036
@@ -416,7 +415,7 @@ class MachineTests(BasicACLTest):
         self.assertEqual(len(cloned_machine_info['disks']), 2)
         self.assertEqual(len([x for x in cloned_machine_info['disks'] if x['type'] == 'B']), 1)
         self.assertEqual(len([x for x in cloned_machine_info['disks'] if x['type'] == 'M']), 1)
-    
+
         self.lg('Start (VM1), should succeed')
         self.api.cloudapi.machines.start(machineId=machineId)
 
@@ -534,7 +533,7 @@ class MachineTests(BasicACLTest):
                       "--runtime=30 --readwrite=rw --rwmixwrite=5 --size=500M --name=test{0} "\
                       "--output={0}".format(run_name)
             vm1_client.execute(fio_cmd, sudo=True)
-            
+
             stdin, stdout, stderr = vm1_client.execute("cat %s | grep -o 'iops=[0-9]\{1,\}' | cut -d '=' -f 2" % run_name)
             iops_list = stdout.read().split()
             return iops_list
@@ -640,7 +639,7 @@ class MachineTests(BasicACLTest):
         self.lg("Delete (VM1) external network ip, and give it the same ip of (CS1)")
         cs_ip = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)["publicipaddress"]
         vm_1_ext_client.execute("ip a d {} dev {}".format(vm1_ext_ip,ext_interface_name1), sudo=True, wait =False)
-        vm_1_client = VMClient(vm1_id)        
+        vm_1_client = VMClient(vm1_id)
         vm_1_client.execute("ip a a {} dev {}".format(cs_ip,ext_interface_name1), sudo=True)
         vm_1_client.execute("nohup bash -c 'ip l s dev {} up </dev/null >/dev/null 2>&1 & '".format(ext_interface_name1), sudo=True, wait =False)
 
