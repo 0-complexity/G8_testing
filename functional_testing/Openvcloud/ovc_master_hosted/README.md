@@ -15,38 +15,41 @@ Travis CI build uses the environment's controller to execute the tests on it, so
 - Create zerotier network and join it.
 
 #### Jobs
+OpenvCloud Travis build consists of 3 jobs running in parallel, each job executes one of the OpenvCloud's testsuites.
+- ```ovc``` job: executes tests located in *functional_testing/Openvcloud/ovc_master_hosted/OVC*.
+- ```acl``` job: executes tests located in *functional_testing/Openvcloud/ovc_master_hosted/ACL*.
+- ```portal``` job: executes tests located in *functional_testing/Openvcloud/ovc_master_hosted/Portal*.
 
-- ```ovc```: executes tests located in *functional_testing/Openvcloud/ovc_master_hosted/OVC*.
-- ```acl```: executes tests located in *functional_testing/Openvcloud/ovc_master_hosted/ACL*.
-- ```portal```: executes tests located in *functional_testing/Openvcloud/ovc_master_hosted/Portal*.
-
-#### configrations
+#### Travis Parameters
+- ##### Environment
 - ```environment```: environment name (for example: **be-g8-3**).
-- ```ctrl_ipaddress```: controller's ip address.
+- ```ctrl_ipaddress```: controller's ip address (zerotier ip in case your using zerotier).
 - ```ctrl_root_user```: controller's root user (default: root).
+- ```ctrl_root_password```: controller root ssh password.
 - ```ctrl_user```: controller's non-root user (default: gig)
-- ```ctrl_password```: controller ssh password.
+- ```ctrl_user_password```: controller user ssh password.
+
+- ##### Jobs
 - ```jobs```: jobs to be executed (for example ```acl-ovc``` to execute only ovc and acl jobs).
 - ```ovc_testsuite_dir```: ovc tests path.
 - ```acl_testsuite_dir```: acl tests path.
 - ```portal_testsuite_dir```: portal tests path.
-> In case you want to run multiple files use  ```--tests=<PATH1> <PATH2>```: 
-##### Example:
-to run ovc extended and advanced tests
+
+In case you want to run multiple files use  ```--tests=<PATH1> <PATH2>```: 
+for example to run ovc extended and advanced tests
 ```
 ovc_testsuite_dir = --tests ovc_master_hosted/OVC/b_extended/,ovc_master_hosted/OVC/c_advanced/
 ```
 
-#### In case you are using zerotier
+- ##### In case you are using zerotier
 - ```zerotier_network```: zerotier network id.
 - ```zerotier_token```: zerotier account token.
 
-#### Required for portal job 
+- ##### Required for portal job
 - ```portal_admin```: [itsyou.online](itsyou.online) username.
 - ```portal_password```: [itsyou.online](itsyou.online) password.
 - ```portal_secret```: [itsyou.online](itsyou.online) otp secret.
 - ```portal_browser```: web browser to execute portal tests (default: chrome).
-
 
 
 ### Jenkins
