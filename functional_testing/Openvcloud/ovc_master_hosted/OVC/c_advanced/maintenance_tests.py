@@ -1,5 +1,5 @@
 import unittest
-from ....utils.utils import BasicACLTest
+from ....utils.utils import BasicACLTest, VMClient
 from nose_parameterized import parameterized
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
@@ -22,19 +22,20 @@ class MaintenanceTests(BasicACLTest):
         self.api.cloudbroker.computenode.enable(id=self.stackId, gid=self.gridId, message='test')
         self.assertTrue(self.wait_for_stack_status(self.stackId, 'ENABLED'))
 
-    def wait_till_vm_move(self, vm_id, stackId, timeout=60):
+    def wait_till_vm_move(self, vm_id, stackId, status="RUNNING", timeout=30):
         """
-        :stackId: stackId that the vm will move from.
+        stackId: stackId that the vm will move from.
+        status: status that need to be checked on after vm migration.
         """
         for _ in xrange(timeout):
-            time.sleep(1)
+            time.sleep(2)
             vm = self.api.cloudbroker.machine.get(machineId=vm_id)
             if vm['stackId'] != stackId:
                 break
             else:
                 continue
         self.assertNotEqual(vm["stackId"], stackId, "vm didn't move to another stack")
-        self.assertEqual(vm["status"], "RUNNING", "vm is not running")
+        self.assertEqual(vm["status"], status, "vm is not %s" % status)
 
 
     def test001_check_vm_ext_net_migration(self):
@@ -74,5 +75,56 @@ class MaintenanceTests(BasicACLTest):
                                                                         targetStackId=self.stackId, force=False)
         self.lg('- expected error raised %s' % e.exception.status_code)
         self.assertEqual(e.exception.status_code, 400)
+
+        self.lg('%s ENDED' % self._testID)
+
+    @parameterized.expand(['move', 'stop'])
+    def test002_node_maintenance_migrateVMs(self, migrate_option):
+        """ OVC-49
+        *Test case for putting node in maintenance with action migrate all vms.*
+
+        **Test Scenario:**
+
+        #. Create 3 VMs, should succeed.
+        #. Leave one VM running, stop one, and pause another, should succeed.
+        #. Put node in maintenance with migrate all vms, should succeed.
+        #. Check if the 3 VMs have been migrated keeping their old state, should succeed.
+        #. Check that the running VM is working well, should succeed.
+        #. Enable the node back, should succeed.
+        """
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg('Create 2 VMs, should succeed')
+        machine_1_id = self.cloudbroker_create_machine(self.cloudspace_id, stackId=self.stackId)
+        machine_2_id = self.cloudbroker_create_machine(self.cloudspace_id, stackId=self.stackId)
+        machine_3_id = self.cloudbroker_create_machine(self.cloudspace_id, stackId=self.stackId)
+
+        self.lg('Leave one VM running, stop one, and pause another, should succeed.')
+        stopped = self.api.cloudapi.machines.stop(machineId=machine_2_id)
+        self.assertTrue(stopped)
+        self.api.cloudapi.machines.pause(machineId=machine_3_id)
+        self.assertEqual(self.api.cloudapi.machines.get(machineId=machine_3_id)['status'], 'PAUSED')
+
+        self.lg('Put node in maintenance with migrate all vms, should succeed')
+        self.api.cloudbroker.computenode.maintenance(id=self.stackId, gid=self.gridId, vmaction=migrate_option, message='test')
+
+        self.lg('Check if the 3 VMs have been migrated keeping their old state, should succeed')
+        if migrate_option == 'move':
+            self.wait_till_vm_move(machine_1_id, self.stackId, status='RUNNING')
+            self.wait_till_vm_move(machine_2_id, self.stackId, status='HALTED')
+            self.wait_till_vm_move(machine_3_id, self.stackId, status='PAUSED')
+        else:
+            self.wait_for_status('HALTED', self.api.cloudapi.machines.get, timeout=30, machineId=machine_1_id)
+            self.assertEqual(self.api.cloudapi.machines.get(machineId=machine_1_id)['status'], 'HALTED')
+            self.wait_for_status('HALTED', self.api.cloudapi.machines.get, timeout=30, machineId=machine_2_id)
+            self.assertEqual(self.api.cloudapi.machines.get(machineId=machine_2_id)['status'], 'HALTED')
+            self.wait_for_status('HALTED', self.api.cloudapi.machines.get, timeout=30, machineId=machine_3_id)
+            self.assertEqual(self.api.cloudapi.machines.get(machineId=machine_3_id)['status'], 'HALTED')
+        self.assertTrue(self.wait_for_stack_status(self.stackId, 'MAINTENANCE'))
+
+        self.lg('Check that the running VM is working well, should succeed')
+        machine_1_client = VMClient(machine_1_id)
+        stdin, stdout, stderr = machine_1_client.execute('uname')
+        self.assertIn('Linux', stdout.read())
 
         self.lg('%s ENDED' % self._testID)

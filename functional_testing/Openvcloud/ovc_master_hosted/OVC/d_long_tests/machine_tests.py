@@ -18,7 +18,7 @@ class MachineLongTests(BasicACLTest):
         *Test case for checking cloned VM ip, portforwards and credentials*
 
         **Test Scenario:**
-        
+
         #. Create virtual machine (VM1), should succeed.
         #. Create data disk (DD1), should succeed.
         #. Attach disk (DD1) to virtual machine (VM1), should succeed.
@@ -51,15 +51,15 @@ class MachineLongTests(BasicACLTest):
         machine_1_client.execute('echo "helloWorld" > data/test2.txt')
 
         time.sleep(40)
-        
-        folder_name = str(uuid.uuid4()).replace('-', '')[:10]        
+
+        folder_name = str(uuid.uuid4()).replace('-', '')[:10]
         owncloud_auth = (self.owncloud_user, self.owncloud_password)
 
         web_dav_link = self.owncloud_url + '/remote.php/webdav/'
 
         folder_url = '{url}/remote.php/dav/files/{user}/{folder}'.format(
-            url=self.owncloud_url, 
-            user=self.owncloud_user, 
+            url=self.owncloud_url,
+            user=self.owncloud_user,
             folder=folder_name
         )
 
@@ -117,64 +117,7 @@ class MachineLongTests(BasicACLTest):
 
         except:
             raise
-        
+
         finally:
             self.lg('Delete folder in owncloud')
             requests.request('DELETE', url=folder_url, auth=owncloud_auth)
-
-
-    def test002_node_maintenance_migrateVMs(self):
-        """ OVC-49
-        *Test case for putting node in maintenance with action migrate all vms.*
-
-        **Test Scenario:**
-
-        #. Create 2 VMs, should succeed.
-        #. Put node in maintenance with migrate all vms, should succeed.
-        #. Check that the 2 VMs have been migrated.
-        #. Check that the 2 VMs are in running state.
-        #. Check that the 2 VMs are working well, should succeed.
-        #. Enable the node back, should succeed.
-        """
-        stackId = self.get_running_stackId()
-        gridId = self.get_node_gid(stackId)
-        
-        self.lg('Create 2 VMs, should succeed')
-        machine_1_id = self.cloudbroker_create_machine(self.cloudspace_id, stackId=stackId)
-        machine_2_id = self.cloudbroker_create_machine(self.cloudspace_id, stackId=stackId)
-
-        self.lg('Put node in maintenance with migrate all vms, should succeed')
-        self.api.cloudbroker.computenode.maintenance(id=stackId, gid=gridId, vmaction='move', message='test')
-        self.assertTrue(self.wait_for_stack_status(stackId, 'MAINTENANCE'))
-        
-        try:
-            self.lg('Check that the 2 Vms have been migrated')
-            for _ in range(15):
-                machine_1_stackid = self.get_machine_stackId(machine_1_id)
-                machine_2_stackid = self.get_machine_stackId(machine_2_id)
-                if machine_1_stackid != stackId and machine_2_stackid != stackId:
-                    break
-                else:
-                    time.sleep(3)
-            else:
-                self.fail('The Vms have not been migrated')
-
-            self.lg('Check that the 2 VMs are in running state')
-            machine_1_info = self.api.cloudapi.machines.get(machine_1_id)
-            machine_2_info = self.api.cloudapi.machines.get(machine_2_id)
-            self.assertTrue(machine_1_info['status'], 'RUNNING')
-            self.assertTrue(machine_2_info['status'], 'RUNNING')
-
-            self.lg('Check that the 2 VMs are working well, should succeed')
-            machine_1_client = VMClient(machine_1_id)
-            stdin, stdout, stderr = machine_1_client.execute('uname')
-            self.assertIn('Linux', stdout.read())
-            machine_2_client = VMClient(machine_2_id)
-            stdin, stdout, stderr = machine_2_client.execute('uname')
-            self.assertIn('Linux', stdout.read())
-        except:
-            raise
-        finally:
-            self.lg('Enable the node back, should succeed')
-            self.api.cloudbroker.computenode.enable(id=stackId, gid=gridId, message='test')
-            self.assertTrue(self.wait_for_stack_status(stackId, 'ENABLED'))
