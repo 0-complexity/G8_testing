@@ -12,7 +12,7 @@ You can trigger the build from [Travis website](https://travis-ci.org/0-complexi
 #### Prerequisites
 Travis CI build uses the environment's controller to execute the tests from it, so if your environment controller doesn't have public ip you have to:
 - Install zerotier [ZeroTier](zerotier.com/network) on the controller.
-- Create zerotier network and join it.
+- Create zerotier network and make the controller join it.
 
 #### Jobs
 OpenvCloud Travis build consists of 3 jobs running in parallel, each job executes one of the OpenvCloud's testsuites.
@@ -35,12 +35,12 @@ OpenvCloud Travis build consists of 3 jobs running in parallel, each job execute
   - ```acl_testsuite_dir```: acl tests path.
   - ```portal_testsuite_dir```: portal tests path.
 
-  In case you want to run multiple files use  ```--tests=<PATH1> <PATH2>```: 
+    In case you want to run multiple files use  ```--tests=<PATH1> <PATH2>```.
 
-  for example to run ovc extended and advanced tests
-  ```
-  ovc_testsuite_dir = --tests ovc_master_hosted/OVC/b_extended/,ovc_master_hosted/OVC/c_advanced/
-  ```
+    for example to run ovc extended and advanced tests
+    ```
+    ovc_testsuite_dir = --tests ovc_master_hosted/OVC/b_extended/,ovc_master_hosted/OVC/c_advanced/
+    ```
 
 - ##### In case you are using zerotier
   - ```zerotier_network```: zerotier network id.
@@ -51,6 +51,10 @@ OpenvCloud Travis build consists of 3 jobs running in parallel, each job execute
   - ```portal_password```: [itsyou.online](itsyou.online) password.
   - ```portal_secret```: [itsyou.online](itsyou.online) otp secret.
   - ```portal_browser```: web browser to execute portal tests (default: chrome).
+
+- ##### Other parameters
+  - ```test_email```: test email to be used inside the tests.
+  - ```test_email password```: the password of the ```test_email```.
 
 
 ### Jenkins

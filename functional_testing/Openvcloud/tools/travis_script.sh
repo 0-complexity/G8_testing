@@ -35,7 +35,7 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
             if [[ "${testsuite}" == "acl" || "${testsuite}" == "ovc" ]]; then
 
-                cmd="export PYTHONPATH=${python_path}; cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud; nosetests -s -v ${testsuite_path} --tc-file config.ini --tc=main.environment:${environment}"
+                cmd="export PYTHONPATH=${python_path}; cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud; nosetests -s -v ${testsuite_path} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
                 sshpass -p ${ctrl_root_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_root_user}@${ctrl_ipaddress} "${cmd}"
 
             elif [[ "${testsuite}" == "portal" ]]; then
