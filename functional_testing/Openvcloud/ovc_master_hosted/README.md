@@ -36,6 +36,7 @@ OpenvCloud Travis build consists of 3 jobs running in parallel, each job execute
 - ```portal_testsuite_dir```: portal tests path.
 
 In case you want to run multiple files use  ```--tests=<PATH1> <PATH2>```: 
+
 for example to run ovc extended and advanced tests
 ```
 ovc_testsuite_dir = --tests ovc_master_hosted/OVC/b_extended/,ovc_master_hosted/OVC/c_advanced/
