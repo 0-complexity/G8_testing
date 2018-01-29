@@ -81,7 +81,7 @@ class MaintenanceTests(BasicACLTest):
     @parameterized.expand(['move', 'stop'])
     def test002_node_maintenance_migrateVMs(self, migrate_option):
         """ OVC-49
-        *Test case for putting node in maintenance with action migrate all vms.*
+        *Test case for putting node in maintenance with action move or stop all vms.*
 
         **Test Scenario:**
 
@@ -89,7 +89,7 @@ class MaintenanceTests(BasicACLTest):
         #. Leave one VM running, stop one, and pause another, should succeed.
         #. Put node in maintenance with migrate all vms, should succeed.
         #. Check if the 3 VMs have been migrated keeping their old state, should succeed.
-        #. Check that the running VM is working well, should succeed.
+        #. Check that the running VM is working well (option=move vms), should succeed.
         #. Enable the node back, should succeed.
         """
         self.lg('%s STARTED' % self._testID)
@@ -113,6 +113,10 @@ class MaintenanceTests(BasicACLTest):
             self.wait_till_vm_move(machine_1_id, self.stackId, status='RUNNING')
             self.wait_till_vm_move(machine_2_id, self.stackId, status='HALTED')
             self.wait_till_vm_move(machine_3_id, self.stackId, status='PAUSED')
+            self.lg('Check that the running VM is working well, should succeed')
+            machine_1_client = VMClient(machine_1_id)
+            stdin, stdout, stderr = machine_1_client.execute('uname')
+            self.assertIn('Linux', stdout.read())
         else:
             self.wait_for_status('HALTED', self.api.cloudapi.machines.get, timeout=30, machineId=machine_1_id)
             self.assertEqual(self.api.cloudapi.machines.get(machineId=machine_1_id)['status'], 'HALTED')
@@ -121,10 +125,5 @@ class MaintenanceTests(BasicACLTest):
             self.wait_for_status('HALTED', self.api.cloudapi.machines.get, timeout=30, machineId=machine_3_id)
             self.assertEqual(self.api.cloudapi.machines.get(machineId=machine_3_id)['status'], 'HALTED')
         self.assertTrue(self.wait_for_stack_status(self.stackId, 'MAINTENANCE'))
-
-        self.lg('Check that the running VM is working well, should succeed')
-        machine_1_client = VMClient(machine_1_id)
-        stdin, stdout, stderr = machine_1_client.execute('uname')
-        self.assertIn('Linux', stdout.read())
 
         self.lg('%s ENDED' % self._testID)
