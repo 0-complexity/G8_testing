@@ -303,6 +303,7 @@ class BasicTests(BasicACLTest):
         #. Take 6 different snapshots for the created virtual machine
         #. Rollback to the 3rd snapshot
         #. check if the rolling back have succeed
+        #. create snapshot by passing number in the name param and then list snapshots, should succeed.
         #. disable the account, should succeed
         #. Try to create snapshot, should fail with 403 forbidden
         #. Try to start the VM, should fail with 403 forbidden
