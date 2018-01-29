@@ -391,6 +391,12 @@ class BasicTests(BasicACLTest):
             self.assertEqual('3', count_files[0])
         finally:
             self.execute_command_on_physical_node('cd; rm machine_script.py', nodeID)
+        
+        self.lg('- create snapshot with name is number and then list snapshots, should succeed')
+        name = str(random.randint(10,100))
+        self.account_owner_api.cloudapi.machines.snapshot(machineId=self.machine_id, name=name)
+        snapshots = self.account_owner_api.cloudapi.machines.listSnapshots(machineId=self.machine_id)
+        self.assertIn(name, [x['name'] for x in snapshots])
 
         self.lg('- disable the account, should succeed')
         self.api.cloudbroker.account.disable(accountId=self.account_id, reason='testing')
@@ -410,12 +416,6 @@ class BasicTests(BasicACLTest):
 
         self.lg('- expected error raised %s' % e.exception.message)
         self.assertEqual(e.exception.message, '403 Forbidden')
-
-        self.lg('- create snapshot with name is number and then list snapshots, should succeed')
-        name = str(random.randint(10,100))
-        self.account_owner_api.cloudapi.machines.snapshot(machineId=self.machine_id, name=name)
-        snapshots = self.account_owner_api.cloudapi.machines.listSnapshots(machineId=self.machine_id)
-        self.assertIn(name, [x['name'] for x in snapshots])
 
         self.lg('%s ENDED' % self._testID)
 
