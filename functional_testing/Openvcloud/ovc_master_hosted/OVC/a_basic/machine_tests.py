@@ -411,6 +411,12 @@ class BasicTests(BasicACLTest):
         self.lg('- expected error raised %s' % e.exception.message)
         self.assertEqual(e.exception.message, '403 Forbidden')
 
+        self.lg('- create snapshot with name is number and then list snapshots')
+        name = str(random.randint(1,10))
+        self.account_owner_api.cloudapi.machines.snapshot(machineId=self.machine_id, name=name)
+        snapshots = self.account_owner_api.cloudapi.machines.listSnapshots(machineId=self.machine_id)
+        self.assertIn(name, [x['name'] for x in snapshots])
+
         self.lg('%s ENDED' % self._testID)
 
     def test007_cleanup_vxlans_for_stopped_deleted_vms(self):
