@@ -7,6 +7,12 @@ Below only **internal** documentation please.
 ## Continues Integration
 
 ### Travis
+You can trigger the build from [Travis website](https://travis-ci.org/0-complexity/G8_testing) or [CI-Dashboard](https://travis-dash.gig.tech/).
+
+#### Prerequisites
+Travis CI build uses the environment's controller to execute the tests on it, so if your environment controller doesn't have public ip you have to:
+- Install zerotier [ZeroTier](zerotier.com/network) on the controller.
+- Create zerotier network and join it.
 
 #### Jobs
 
@@ -14,7 +20,7 @@ Below only **internal** documentation please.
 - ```acl```: executes tests located in *functional_testing/Openvcloud/ovc_master_hosted/ACL*.
 - ```portal```: executes tests located in *functional_testing/Openvcloud/ovc_master_hosted/Portal*.
 
-### configrations
+#### configrations
 - ```environment```: environment name (for example: **be-g8-3**).
 - ```ctrl_ipaddress```: controller's ip address.
 - ```ctrl_root_user```: controller's root user (default: root).
@@ -24,8 +30,14 @@ Below only **internal** documentation please.
 - ```ovc_testsuite_dir```: ovc tests path.
 - ```acl_testsuite_dir```: acl tests path.
 - ```portal_testsuite_dir```: portal tests path.
+> In case you want to run multiple files use  ```--tests=<PATH1> <PATH2>```: 
+##### Example:
+to run ovc extended and advanced tests
+```
+ovc_testsuite_dir = --tests ovc_master_hosted/OVC/b_extended/,ovc_master_hosted/OVC/c_advanced/
+```
 
-#### in case you are using zerotier
+#### In case you are using zerotier
 - ```zerotier_network```: zerotier network id.
 - ```zerotier_token```: zerotier account token.
 
