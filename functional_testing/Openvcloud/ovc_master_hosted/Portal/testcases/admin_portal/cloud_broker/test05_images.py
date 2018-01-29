@@ -70,10 +70,6 @@ class ImagesTests(Framework):
         #. go to images page.
         #. try use the search box in every column and  verfiy it return the right value
         """
-
-        if (column == 'Location') or (column == 'Size'):
-            self.skipTest('https://github.com/0-complexity/openvcloud/issues/696')
-
         self.lg('1- go to Images page')
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
@@ -143,10 +139,6 @@ class ImagesTests(Framework):
         #. open one random  image page
         #. try use the search box in every column and  verfiy it return the right value in stack table
         """
-        if column == 'GridID':
-            self.skipTest('https://github.com/0-complexity/openvcloud/issues/696')
-        if column == 'Reference ID':
-            self.skipTest('https://github.com/0-complexity/openvcloud/issues/696')
         self.lg('1- go to Images page')
         self.Images.get_it()
         image = choice(['Ubuntu', 'Windows'])
@@ -170,8 +162,6 @@ class ImagesTests(Framework):
         #. open one random  image page
         #. try use the search box in every column and  verfiy it return the right value in VM table
         """
-        if column == 'Cloud Space':
-            self.skipTest('https://github.com/0-complexity/openvcloud/issues/696')
         self.lg('1- go to Images page')
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())

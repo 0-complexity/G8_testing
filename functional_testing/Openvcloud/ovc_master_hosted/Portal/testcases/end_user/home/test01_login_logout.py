@@ -30,7 +30,7 @@ class LoginLogoutPortalTests(Framework):
         self.assertEqual(self.element_link("machines_link"),
                         "%s/g8vdc/#/MachineDeck" % url)
 
-    @unittest.skip('bug 749')
+    # @unittest.skip('bug 749')
     def test002_logout_and_portal_title(self):
         """ PRTL-002
         *Test case for check user potal logout and titles.*
@@ -64,7 +64,7 @@ class LoginLogoutPortalTests(Framework):
                            ('long username', 'X'*1000),
                            ('numeric username', 9876543210),
                            ('special chars username', '+_=-)(*&^#@!~`{}[];\',.<>\/')])
-    @unittest.skip('bug 749')
+    # @unittest.skip('bug 749')
     def test003_login_wrong_username(self, _, username):
         """ PRTL-003
         *Test case for check user potal login with wrong username.*
@@ -93,7 +93,7 @@ class LoginLogoutPortalTests(Framework):
                            ('long password', 'X'*1000),
                            ('numeric password', 9876543210),
                            ('special chars password', '+_=-)(*&^#@!~`{}[];\',.<>\/')])
-    @unittest.skip('bug 749')
+    # @unittest.skip('bug 749')
     def test004_login_wrong_password(self, _, password):
         """ PRTL-004
         *Test case for check user potal login with wrong password.*
@@ -123,7 +123,7 @@ class LoginLogoutPortalTests(Framework):
                            ('long username/password', 'X'*1000),
                            ('numeric username/password', 9876543210),
                            ('special chars username/password', '+_=-)(*&^#@!~`{}[];\',.<>\/')])
-    @unittest.skip('bug 749')
+    # @unittest.skip('bug 749')
     def test005_login_wrong_username_password(self, _, name):
         """ PRTL-005
         *Test case for check user potal login with wrong username/password.*
