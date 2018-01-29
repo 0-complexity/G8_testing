@@ -54,7 +54,7 @@ OpenvCloud Travis build consists of 3 jobs running in parallel, each job execute
 
 - ##### Other parameters
   - ```test_email```: test email to be used inside the tests.
-  - ```test_email password```: the password of the ```test_email```.
+  - ```test_email_password```: the password of the ```test_email```.
 
 
 ### Jenkins
