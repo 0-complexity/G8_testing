@@ -152,12 +152,14 @@ class CloudspaceTests(BasicACLTest):
         #. Create new cloudspace (CS1).
         #. Create virtual machine (VM1).
         #. Disable cloudspace (CS1), should succeed.
+        #. Check that cloudspace (CS1)'s private network is halted.
         #. Check virtual machine (VM1) status, should be halted.
         #. Create user without Admin access.
         #. Authenticate (U1), should succeed.
         #. Add user (U1) to cloudsapce (CS1), should succeed.
         #. Try to start virtual machine (VM1) using user (U1), should fail.
         #. Enable cloudspace (CS1), should succeed.
+        #. Check that cloudspace (CS1)'s private network is running.
         #. Try to start virtual machine (VM1) using user (U1), should succeed.
         #. Disable cloudspace (CS1) again, should succeed.
         #. Delete cloudspace (CS1) should succeed.
@@ -169,6 +171,10 @@ class CloudspaceTests(BasicACLTest):
 
         self.lg('Disable cloudspace (CS1), should succeed')
         self.assertTrue(self.api.cloudapi.cloudspaces.disable(cloudspaceId=self.cloudspace_id, reason='test'))
+        self.wait_for_status('DISABLED', self.api.cloudapi.cloudspaces.get, cloudspaceId=self.cloudspace_id)
+        
+        self.lg('Check that cloudspace (CS1)\'s private network is halted')
+        self.wait_for_status('HALTED', self.api.cloudbroker.cloudspace.getVFW, cloudspaceId=self.cloudspace_id)
 
         self.lg('Check virtual machine (VM1) status, should be halted')
         machine_info = self.api.cloudapi.machines.get(machineId=machineId)
@@ -189,6 +195,10 @@ class CloudspaceTests(BasicACLTest):
 
         self.lg('Enable cloudspace (CS1), should succeed')
         self.assertTrue(self.api.cloudapi.cloudspaces.enable(cloudspaceId=self.cloudspace_id, reason='test'))
+        self.wait_for_status('DEPLOYED', self.api.cloudapi.cloudspaces.get, cloudspaceId=self.cloudspace_id)
+        
+        self.lg('Check that cloudspace (CS1)\'s private network is running')
+        self.wait_for_status('RUNNING', self.api.cloudbroker.cloudspace.getVFW, cloudspaceId=self.cloudspace_id)
 
         self.lg('Try to start virtual machine (VM1) using user (U1), should succeed')
         self.assertTrue(self.api.cloudapi.machines.start(machineId=machineId))
