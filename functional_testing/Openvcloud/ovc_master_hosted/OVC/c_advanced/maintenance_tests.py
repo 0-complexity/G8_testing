@@ -6,7 +6,6 @@ from JumpScale.baselib.http_client.HttpClient import HTTPError
 import time
 
 
-
 class MaintenanceTests(BasicACLTest):
     def setUp(self):
         super(MaintenanceTests, self).setUp()
@@ -188,8 +187,8 @@ class MaintenanceTests(BasicACLTest):
             self.lg('Stop VFW1, should succeed.')
             response = self.api.cloudbroker.cloudspace.stopVFW(cloudspaceId=self.cloudspace_id)
             self.assertTrue(response)
-            vfw = self.api.cloudbroker.cloudspace.getVFW(cloudspaceId=self.cloudspace_id)
-            self.assertEqual(vfw['status'], 'HALTED')
+            self.wait_for_status('HALTED', self.api.cloudbroker.cloudspace.getVFW,
+                                 timeout=20, cloudspaceId=self.cloudspace_id)
         else:
             self.lg('make sure VFW1 has been stopped')
             self.wait_for_status('HALTED', self.api.cloudbroker.cloudspace.getVFW,
@@ -221,9 +220,9 @@ class MaintenanceTests(BasicACLTest):
 
         self.lg('Create cloud space and stop its virtual firewall (VFW).')
         response = self.api.cloudbroker.cloudspace.stopVFW(cloudspaceId=self.cloudspace_id)
-        self.assertEqual(response, 'true')
-        vfw1 = self.api.cloudbroker.cloudspace.getVFW(cloudspaceId=self.cloudspace_id)
-        self.assertEqual(vfw1['status'], 'HALTED')
+        self.assertTrue(response)
+        self.wait_for_status('HALTED', self.api.cloudbroker.cloudspace.getVFW,
+                             timeout=20, cloudspaceId=self.cloudspace_id)
 
         self.lg("Put VFW's node (CPU1) in maintenance, should succeed.")
         self.api.cloudbroker.computenode.maintenance(id=self.stackId, gid=self.gridId,
@@ -257,9 +256,10 @@ class MaintenanceTests(BasicACLTest):
 
         self.lg('Create cloud space and stop its virtual firewall (VFW).')
         response = self.api.cloudbroker.cloudspace.stopVFW(cloudspaceId=self.cloudspace_id)
-        self.assertEqual(response, 'true')
+        self.assertTrue(response)
+        self.wait_for_status('HALTED', self.api.cloudbroker.cloudspace.getVFW,
+                             timeout=20, cloudspaceId=self.cloudspace_id)
         vfw1 = self.api.cloudbroker.cloudspace.getVFW(cloudspaceId=self.cloudspace_id)
-        self.assertEqual(vfw1['status'], 'HALTED')
 
         self.lg("Put VFW's node (CPU1) in maintenance, should succeed.")
         self.api.cloudbroker.computenode.maintenance(id=self.stackId, gid=self.gridId,
@@ -267,7 +267,7 @@ class MaintenanceTests(BasicACLTest):
         self.assertTrue(self.wait_for_stack_status(self.stackId, 'MAINTENANCE'))
 
         self.lg('Start VFW, and make sure it has been moved to another cpu-node.')
-        response = self.user1_api.cloudbroker.cloudspace.startVFW(cloudspaceId=self.cloudspace_id)
+        response = self.api.cloudbroker.cloudspace.startVFW(cloudspaceId=self.cloudspace_id)
         self.assertTrue(response)
         self.wait_for_status('RUNNING', self.api.cloudbroker.cloudspace.getVFW,
                              cloudspaceId=self.cloudspace_id)
