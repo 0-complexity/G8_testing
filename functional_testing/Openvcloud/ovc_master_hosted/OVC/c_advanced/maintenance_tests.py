@@ -148,7 +148,7 @@ class MaintenanceTests(BasicACLTest):
 
     @parameterized.expand(['move', 'stop'])
     def test003_running_vfw_node_maintenance(self, migrate_option):
-        """ OVC-000
+        """ OVC-053
         *Test case for migrating running VFW by putting node in maintenance with action move or stop all vms.*
 
         **Test Scenario:**
@@ -206,7 +206,7 @@ class MaintenanceTests(BasicACLTest):
 
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1297')
     def test004_halted_vfw_node_maintenance(self):
-        """ OVC-000
+        """ OVC-054
         *Test case for halted VFW by putting node in maintenance with action stop all vms.*
 
         **Test Scenario:**
@@ -242,7 +242,7 @@ class MaintenanceTests(BasicACLTest):
 
     @parameterized.expand(['move', 'stop'])
     def test005_starting_vfw_node_maintenance(self, migrate_option):
-        """ OVC-000
+        """ OVC-055
         *Test case for starting VFW after putting node in maintenance*
 
         **Test Scenario:**
