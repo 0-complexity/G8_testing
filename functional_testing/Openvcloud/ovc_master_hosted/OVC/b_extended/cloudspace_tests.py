@@ -1,4 +1,4 @@
-#import random
+# coding=utf-8
 import unittest, socket, random
 from ....utils.utils import BasicACLTest, VMClient
 from JumpScale.portal.portal.PortalClient2 import ApiError
