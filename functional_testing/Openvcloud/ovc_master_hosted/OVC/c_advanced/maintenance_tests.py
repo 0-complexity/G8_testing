@@ -6,7 +6,6 @@ from JumpScale.baselib.http_client.HttpClient import HTTPError
 import time
 
 
-
 class MaintenanceTests(BasicACLTest):
     def setUp(self):
         super(MaintenanceTests, self).setUp()
@@ -18,9 +17,10 @@ class MaintenanceTests(BasicACLTest):
 
     def tearDown(self):
         super(MaintenanceTests, self).tearDown()
-        self.lg('Enable CPU1, should succeed')
-        self.api.cloudbroker.computenode.enable(id=self.stackId, gid=self.gridId, message='test')
-        self.assertTrue(self.wait_for_stack_status(self.stackId, 'ENABLED'))
+        if self.stackId != -1:
+            self.lg('Enable CPU1, should succeed')
+            self.api.cloudbroker.computenode.enable(id=self.stackId, gid=self.gridId, message='test')
+            self.assertTrue(self.wait_for_stack_status(self.stackId, 'ENABLED'))
 
     def wait_till_vm_move(self, vm_id, stackId, status="RUNNING", timeout=30):
         """
@@ -37,6 +37,18 @@ class MaintenanceTests(BasicACLTest):
         self.assertNotEqual(vm["stackId"], stackId, "vm didn't move to another stack")
         self.assertEqual(vm["status"], status, "vm is not %s" % status)
 
+    def wait_till_vfw_move(self, cloudspaceId, vfw_node, timeout=30):
+        """
+        vfw_node: old vfw's cpu-node name.
+        """
+        for _ in xrange(timeout):
+            time.sleep(2)
+            vfw = self.api.cloudbroker.cloudspace.getVFW(cloudspaceId=cloudspaceId)
+            if vfw["nodename"] != vfw_node:
+                break
+            else:
+                continue
+        self.assertNotEqual(vfw["nodename"], vfw_node, "vfw didn't move to another stack")
 
     def test001_check_vm_ext_net_migration(self):
         """ OVC-052
@@ -113,17 +125,153 @@ class MaintenanceTests(BasicACLTest):
             self.wait_till_vm_move(machine_1_id, self.stackId, status='RUNNING')
             self.wait_till_vm_move(machine_2_id, self.stackId, status='HALTED')
             self.wait_till_vm_move(machine_3_id, self.stackId, status='PAUSED')
+            self.assertTrue(self.wait_for_stack_status(self.stackId, 'MAINTENANCE'))
             self.lg('Check that the running VM is working well, should succeed')
             machine_1_client = VMClient(machine_1_id)
             stdin, stdout, stderr = machine_1_client.execute('uname')
             self.assertIn('Linux', stdout.read())
         else:
             self.wait_for_status('HALTED', self.api.cloudapi.machines.get, timeout=30, machineId=machine_1_id)
-            self.assertEqual(self.api.cloudapi.machines.get(machineId=machine_1_id)['status'], 'HALTED')
             self.wait_for_status('HALTED', self.api.cloudapi.machines.get, timeout=30, machineId=machine_2_id)
-            self.assertEqual(self.api.cloudapi.machines.get(machineId=machine_2_id)['status'], 'HALTED')
             self.wait_for_status('HALTED', self.api.cloudapi.machines.get, timeout=30, machineId=machine_3_id)
-            self.assertEqual(self.api.cloudapi.machines.get(machineId=machine_3_id)['status'], 'HALTED')
+            self.assertTrue(self.wait_for_stack_status(self.stackId, 'MAINTENANCE'))
+
+            self.lg('Enable CPU1, should succeed and check that the vms are keeping their old state')
+            self.api.cloudbroker.computenode.enable(id=self.stackId, gid=self.gridId, message='test')
+            self.assertTrue(self.wait_for_stack_status(self.stackId, 'ENABLED'))
+            self.stackId = -1  # prevent enabling the node in tearDown
+            self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, timeout=30, machineId=machine_1_id)
+            self.wait_for_status('HALTED', self.api.cloudapi.machines.get, timeout=30, machineId=machine_2_id)
+            self.wait_for_status('HALTED', self.api.cloudapi.machines.get, timeout=30, machineId=machine_3_id)
+
+        self.lg('%s ENDED' % self._testID)
+
+    @parameterized.expand(['move', 'stop'])
+    def test003_running_vfw_node_maintenance(self, migrate_option):
+        """ OVC-053
+        *Test case for migrating running VFW by putting node in maintenance with action move or stop all vms.*
+
+        **Test Scenario:**
+
+        #. Create cloud space and get its virtual firewall (VFW), should succeed.
+        #. Put VFW's node (CPU1) in maintenance, should succeed.
+        #. Make sure the running (VFW1) has been migrated to another cpu-node.
+        #. Move VFW1 to CPU1, should fail.
+        #. Stop VFW1, should succeed.
+        #. Enable CPU1, should succeed.
+        """
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg('Create cloud space and get its virtual firewall (VFW), should succeed.')
+        vfw1 = self.api.cloudbroker.cloudspace.getVFW(cloudspaceId=self.cloudspace_id)
+        self.assertTrue(vfw1)
+        nodes = self.api.cloudbroker.computenode.list()
+        self.assertTrue(nodes)
+        self.stackId = [node['id'] for node in nodes if node['name'] == vfw1["nodename"]][0]
+
+        self.lg("Put VFW's node (CPU1) in maintenance, should succeed.")
+        self.api.cloudbroker.computenode.maintenance(id=self.stackId, gid=self.gridId, vmaction=migrate_option, message='test')
+
+        if migrate_option == 'move':
+            self.lg('Make sure the running (VFW1) has been migrated to another cpu-node.')
+            self.wait_till_vfw_move(self.cloudspace_id, vfw1["nodename"])
+            self.assertTrue(self.wait_for_stack_status(self.stackId, 'MAINTENANCE'))
+
+            self.lg('Move VFW1 to CPU1, should fail.')
+            with self.assertRaises(HTTPError) as e:
+                self.api.cloudbroker.cloudspace.moveVirtualFirewallToFirewallNode(cloudspaceId=self.cloudspace_id,
+                                                                                  targetNid=vfw1['nid'])
+            self.lg('- expected error raised %s' % e.exception.status_code)
+            self.assertEqual(e.exception.status_code, 400)
+
+            self.lg('Stop VFW1, should succeed.')
+            response = self.api.cloudbroker.cloudspace.stopVFW(cloudspaceId=self.cloudspace_id)
+            self.assertTrue(response)
+            self.wait_for_status('HALTED', self.api.cloudbroker.cloudspace.getVFW,
+                                 timeout=20, cloudspaceId=self.cloudspace_id)
+        else:
+            self.lg('make sure VFW1 has been stopped')
+            self.wait_for_status('HALTED', self.api.cloudbroker.cloudspace.getVFW,
+                                 cloudspaceId=self.cloudspace_id)
+            self.assertTrue(self.wait_for_stack_status(self.stackId, 'MAINTENANCE'))
+
+            self.lg('Enable CPU1, should succeed and check that the vfw is running')
+            self.api.cloudbroker.computenode.enable(id=self.stackId, gid=self.gridId, message='test')
+            self.assertTrue(self.wait_for_stack_status(self.stackId, 'ENABLED'))
+            self.stackId = -1  # prevent enabling the node in tearDown
+            self.wait_for_status('RUNNING', self.api.cloudbroker.cloudspace.getVFW, timeout=30,
+                                 cloudspaceId=self.cloudspace_id)
+
+        self.lg('%s ENDED' % self._testID)
+
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1297')
+    def test004_halted_vfw_node_maintenance(self):
+        """ OVC-054
+        *Test case for halted VFW by putting node in maintenance with action stop all vms.*
+
+        **Test Scenario:**
+
+        #. Create cloud space and stop its virtual firewall (VFW).
+        #. Put VFW's node (CPU1) in maintenance (action=stop vms), should succeed.
+        #. Enable CPU1, should succeed.
+        #. Make sure VFW is still Halted.
+        """
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg('Create cloud space and stop its virtual firewall (VFW).')
+        response = self.api.cloudbroker.cloudspace.stopVFW(cloudspaceId=self.cloudspace_id)
+        self.assertTrue(response)
+        self.wait_for_status('HALTED', self.api.cloudbroker.cloudspace.getVFW,
+                             timeout=20, cloudspaceId=self.cloudspace_id)
+
+        self.lg("Put VFW's node (CPU1) in maintenance, should succeed.")
+        self.api.cloudbroker.computenode.maintenance(id=self.stackId, gid=self.gridId,
+                                                     vmaction='stop', message='test')
+        time.sleep(60)
         self.assertTrue(self.wait_for_stack_status(self.stackId, 'MAINTENANCE'))
+
+
+        self.lg('Enable CPU1, should succeed')
+        self.api.cloudbroker.computenode.enable(id=self.stackId, gid=self.gridId, message='test')
+        self.assertTrue(self.wait_for_stack_status(self.stackId, 'ENABLED'))
+        self.stackId = -1  # prevent enabling the node in tearDown
+
+        self.lg('Make sure VFW is still Halted.')
+        time.sleep(60)
+        vfw = self.api.cloudbroker.cloudspace.getVFW(cloudspaceId=self.cloudspace_id)
+        self.assertEqual(vfw['status'], 'HALTED')
+
+    @parameterized.expand(['move', 'stop'])
+    def test005_starting_vfw_node_maintenance(self, migrate_option):
+        """ OVC-055
+        *Test case for starting VFW after putting node in maintenance*
+
+        **Test Scenario:**
+
+        #. Create cloud space and stop its virtual firewall (VFW).
+        #. Put VFW's node (CPU1) in maintenance, should succeed.
+        #. Start VFW, and make sure it has been moved to another cpu-node.
+        #. Enable CPU1, should succeed.
+        """
+        self.lg('%s STARTED' % self._testID)
+
+        self.lg('Create cloud space and stop its virtual firewall (VFW).')
+        response = self.api.cloudbroker.cloudspace.stopVFW(cloudspaceId=self.cloudspace_id)
+        self.assertTrue(response)
+        self.wait_for_status('HALTED', self.api.cloudbroker.cloudspace.getVFW,
+                             timeout=20, cloudspaceId=self.cloudspace_id)
+        vfw1 = self.api.cloudbroker.cloudspace.getVFW(cloudspaceId=self.cloudspace_id)
+
+        self.lg("Put VFW's node (CPU1) in maintenance, should succeed.")
+        self.api.cloudbroker.computenode.maintenance(id=self.stackId, gid=self.gridId,
+                                                     vmaction=migrate_option, message='test')
+        self.assertTrue(self.wait_for_stack_status(self.stackId, 'MAINTENANCE'))
+
+        self.lg('Start VFW, and make sure it has been moved to another cpu-node.')
+        response = self.api.cloudbroker.cloudspace.startVFW(cloudspaceId=self.cloudspace_id)
+        self.assertTrue(response)
+        self.wait_for_status('RUNNING', self.api.cloudbroker.cloudspace.getVFW,
+                             cloudspaceId=self.cloudspace_id)
+        self.wait_till_vfw_move(self.cloudspace_id, vfw1["nodename"])
 
         self.lg('%s ENDED' % self._testID)
