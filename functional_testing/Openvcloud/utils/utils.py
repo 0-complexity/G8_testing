@@ -524,7 +524,7 @@ class BaseTest(unittest.TestCase):
         nodes = self.api.cloudbroker.computenode.list()
         for node in nodes:
             if int(node['referenceId']) != except_nodeid and node['status'] == 'ENABLED':
-                return node['referenceId']
+                return int(node['referenceId'])
         else:
             return None
 
