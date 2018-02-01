@@ -208,9 +208,9 @@ class CloudspaceTests(BasicACLTest):
         self.lg('Delete cloudspace (CS1) should succeed')
         self.api.cloudapi.machines.delete(machineId=machineId)
 
-    def test005_stop_start_remove_deploy_vfw(self):
+    def test005_get_stop_start_destroy_deploy_vfw(self):
         """ OVC-04x
-        *Test case for test start stop move remove virtual firewall.*
+        *Test case for test start stop move destroy virtual firewall.*
 
         **Test Scenario:**
         #. Create new cloudspace (CS1).
@@ -219,6 +219,9 @@ class CloudspaceTests(BasicACLTest):
         #. Stop cloudspace (CS1)'s vfw, should succeed.
         #. Try to connect to vm (VM1), should fail.
         #. Start cloudspace (CS1)'s vfw, should succeed.
+        #. Try to connect to vm (VM1), should succeed.
+        #. Destroy cloudspace (CS1)'s vfw, should succeed.
+        #. Deploy new vfw for cloudspace (CS1), should succeed.
         #. Try to connect to vm (VM1), should succeed.
         """
         self.lg('Create virtual machine (VM1)')
@@ -241,6 +244,27 @@ class CloudspaceTests(BasicACLTest):
         self.lg('Start cloudspace (CS1)\'s vfw, should succeed')
         self.api.cloudbroker.cloudspace.startVFW(self.cloudspace_id)
         self.wait_for_status('RUNNING', self.api.cloudbroker.cloudspace.getVFW, cloudspaceId=self.cloudspace_id)
+
+        self.lg('Try to connect to vm (VM1), should succeed')
+        machine_client = VMClient(machine_id)
+        stdin, stdout, stderr = machine_client.execute('uname')
+        self.assertIn('Linux', stdout.read())
+
+        self.lg('Destroy cloudspace (CS1)\'s vfw, should succeed')
+        self.api.cloudbroker.cloudspace.destroyVFW(self.cloudspace_id)
+        self.wait_for_status('VIRTUAL', self.api.cloudapi.cloudspaces.get, cloudspaceId=self.cloudspace_id)
+
+        with self.assertRaises(HTTPError) as e:
+            self.api.cloudbroker.cloudspace.getVFW(self.cloudspace_id)
+        self.assertEqual(e.exception.status_code, 400)
+
+        self.lg('Try to connect to vm (VM1), should fail')
+        with self.assertRaises(socket.error):
+            VMClient(machine_id, timeout=1)
+
+        self.lg('Deploy new vfw for cloudspace (CS1), should succeed')
+        self.api.cloudbroker.cloudspace.deployVFW(self.cloudspace_id)
+        self.wait_for_status('DEPLOYED', self.api.cloudapi.cloudspaces.get, cloudspaceId=self.cloudspace_id)
 
         self.lg('Try to connect to vm (VM1), should succeed')
         machine_client = VMClient(machine_id)
@@ -316,6 +340,8 @@ class CloudspaceTests(BasicACLTest):
         #. Try to connect to virtual machine (VM1) through PF1, should succeed.
         #. Reset cloudspace (CS1)'s vfw, should succeed.
         #. Try to connect to virtual machine (VM1) through PF1, should fail.
+        #. Destroy cloudspace (CS1)'s vfw.
+        #. Try to reset cloudspace (CS1)'s vfw, should fail.
         """
         self.lg('Create virtual machine (VM1)')
         machine_id = self.cloudapi_create_machine(self.cloudspace_id)
@@ -334,7 +360,7 @@ class CloudspaceTests(BasicACLTest):
                     public_port=public_port,
                     local_port=local_port
                 )
-
+l
         self.api.cloudapi.cloudspaces.executeRouterOSScript(self.cloudspace_id, script=script)
 
         self.lg('Try to connect to virtual machine (VM1) through PF1, should succeed')
@@ -348,6 +374,15 @@ class CloudspaceTests(BasicACLTest):
         self.lg('Try to connect to virtual machine (VM1) through PF1, should fail')
         with self.assertRaises(socket.error):
             VMClient(machine_id, port=public_port, timeout=1)
+
+        self.lg('Destroy cloudspace (CS1)\'s vfw')
+        self.api.cloudbroker.cloudspace.destroyVFW(self.cloudspace_id)
+
+        self.lg('Try to reset cloudspace (CS1)\'s vfw, should fail')
+        with self.assertRaises(HTTPError) as e:
+            self.api.cloudbroker.cloudspace.resetVFW(self.cloudspace_id, resettype='factory')
+        self.assertEqual(e.exception.status_code, 400)
+
 
 
 
