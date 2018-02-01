@@ -227,8 +227,9 @@ class MaintenanceTests(BasicACLTest):
         self.lg("Put VFW's node (CPU1) in maintenance, should succeed.")
         self.api.cloudbroker.computenode.maintenance(id=self.stackId, gid=self.gridId,
                                                      vmaction='stop', message='test')
-        self.assertTrue(self.wait_for_stack_status(self.stackId, 'MAINTENANCE'))
         time.sleep(60)
+        self.assertTrue(self.wait_for_stack_status(self.stackId, 'MAINTENANCE'))
+
 
         self.lg('Enable CPU1, should succeed')
         self.api.cloudbroker.computenode.enable(id=self.stackId, gid=self.gridId, message='test')
