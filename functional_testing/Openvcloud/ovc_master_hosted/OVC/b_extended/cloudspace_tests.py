@@ -258,10 +258,6 @@ class CloudspaceTests(BasicACLTest):
             self.api.cloudbroker.cloudspace.getVFW(self.cloudspace_id)
         self.assertEqual(e.exception.status_code, 400)
 
-        self.lg('Try to connect to vm (VM1), should fail')
-        with self.assertRaises(socket.error):
-            VMClient(machine_id, timeout=1)
-
         self.lg('Deploy new vfw for cloudspace (CS1), should succeed')
         self.api.cloudbroker.cloudspace.deployVFW(self.cloudspace_id)
         self.wait_for_status('DEPLOYED', self.api.cloudapi.cloudspaces.get, cloudspaceId=self.cloudspace_id)
