@@ -360,7 +360,7 @@ class CloudspaceTests(BasicACLTest):
                     public_port=public_port,
                     local_port=local_port
                 )
-l
+                
         self.api.cloudapi.cloudspaces.executeRouterOSScript(self.cloudspace_id, script=script)
 
         self.lg('Try to connect to virtual machine (VM1) through PF1, should succeed')
