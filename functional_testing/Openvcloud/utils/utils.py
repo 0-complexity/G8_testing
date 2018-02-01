@@ -521,7 +521,7 @@ class BaseTest(unittest.TestCase):
         return ssh_client
 
     def get_running_nodeId(self, except_nodeid=None):
-        nodes = cloudbroker.computenode.list()
+        nodes = self.api.cloudbroker.computenode.list()
         for node in nodes:
             if int(node['id']) != except_nodeid and node['status'] == 'ENABLED':
                 return node['id']
