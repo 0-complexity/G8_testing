@@ -1,5 +1,5 @@
 #import random
-import unittest, socket
+import unittest, socket, random
 from ....utils.utils import BasicACLTest, VMClient
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
@@ -208,7 +208,7 @@ class CloudspaceTests(BasicACLTest):
         self.lg('Delete cloudspace (CS1) should succeed')
         self.api.cloudapi.machines.delete(machineId=machineId)
 
-    def test005_stop_start_move_remove_deploy_vfw(self):
+    def test005_stop_start_remove_deploy_vfw(self):
         """ OVC-04x
         *Test case for test start stop move remove virtual firewall.*
 
@@ -220,15 +220,7 @@ class CloudspaceTests(BasicACLTest):
         #. Try to connect to vm (VM1), should fail.
         #. Start cloudspace (CS1)'s vfw, should succeed.
         #. Try to connect to vm (VM1), should succeed.
-        #. Move cloudspace (CS1)'s vfw to another node, should succeed.
-        #. Try to connect to vm (VM1), should succeed.
-        #. Stop cloudspace (CS1)'s vfw, should succeed.
-        #. Move cloudspace (CS1)'s vfw to another node, should succeed.
-        #. Start cloudspace (CS1)'s vfw, should succeed.
-        #. Try to connect to vm (VM1), should succeed.
         """
-        vfw = self.api.cloudbroker.cloudspace.getVFW(self.cloudspace_id)
-
         self.lg('Create virtual machine (VM1)')
         machine_id = self.cloudapi_create_machine(self.cloudspace_id)
         self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machine_id)
@@ -255,6 +247,26 @@ class CloudspaceTests(BasicACLTest):
         stdin, stdout, stderr = machine_client.execute('uname')
         self.assertIn('Linux', stdout.read())
 
+    def test006_move_vfw(self):
+        """ OVC-04x
+        *Test case for test start stop move remove virtual firewall.*
+
+        **Test Scenario:**
+        #. Create new cloudspace (CS1).
+        #. Create virtual machine (VM1).
+        #. Move cloudspace (CS1)'s vfw to another node, should succeed.
+        #. Try to connect to vm (VM1), should succeed.
+        #. Stop cloudspace (CS1)'s vfw, should succeed.
+        #. Move cloudspace (CS1)'s vfw to another node, should succeed.
+        #. Start cloudspace (CS1)'s vfw, should succeed.
+        #. Try to connect to vm (VM1), should succeed.
+        """
+        vfw = self.api.cloudbroker.cloudspace.getVFW(self.cloudspace_id)
+
+        self.lg('Create virtual machine (VM1)')
+        machine_id = self.cloudapi_create_machine(self.cloudspace_id)
+        self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machine_id)
+        
         self.lg('Move cloudspace (CS1)\'s vfw to another node, should succeed')
         node_id = self.get_running_nodeId(except_nodeid=vfw['nid'])
         if not node_id:
@@ -293,6 +305,51 @@ class CloudspaceTests(BasicACLTest):
         stdin, stdout, stderr = machine_client.execute('uname')
         self.assertIn('Linux', stdout.read())
 
+    def test007_reset_vfw(self):
+        """ OVC-04x
+        *Test case for test start stop move remove virtual firewall.*
 
-    def test006_reset_reapplyconfig_vfw(self):
-        pass
+        **Test Scenario:**
+        #. Create new cloudspace (CS1).
+        #. Create virtual machine (VM1).
+        #. Execute script on routeros of cloudspace (CS1) to create portforward (PF1), should succeed.
+        #. Try to connect to virtual machine (VM1) through PF1, should succeed.
+        #. Reset cloudspace (CS1)'s vfw, should succeed.
+        #. Try to connect to virtual machine (VM1) through PF1, should fail.
+        """
+        self.lg('Create virtual machine (VM1)')
+        machine_id = self.cloudapi_create_machine(self.cloudspace_id)
+        self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machine_id)
+
+        self.lg('Execute script on routeros of cloudspace (CS1) to create portforward (PF1), should succeed')
+        cloudspace_ip = self.api.cloudapi.cloudspaces.get(self.cloudspace_id)['publicipaddress']
+        vm_ip = self.get_machine_ipaddress(machine_id)
+        public_port = random.randint(30000, 60000)
+        local_port = 22
+        script = '/ip firewall nat add chain=dstnat action=dst-nat \
+                 to-addresses={vm_ip} to-ports={local_port} protocol=tcp dst-address={cloudspace_ip} \
+                 dst-port={public_port} comment=cloudbroker'.format(
+                    vm_ip=vm_ip,
+                    cloudspace_ip=cloudspace_ip,
+                    public_port=public_port,
+                    local_port=local_port
+                )
+
+        self.api.cloudapi.cloudspaces.executeRouterOSScript(self.cloudspace_id, script=script)
+
+        self.lg('Try to connect to virtual machine (VM1) through PF1, should succeed')
+        machine_client = VMClient(machine_id, port=public_port)
+        stdin, stdout, stderr = machine_client.execute('uname')
+        self.assertIn('Linux', stdout.read())
+
+        self.lg('Reset cloudspace (CS1)\'s vfw, should succeed')
+        self.api.cloudbroker.cloudspace.resetVFW(self.cloudspace_id, resettype='factory')
+
+        self.lg('Try to connect to virtual machine (VM1) through PF1, should fail')
+        with self.assertRaises(socket.error):
+            VMClient(machine_id, port=public_port, timeout=1)
+
+
+
+
+
