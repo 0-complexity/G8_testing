@@ -1,6 +1,5 @@
-# coding=utf-8
-import random
-import unittest
+#import random
+import unittest, socket
 from ....utils.utils import BasicACLTest, VMClient
 from JumpScale.portal.portal.PortalClient2 import ApiError
 from JumpScale.baselib.http_client.HttpClient import HTTPError
@@ -208,3 +207,92 @@ class CloudspaceTests(BasicACLTest):
 
         self.lg('Delete cloudspace (CS1) should succeed')
         self.api.cloudapi.machines.delete(machineId=machineId)
+
+    def test005_stop_start_move_remove_deploy_vfw(self):
+        """ OVC-04x
+        *Test case for test start stop move remove virtual firewall.*
+
+        **Test Scenario:**
+        #. Create new cloudspace (CS1).
+        #. Create virtual machine (VM1).
+        #. Try to connect to vm (VM1), should succeed.
+        #. Stop cloudspace (CS1)'s vfw, should succeed.
+        #. Try to connect to vm (VM1), should fail.
+        #. Start cloudspace (CS1)'s vfw, should succeed.
+        #. Try to connect to vm (VM1), should succeed.
+        #. Move cloudspace (CS1)'s vfw to another node, should succeed.
+        #. Try to connect to vm (VM1), should succeed.
+        #. Stop cloudspace (CS1)'s vfw, should succeed.
+        #. Move cloudspace (CS1)'s vfw to another node, should succeed.
+        #. Start cloudspace (CS1)'s vfw, should succeed.
+        #. Try to connect to vm (VM1), should succeed.
+        """
+        vfw = self.api.cloudbroker.cloudspace.getVFW(self.cloudspace_id)
+
+        self.lg('Create virtual machine (VM1)')
+        machine_id = self.cloudapi_create_machine(self.cloudspace_id)
+        self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=machine_id)
+
+        self.lg('Try to connect to vm (VM1), should succeed')
+        machine_client = VMClient(machine_id)
+        stdin, stdout, stderr = machine_client.execute('uname')
+        self.assertIn('Linux', stdout.read())
+
+        self.lg('Stop cloudspace (CS1)\'s vfw, should succeed')
+        self.api.cloudbroker.cloudspace.stopVFW(self.cloudspace_id)
+        self.wait_for_status('HALTED', self.api.cloudbroker.cloudspace.getVFW, cloudspaceId=self.cloudspace_id)
+
+        self.lg('Try to connect to vm (VM1), should fail')
+        with self.assertRaises(socket.error):
+            VMClient(machine_id, timeout=1)
+
+        self.lg('Start cloudspace (CS1)\'s vfw, should succeed')
+        self.api.cloudbroker.cloudspace.startVFW(self.cloudspace_id)
+        self.wait_for_status('RUNNING', self.api.cloudbroker.cloudspace.getVFW, cloudspaceId=self.cloudspace_id)
+
+        self.lg('Try to connect to vm (VM1), should succeed')
+        machine_client = VMClient(machine_id)
+        stdin, stdout, stderr = machine_client.execute('uname')
+        self.assertIn('Linux', stdout.read())
+
+        self.lg('Move cloudspace (CS1)\'s vfw to another node, should succeed')
+        node_id = self.get_running_nodeId(except_nodeid=vfw['nid'])
+        if not node_id:
+            self.skipTest('No enabled nodes were found to move the VFW')
+
+        self.api.cloudbroker.cloudspace.moveVirtualFirewallToFirewallNode(self.cloudspace_id, node_id)
+        vfw = self.api.cloudbroker.cloudspace.getVFW(self.cloudspace_id)
+        self.assertEqual(vfw['nid'], node_id)
+        self.wait_for_status('RUNNING', self.api.cloudbroker.cloudspace.getVFW, cloudspaceId=self.cloudspace_id)
+
+        self.lg('Try to connect to vm (VM1), should succeed')
+        machine_client = VMClient(machine_id)
+        stdin, stdout, stderr = machine_client.execute('uname')
+        self.assertIn('Linux', stdout.read())
+
+        self.lg('Stop cloudspace (CS1)\'s vfw, should succeed')
+        self.api.cloudbroker.cloudspace.stopVFW(self.cloudspace_id)
+        self.wait_for_status('HALTED', self.api.cloudbroker.cloudspace.getVFW, cloudspaceId=self.cloudspace_id)
+
+        self.lg('Move cloudspace (CS1)\'s vfw to another node, should succeed')
+        node_id = self.get_running_nodeId(except_nodeid=vfw['nid'])
+        if not node_id:
+            self.skipTest('No enabled nodes were found to move the VFW')
+
+        self.api.cloudbroker.cloudspace.moveVirtualFirewallToFirewallNode(self.cloudspace_id, node_id)
+        vfw = self.api.cloudbroker.cloudspace.getVFW(self.cloudspace_id)
+        self.assertEqual(vfw['nid'], node_id)
+        self.wait_for_status('HALTED', self.api.cloudbroker.cloudspace.getVFW, cloudspaceId=self.cloudspace_id)
+
+        self.lg('Start cloudspace (CS1)\'s vfw, should succeed')
+        self.api.cloudbroker.cloudspace.startVFW(self.cloudspace_id)
+        self.wait_for_status('RUNNING', self.api.cloudbroker.cloudspace.getVFW, cloudspaceId=self.cloudspace_id)
+
+        self.lg('Try to connect to vm (VM1), should succeed')
+        machine_client = VMClient(machine_id)
+        stdin, stdout, stderr = machine_client.execute('uname')
+        self.assertIn('Linux', stdout.read())
+
+
+    def test006_reset_reapplyconfig_vfw(self):
+        pass
