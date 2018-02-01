@@ -523,8 +523,8 @@ class BaseTest(unittest.TestCase):
     def get_running_nodeId(self, except_nodeid=None):
         nodes = self.api.cloudbroker.computenode.list()
         for node in nodes:
-            if int(node['id']) != except_nodeid and node['status'] == 'ENABLED':
-                return node['id']
+            if int(node['referenceId']) != except_nodeid and node['status'] == 'ENABLED':
+                return node['referenceId']
         else:
             return None
 
