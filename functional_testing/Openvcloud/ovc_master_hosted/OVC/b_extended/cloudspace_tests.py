@@ -209,7 +209,7 @@ class CloudspaceTests(BasicACLTest):
         self.api.cloudapi.machines.delete(machineId=machineId)
 
     def test005_get_stop_start_destroy_deploy_vfw(self):
-        """ OVC-04x
+        """ OVC-056
         *Test case for test start stop move destroy virtual firewall.*
 
         **Test Scenario:**
@@ -272,7 +272,7 @@ class CloudspaceTests(BasicACLTest):
         self.assertIn('Linux', stdout.read())
 
     def test006_move_vfw(self):
-        """ OVC-04x
+        """ OVC-057
         *Test case for test start stop move remove virtual firewall.*
 
         **Test Scenario:**
@@ -330,7 +330,7 @@ class CloudspaceTests(BasicACLTest):
         self.assertIn('Linux', stdout.read())
 
     def test007_reset_vfw(self):
-        """ OVC-04x
+        """ OVC-058
         *Test case for test start stop move remove virtual firewall.*
 
         **Test Scenario:**
@@ -360,7 +360,7 @@ class CloudspaceTests(BasicACLTest):
                     public_port=public_port,
                     local_port=local_port
                 )
-                
+
         self.api.cloudapi.cloudspaces.executeRouterOSScript(self.cloudspace_id, script=script)
 
         self.lg('Try to connect to virtual machine (VM1) through PF1, should succeed')
