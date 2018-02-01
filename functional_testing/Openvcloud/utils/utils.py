@@ -520,6 +520,13 @@ class BaseTest(unittest.TestCase):
         ssh_client.connect(vm_ip, username=login, password=password)
         return ssh_client
 
+    def get_running_nodeId(self, except_nodeid=None):
+        nodes = self.api.cloudbroker.computenode.list()
+        for node in nodes:
+            if int(node['referenceId']) != except_nodeid and node['status'] == 'ENABLED':
+                return int(node['referenceId'])
+        else:
+            return None
 
     def get_running_stackId(self, except_stackid=''):
         ccl = j.clients.osis.getNamespace('cloudbroker')
