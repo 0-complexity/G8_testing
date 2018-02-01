@@ -367,7 +367,7 @@ class CloudspaceTests(BasicACLTest):
         self.lg('Reset cloudspace (CS1)\'s vfw, should succeed')
         self.api.cloudbroker.cloudspace.resetVFW(self.cloudspace_id, resettype='factory')
 
-        self.lg('Try to connect to virtual machine (VM1) through PF1, should fail')
+        self.lg('Try to connect to virtual machine (VM1) through portforward (PF1), should fail')
         with self.assertRaises(socket.error):
             VMClient(machine_id, port=public_port, timeout=1)
 
