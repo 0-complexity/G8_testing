@@ -57,10 +57,8 @@ class ImagesTests(Framework):
         self.assertTrue(self.Tables.check_next_previous_buttons('images'))
 
     @parameterized.expand(['Name',
-                           'Location',
                            'Type',
-                           'Status',
-                           'Size'])
+                           'Status'])
     def test04_image_page_searchbox(self, column):
         """ PRTL-044
         *Test case to make sure that search boxes of images page are working as expected*
@@ -125,7 +123,7 @@ class ImagesTests(Framework):
         self.assertTrue(self.Tables.check_next_previous_buttons('machines'))
 
     @parameterized.expand(['ID',
-                           'GridID',
+                           'Grid ID',
                            'Name',
                            'Status',
                            'Reference ID'])
