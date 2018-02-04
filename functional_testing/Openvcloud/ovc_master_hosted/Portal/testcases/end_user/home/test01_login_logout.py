@@ -42,8 +42,6 @@ class LoginLogoutPortalTests(Framework):
         #. check the home page title, should succeed
         #. do logout, should succeed
         #. check the login page title, should succeed
-        #. do login using admin username/password, should succeed
-        #. check the home page title, should succeed
         """
         self.lg('%s STARTED' % self._testID)
         self.lg('do login using admin username/password, should succeed')
@@ -54,11 +52,6 @@ class LoginLogoutPortalTests(Framework):
         self.Logout.End_User_Logout()
         time.sleep(5)
         self.assertEqual(self.driver.title, 'OpenvCloud - Decks')
-        self.lg('do login using admin username/password again, should succeed')
-        self.Login.Login()
-        self.lg('check the home page title, should succeed')
-        self.assertEqual(self.driver.title, 'OpenvCloud - Decks')
-        self.lg('%s ENDED' % self._testID)
 
     @parameterized.expand([('normal username', str(uuid.uuid4())),
                            ('long username', 'X'*1000),
