@@ -65,6 +65,16 @@ elements = {
             'table_groups_pagination':['ID','DataTables_Table_0_paginate'],
             'table_groups_search_box':['XPATH','//*[@id="DataTables_Table_0_filter"]/label/input'],
 
+            'table_zero_access_nodes_data':['ID','DataTables_Table_0'],
+            'table_zero_access_nodes_info':['ID','DataTables_Table_0_info'],
+            'table_zero_access_nodes_selector':['NAME','DataTables_Table_0_length', 0],
+            'table_zero_access_nodes_pagination':['ID','DataTables_Table_0_paginate'],
+
+            'table_zero_access_sessions_data':['ID','DataTables_Table_1'],
+            'table_zero_access_sessions_info':['ID','DataTables_Table_1_info'],
+            'table_zero_access_sessions_selector':['NAME','DataTables_Table_1_length', 0],
+            'table_zero_access_sessions_pagination':['ID','DataTables_Table_1_paginate'],
+        
             'snapshot_ok_button': ['XPATH', 'html/body/div[3]/form/div[3]/button[1]'],
             'storage_arrow': ['XPATH', 'html/body/div[1]/div/div[1]/div/nav/div/ul/li[5]/ul[1]/a[1]'],
             'user_delete_confirm': ['XPATH', ".//*[@id='action-Delete']/div/div[3]/button[2]"],
@@ -402,7 +412,8 @@ elements = {
             'knowledge_base_line6_tab_image8': ['XPATH',
                                                 ".//*[@id='wrap']/div/tour/div[3]/div[2]/div/div/div/div[2]/p[16]/img"],
             'cloudbroker_sub_sr': ['XPATH', ".//*[@id='collapse-2']/li[11]/a"],
-            'cloudbroker_sub_sv': ['XPATH', ".//*[@id='collapse-2']/li[12]/a"],
+            'cloudbroker_sub_0_access': ['XPATH', ".//*[@id='collapse-2']/li[12]/a"],
+            'cloudbroker_sub_sv': ['XPATH', ".//*[@id='collapse-2']/li[13]/a"],
             'windows_2012': ['XPATH', ".//*[@id='Windows']/ul/button"], 'machine_description_': ['XPATH',
                                                                                                  ".//*[@id='wrap']/div/tour/div[3]/div[2]/div/div/div/div[2]/div/div/div/div[2]/textarea"],
             'machines_line11_label': ['XPATH', ".//*[@id='wrap']/div/tour/div[3]/div[2]/div/div/div/div[2]/p"],
@@ -797,6 +808,11 @@ elements = {
             'delete_account_dialog':['ID','action-Delete'],
             'delete_cloudspace_dialog':['ID','action-DeleteCloudSpace'],
             'delete_vm_dialog':['ID','action-Delete'],
-            'edit_account_dialog':['ID','action-Edit']
+            'edit_account_dialog':['ID','action-Edit'],
+
+            'zero_access_nodes_search': ['XPATH', '//*[@id="DataTables_Table_0"]/tfoot/td[1]/input'],
+            'zero_access_sessions_search': ['XPATH', '//*[@id="DataTables_Table_1"]/tfoot/td[1]/input'],
+            'zero_access_nodes_first_element': ['XPATH', "//*[@id='DataTables_Table_0']/tbody/tr[1]/td[1]"],
+            'zero_access_sessions_first_element': ['XPATH', "//*[@id='DataTables_Table_1']/tbody/tr[1]/td[1]"],
 
             }
