@@ -8,8 +8,6 @@ class GridTests(Framework):
         super(GridTests, self).setUp()
         self.Login.Login()
 
-
-    @unittest.skip('bug #695')
     def test001_error_condition_page(self):
 
         """ PRTL-021
