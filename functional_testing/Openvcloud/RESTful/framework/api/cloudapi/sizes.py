@@ -3,4 +3,8 @@ from framework.utils.utils import Utils
 
 class Sizes:
     def __init__(self):
-        pass
+        self._api = api_client.cloudapi.sizes
+        self.utils = Utils()
+
+    def list(** kwargs):
+        return self._api.list(** kwargs)
