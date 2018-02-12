@@ -14,12 +14,7 @@ class BaseResource(object):
 
     def __call__(self, **kwargs):
         response = self._session.request(self._method, self._url, kwargs)
-        response.raise_for_status()
-
-        if response.headers.get('content-type', 'text/html') == 'application/json':
-            return response.json()
-
-        return response.content
+        return response
 
 class Client(BaseResource):
     def __init__(self, ip, port, client_id, client_secret):

@@ -2,6 +2,9 @@ import time, signal, logging
 from datetime import timedelta
 from unittest import TestCase
 from nose.tools import TimeExpired
+from testconfig import config
+from framework.api.client import Client
+from framework.utils.utils import Utils
 
 class TestcasesBase(TestCase):
     def __init__(self, *args, **kwargs):
@@ -10,7 +13,9 @@ class TestcasesBase(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        pass
+        cls.api = Client()
+        cls.utils = Utils()
+        cls.whoami = config['main']['username']
   
     @classmethod
     def tearDownClass(cls):
