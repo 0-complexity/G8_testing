@@ -31,35 +31,16 @@ class Accounts:
         )
 
     def update(self, accountId, **kwargs):
-        name = kwargs.get('name', self.utils.random_string())
-        maxMemoryCapacity = kwargs.get('maxMemoryCapacity', -1)
-        maxVDiskCapacity = kwargs.get('maxVDiskCapacity', -1)
-        maxCPUCapacity = kwargs.get('maxCPUCapacity', -1)
-        maxNetworkPeerTransfer = kwargs.get('maxNetworkPeerTransfer', -1)
-        maxNumPublicIP = kwargs.get('maxNumPublicIP', -1)
-
-        return self._api.update(
-            accountId=accountId,
-            name=name,
-            maxMemoryCapacity=maxMemoryCapacity,
-            maxVDiskCapacity=maxVDiskCapacity,
-            maxCPUCapacity=maxCPUCapacity,
-            maxNetworkPeerTransfer=maxNetworkPeerTransfer,
-            maxNumPublicIP=maxNumPublicIP
-        )
+        return self._api.update(accountId=accountId, **kwargs)
     
-    def addUser(self, accountId, userId, **kwargs):
-        accesstype = kwargs.get('accesstype', 'ARCXDU')
-
+    def addUser(self, accountId, userId, accesstype='ARCXDU'):
         return self._api.addUser(
             accountId=accountId,
             userId=userId,
             accesstype=accesstype
         )
 
-    def deleteUser(self, accountId, userId, **kwargs):
-        recursivedelete = kwargs.get('recursivedelete', False)
-        
+    def deleteUser(self, accountId, userId, recursivedelete=False):        
         return self._api.deleteUser(
             accountId=accountId,
             userId=userId,
