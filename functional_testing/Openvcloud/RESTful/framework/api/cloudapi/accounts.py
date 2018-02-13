@@ -1,10 +1,8 @@
 from framework.api import api_client
-from framework.utils.utils import Utils
 
 class Accounts:
     def __init__(self):
         self._api = api_client.cloudapi.accounts
-        self.utils = Utils()
 
     def list(self):
         return self._api.list()
@@ -13,7 +11,7 @@ class Accounts:
         return self._api.get(accountId=accountId)
 
     def create(self, access, **kwargs):
-        name = kwargs.get('name', self.utils.random_string())
+        name = kwargs.get('name', utils.random_string())
         maxMemoryCapacity = kwargs.get('maxMemoryCapacity', -1)
         maxVDiskCapacity = kwargs.get('maxVDiskCapacity', -1)
         maxCPUCapacity = kwargs.get('maxCPUCapacity', -1)

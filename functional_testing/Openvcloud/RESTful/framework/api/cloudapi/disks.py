@@ -1,10 +1,8 @@
 from framework.api import api_client
-from framework.utils.utils import Utils
 
 class Disks:
     def __init__(self):
         self._api = api_client.cloudapi.disks
-        self.utils = Utils()
 
     def list(self, accountId):
         disktype = kwargs.get('type')
@@ -14,8 +12,8 @@ class Disks:
         return self._api.get(diskId=diskId)
 
     def create(self, accountId, gid, type, **kwargs):
-        name = kwargs.get('name', self.utils.random_string())
-        description = kwargs.get('description', self.utils.random_string())
+        name = kwargs.get('name', utils.random_string())
+        description = kwargs.get('description', utils.random_string())
         disktype = kwargs.get('type', 'D')
 
         return self._api.create(

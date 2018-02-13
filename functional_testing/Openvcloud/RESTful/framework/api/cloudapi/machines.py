@@ -1,14 +1,12 @@
 from framework.api import api_client
-from framework.utils.utils import Utils
 
 class Machines:
     def __init__(self):
         self._api = api_client.cloudapi.machines
-        self.utils = Utils()
 
     def addDisk(self, machineId, **kwargs):
-        diskName = kwargs.get('diskName', self.utils.random_string())
-        description = kwargs.get('description', self.utils.random_string())
+        diskName = kwargs.get('diskName', utils.random_string())
+        description = kwargs.get('description', utils.random_string())
         size = kwargs.get('size', 25)
         disktype = kwargs.get('type', 'D')
 
@@ -40,7 +38,7 @@ class Machines:
         )
 
     def clone(self, machineId, **kwargs):   
-        name = kwargs.get('name', self.utils.random_string())     
+        name = kwargs.get('name', utils.random_string())     
         return self._api.clone(
             machineId=machineId,
             name=name,
@@ -48,15 +46,15 @@ class Machines:
         )
 
     def convertToTemplate(self, machineId, **kwargs):   
-        templatename = kwargs.get('templatename', self.utils.random_string())     
+        templatename = kwargs.get('templatename', utils.random_string())     
         return self._api.convertToTemplate(
             machineId=machineId,
             templatename=templatename
         )
 
     def create(self, cloudspaceId, sizeId, imageId, disksize, **kwargs):   
-        name = kwargs.get('name', self.utils.random_string())    
-        description = kwargs.get('description', self.utils.random_string()) 
+        name = kwargs.get('name', utils.random_string())    
+        description = kwargs.get('description', utils.random_string()) 
         datadisks = kwargs.get('datadisks', [])
 
         return self._api.create(
@@ -96,8 +94,8 @@ class Machines:
         )
 
     def importOVF(self, link, username, passwd, path, cloudspaceId, sizeId, **kwargs):
-        name = kwargs.get('name', self.utils.random_string())    
-        description = kwargs.get('description', self.utils.random_string()) 
+        name = kwargs.get('name', utils.random_string())    
+        description = kwargs.get('description', utils.random_string()) 
 
         return self._api.importOVF(
             link=link,
@@ -151,12 +149,12 @@ class Machines:
         return self._api.rollbackSnapshot(machineId=machineId, **kwargs)
 
     def snapshot(self, machineId, **kwargs):
-        name = kwargs.get('name', self.utils.random_string())
+        name = kwargs.get('name', utils.random_string())
         return self._api.snapshot(machineId=machineId, name=name)
 
     def update(self, machineId, **kwargs):
-        name = kwargs.get('name', self.utils.random_string())
-        description = kwargs.get('description', self.utils.random_string())
+        name = kwargs.get('name', utils.random_string())
+        description = kwargs.get('description', utils.random_string())
         return self._api.update(
             machineId=machineId, 
             name=name,

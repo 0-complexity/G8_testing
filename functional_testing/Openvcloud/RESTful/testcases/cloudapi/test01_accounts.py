@@ -16,10 +16,11 @@ class Test(TestcasesBase):
     def tearDown(self):
         super().tearDown()
 
+    # @print_test
     def test001_create_account(self):
         """ OVC-001
         """
-        pass
+        print(self._testID)
 
     def test002_get_account(self):
         """ OVC-002
