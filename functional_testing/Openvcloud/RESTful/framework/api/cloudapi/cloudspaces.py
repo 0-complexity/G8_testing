@@ -11,28 +11,35 @@ class Cloudspaces:
         return self._api.cloudapi.cloudspaces.get(cloudspaceId=cloudspaceId)
 
     def create(self, accountId, location, access, **kwargs):
-        name = kwargs.get('name', utils.random_string())
-        maxMemoryCapacity = kwargs.get('maxMemoryCapacity', -1)
-        maxVDiskCapacity = kwargs.get('maxVDiskCapacity', -1)
-        maxCPUCapacity = kwargs.get('maxCPUCapacity', -1)
-        maxNetworkPeerTransfer = kwargs.get('maxNetworkPeerTransfer', -1)
-        maxNumPublicIP = kwargs.get('maxNumPublicIP', -1)
-        
-        return self._api.cloudapi.cloudspaces.create(
-            accountId=accountId,
-            location=location,
-            access=access,
-            name=name,
-            maxMemoryCapacity=maxMemoryCapacity,
-            maxVDiskCapacity=maxVDiskCapacity,
-            maxCPUCapacity=maxCPUCapacity,
-            maxNetworkPeerTransfer=maxNetworkPeerTransfer,
-            maxNumPublicIP=maxNumPublicIP,
-            **kwargs
-        )
+        data = {
+            'accountId': accountId,
+            'location': location,
+            'access': access,
+            'name': utils.random_string(),
+            'maxMemoryCapacity': -1,
+            'maxVDiskCapacity': -1,
+            'maxCPUCapacity': -1,
+            'maxNetworkPeerTransfer': -1,
+            'maxNumPublicIP': -1,
+            'allowedVMSizes': [],
+            'privatenetwork': ''
+        }
+        data.update(** kwargs)
+        return data, self._api.cloudapi.cloudspaces.create(** data)
 
     def update(self, cloudspaceId, **kwargs):
-        return self._api.cloudapi.cloudspaces.update(cloudspaceId=cloudspaceId, **kwargs)
+        data = {
+            'cloudspaceId': cloudspaceId,
+            'name': utils.random_string(),
+            'maxMemoryCapacity': -1,
+            'maxVDiskCapacity': -1,
+            'maxCPUCapacity': -1,
+            'maxNetworkPeerTransfer': -1,
+            'maxNumPublicIP': -1,
+            'allowedVMSizes': [],
+        }
+        data.update(** kwargs)
+        return data, self._api.cloudapi.cloudspaces.update(** data)
 
     def delete(self, cloudspaceId):
         return self._api.cloudapi.cloudspaces.delete(cloudspaceId=cloudspaceId)

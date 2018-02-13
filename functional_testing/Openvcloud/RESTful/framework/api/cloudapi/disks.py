@@ -11,19 +11,22 @@ class Disks:
     def get(self, diskId):
         return self._api.cloudapi.disks.get(diskId=diskId)
 
-    def create(self, accountId, gid, type, **kwargs):
-        name = kwargs.get('name', utils.random_string())
-        description = kwargs.get('description', utils.random_string())
-        disktype = kwargs.get('type', 'D')
+    def create(self, accountId, gid, **kwargs):
+        data = {
+            'accountId': accountId,
+            'gid': gid,
+            'name': utils.random_string(),
+            'description': utils.random_string(),
+            'type': random.choice(['D', 'B', 'T']),
+            'iops': random.randint(100, 5000)
+        }
+        data.update(**kwargs)
 
-        return self._api.cloudapi.disks.create(
-            accountId=accountId,
-            gid=gid,
-            name=name,
-            description=description,
-            type=disktype,
-            **kwargs
-        )
+        disk_min_size = 25 if data['type'] == 'B' else 1
+        data['size'] = random.randint(disk_min_size, 1000)
+        data['ssdSize'] = random.randint(0, data['size'])
+        
+        return data, self._api.cloudapi.disks.create(** data)
 
     def resize(self, diskId, size):
         return self._api.cloudapi.disks.resize(diskId=diskId, size=size)
