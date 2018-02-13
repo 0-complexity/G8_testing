@@ -2,21 +2,21 @@ from framework.api import api_client
 
 class Disks:
     def __init__(self):
-        self._api = api_client.cloudapi.disks
+        self._api = api_client
 
     def list(self, accountId):
         disktype = kwargs.get('type')
-        return self._api.list(accountId=accountId, type=disktype)
+        return self._api.cloudapi.disks.list(accountId=accountId, type=disktype)
     
     def get(self, diskId):
-        return self._api.get(diskId=diskId)
+        return self._api.cloudapi.disks.get(diskId=diskId)
 
     def create(self, accountId, gid, type, **kwargs):
         name = kwargs.get('name', utils.random_string())
         description = kwargs.get('description', utils.random_string())
         disktype = kwargs.get('type', 'D')
 
-        return self._api.create(
+        return self._api.cloudapi.disks.create(
             accountId=accountId,
             gid=gid,
             name=name,
@@ -26,8 +26,8 @@ class Disks:
         )
 
     def resize(self, diskId, size):
-        return self._api.resize(diskId=diskId, size=size)
+        return self._api.cloudapi.disks.resize(diskId=diskId, size=size)
 
     def delete(self, diskId, detach):
         detach = kwargs.get('detach')
-        return self._api.delete(diskId=diskId, detach=detach)
+        return self._api.cloudapi.disks.delete(diskId=diskId, detach=detach)
