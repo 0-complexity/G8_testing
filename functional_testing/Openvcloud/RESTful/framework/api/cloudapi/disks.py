@@ -1,4 +1,4 @@
-from framework.api import api_client
+from framework.api import api_client, utils
 
 class Disks:
     def __init__(self):
@@ -18,14 +18,11 @@ class Disks:
             'name': utils.random_string(),
             'description': utils.random_string(),
             'type': random.choice(['D', 'B', 'T']),
+            'size': random.randint(1, 1000),
+            'ssdSize': random.randint(1, 1000),
             'iops': random.randint(100, 5000)
         }
-        data.update(**kwargs)
-
-        disk_min_size = 25 if data['type'] == 'B' else 1
-        data['size'] = random.randint(disk_min_size, 1000)
-        data['ssdSize'] = random.randint(0, data['size'])
-        
+        data.update(**kwargs)        
         return data, self._api.cloudapi.disks.create(** data)
 
     def resize(self, diskId, size):

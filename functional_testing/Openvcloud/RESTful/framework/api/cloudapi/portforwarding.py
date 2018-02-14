@@ -1,5 +1,5 @@
 import random
-from framework.api import api_client
+from framework.api import api_client, utils
 
 class Portforwarding:
     def __init__(self):

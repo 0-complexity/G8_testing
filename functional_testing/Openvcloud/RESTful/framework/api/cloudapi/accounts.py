@@ -1,4 +1,4 @@
-from framework.api import api_client
+from framework.api import api_client, utils
 
 class Accounts:
     def __init__(self):
@@ -11,22 +11,17 @@ class Accounts:
         return self._api.cloudapi.accounts.get(accountId=accountId)
 
     def create(self, access, **kwargs):
-        name = kwargs.get('name', utils.random_string())
-        maxMemoryCapacity = kwargs.get('maxMemoryCapacity', -1)
-        maxVDiskCapacity = kwargs.get('maxVDiskCapacity', -1)
-        maxCPUCapacity = kwargs.get('maxCPUCapacity', -1)
-        maxNetworkPeerTransfer = kwargs.get('maxNetworkPeerTransfer', -1)
-        maxNumPublicIP = kwargs.get('maxNumPublicIP', -1)
-
-        return self._api.cloudapi.accounts.create(
-            name=name,
-            access=access,
-            maxMemoryCapacity=maxMemoryCapacity,
-            maxVDiskCapacity=maxVDiskCapacity,
-            maxCPUCapacity=maxCPUCapacity,
-            maxNetworkPeerTransfer=maxNetworkPeerTransfer,
-            maxNumPublicIP=maxNumPublicIP
-        )
+        data = {
+            'name': utils.random_string(),
+            'access': access,
+            'maxMemoryCapacity': -1,
+            'maxVDiskCapacity': -1,
+            'maxCPUCapacity': -1,
+            'maxNetworkPeerTransfer': -1,
+            'maxNumPublicIP': -1,
+        }
+        data.update(** kwargs)
+        return data, self._api.cloudapi.accounts.create(** data)
 
     def update(self, accountId, **kwargs):
         return self._api.cloudapi.accounts.update(accountId=accountId, **kwargs)

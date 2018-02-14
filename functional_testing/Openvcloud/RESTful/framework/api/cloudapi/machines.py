@@ -1,71 +1,60 @@
-from framework.api import api_client
+from framework.api import api_client, utils
 
 class Machines:
     def __init__(self):
         self._api = api_client
 
     def addDisk(self, machineId, **kwargs):
-        diskName = kwargs.get('diskName', utils.random_string())
-        description = kwargs.get('description', utils.random_string())
-        size = kwargs.get('size', 25)
-        disktype = kwargs.get('type', 'D')
-
-        return self._api.cloudapi.machines.addDisk(
-            machineId=machineId,
-            diskName=diskName,
-            description=description,
-            size=size,
-            disktype=disktype,
-            **kwargs
-        )
+        data = {
+            'machineId': machineId,
+            'diskName': utils.random_string(),
+            'description': utils.random_string(),
+            'size': random.randint(1, 1000),
+            'ssdSize': random.randint(1, 1000),
+            'type': random.choice(['D', 'B', 'T']),
+            'iops': random.randint(100, 5000)
+        }
+        data.update(** kwargs)
+        return data, self._api.cloudapi.machines.addDisk()
 
     def addUser(self, machineId, userId, accesstype='ARCXDU'):        
-        return self._api.cloudapi.machines.addUser(
-            machineId=machineId,
+        return self._api.cloudapi.machines.addUser(machineId=machineId,
             userId=userId,
             accesstype=accesstype
         )
 
     def attachDisk(self, machineId, diskId):        
-        return self._api.cloudapi.machines.attachDisk(
-            machineId=machineId,
-            diskId=diskId
-        )
+        return self._api.cloudapi.machines.attachDisk(machineId=machineId,diskId=diskId)
     
     def attachExternalNetwork(self, machineId):        
-        return self._api.cloudapi.machines.attachExternalNetwork(
-            machineId=machineId
-        )
+        return self._api.cloudapi.machines.attachExternalNetwork(machineId=machineId)
 
     def clone(self, machineId, **kwargs):   
         name = kwargs.get('name', utils.random_string())     
-        return self._api.cloudapi.machines.clone(
-            machineId=machineId,
-            name=name,
-            **kwargs
-        )
+        return self._api.cloudapi.machines.clone(machineId=machineId, name=name, **kwargs)
 
     def convertToTemplate(self, machineId, **kwargs):   
         templatename = kwargs.get('templatename', utils.random_string())     
-        return self._api.cloudapi.machines.convertToTemplate(
-            machineId=machineId,
-            templatename=templatename
-        )
+        return self._api.cloudapi.machines.convertToTemplate(machineId=machineId, templatename=templatename)
 
-    def create(self, cloudspaceId, sizeId, imageId, disksize, **kwargs):   
-        name = kwargs.get('name', utils.random_string())    
-        description = kwargs.get('description', utils.random_string()) 
-        datadisks = kwargs.get('datadisks', [])
+    def create(self, cloudspaceId, **kwargs):
+        data = {
+            'cloudspaceId': cloudspaceId,
+            'name': utils.random_string(),
+            'description': utils.random_string(),
+            'datadisks': [],
+            'userdata': ''
+        }
+        response = self._api.cloudapi.images.list()
+        response.raise_for_status()
+        image = random.choice([x for x in response.json() if x.startswith(('Window', 'Linux'))])
+        data['imageId'] = image['id']
+
+        data.update(** kwargs)
 
         return self._api.cloudapi.machines.create(
-            cloudspaceId=cloudspaceId,
-            name=name,
-            description=description,
             sizeId=sizeId,
-            imageId=imageId,
             disksize=disksize,
-            datadisks=datadisks,
-            **kwargs
         )
 
     def delete(self, machineId):   
@@ -148,18 +137,22 @@ class Machines:
     def rollbackSnapshot(self, machineId, **kwargs):
         return self._api.cloudapi.machines.rollbackSnapshot(machineId=machineId, **kwargs)
 
-    def snapshot(self, machineId, **kwargs):
-        name = kwargs.get('name', utils.random_string())
-        return self._api.cloudapi.machines.snapshot(machineId=machineId, name=name)
+    def snapshot(self, machineId):
+        data = {
+            'machineId':machineId,
+            'name': utils.random_string()
+        }
+        data.update(** kwargs)
+        return self._api.cloudapi.machines.snapshot(** data)
 
     def update(self, machineId, **kwargs):
-        name = kwargs.get('name', utils.random_string())
-        description = kwargs.get('description', utils.random_string())
-        return self._api.cloudapi.machines.update(
-            machineId=machineId, 
-            name=name,
-            description=description
-        )
+        data = {
+            'machineId': machineId,
+            'name': utils.random_string(),
+            'description': utils.random_string(),
+        }
+        data.update(** kwargs)
+        return data, self._api.cloudapi.machines.update(** data)
 
     def updateUser(self, machineId, userId, accesstype):
         return self._api.cloudapi.machines.updateUser(
