@@ -4,7 +4,7 @@ class Locations:
     def __init__(self):
         self._api = api_client
 
-    def list():
+    def list(self):
         return self._api.cloudapi.locations.list()
 
     def getUrl(self):

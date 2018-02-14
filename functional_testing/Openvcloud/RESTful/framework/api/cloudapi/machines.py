@@ -15,7 +15,7 @@ class Machines:
             'iops': random.randint(100, 5000)
         }
         data.update(** kwargs)
-        return data, self._api.cloudapi.machines.addDisk()
+        return data, self._api.cloudapi.machines.addDisk(** data)
 
     def addUser(self, machineId, userId, accesstype='ARCXDU'):        
         return self._api.cloudapi.machines.addUser(machineId=machineId,
