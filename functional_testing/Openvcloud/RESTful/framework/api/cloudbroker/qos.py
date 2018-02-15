@@ -1,19 +1,19 @@
+import random
 from framework.api import api_client, utils
 
-class qos:
+class Qos:
     def __init__(self):
-        self._api = api_client.cloudbroker.qos
+        self._api = api_client
     
     def limitCPU(self, machineId):
-        return self._api.limitCPU(machineId=machineId)
+        return self._api.cloudbroker.qos.limitCPU(machineId=machineId)
     
     def resize(self, diskId, size):
-        return self._api.resize(diskId=diskId, size=size)
-
+        return self._api.cloudbroker.qos.resize(diskId=diskId, size=size)
 
     def limitIO(self, diskId,**kwargs):
-        return self._api.limitIO(diskId, **kwargs)
+        return self._api.cloudbroker.qos.limitIO(diskId, **kwargs)
     
     def limitInternetBandwith(self, cloudspacId, rate, burst):
-        return self._api.limitInternetBandwith(cloudspacId=cloudspacId, rate=rate, burst=burst)
+        return self._api.cloudbroker.qos.limitInternetBandwith(cloudspacId=cloudspacId, rate=rate, burst=burst)
         

@@ -1,35 +1,34 @@
-from framework.api import *
-import random 
+import random
+from framework.api import api_client, utils
 
 class User:
     def __init__(self):
-        self._api = api_client.cloudbroker.user
+        self._api = api_client
+
     def create(self,**kwargs):
-        username=utils.random_string()
-        data={"username":username,
-              "emailaddress":"%s@example.com" % username,
-              "password":username,
-              "groups":["level1","user","level2","level3","admin"]
-              }
+        data = {
+            "username": utils.random_string(),
+            "emailaddress": "%s@text.com" % username,
+            "password": utils.random_string(),
+            "groups": ["level1","user","level2","level3","admin"]
+        }
         data.update(**kwargs)
-        response = self._api.create(**data)
-        return data ,response
+        return data, self._api.cloudbroker.user.create(**data)
 
-    def delete(self,username):
-        return self._api.delete(username=username)
+    def delete(self, username):
+        return self._api.cloudbroker.user.delete(username=username)
 
-    def deleteByGuid(self,userguid):
-        return self._api.deleteByGuid(userguid=userguid)
+    def deleteByGuid(self, userguid):
+        return self._api.cloudbroker.user.deleteByGuid(userguid=userguid)
     
     def deleteUsers(self, userIds):
-        return self._api.deleteUsers(userids=userIds)
+        return self._api.cloudbroker.user.deleteUsers(userIds=userIds)
     
     def generateAuthorizationKey(self, username):
-        return self._api.generateAuthorizationKey(username=username)
+        return self._api.cloudbroker.user.generateAuthorizationKey(username=username)
     
     def sendResetPasswordLink(self,username):
-        return self._api.sendResetPasswordLink(username=username)        
+        return self._api.cloudbroker.user.sendResetPasswordLink(username=username)        
 
-    def updatePassword(self,username,password=''):
-        password=password or utils.random_string()
-        return self._api.updatePassword(username=username, password=password)
+    def updatePassword(self, username, password):
+        return self._api.cloudbroker.user.updatePassword(username=username, password=password)

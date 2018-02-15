@@ -1,30 +1,30 @@
-from framework.api import *
+import random
+from framework.api import api_client, utils
 
-class ovsnode:
+class Iaas:
     def __init__(self):
-        self._api = api_client.cloudbroker.iaas
+        self._api = api_client
 
-    def addExternalIPs(self,externalnetworkId,startip,endip):
-        return self._api.addExternalIPs(externalnetworkId=externalnetworkId, startip=startip, endip=endip)
+    def addExternalIPs(self,externalnetworkId, startip, endip):
+        return self._api.cloudbroker.iaas.addExternalIPs(externalnetworkId=externalnetworkId, startip=startip, endip=endip)
 
     def changeIPv4Gateway(self, externalnetworkId, gateway):
-        return self._api.changeIPv4Gateway(externalnetworkId=externalnetworkId, gateway=gateway)
+        return self._api.cloudbroker.iaas.changeIPv4Gateway(externalnetworkId=externalnetworkId, gateway=gateway)
 
     def deleteExternalNetwork(self, externalnetworkId):
-        return self._api.deleteExternalNetwork(externalnetworkId=externalnetworkId)
+        return self._api.cloudbroker.iaas.deleteExternalNetwork(externalnetworkId=externalnetworkId)
 
     def deleteSize(self, sizeid):
-        return self._api.deleteSize(size_id=sizeid)
+        return self._api.cloudbroker.iaas.deleteSize(size_id=sizeid)
   
-    def editPingIps(self, externalnetworkId,pingips ):
-        return self._api.editPingIps(externalnetworkId=externalnetworkId,pingips=pingips)
+    def editPingIps(self, externalnetworkId, pingips):
+        return self._api.cloudbroker.iaas.editPingIps(externalnetworkId=externalnetworkId, pingips=pingips)
   
     def removeExternalIP(self, externalnetworkId, ip):
-        return self._api.removeExternalIP(externalnetworkId=externalnetworkId, ip=ip)
+        return self._api.cloudbroker.iaas.removeExternalIP(externalnetworkId=externalnetworkId, ip=ip)
 
-  
     def removeExternalIPs(self, externalnetworkId, freeips):
-        return self._api.removeExternalIP(externalnetworkId=externalnetworkId, freeips=freeips)
+        return self._api.cloudbroker.iaas.removeExternalIP(externalnetworkId=externalnetworkId, freeips=freeips)
 
  
         

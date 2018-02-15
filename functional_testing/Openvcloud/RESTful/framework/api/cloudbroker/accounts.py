@@ -1,60 +1,62 @@
-from framework.api import *
+import random
+from framework.api import api_client, utils
 
 class Accounts:
     def __init__(self):
-        self._api = api_client.cloudbroker.accounts
+        self._api = api_client
 
-    def addUser(self,username,accountId,**kwargs):
-        accesstype = kwargs.get('maxVDiskCapacity',random.choise['R','RCX','ARCX'])
-        response = self._api.addUser(username=username,accountId=accountId,accesstype=accesstype)
-        return response,accesstype
+    def addUser(self, username, accountId, **kwargs):
+        data = {
+            'username': username,
+            'accountId': accountId,
+            'accesstype': random.choise['R','RCX','ARCX']
+        }
+        data.update(** kwargs)
+        return data, self._api.cloudbroker.accounts.addUser(** data)
 
     def create(self, username, **kwargs):
-        data={
-              "name" : utils.random_string(),
-              "username" : username,
-              "maxMemoryCapacity": -1,
-              "maxVDiskCapacity": -1,
-              "maxCPUCapacity": -1,
-              "maxNetworkPeerTransfer": -1,
-              "maxNumPublicIP": -1
-             }
+        data = {
+            "name" : utils.random_string(),
+            "username" : username,
+            "maxMemoryCapacity": -1,
+            "maxVDiskCapacity": -1,
+            "maxCPUCapacity": -1,
+            "maxNetworkPeerTransfer": -1,
+            "maxNumPublicIP": -1
+        }
         data.update(** kwargs)
-        return data, self._api.create(**data)
+        return data, self._api.cloudbroker.accounts.create(**data)
 
     def delete(self, accountId, **kwargs):
         reason = kwargs.get('reason', utils.random_string())
-        return self._api.delete(accountId=accountId,reason=reason)
+        return self._api.cloudbroker.accounts.delete(accountId=accountId,reason=reason)
     
     def deleteAccounts(self, accountIds, **kwargs):
         reason = kwargs.get('reason', utils.random_string())
-        return self._api.deleteAccounts(accountIds=accountIds,
-                                        reason=reason
-                                        )
+        return self._api.cloudbroker.accounts.deleteAccounts(accountIds=accountIds, reason=reason)
 
     def update(self, accountId, **kwargs):
         data = {
-                'accountId': accountId,
-                'name': utils.random_string(),
-                'maxMemoryCapacity': -1,
-                'maxVDiskCapacity': -1,
-                'maxCPUCapacity': -1,
-                'maxNetworkPeerTransfer': -1,
-                'maxNumPublicIP': -1
-              }
-
+            'accountId': accountId,
+            'name': utils.random_string(),
+            'maxMemoryCapacity': -1,
+            'maxVDiskCapacity': -1,
+            'maxCPUCapacity': -1,
+            'maxNetworkPeerTransfer': -1,
+            'maxNumPublicIP': -1
+        }
         data.update(** kwargs)
-        return data, self._api.cloudapi.cloudspaces.update(** data)
+        return data, self._api.cloudbroker.accounts.update(** data)
 
     def deleteUser(self, accountId, userId, recursivedelete=False):        
-        return self._api.deleteUser(
+        return self._api.cloudbroker.accounts.deleteUser(
             accountId=accountId,
             userId=userId,
             recursivedelete=recursivedelete
         )
 
     def updateUser(self, accountId, userId, accesstype):
-        return self._api.addUser(
+        return self._api.cloudbroker.accounts.addUser(
             accountId=accountId,
             userId=userId,
             accesstype=accesstype
@@ -62,8 +64,8 @@ class Accounts:
 
     def disable(self, accountId, **kwargs):
         reason = kwargs.get('reason', utils.random_string())
-        return self._api.disable(accountId=accountId,reason=reason)
+        return self._api.cloudbroker.accounts.disable(accountId=accountId, reason=reason)
 
     def enable(self, accountId, **kwargs):
         reason = kwargs.get('reason', utils.random_string())
-        return self._api.enable(accountId=accountId,reason=reason)
+        return self._api.cloudbroker.accounts.enable(accountId=accountId, reason=reason)
