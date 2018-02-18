@@ -22,7 +22,7 @@ class System:
         self.audits = Audits()
         self.contentmanager = ContentManager()
         self.docgenerato = DocGenerator()
-        self.locations = emailsender()
+        self.emailsender = EmailSender()
         self.errorconditionhandler = ErrorConditionHandler()
         self.gridmanager = GridManager()
         self.health = Health()

@@ -65,7 +65,7 @@ class Machine:
             'machineId': machineId,
             'localport': random.randint(1000, 5000),
             'destPort': random.randint(1000, 5000),
-            'protocol': random.choice['udp', 'tcp']),
+            'protocol': random.choice(['udp', 'tcp'])
         }
         data.update(** kwargs)
         return data, self._api.cloudbroker.machine.createPortForward(** data)

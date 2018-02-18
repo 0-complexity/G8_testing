@@ -8,7 +8,7 @@ class User:
     def create(self,**kwargs):
         data = {
             "username": utils.random_string(),
-            "emailaddress": "%s@text.com" % username,
+            "emailaddress": "%s@text.com" % utils.random_string(),
             "password": utils.random_string(),
             "groups": ["level1","user","level2","level3","admin"]
         }

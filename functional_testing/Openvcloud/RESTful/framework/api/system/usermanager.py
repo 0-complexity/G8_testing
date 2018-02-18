@@ -49,7 +49,7 @@ class UserManager:
             'username': username,
             'domain': utils.random_string(),
             'password': utils.random_string(),
-            'emails': [utils.random_string() + '@test.com']
+            'emails': [utils.random_string() + '@test.com'],
             'groups': ['admin']
         }
         data.update(** kwargs)
