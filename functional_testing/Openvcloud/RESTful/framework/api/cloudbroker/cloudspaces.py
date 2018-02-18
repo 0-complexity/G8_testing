@@ -12,7 +12,7 @@ class Cloudspaces:
         data = {
             'username': username, 
             'cloudspaceId': cloudspaceId,
-            'accesstype': random.choise(['R','RCX','ARCX'])
+            'accesstype': random.choice(['R','RCX','ARCX'])
         }
         data.update(** kwargs)
         return data, self._api.cloudbroker.Cloudspace.addUser(** data)

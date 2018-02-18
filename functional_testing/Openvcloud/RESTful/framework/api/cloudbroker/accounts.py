@@ -9,7 +9,7 @@ class Accounts:
         data = {
             'username': username,
             'accountId': accountId,
-            'accesstype': random.choise['R','RCX','ARCX']
+            'accesstype': random.choice(['R','RCX','ARCX'])
         }
         data.update(** kwargs)
         return data, self._api.cloudbroker.accounts.addUser(** data)
