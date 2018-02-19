@@ -1,6 +1,7 @@
 from testcases import *
 from nose_parameterized import parameterized
 
+
 class Test(TestcasesBase):
 
     @classmethod
@@ -101,4 +102,3 @@ class Test(TestcasesBase):
          
         """
         pass
-
