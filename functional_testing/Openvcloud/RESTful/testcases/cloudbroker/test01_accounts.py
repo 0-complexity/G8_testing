@@ -1,4 +1,5 @@
 from testcases import *
+from nose_parameterized import parameterized
 
 class Test(TestcasesBase):
 
@@ -16,54 +17,47 @@ class Test(TestcasesBase):
     def tearDown(self):
         super().tearDown()
 
-    def test001_add_user_with_read_access(self):
-        """ OVC-000
-        *Test case for adding user to account with read access.*
+    def test001_create_account_with_different_options(self):
+       """ OVC-000
+        *Test case for testing creating account wuth different options .*
 
         **Test Scenario:**
 
+        #. Create account with passing negative values in the account's limitation, should fail.
+        #. Create account with certain limits, should succeed.
+        #. Create account with non-exist user, should fail.
+
+        """        
+    @parameterized.expand(['read', 'write','admin'])
+    def test002_add_user_to_account(self):
+        """ OVC-000
+        *Test case for adding user to account with different accesstypes.*
+
+        **Test Scenario:**
+   
         #. Create two users [u1],[u2].
-        #. Create account [C1] for user[U1] and get account with user[u1],should succeed.
+        #. Create account[C1] for user[U1] and get this account  with user[u1],should succeed.
         #. Try get account[C1] with user[U2], should fail.
-        #. Add user[U2] to the account[C1]with read access[R], should succeed.
-        #. Get account[C1] with user[u2], should succeed.
-        #. Update account[C1] name with user[U2], should fail'.
-        #. Delete account[C1] with user [U2],should fail.
+        #. Add user[U2] to [C1]with access[accesstype], should succeed.
+        #. If accesstype read [R], should succeed to get account[C1] with user[u2]
+                                  , should fail to update account[C1] name or delete it.
+        #. If accesstype write [RCX], should succeed to get account[C1] and update its name
+                                  , should fail to delete account[C1].
+        #. If accesstype admin [ARCXDU], should succeed to get , update and  delete account [C1].
         """
         pass
 
-    def test002_add_user_with_write_access(self):
+    def test03_delete_account(self):
         """ OVC-000
-        *Test case for adding user to account with write access.*
+        *Test case for deleting account.*
 
         **Test Scenario:**
 
-        #. Create two users [u1],[u2].
-        #. Create account [C1] for user[U1] and get account with user[u1],should succeed.
-        #. Try get account[C1] with user[U2], should fail.
-        #. Add user[U2] to the account[C1]with write access[RCX], should succeed.
-        #. Get account[C1] with user[u2], should succeed
-        #. Update account[C1] name with user[U2], should succeed.
-        #. Delete account[C1] with user [U2],should fail.    
- 
+        #. Create account [C1] .
+        #. Delete non-exist account, should fail. 
+        #. Delete account [C1], should succeed.
+        #. Try to get [C1], should fail.
         """
-        pass
-
-    def test003_add_user_with_admin_access(self):
-        """ OVC-000
-        *Test case for adding user to account with write access.*
-
-        **Test Scenario:**
-
-        #. Create two users [u1],[u2].
-        #. Create account [C1] for user[U1] and get account with user[u1],should succeed.
-        #. Try get account[C1] with user[U2], should fail.
-        #. Add user[U2] to the account[C1]with admin access[ARCXDU], should succeed.
-        #. Get account[C1] with user[u2], should succeed
-        #. Update account[C1] name with user[U2], should succeed.
-        #. Delete account[C1] with user [U2],should succeed.    
- 
-        """"
         pass
 
     def test004_delete_accounts(self):
@@ -108,6 +102,3 @@ class Test(TestcasesBase):
         """
         pass
 
-
-
-    
