@@ -2,24 +2,20 @@ from testcases import *
 from nose_parameterized import parameterized
 import random
 
-class Test(TestcaselsBase):
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
+class Test(TestcasesBase):
 
     def setUp(self):
-        super().setUp()   
-        
+        super().setUp()
+        self.user="{}@itsyouonline".format(self.whoami) 
+        self.account,response=self.api.cloudbroker.accounts.create(self.user)
+        self.assertEqual(response.status_code, 200)
+
+
     def tearDown(self):
         super().tearDown()
 
     def test001_create_account_with_different_options(self):
-       """ OVC-000
+        """ OVC-000
         *Test case for testing creating account wuth different options .*
 
         **Test Scenario:**
@@ -28,11 +24,33 @@ class Test(TestcaselsBase):
         #. Create account with certain limits, should succeed.
         #. Create account with non-exist user, should fail.
 
-        """        
-        pass 
+        """ 
+        self.lg.info("Create account with passing negative values in the account's limitation, should fail.")
+        accounts_limitation={"maxMemoryCapacity":  random.randint(2,1000)*-1,
+                             "maxVDiskCapacity": random.randint(2,1000)*-1,
+                             "maxCPUCapacity":  random.randint(2,1000)*-1,
+                             "maxNetworkPeerTransfer":  random.randint(2,1000)*-1,
+                             "maxNumPublicIP":  random.randint(2,1000)*-1  }       
+        data,response = self.api.cloudbroker.accounts.create(username=self.user, **accounts_limitation)
+        self.assertEqual(response.status_code, 400,"A resource limit should be a positive number or -1 (unlimited).")
+        
+        self.lg.info("Create account with certain limits, should succeed.")
+        accounts_limitation={"maxMemoryCapacity":  random.randint(2,1000),
+                             "maxVDiskCapacity": random.randint(2,1000),
+                             "maxCPUCapacity":  random.randint(2,1000),
+                             "maxNetworkPeerTransfer":  random.randint(2,1000),
+                             "maxNumPublicIP":  random.randint(2,1000) }          
+        data,response = self.api.cloudbroker.accounts.create(username=self.user, **accounts_limitation)
+        self.assertEqual(response.status_code, 200)
+
+        self.lg.info(" Create account with non-exist user, should fail.")
+        fake_user = self.utils.random_string()
+        data,response = self.api.cloudbroker.accounts.create(username=fake_user)
+        self.assertEqual(response.status_code, 400,"Email address is required for new users.")    
+        
 
     @parameterized.expand(['read', 'write','admin'])
-    def test002_add_user_to_account(self):
+    def test002_add_user_to_account(self,accesstype):
         """ OVC-000
         *Test case for adding user to account with different accesstypes.*
 
