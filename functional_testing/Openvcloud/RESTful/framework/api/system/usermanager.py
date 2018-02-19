@@ -4,13 +4,13 @@ class UserManager:
     def __init__(self):
         self._api = api_client
 
-    def authenticate(self, username, password):
-        return self._api.system.usermanager.authenticate(username=username, password=password)
+    def authenticate(self, username, secret):
+        return self._api.system.usermanager.authenticate(username=username, secret=secret)
 
     def create(self, **kwargs):
         data = {
             'username': utils.random_string(),
-            'password': utils.random_string(),
+            'secret': utils.random_string(),
             'groups': ['admin'],
             'emails': [utils.random_string()],
             'domain': utils.random_string(),
