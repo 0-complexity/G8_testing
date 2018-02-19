@@ -5,7 +5,7 @@ class UserManager:
         self._api = api_client
 
     def authenticate(self, username, password):
-        return self._api.cloudapi.usermanager.authenticate(username=username, password=password)
+        return self._api.system.usermanager.authenticate(username=username, password=password)
 
     def create(self, **kwargs):
         data = {
@@ -17,7 +17,7 @@ class UserManager:
             'provider': utils.random_string()
         }
         data.update(** kwargs)
-        return data, self._api.cloudapi.usermanager.create(** data)
+        return data, self._api.system.usermanager.create(** data)
 
     def createGroup(self, **kwargs):
         data = {
@@ -26,13 +26,13 @@ class UserManager:
             'description': utils.random_string(),
         }
         data.update(** kwargs)
-        return data, self._api.cloudapi.usermanager.createGroup(** data)
+        return data, self._api.system.usermanager.createGroup(** data)
 
     def delete(self, username):
-        return self._api.cloudapi.usermanager.delete(username=username)
+        return self._api.system.usermanager.delete(username=username)
 
     def deleteGroup(self, id):
-        return self._api.cloudapi.usermanager.deleteGroup(id=id)
+        return self._api.system.usermanager.deleteGroup(id=id)
 
     def editGroup(self, name, **kwargs):
         data = {
@@ -42,7 +42,7 @@ class UserManager:
             'users': []
         }
         data.update(** kwargs)
-        return data, self._api.cloudapi.usermanager.editGroup(** data)
+        return data, self._api.system.usermanager.editGroup(** data)
 
     def editUser(self, username, **kwargs):
         data = {
@@ -53,13 +53,13 @@ class UserManager:
             'groups': ['admin']
         }
         data.update(** kwargs)
-        return data, self._api.cloudapi.usermanager.editUser(** data)
+        return data, self._api.system.usermanager.editUser(** data)
 
     def userexists(self, name):
-        return self._api.cloudapi.usermanager.userexists(name=name)
+        return self._api.system.usermanager.userexists(name=name)
 
     def userget(self, name):
-        return self._api.cloudapi.usermanager.userget(name=name)
+        return self._api.system.usermanager.userget(name=name)
 
     def whoami(self):
-        return self._api.cloudapi.usermanager.whoami()
+        return self._api.system.usermanager.whoami()
