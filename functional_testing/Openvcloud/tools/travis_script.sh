@@ -38,6 +38,11 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
                 cmd="export PYTHONPATH=${python_path}; cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud; nosetests -s -v ${testsuite_path} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
                 sshpass -p ${ctrl_root_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_root_user}@${ctrl_ipaddress} "${cmd}"
 
+            elif [[ "${testsuite}" == "restful" ]]; then
+
+                cmd="cd functional_testing/Openvcloud/RESTful; nosetests -s -v ${testsuite_path} --tc-file config.ini --tc=main.ip:${restful_ip} --tc=main.port:${restful_port} --tc=main.username:${username} --tc=main.client_id:${client_id} --tc=main.client_secret:${client_secret}"
+                sshpass -p ${ctrl_user_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_user}@${ctrl_ipaddress} "${cmd}"
+
             elif [[ "${testsuite}" == "portal" ]]; then
 
                 cmd="cd ${testsuite_repo_path}/G8_testing; bash functional_testing/Openvcloud/ovc_master_hosted/Portal/travis_portal_script.sh ${environment} ${portal_admin} ${portal_password} ${portal_secret} ${testsuite_path} ${portal_browser} ${ctrl_password}"
