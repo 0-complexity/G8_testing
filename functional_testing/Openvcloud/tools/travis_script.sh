@@ -40,6 +40,10 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
             elif [[ "${testsuite}" == "restful" ]]; then
 
+                echo "[+] Install requirements"
+                cmd="cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud/RESTful; pip3 install -r requirements.txt"
+                sshpass -p "${ctrl_root_password}" ssh -t -o StrictHostKeyChecking=no ${ctrl_root_user}@${ctrl_ipaddress} "${cmd}"
+
                 cmd="cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud/RESTful; nosetests -s -v ${testsuite_path} --tc-file config.ini --tc=main.ip:${restful_ip} --tc=main.port:${restful_port} --tc=main.username:${username} --tc=main.client_id:${client_id} --tc=main.client_secret:${client_secret}"
                 sshpass -p ${ctrl_user_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_user}@${ctrl_ipaddress} "${cmd}"
 
