@@ -88,6 +88,25 @@ class cloudspace(TestcasesBase):
         #. deploy VFW to  the created cloudspace
         #. stop the Virtual fire wall, should succeed,
         #. start the virtual fire wall, should succeed.
-
         """
         pass
+
+
+    def test006_create_cloudspace_with_different_options(self):
+        """ OVC-000
+        *Test case for testing creating account wuth different options .*
+
+        **Test Scenario:**
+
+        #. Create account[C1] with certain limits and max_IPs equal 1, should succeed.
+        #. Create cloudspace[CS1] with passing negative values in the account's limitation, should fail.
+        #. Create cloudspace[CS2] with non-exist user, should fail.
+        #. Create cloudspace [CS3] that exceeds account's max_cores, should fail
+        #. Create cloudspace [CS4] that exceeds account's max_memory, should fail
+        #. Create cloudspace [CS5] that exceeds account's max_vdisks, should fail
+        #. Create cloudspace [CS6] that exceeds account's max_IPs, should fail
+        #. Create cloudspace [CS7] that doesn't exceed account's limits, should succeed.
+        #. Create another cloudspace [CS8] that doesn't exceed account's limits , should fail as max_IPs equal 1.
+        
+        """        
+        pass 

@@ -1,8 +1,8 @@
 from testcases import *
 from nose_parameterized import parameterized
+import random
 
-
-class Test(TestcasesBase):
+class Test(TestcaselsBase):
 
     @classmethod
     def setUpClass(cls):
@@ -29,6 +29,8 @@ class Test(TestcasesBase):
         #. Create account with non-exist user, should fail.
 
         """        
+        pass 
+
     @parameterized.expand(['read', 'write','admin'])
     def test002_add_user_to_account(self):
         """ OVC-000
@@ -67,8 +69,9 @@ class Test(TestcasesBase):
 
         **Test Scenario:**
 
-        #. Create accounts [C1],[C2] and [C3] .
-        #. Delete [C1],[C2] and [C3] acoounts using delete acoounts api, should succeed. 
+        #. Create accounts [C1],[C2] and [C3], should succeed .
+        #. Delete accounts [C1], and non-exist account, should fail.
+        #. Delete [C2] and [C3] acoounts using delete acoounts api, should succeed. 
         #. Check that the three acounts deleted ,should succeed.
         """
         pass
