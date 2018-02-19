@@ -40,7 +40,7 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
             elif [[ "${testsuite}" == "restful" ]]; then
 
-                cmd="cd functional_testing/Openvcloud/RESTful; nosetests -s -v ${testsuite_path} --tc-file config.ini --tc=main.ip:${restful_ip} --tc=main.port:${restful_port} --tc=main.username:${username} --tc=main.client_id:${client_id} --tc=main.client_secret:${client_secret}"
+                cmd="cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud/RESTful; nosetests -s -v ${testsuite_path} --tc-file config.ini --tc=main.ip:${restful_ip} --tc=main.port:${restful_port} --tc=main.username:${username} --tc=main.client_id:${client_id} --tc=main.client_secret:${client_secret}"
                 sshpass -p ${ctrl_user_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_user}@${ctrl_ipaddress} "${cmd}"
 
             elif [[ "${testsuite}" == "portal" ]]; then
