@@ -22,10 +22,10 @@ class Libvirt:
     def releaseNetworkId(self, gid, networkid):
         return self._api.libcloud.libvirt.releaseNetworkId(gid=gid, networkid=networkid)
 
-    def retreiveInfo(self, key, reset):
+    def retreiveInfo(self, key, reset=False):
         return self._api.libcloud.libvirt.retreiveInfo(key=key, reset=reset)
 
-    def storeInfo(self, data, timeout):
+    def storeInfo(self, data, timeout=0):
         return self._api.libcloud.libvirt.storeInfo(data=data, timeout=timeout)
 
     
