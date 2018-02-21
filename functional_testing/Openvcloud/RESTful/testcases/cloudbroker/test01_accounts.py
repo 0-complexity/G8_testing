@@ -4,6 +4,7 @@ import random
 #from framework.api.client import Client
 
 
+
 class Test(TestcasesBase):
 
     def setUp(self):
@@ -16,47 +17,46 @@ class Test(TestcasesBase):
     def tearDown(self):
         super().tearDown()
 
-    # def test001_create_account_with_different_options(self):
-    #     """ OVC-000
-    #     *Test case for testing creating account wuth different options .*
 
-    #     **Test Scenario:**
+    @parameterized.expand([("Negative values", -1, 400),
+                           ("Positive values", 1, 200)])
+    def test001_create_account_with_different_options(self, type, factor, return_code):
+        """ OVC-000
+        *Test case for testing creating account wuth different options .*
 
-    #     #. Create account with passing negative values in the account's limitation, should fail.
-    #     #. Create account with certain limits, should succeed.
-    #     #. Create account with non-exist user, should fail.
+        **Test Scenario:**
 
-    #     """ 
-    #     self.lg.info("Create account with passing negative values in the account's limitation, should fail.")
-    #     accounts_limitation={"maxMemoryCapacity":  random.randint(2,1000)*-1,
-    #                          "maxVDiskCapacity": random.randint(2,1000)*-1,
-    #                          "maxCPUCapacity":  random.randint(2,1000)*-1,
-    #                          "maxNetworkPeerTransfer":  random.randint(2,1000)*-1,
-    #                          "maxNumPublicIP":  random.randint(2,1000)*-1  }       
-    #     data,response = self.api.cloudbroker.accounts.create(username=self.user, **accounts_limitation)
-    #     self.assertEqual(response.status_code, 400,"A resource limit should be a positive number or -1 (unlimited).")
+        #. Create account with passing negative values in the account's limitation, should fail.
+        #. Create account with certain limits, should succeed.
+        """
+        self.lg.info("Create account with passing %s values in the account's limitation." % type)
+        accounts_limitation = {"maxMemoryCapacity": random.randint(2, 1000) * factor,
+                               "maxVDiskCapacity": random.randint(2, 1000) * factor,
+                               "maxCPUCapacity": random.randint(2, 1000) * factor,
+                               "maxNetworkPeerTransfer": random.randint(2, 1000) * factor,
+                               "maxNumPublicIP": random.randint(2, 1000) * factor}
+        data, response = self.api.cloudbroker.accounts.create(username=self.user, **accounts_limitation)
+        self.assertEqual(response.status_code, return_code, "A resource limit should be a positive number or -1 (unlimited).")
 
-    #     self.lg.info("Create account with certain limits, should succeed.")
-    #     accounts_limitation={"maxMemoryCapacity":  random.randint(2,1000),
-    #                          "maxVDiskCapacity": random.randint(2,1000),
-    #                          "maxCPUCapacity":  random.randint(2,1000),
-    #                          "maxNetworkPeerTransfer":  random.randint(2,1000),
-    #                          "maxNumPublicIP":  random.randint(2,1000) }          
-    #     data,response = self.api.cloudbroker.accounts.create(username=self.user, **accounts_limitation)
-    #     self.assertEqual(response.status_code, 200)
+    def test002_create_account_with_non_existing_user(self):
+        """ OVC-000
+        *Test case for testing creating account with non existing user.*
 
-    #     self.lg.info(" Create account with non-exist user, should fail.")
-    #     fake_user = self.utils.random_string()
-    #     data,response = self.api.cloudbroker.accounts.create(username=fake_user)
-    #     self.assertEqual(response.status_code, 400,"Email address is required for new users.")    
-        
+        **Test Scenario:**
 
+        #. Create account with non-exist user, should fail.
+
+        """
+        self.lg.info(" Create account with non-exist user, should fail.")
+        fake_user = self.utils.random_string()
+        data, response = self.api.cloudbroker.accounts.create(username=fake_user)
+        self.assertEqual(response.status_code, 400, "Email address is required for new users.")
 
     @parameterized.expand([('R',200,401,401),
                            ('RCX',200,401,401),
                             ('ARCXDU',200,200,401)
                             ])
-    def test002_add_user_to_account(self,accesstype,get_code,update_code,delete_code):
+    def test003_add_user_to_account(self,accesstype,get_code,update_code,delete_code):
         """ OVC-000
         *Test case for adding user to account with different accesstypes.*
 
@@ -82,7 +82,6 @@ class Test(TestcasesBase):
         self.assertEqual(response.status_code,200)
 
         self.lg.info("Add user[U1] to [C1]with access[accesstype], should succeed.")
-        import ipdb;ipdb.set_trace()
         data, response = self.api.cloudbroker.accounts.addUser(username=user_data["username"], accountId=self.response.json(),accesstype=accesstype)
         self.assertEqual(response.status_code, 200)
 
@@ -96,7 +95,7 @@ class Test(TestcasesBase):
         self.assertEqual(response.status_code,delete_code)
 
       
-    def test03_delete_account(self):
+    def test004_delete_account(self):
         """ OVC-000
         *Test case for deleting account.*
 
@@ -119,7 +118,7 @@ class Test(TestcasesBase):
         response = self.api.cloudbroker.accounts.delete(self.response.json())
         self.assertEqual(response.status_code, 404)
 
-    def test004_delete_accounts(self):
+    def test005_delete_accounts(self):
         """ OVC-000
         *Test case for deleting multiple accounts.*
 
@@ -150,7 +149,7 @@ class Test(TestcasesBase):
             self.assertEqual(response.status_code, 404)
        
 
-    def test005_account_disable_and_enable(self):
+    def test006_account_disable_and_enable(self):
         """ OVC-000
         *Test case for disable and enable account .*
 
@@ -184,7 +183,7 @@ class Test(TestcasesBase):
         data,response = self.api.cloudbroker.cloudspaces.create(accountId=response.json(), location=location, access=self.user)
         self.assertTrue
 
-    def test006_Update_account(self):
+    def test007_Update_account(self):
         """ OVC-000
         *Test case for Update account .*
 
