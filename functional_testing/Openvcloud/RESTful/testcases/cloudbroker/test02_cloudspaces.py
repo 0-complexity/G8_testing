@@ -28,7 +28,6 @@ class cloudspace(TestcasesBase):
         #. Add Extra IP on cloudspace[cs1], should succeed.
         #. Check thar IP added to cloudspace [CS1], should succeed.
         """
-        pass
 
 
     @parameterized.expand(['read', 'write','admin'])

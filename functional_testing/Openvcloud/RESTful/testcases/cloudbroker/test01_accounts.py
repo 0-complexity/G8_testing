@@ -1,4 +1,4 @@
-from testcases import *
+from testcases.testcase_base import TestcasesBase
 from nose_parameterized import parameterized
 import random
 #from framework.api.client import Client
@@ -131,14 +131,14 @@ class Test(TestcasesBase):
         #. Check that the four acounts deleted ,should succeed.
         """
         accounts=[self.response.json()]
-        for _ in range(2):
+        for _ in range(3):
             data,response=self.api.cloudbroker.accounts.create(self.user)
             accounts.append(response.json())
-        
+        import ipdb;ipdb.set_trace()
         response= self.api.cloudbroker.accounts.delete(accounts[0])
         self.assertEqual(response.status_code, 200)
         
-        response= self.api.cloudbroker.accounts.deleteAccounts([accounts[0],accounts[1]])
+        response= self.api.cloudbroker.accounts.deleteAccounts([accounts[1],accounts[0]])
         self.assertEqual(response.status_code, 404)
 
         response= self.api.cloudbroker.accounts.deleteAccounts([accounts[2],accounts[3]])
@@ -146,42 +146,66 @@ class Test(TestcasesBase):
 
         for accountID in accounts:
             response = self.api.cloudapi.accounts.get(accountID)
-            self.assertEqual(response.status_code, 404)
+            self.assertEqual(response.json()["status"],"DESTROYED")
        
-
     def test006_account_disable_and_enable(self):
         """ OVC-000
         *Test case for disable and enable account .*
 
         **Test Scenario:**
         #. Disable non-exist account, should fail.
+        #. Disable deleted account ,should fail.
         #. Enable non-exist account, should fail.
-        #. Create account [C1].
+        #. Enable Deleted account, should fail.
+        #. Create account [C1] and user[U1].
         #. Disable account [C1], should succeed.
         #. Try to create cloudspace on [C1], should fail.
-        #. Disable non-exist account, should fail.
         #. Enable account [C1], should succeed.
         #. Try to create cloudspace on [C1], should succeed.
 
         """
         self.lg.info("Disable non-exist account, should fail.")
+        random_account= random.randint(3000,5000)
+        response= self.api.cloudbroker.accounts.disable(random_account)
+        self.assertEqual(response.status_code, 404)  
 
+        self.lg.info("Disable deleted account ,should fail.")
         response= self.api.cloudbroker.accounts.delete(self.response.json())
         self.assertEqual(response.status_code, 200)
 
         response= self.api.cloudbroker.accounts.disable(self.response.json())
         self.assertEqual(response.status_code, 404)
 
+        self.lg.info("Enable non-exist account, should fail.")
+        random_account= random.randint(3000,5000)
+        response= self.api.cloudbroker.accounts.enable(random_account)
+        self.assertEqual(response.status_code, 404)  
+
+        self.lg.info("Enable Deleted account, should fail.")
         response= self.api.cloudbroker.accounts.enable(self.response.json())
         self.assertEqual(response.status_code, 404)
 
+        self.lg.info(" Create account [C1] and user[U1].")
         data,response=self.api.cloudbroker.accounts.create(self.user)
-        response= self.api.cloudbroker.accounts.disable(response.json())
+        c1_id=response.json()
+        self.lg.info("Disable account [C1], should succeed.")
+        response= self.api.cloudbroker.accounts.disable(c1_id)
         self.assertEqual(response.status_code, 200)    
 
-        location = self.utils.get_location()
-        data,response = self.api.cloudbroker.cloudspaces.create(accountId=response.json(), location=location, access=self.user)
-        self.assertTrue
+        self.lg.info("Try to create cloudspace on [C1], should fail.")
+        location = self.api.get_location()
+        data,response = self.api.cloudbroker.cloudspaces.create(accountId=c1_id, location=location, access=self.user)
+        self.assertEqual(response.status_code,404)
+
+        self.lg.info(" Enable account [C1], should succeed.")
+        response= self.api.cloudbroker.accounts.enable(c1_id)
+        self.assertEqual(response.status_code, 200)    
+
+        self.lg.info("Try to create cloudspace on [C1], should succeed.")
+        location = self.api.get_location()
+        data,response = self.api.cloudbroker.cloudspaces.create(accountId=c1_id, location=location, access=self.user)
+        self.assertEqual(response.status_code,200)
+
 
     def test007_Update_account(self):
         """ OVC-000
@@ -189,6 +213,7 @@ class Test(TestcasesBase):
 
         **Test Scenario:**       
         #. Update name of non-exist account [C1],should fail.
+        #. Update deleted account. should fail.
         #. Create account [C1].
         #. Update account [C1] name, should succeed.
         #. Check that account name updated, should succeed.
@@ -200,6 +225,7 @@ class Test(TestcasesBase):
         data, response= self.api.cloudbroker.accounts.update(random_account)
         self.assertEqual(response.status_code, 404)
         
+        self.lg.info(" Update deleted account. should fail.")
         response= self.api.cloudbroker.accounts.delete(self.response.json())
         self.assertEqual(response.status_code, 200)
 
