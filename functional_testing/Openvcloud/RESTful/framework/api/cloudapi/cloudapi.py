@@ -10,14 +10,14 @@ from framework.api.cloudapi.sizes import Sizes
 from framework.api.cloudapi.users import Users
 
 class Cloudapi:
-    def __init__(self):
-        self.accounts = Accounts()
-        self.cloudspaces = Cloudspaces()
-        self.disks = Disks()
-        self.externalnetwork = ExternalNetwork()
-        self.images = Images()
-        self.locations = Locations()
-        self.machines = Machines()
-        self.portforwarding = Portforwarding()
-        self.sizes = Sizes()
-        self.users = Users()
+    def __init__(self, api_client):
+        self.accounts = Accounts(api_client)
+        self.cloudspaces = Cloudspaces(api_client)
+        self.disks = Disks(api_client)
+        self.externalnetwork = ExternalNetwork(api_client)
+        self.images = Images(api_client)
+        self.locations = Locations(api_client)
+        self.machines = Machines(api_client)
+        self.portforwarding = Portforwarding(api_client)
+        self.sizes = Sizes(api_client)
+        self.users = Users(api_client)

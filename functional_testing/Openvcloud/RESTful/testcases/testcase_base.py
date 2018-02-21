@@ -13,7 +13,8 @@ class TestcasesBase(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.api = Client()
+        cls.api= Client()
+        cls.user_api=Client()
         cls.utils = Utils()
         cls.whoami = config['main']['username']
   

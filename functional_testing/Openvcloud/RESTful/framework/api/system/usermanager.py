@@ -1,11 +1,11 @@
-from framework.api import api_client, utils
+from framework.api import utils
 
 class UserManager:
-    def __init__(self):
+    def __init__(self, api_client):
         self._api = api_client
 
     def authenticate(self, username, password):
-        return self._api.cloudapi.usermanager.authenticate(username=username, password=password)
+        return self._api.system.usermanager.authenticate(name=username, secret=password)
 
     def create(self, **kwargs):
         data = {

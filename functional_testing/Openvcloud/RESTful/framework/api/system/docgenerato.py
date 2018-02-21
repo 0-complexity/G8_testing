@@ -1,7 +1,7 @@
-from framework.api import api_client, utils
+from framework.api import utils
 
 class DocGenerator:
-    def __init__(self):
+    def __init__(self, api_client):
         self._api = api_client
 
     def prepareCatalog(self):
