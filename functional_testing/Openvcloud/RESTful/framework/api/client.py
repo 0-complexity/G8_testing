@@ -4,6 +4,8 @@ from framework.api.libcloud.libcloud import Libcloud
 from framework.api.cloudbroker.cloudbroker import Cloudbroker
 from testconfig import config
 from framework.utils.ovc_client import Client as api_client
+import random
+
 
 ip = config['main']['ip']
 port = int(config['main']['port'])
@@ -21,8 +23,6 @@ class Client:
 
     def set_auth_header(self, value):
         self.api_client._session.headers['Authorization'] = value
-        
-
 
     def get_location(self):
         env_location = config['main']['location']
@@ -33,5 +33,5 @@ class Client:
         else:
             raise Exception("can't find the %s environment location in grid" % env_location)
 
-    
-
+    def get_random_locations(self):
+        return random.choice(self.cloudapi.locations.list())['locationCode']
