@@ -16,11 +16,7 @@ class Test(TestcasesBase):
 
     def tearDown(self):
         super().tearDown()
-        for accountId in self.CLEANUP['accounts']:
-            self.api.cloudbroker.accounts.delete(accountId)
-        
-        for user in self.CLEANUP['users']:
-            self.api.cloudbroker.user.delete(user)
+
 
     @parameterized.expand([("Negative values", -1, 400),
                            ("Positive values", 1, 200)])
@@ -157,23 +153,16 @@ class Test(TestcasesBase):
         for accountID in accounts:
             response = self.api.cloudapi.accounts.get(accountID)
             self.assertEqual(response.json()["status"],"DESTROYED")
-       
-    def test006_account_disable_and_enable(self):
+
+    def test006_disable_non_exist_account(self):
         """ OVC-000
         *Test case for disable and enable account .*
 
         **Test Scenario:**
         #. Disable non-exist account, should fail.
         #. Disable deleted account ,should fail.
-        #. Enable non-exist account, should fail.
-        #. Enable Deleted account, should fail.
-        #. Create account [C1] and user[U1].
-        #. Disable account [C1], should succeed.
-        #. Try to create cloudspace on [C1], should fail.
-        #. Enable account [C1], should succeed.
-        #. Try to create cloudspace on [C1], should succeed.
-
         """
+   
         self.lg.info("Disable non-exist account, should fail.")
         random_account= random.randint(3000,5000)
         response= self.api.cloudbroker.accounts.disable(random_account)
@@ -187,14 +176,40 @@ class Test(TestcasesBase):
         response= self.api.cloudbroker.accounts.disable(self.response.json())
         self.assertEqual(response.status_code, 404)
 
+    def test007_enable_non_exist_account(self):
+        """ OVC-000
+        *Test case for disable and enable account .*
+
+        **Test Scenario:**
+        #. Enable non-exist account, should fail.
+        #. Enable deleted account ,should fail.
+        
+        """
         self.lg.info("Enable non-exist account, should fail.")
         random_account= random.randint(3000,5000)
         response= self.api.cloudbroker.accounts.enable(random_account)
         self.assertEqual(response.status_code, 404)  
 
         self.lg.info("Enable Deleted account, should fail.")
+        response= self.api.cloudbroker.accounts.delete(self.response.json())
+        self.assertEqual(response.status_code, 200)
+        self.CLEANUP['accounts'].remove(self.response.json())
+
         response= self.api.cloudbroker.accounts.enable(self.response.json())
         self.assertEqual(response.status_code, 404)
+
+    def test008_account_disable_and_enable(self):
+        """ OVC-000
+        *Test case for disable and enable account .*
+
+        **Test Scenario:**
+        #. Create account [C1] and user[U1].
+        #. Disable account [C1], should succeed.
+        #. Try to create cloudspace on [C1], should fail.
+        #. Enable account [C1], should succeed.
+        #. Try to create cloudspace on [C1], should succeed.
+
+        """
 
         self.lg.info(" Create account [C1] and user[U1].")
         data,response=self.api.cloudbroker.accounts.create(self.user)
@@ -224,17 +239,13 @@ class Test(TestcasesBase):
         self.assertEqual(response.status_code,200)
 
     @unittest.skip("https://github.com/0-complexity/openvcloud/issues/1355")
-    def test007_Update_account(self):
+    def test009_Update_non_exist_account(self):
         """ OVC-000
         *Test case for Update account .*
 
         **Test Scenario:**       
         #. Update name of non-exist account [C1],should fail.
         #. Update deleted account. should fail.
-        #. Create account [C1].
-        #. Update account [C1] name, should succeed.
-        #. Check that account name updated, should succeed.
-         
         """
         random_account= random.randint(3000,5000)
 
@@ -250,15 +261,18 @@ class Test(TestcasesBase):
         data, response= self.api.cloudbroker.accounts.update(self.response.json())
         self.assertEqual(response.status_code, 404)
 
-        self.lg.info("Create account [C1].")
-        data,response=self.api.cloudbroker.accounts.create(self.user)
-        accountId = response.json()
-        self.CLEANUP['accounts'].append(self.response.json())
 
+    def test010_Update_account(self):
+        """ OVC-000
+        #. Create account [C1].
+        #. Update account [C1] name, should succeed.
+        #. Check that account name updated, should succeed.
+         
+        """
         self.lg.info(" Update account [C1] name, should succeed.")
-        data,response= self.api.cloudbroker.accounts.update(accountId)
+        data,response= self.api.cloudbroker.accounts.update(self.response.json())
         self.assertEqual(response.status_code, 200)    
 
         self.lg.info("Check that account name updated, should succeed.")
-        response = self.api.cloudapi.accounts.get(accountId)
+        response = self.api.cloudapi.accounts.get(self.response.json())
         self.assertEqual(data["name"], response.json()["name"])

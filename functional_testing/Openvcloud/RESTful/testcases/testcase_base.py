@@ -40,6 +40,12 @@ class TestcasesBase(TestCase):
     def tearDown(self):
         self._endTime = time.time()
         self._duration = int(self._endTime - self._startTime)
+        for accountId in self.CLEANUP['accounts']:
+            self.api.cloudbroker.accounts.delete(accountId)
+        
+        for user in self.CLEANUP['users']:
+            self.api.cloudbroker.user.delete(user)
+            
         self.lg.info('Testcase [{}] is ended, Duration: {} seconds'.format(self._testID, self._duration))
 
     def logger(self):
