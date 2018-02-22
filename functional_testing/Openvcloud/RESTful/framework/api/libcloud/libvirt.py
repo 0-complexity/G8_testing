@@ -1,3 +1,4 @@
+import random
 from framework.api import api_client
 
 class Libvirt:
@@ -13,8 +14,14 @@ class Libvirt:
     def listVNC(self, gid):
         return self._api.libcloud.libvirt.listVNC(gid=gid)
 
-    def registerNetworkIdRange(self, gid, start, end):
-        return self._api.libcloud.libvirt.registerNetworkIdRange(gid=gid, start=start, end=end)
+    def registerNetworkIdRange(self, gid, ** kwargs):
+        data = {
+            'gid':gid,
+            'start': random.randint(1, 1000),
+            'end': random.randint(1000, 2000)
+        }
+        data.update(** kwargs)
+        return data, self._api.libcloud.libvirt.registerNetworkIdRange(** data)
 
     def registerVNC(self, gid, url):
         return self._api.libcloud.libvirt.registerVNC(gid=gid, url=url)

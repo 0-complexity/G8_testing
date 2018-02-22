@@ -1,12 +1,12 @@
 import random
 from framework.api import api_client, utils 
 
-class Cloudspaces:
+class Cloudspace:
     def __init__(self):
         self._api = api_client
 
     def addExtraIP(self, cloudspaceId, ipaddress):
-        return self._api.cloudbroker.Cloudspace.addExtraIP(cloudspaceId=cloudspaceId, ipaddress=ipaddress)
+        return self._api.cloudbroker.cloudspace.addExtraIP(cloudspaceId=cloudspaceId, ipaddress=ipaddress)
 
     def addUser(self, username, cloudspaceId,**kwargs):
         data = {
@@ -15,7 +15,7 @@ class Cloudspaces:
             'accesstype': random.choice(['R','RCX','ARCX'])
         }
         data.update(** kwargs)
-        return data, self._api.cloudbroker.Cloudspace.addUser(** data)
+        return data, self._api.cloudbroker.cloudspace.addUser(** data)
 
     def create(self, accountId, location, access, **kwargs):
         data = {
@@ -33,7 +33,7 @@ class Cloudspaces:
             
         }
         data.update(** kwargs)
-        return data, self._api.cloudbroker.Cloudspace.create(** data)
+        return data, self._api.cloudbroker.cloudspace.create(** data)
 
     def update(self, cloudspaceId, **kwargs):
         data = {
@@ -47,16 +47,16 @@ class Cloudspaces:
             'allowedVMSizes': [],
         }
         data.update(** kwargs)
-        return data, self._api.cloudbroker.Cloudspace.update(** data)
+        return data, self._api.cloudbroker.cloudspace.update(** data)
 
     def applyConfig(self, cloudspaceId):
-        return self._api.cloudbroker.Cloudspace.appapplyConfig(cloudspaceId=cloudspaceId)
+        return self._api.cloudbroker.cloudspace.appapplyConfig(cloudspaceId=cloudspaceId)
 
     def delete(self, cloudspaceId):
-        return self._api.cloudbroker.Cloudspace.delete(cloudspaceId=cloudspaceId)
+        return self._api.cloudbroker.cloudspace.delete(cloudspaceId=cloudspaceId)
 
     def deletePortForward(self, cloudspaceId, publicIp, publicPort, protocol):
-        return self._api.cloudbroker.Cloudspace.deletePortForward(
+        return self._api.cloudbroker.cloudspace.deletePortForward(
             cloudspaceId =cloudspaceId,
             publicIp=publicIp,
             publicPort=publicPort,
@@ -64,40 +64,40 @@ class Cloudspaces:
         )
 
     def deleteUser(self, cloudspaceId, userId, recursivedelete=False):        
-        return self._api.cloudbroker.Cloudspace.deleteUser(
+        return self._api.cloudbroker.cloudspace.deleteUser(
             cloudspaceId=cloudspaceId,
             userId=userId,
             recursivedelete=recursivedelete
         )
 
     def deployVFW(self, cloudspaceId):
-        return self._api.cloudbroker.Cloudspace.deployVFW(cloudspaceId=cloudspaceId)
+        return self._api.cloudbroker.cloudspace.deployVFW(cloudspaceId=cloudspaceId)
     
     def moveVirtualFirewallToFirewallNode(self, cloudspaceId, targetNid):
-        return self._api.cloudbroker.Cloudspace.moveVirtualFirewallToFirewallNode(cloudspaceId=cloudspaceId, targetNid=targetNid)
+        return self._api.cloudbroker.cloudspace.moveVirtualFirewallToFirewallNode(cloudspaceId=cloudspaceId, targetNid=targetNid)
       
     def destroy(self, cloudspaceId, accountId, **kwargs):
         reason = kwargs.get('reason',utils.random_string())       
-        return self._api.cloudbroker.Cloudspace.deployVFW(accountId=accountId, cloudspaceId=cloudspaceId, reason=reason)
+        return self._api.cloudbroker.cloudspace.deployVFW(accountId=accountId, cloudspaceId=cloudspaceId, reason=reason)
 
     def destroyCloudSpaces(self, cloudspaceIds, **kwargs):
         reason = kwargs.get('reason',utils.random_string())       
-        return self._api.cloudbroker.Cloudspace.deployVFW(cloudspaceIds=cloudspaceIds, reason=reason)
+        return self._api.cloudbroker.cloudspace.deployVFW(cloudspaceIds=cloudspaceIds, reason=reason)
 
     def destroyVFW(self, cloudspaceId):
-        return self._api.cloudbroker.Cloudspace.destroyVFW(cloudspaceId=cloudspaceId)
+        return self._api.cloudbroker.cloudspace.destroyVFW(cloudspaceId=cloudspaceId)
 
     def getVFW(self, cloudspaceId):
-        return self._api.cloudbroker.Cloudspace.getVFW(cloudspaceId=cloudspaceId)
+        return self._api.cloudbroker.cloudspace.getVFW(cloudspaceId=cloudspaceId)
 
     def removeIP(self, cloudspaceId, ipaddress):
-        return self._api.cloudbroker.Cloudspace.removeIP(cloudspaceId=cloudspaceId,ipaddress=ipaddress)     
+        return self._api.cloudbroker.cloudspace.removeIP(cloudspaceId=cloudspaceId,ipaddress=ipaddress)     
 
     def startVFW(self, cloudspaceId):
-        return self._api.cloudbroker.Cloudspace.startVFW(cloudspaceId=cloudspaceId)
+        return self._api.cloudbroker.cloudspace.startVFW(cloudspaceId=cloudspaceId)
 
     def stopVFW(self, cloudspaceId):
-        return self._api.cloudbroker.Cloudspace.stopVFW(cloudspaceId=cloudspaceId)
+        return self._api.cloudbroker.cloudspace.stopVFW(cloudspaceId=cloudspaceId)
     
     def resetVFW(self, cloudspaceId, resettype):
-        return self._api.cloudbroker.Cloudspace.resetVFW(cloudspaceId=cloudspaceId, resettype=resettype)
+        return self._api.cloudbroker.cloudspace.resetVFW(cloudspaceId=cloudspaceId, resettype=resettype)
