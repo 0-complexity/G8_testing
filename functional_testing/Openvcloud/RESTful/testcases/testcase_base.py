@@ -5,6 +5,10 @@ from nose.tools import TimeExpired
 from testconfig import config
 from framework.api.client import Client
 from framework.utils.utils import Utils
+from testconfig import config
+
+client_id = config['main']['client_id']
+client_secret = config['main']['client_secret']
 
 class TestcasesBase(TestCase):
     def __init__(self, *args, **kwargs):
@@ -13,8 +17,7 @@ class TestcasesBase(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.api= Client()
-        cls.user_api=Client()
+        cls.api= Client(client_id=client_id, client_secret=client_secret)
         cls.utils = Utils()
         cls.whoami = config['main']['username']
   
@@ -24,9 +27,10 @@ class TestcasesBase(TestCase):
 
     def setUp(self):
         self._testID = self._testMethodName
+        self.CLEANUP = {'users':[], 'accounts':[]}
         self._startTime = time.time()
         self.lg.info('====== Testcase [{}] is started ======'.format(self._testID))
-
+        self.user_api = Client()
         def timeout_handler(signum, frame):
             raise TimeExpired('Timeout expired before end of test %s' % self._testID)
 

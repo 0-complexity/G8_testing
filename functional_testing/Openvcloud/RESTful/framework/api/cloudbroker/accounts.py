@@ -33,7 +33,7 @@ class Accounts:
     
     def deleteAccounts(self, accountIds, **kwargs):
         reason = kwargs.get('reason', utils.random_string())
-        return self._api.cloudbroker.account.deleteaccount(accountIds=accountIds, reason=reason)
+        return self._api.cloudbroker.account.deleteAccounts(accountIds=accountIds, reason=reason)
 
     def update(self, accountId, **kwargs):
         data = {

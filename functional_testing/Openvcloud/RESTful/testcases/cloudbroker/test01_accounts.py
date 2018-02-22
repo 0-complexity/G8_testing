@@ -1,6 +1,6 @@
-from testcases.testcase_base import TestcasesBase
+from testcases import *
 from nose_parameterized import parameterized
-import random
+import random, unittest
 #from framework.api.client import Client
 
 
@@ -12,11 +12,15 @@ class Test(TestcasesBase):
         self.user="{}@itsyouonline".format(self.whoami) 
         self.account,self.response=self.api.cloudbroker.accounts.create(self.user)
         self.assertEqual(self.response.status_code, 200)
-
+        self.CLEANUP['accounts'].append(self.response.json())
 
     def tearDown(self):
         super().tearDown()
-
+        for accountId in self.CLEANUP['accounts']:
+            self.api.cloudbroker.accounts.delete(accountId)
+        
+        for user in self.CLEANUP['users']:
+            self.api.cloudbroker.user.delete(user)
 
     @parameterized.expand([("Negative values", -1, 400),
                            ("Positive values", 1, 200)])
@@ -37,6 +41,8 @@ class Test(TestcasesBase):
                                "maxNumPublicIP": random.randint(2, 1000) * factor}
         data, response = self.api.cloudbroker.accounts.create(username=self.user, **accounts_limitation)
         self.assertEqual(response.status_code, return_code, "A resource limit should be a positive number or -1 (unlimited).")
+        if return_code == 200:
+            self.CLEANUP['accounts'].append(response.json())
 
     def test002_create_account_with_non_existing_user(self):
         """ OVC-000
@@ -52,11 +58,11 @@ class Test(TestcasesBase):
         data, response = self.api.cloudbroker.accounts.create(username=fake_user)
         self.assertEqual(response.status_code, 400, "Email address is required for new users.")
 
-    @parameterized.expand([('R',200,401,401),
-                           ('RCX',200,401,401),
-                            ('ARCXDU',200,200,401)
+    @parameterized.expand([('R',200,403,403),
+                           ('RCX',200,403,200),
+                            ('ARCXDU',200,200,200)
                             ])
-    def test003_add_user_to_account(self,accesstype,get_code,update_code,delete_code):
+    def test003_add_user_to_account(self,accesstype,get_code,update_code,cloudspace_code):
         """ OVC-000
         *Test case for adding user to account with different accesstypes.*
 
@@ -66,33 +72,36 @@ class Test(TestcasesBase):
         #. Create account[C1] for main user and get this account  with main user,should succeed.
         #. Add user[U1] to [C1]with access[accesstype], should succeed.
         #. If accesstype read [R], should succeed to get account[C1] with user[U1]
-                                  , should fail to update account[C1] name or delete it.
-        #. If accesstype write [RCX], should succeed to get account[C1] and update its name
-                                  , should fail to delete account[C1].
-        #. If accesstype admin [ARCXDU], should succeed to get , update and  delete account [C1].
+                                 , should fail to update account[C1] name or create cloudspace on it.
+        #. If accesstype write [RCX], should succeed to get account[C1] and create cloudspace on it
+                                    , should fail to updare account[C1] name. 
+        #. If accesstype admin [ARCXDU], should succeed to get , update [C1] name and  create cloudspace on it. 
         """
 
         self.lg.info("Create user [u1].")
         user_data,response = self.api.cloudbroker.user.create(groups=["user"])
-
+        self.CLEANUP['users'].append(user_data["username"])
         self.lg.info("Create account[C1] for main user and get this account  with  user,should succeed.")
-        auth_key = self.api.system.usermanager.authenticate(user_data["username"], user_data["password"])
-        self.user_api.set_auth_header('authkey {}'.format(auth_key.json()))
-        response= self.user_api.cloudapi.accounts.get(self.response.json())
+        response= self.api.cloudapi.accounts.get(self.response.json())
         self.assertEqual(response.status_code,200)
 
         self.lg.info("Add user[U1] to [C1]with access[accesstype], should succeed.")
         data, response = self.api.cloudbroker.accounts.addUser(username=user_data["username"], accountId=self.response.json(),accesstype=accesstype)
         self.assertEqual(response.status_code, 200)
 
+        self.user_api.system.usermanager.authenticate(user_data["username"], user_data["password"])
+
         response=self.user_api.cloudapi.accounts.get(self.response.json())
         self.assertEqual(response.status_code,get_code)
 
-        data, response=self.user_api.cloudbroker.accounts.update(accountId=self.response.json())
+        location = self.api.get_location()
+        data,response = self.user_api.cloudapi.cloudspaces.create(accountId=self.response.json(), location=location, access=user_data["username"])
+        self.assertEqual(response.status_code,cloudspace_code)
+
+        new_account_name = self.utils.random_string()
+        response=self.user_api.cloudapi.accounts.update(accountId=self.response.json(),name=new_account_name)
         self.assertEqual(response.status_code, update_code)
 
-        response=self.user_api.cloudbroker.accounts.delete(self.response.json())
-        self.assertEqual(response.status_code,delete_code)
 
       
     def test004_delete_account(self):
@@ -103,16 +112,17 @@ class Test(TestcasesBase):
 
         #. Create account [C1] .
         #. Delete account [C1], should succeed.
-        #. Try to get [C1], should fail.
+        #. Try to get [C1], should has destroyed status.
         #. Delete account [C1] again, should fail.
         """
         self.lg.info("Delete account [C1], should succeed.")
         response = self.api.cloudbroker.accounts.delete(self.response.json())
         self.assertEqual(response.status_code, 200)
+        self.CLEANUP['accounts'].remove(self.response.json())
 
-        self.lg.info("Try to get [C1], should fail.")
+        self.lg.info("Try to get [C1], should has destroyed status.")
         response= self.api.cloudapi.accounts.get(self.response.json())
-        self.assertEqual(self.response.status_code, 404)
+        self.assertEqual(response.json()["status"],"DESTROYED")
 
         self.lg.info("Delete account [C1] again, should fail.")
         response = self.api.cloudbroker.accounts.delete(self.response.json())
@@ -134,9 +144,9 @@ class Test(TestcasesBase):
         for _ in range(3):
             data,response=self.api.cloudbroker.accounts.create(self.user)
             accounts.append(response.json())
-        import ipdb;ipdb.set_trace()
         response= self.api.cloudbroker.accounts.delete(accounts[0])
         self.assertEqual(response.status_code, 200)
+        self.CLEANUP['accounts'].remove(self.response.json())
         
         response= self.api.cloudbroker.accounts.deleteAccounts([accounts[1],accounts[0]])
         self.assertEqual(response.status_code, 404)
@@ -172,6 +182,7 @@ class Test(TestcasesBase):
         self.lg.info("Disable deleted account ,should fail.")
         response= self.api.cloudbroker.accounts.delete(self.response.json())
         self.assertEqual(response.status_code, 200)
+        self.CLEANUP['accounts'].remove(self.response.json())
 
         response= self.api.cloudbroker.accounts.disable(self.response.json())
         self.assertEqual(response.status_code, 404)
@@ -188,25 +199,31 @@ class Test(TestcasesBase):
         self.lg.info(" Create account [C1] and user[U1].")
         data,response=self.api.cloudbroker.accounts.create(self.user)
         c1_id=response.json()
+        self.CLEANUP['accounts'].append(c1_id)
+        user_data,response = self.api.cloudbroker.user.create(groups=["user"])
+        self.CLEANUP['users'].append(user_data["username"])
+        self.user_api.system.usermanager.authenticate(user_data["username"], user_data["password"])
+        data, response = self.api.cloudbroker.accounts.addUser(username=user_data["username"], accountId=c1_id,accesstype="ARCXDU")
+        self.assertEqual(response.status_code, 200)
+        
         self.lg.info("Disable account [C1], should succeed.")
         response= self.api.cloudbroker.accounts.disable(c1_id)
         self.assertEqual(response.status_code, 200)    
 
         self.lg.info("Try to create cloudspace on [C1], should fail.")
         location = self.api.get_location()
-        data,response = self.api.cloudbroker.cloudspaces.create(accountId=c1_id, location=location, access=self.user)
-        self.assertEqual(response.status_code,404)
+        data,response = self.user_api.cloudapi.cloudspaces.create(accountId=c1_id, location=location, access=user_data["username"])
+        self.assertEqual(response.status_code,403, "Only READ actions can be executed on account (or one of its cloudspace or machines) with status DISABLED.")
 
         self.lg.info(" Enable account [C1], should succeed.")
         response= self.api.cloudbroker.accounts.enable(c1_id)
         self.assertEqual(response.status_code, 200)    
 
         self.lg.info("Try to create cloudspace on [C1], should succeed.")
-        location = self.api.get_location()
-        data,response = self.api.cloudbroker.cloudspaces.create(accountId=c1_id, location=location, access=self.user)
+        data,response = self.user_api.cloudapi.cloudspaces.create(accountId=c1_id, location=location, access=self.user)
         self.assertEqual(response.status_code,200)
 
-
+    @unittest.skip("https://github.com/0-complexity/openvcloud/issues/1355")
     def test007_Update_account(self):
         """ OVC-000
         *Test case for Update account .*
@@ -228,6 +245,7 @@ class Test(TestcasesBase):
         self.lg.info(" Update deleted account. should fail.")
         response= self.api.cloudbroker.accounts.delete(self.response.json())
         self.assertEqual(response.status_code, 200)
+        self.CLEANUP['accounts'].remove(self.response.json())
 
         data, response= self.api.cloudbroker.accounts.update(self.response.json())
         self.assertEqual(response.status_code, 404)
@@ -235,7 +253,8 @@ class Test(TestcasesBase):
         self.lg.info("Create account [C1].")
         data,response=self.api.cloudbroker.accounts.create(self.user)
         accountId = response.json()
-    
+        self.CLEANUP['accounts'].append(self.response.json())
+
         self.lg.info(" Update account [C1] name, should succeed.")
         data,response= self.api.cloudbroker.accounts.update(accountId)
         self.assertEqual(response.status_code, 200)    
