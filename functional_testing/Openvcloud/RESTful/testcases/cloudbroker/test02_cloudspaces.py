@@ -13,8 +13,16 @@ class cloudspace(TestcasesBase):
         super().tearDownClass()
 
     def setUp(self):
-        super().setUp()   
-        
+        super().setUp()
+        self.lg(" [*] Create account")
+        self.user = "{}@itsyouonline".format(self.whoami)
+        self.account, self.response = self.api.cloudbroker.accounts.create(self.user)
+        self.assertEqual(self.response.status_code, 200)
+
+        self.lg(" [*] Create cloudspace.")
+        self.api.cloudbroker.cloudspaces.create(accountId=self.account, location=self.api.get_random_locations(),
+                                                access=self.user)
+
     def tearDown(self):
         super().tearDown()
 
@@ -29,9 +37,8 @@ class cloudspace(TestcasesBase):
         #. Check thar IP added to cloudspace [CS1], should succeed.
         """
 
-
-    @parameterized.expand(['read', 'write','admin'])
-    def test002_add_user_to_cloudspace(self,accesstype):
+    @parameterized.expand(['read', 'write', 'admin'])
+    def test002_add_user_to_cloudspace(self, accesstype):
         """ OVC-000
         *Test case for adding user to cloudspace with different accesstypes.*
 
@@ -90,7 +97,6 @@ class cloudspace(TestcasesBase):
         """
         pass
 
-
     def test006_create_cloudspace_with_different_options(self):
         """ OVC-000
         *Test case for testing creating account wuth different options .*
@@ -107,5 +113,5 @@ class cloudspace(TestcasesBase):
         #. Create cloudspace [CS7] that doesn't exceed account's limits, should succeed.
         #. Create another cloudspace [CS8] that doesn't exceed account's limits , should fail as max_IPs equal 1.
         
-        """        
-        pass 
+        """
+        pass

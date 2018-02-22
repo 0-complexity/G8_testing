@@ -4,6 +4,8 @@ from framework.api.libcloud.libcloud import Libcloud
 from framework.api.cloudbroker.cloudbroker import Cloudbroker
 from testconfig import config
 from framework.utils.ovc_client import Client as api_client
+import random
+
 
 class Client:
     def __init__(self):
@@ -21,6 +23,6 @@ class Client:
 
     def set_auth_header(self, value):
         self.api_client._session.headers['Authorization'] = value
-        
 
-
+    def get_random_locations(self):
+        return random.choice(self.cloudapi.locations.list())['locationCode']
