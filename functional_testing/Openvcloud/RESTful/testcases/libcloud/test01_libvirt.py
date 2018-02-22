@@ -10,7 +10,7 @@ class LibCloudBasicTests(TestcasesBase):
 
         locations = response.json()
         if not locations:
-            self.skip('No locations were found in the environment')
+            self.skipTest('No locations were found in the environment')
         
         self._location = random.choice(locations)
         self.location = self._location['name'] 
@@ -59,6 +59,7 @@ class LibCloudBasicTests(TestcasesBase):
         data, response = self.api.cloudbroker.account.create(username=self.whoami)
         self.assertEqual(response.status_code, 200, response.content)
         account_id = int(response.text)
+        self.CLEANUP['accounts'].append(account_id)
 
         self.lg.info('Create cloudspace (CS1), should succeed')
         data, response = self.api.cloudapi.cloudspaces.create(accountId=account_id, location=self.location, access=self.whoami)

@@ -24,6 +24,7 @@ class TestcasesBase(TestCase):
     def setUp(self):
         self._testID = self._testMethodName
         self._startTime = time.time()
+        self.CLEANUP = {'users':[], 'accounts':[]}
         self.lg.info('====== Testcase [{}] is started ======'.format(self._testID))
 
         def timeout_handler(signum, frame):
@@ -36,6 +37,14 @@ class TestcasesBase(TestCase):
         self._endTime = time.time()
         self._duration = int(self._endTime - self._startTime)
         self.lg.info('Testcase [{}] is ended, Duration: {} seconds'.format(self._testID, self._duration))
+        
+        for accountId in self.CLEANUP['accounts']:
+            self.lg.info('[TearDown] Deleting account: {}'.format(accountId))
+            self.api.cloudbroker.account.delete(accountId=accountId)
+
+        for username in self.CLEANUP['users']:
+            self.lg.info('[TearDown] Deleting user: {}'.format(username))
+            self.api.cloudbroker.user.delete(username=username)
 
     def logger(self):
         logger = logging.getLogger('OVC')
