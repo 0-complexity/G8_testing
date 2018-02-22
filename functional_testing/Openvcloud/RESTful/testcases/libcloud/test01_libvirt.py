@@ -1,5 +1,6 @@
 import time, random
 from testcases import *
+from nose_parameterized import parameterized
 
 class LibCloudBasicTests(TestcasesBase):
 
@@ -15,38 +16,43 @@ class LibCloudBasicTests(TestcasesBase):
         self._location = random.choice(locations)
         self.location = self._location['name'] 
         self.gid = self._location['gid']
-        
-    def test01_get_free_mac_address(self):
+
+    @parameterized.expand([('valid_gid', 200), ('invalid_gid', 400)])        
+    def test01_get_free_mac_address(self, case, response_code):
         """ OVC-001
         #. Get free mac address, should succeed.
         #. Get free mac address of invalid grid id, should fail.
-        """
-        self.lg.info('Get free mac address, should succeed')
-        response = self.api.libcloud.libvirt.getFreeMacAddress(gid=self.gid)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.text)
+        """        
+        if case == 'valid_gid':
+            gid = self.gid
+        else:
+            gid = self.utils.random_string()
 
-        self.lg.info('Get free mac address of invalid grid id, should fail')
-        gid = self.utils.random_string()
         response = self.api.libcloud.libvirt.getFreeMacAddress(gid=gid)
-        self.assertEqual(response.status_code, 400)
-                
-    def test02_get_free_network_id(self):
+        self.assertEqual(response.status_code, response_code)
+
+    @parameterized.expand([('valid_gid', 200), ('invalid_gid', 400)])
+    def test02_get_free_network_id(self, case, response_code):
         """ OVC-002
         #. Get free network id, should succeed.
         #. Get free network id of invalid grid id, should fail.
         """
-        self.lg.info('Get free network id, should succeed')
-        response = self.api.libcloud.libvirt.getFreeNetworkId(gid=self.gid)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.text)
+        if case == 'valid_gid':
+            gid = self.gid
+        else:
+            gid = self.utils.random_string()
 
-        self.lg.info('Get free network id of invalid grid id, should fail')
-        gid = self.utils.random_string()
         response = self.api.libcloud.libvirt.getFreeNetworkId(gid=gid)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, response_code)
 
-    def test03_register_release_network_id_range(self):
+    @parameterized.expand([
+            ('valid_newtwork_id', 200), 
+            ('invalid_network_id', 409), 
+            ('invalid_gid', 400),
+            ('invalid_start', 400),
+            ('invalid_end', 400),
+        ])
+    def test03_register_release_network_id_range(self, case, response_code):
         """ OVC-003
         #. Create account (AC1), should succeed.
         #. Create cloudspace (CS1), should succeed.
@@ -55,53 +61,60 @@ class LibCloudBasicTests(TestcasesBase):
         #. Register network id of invalid grid id, should fail.
         #. Register network id of invalid start value, should fail.
         """
-        self.lg.info('Create account (AC1), should succeed')
-        data, response = self.api.cloudbroker.account.create(username=self.whoami)
-        self.assertEqual(response.status_code, 200, response.content)
-        account_id = int(response.text)
-        self.CLEANUP['accounts'].append(account_id)
+        gid = self.gid
+        start = random.randint(10000, 50000)
+        end = random.randint(10000, 50000)
 
-        self.lg.info('Create cloudspace (CS1), should succeed')
-        data, response = self.api.cloudapi.cloudspaces.create(accountId=account_id, location=self.location, access=self.whoami)
-        self.assertEqual(response.status_code, 200)
-        cloudspace_id = int(response.text)
+        if case in ['valid_newtwork_id', 'invalid_network_id']:
 
-        for _ in range(20):
-            response = self.api.cloudapi.cloudspaces.get(cloudspaceId=cloudspace_id)
-            if response.json()['status'] == 'DEPLOYED':
-                break
-            time.sleep(5)
+            self.lg.info('Create account (AC1), should succeed')
+            account_id = self.api.create_account()
+            self.assertTrue(account_id)
+            self.CLEANUP['accounts'].append(account_id)
+
+            self.lg.info('Create cloudspace (CS1), should succeed')
+            cloudspace_id = self.api.create_cloudspace(accountId=account_id, location=self.location)
+            self.assertTrue(cloudspace_id)
+
+            for _ in range(20):
+                response = self.api.cloudapi.cloudspaces.get(cloudspaceId=cloudspace_id)
+                if response.json()['status'] == 'DEPLOYED':
+                    break
+                time.sleep(5)
+            else:
+                self.fail('Can\'t create cloudspace')
+
+            response = self.api.cloudbroker.cloudspace.getVFW(cloudspaceId=cloudspace_id)
+            self.assertEqual(response.status_code, 200)
+            network_id = int(response.json()['id'])
+
+            if case == 'valid_network_id':
+                start = network_id - 1
+                end = network_id + 1
+            else:
+                start = random.randint(10000, 20000)
+                end = start + 2
+
+            self.lg.info('Register network id, should succeed')
+            data, response = self.api.libcloud.libvirt.registerNetworkIdRange(gid=gid, start=start, end=end)
+            self.assertEqual(response.status_code, response_code)
+
         else:
-            self.fail('Can\'t create cloudspace')
+            start = random.randint(10000, 50000)
+            end = random.randint(10000, 50000)
 
-        response = self.api.cloudbroker.cloudspace.getVFW(cloudspaceId=cloudspace_id)
-        self.assertEqual(response.status_code, 200)
-        network_id = int(response.json()['id'])
-        
-        self.lg.info('Register network id, should succeed')
-        data, response = self.api.libcloud.libvirt.registerNetworkIdRange(gid=self.gid)
-        self.assertIn(response.status_code, [200, 409])
+            if case == 'invalid_gid':
+                gid = self.utils.random_string()
+            elif case == 'invalid_start':
+                start = self.utils.random_string()
+            elif case == 'invalid_end':
+                end = self.utils.random_string()
+                
+            data, response = self.api.libcloud.libvirt.registerNetworkIdRange(gid=gid, start=start, end=end)
+            self.assertEqual(response.status_code, response_code)
 
-        self.lg.info('Register network id in range of deployed networkids, should fail')
-        data, response = self.api.libcloud.libvirt.registerNetworkIdRange(gid=self.gid, start=network_id-1, end=network_id+1)
-        self.assertEqual(response.status_code, 409)
-
-        self.lg.info('Register network id of invalid grid id, should fail')
-        gid = self.utils.random_string()
-        data, response = self.api.libcloud.libvirt.registerNetworkIdRange(gid=gid)
-        self.assertEqual(response.status_code, 400)
-
-        self.lg.info('Register network id of invalid start value, should fail')
-        start = self.utils.random_string()
-        data, response = self.api.libcloud.libvirt.registerNetworkIdRange(gid=self.gid, start=start)
-        self.assertEqual(response.status_code, 400)
-
-        self.lg.info('Register network id of invalid end value, should fail')
-        end = self.utils.random_string()
-        data, response = self.api.libcloud.libvirt.registerNetworkIdRange(gid=self.gid, end=end)
-        self.assertEqual(response.status_code, 400)
-
-    def test04_store_retreive_info(self):
+    @parameterized.expand([(3, False), (None, True)])
+    def test04_store_retreive_info(self, timeout, reset):
         """ OVC-004
         #. Store info without timeout, should succeed.
         #. Retreive info, should succeed.
@@ -112,48 +125,27 @@ class LibCloudBasicTests(TestcasesBase):
         #. Retreive the info after the timeout, should be null.
         #. Store info with invalid timeout, should fail.
         """
-        self.lg.info('Store info without timeout, should succeed')
         data = self.utils.random_string()
+
+        self.lg.info('Store info, should succeed')
         response = self.api.libcloud.libvirt.storeInfo(data=data)
         key = response.text.replace('"', '')
         self.assertEqual(response.status_code, 200)
 
         self.lg.info('Retreive info, should succeed')
-        response = self.api.libcloud.libvirt.retreiveInfo(key=key)
+        response = self.api.libcloud.libvirt.retreiveInfo(key=key, reset=reset)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.text.replace('"', ''), data)
 
-        self.lg.info('Retreive info, should succeed')
-        response = self.api.libcloud.libvirt.retreiveInfo(key=key, reset=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.text.replace('"', ''), data)
+        if reset:
+            self.lg.info('Retreive info again, info should be null')
+            response = self.api.libcloud.libvirt.retreiveInfo(key=key, reset=reset)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.text, 'null')
 
-        self.lg.info('Retreive info again, info should be null')
-        response = self.api.libcloud.libvirt.retreiveInfo(key=key)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.text, 'null')
-
-        self.lg.info('Store info timeout, should succeed')
-        timeout = 3
-        data = self.utils.random_string()
-        response = self.api.libcloud.libvirt.storeInfo(data=data, timeout=timeout)
-        key = response.text.replace('"', '')
-        self.assertEqual(response.status_code, 200)
-
-        self.lg.info('Retreive info before timeout, should useds')
-        response = self.api.libcloud.libvirt.retreiveInfo(key=key, reset=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.text.replace('"', ''), data)
-
-        time.sleep(timeout)
-
-        self.lg.info('Retreive the info after the timeout, should be null')
-        response = self.api.libcloud.libvirt.retreiveInfo(key=key)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.text, 'null')
-
-        self.lg.info('Store info with invalid timeout, should fail')
-        data = self.utils.random_string()
-        timeout = self.utils.random_string()
-        response = self.api.libcloud.libvirt.storeInfo(data=data, timeout=timeout)
-        self.assertEqual(response.status_code, 400)
+        if timeout:
+            time.sleep(timeout + 1)
+            self.lg.info('Retreive the info after the timeout, should be null')
+            response = self.api.libcloud.libvirt.retreiveInfo(key=key)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.text, 'null')
