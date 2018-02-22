@@ -45,7 +45,7 @@ class TestcasesBase(TestCase):
     def logger(self):
         logger = logging.getLogger('OVC')
         if not logger.handlers:
-            fileHandler = logging.FileHandler('log/testsuite.log', mode='w')
+            fileHandler = logging.FileHandler('testsuite.log', mode='w')
             formatter = logging.Formatter(' %(asctime)s - %(name)s - [%(levelname)s] - %(message)s')
             fileHandler.setFormatter(formatter)
             logger.addHandler(fileHandler)
