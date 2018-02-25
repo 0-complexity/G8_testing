@@ -156,11 +156,10 @@ class Test(TestcasesBase):
 
     def test006_disable_non_exist_account(self):
         """ OVC-000
-        *Test case for disable and enable account .*
+        *Test case for disable non-exist account .*
 
         **Test Scenario:**
         #. Disable non-exist account, should fail.
-        #. Disable deleted account ,should fail.
         """
    
         self.lg.info("Disable non-exist account, should fail.")
@@ -168,6 +167,17 @@ class Test(TestcasesBase):
         response= self.api.cloudbroker.accounts.disable(random_account)
         self.assertEqual(response.status_code, 404)  
 
+
+    def test007_disable_deleted_account(self):
+        """ OVC-000
+        *Test case for disable deleted  account .*
+
+        **Test Scenario:**
+
+        #. Disable deleted account ,should fail.
+        
+        """
+   
         self.lg.info("Disable deleted account ,should fail.")
         response= self.api.cloudbroker.accounts.delete(self.response.json())
         self.assertEqual(response.status_code, 200)
@@ -176,19 +186,28 @@ class Test(TestcasesBase):
         response= self.api.cloudbroker.accounts.disable(self.response.json())
         self.assertEqual(response.status_code, 404)
 
-    def test007_enable_non_exist_account(self):
+
+    def test008_enable_non_exist_account(self):
         """ OVC-000
-        *Test case for disable and enable account .*
+        *Test case for  enable  non-exist account .*
 
         **Test Scenario:**
         #. Enable non-exist account, should fail.
-        #. Enable deleted account ,should fail.
         
         """
         self.lg.info("Enable non-exist account, should fail.")
         random_account= random.randint(3000,5000)
         response= self.api.cloudbroker.accounts.enable(random_account)
         self.assertEqual(response.status_code, 404)  
+
+    def test009_enable_deleted_acount(self):
+        """ OVC-000
+        *Test case for enable deleted account .*
+
+        **Test Scenario:**
+        #. Enable deleted account ,should fail.
+        
+        """
 
         self.lg.info("Enable Deleted account, should fail.")
         response= self.api.cloudbroker.accounts.delete(self.response.json())
@@ -198,7 +217,8 @@ class Test(TestcasesBase):
         response= self.api.cloudbroker.accounts.enable(self.response.json())
         self.assertEqual(response.status_code, 404)
 
-    def test008_account_disable_and_enable(self):
+
+    def test010_account_disable_and_enable(self):
         """ OVC-000
         *Test case for disable and enable account .*
 
@@ -238,21 +258,29 @@ class Test(TestcasesBase):
         data,response = self.user_api.cloudapi.cloudspaces.create(accountId=c1_id, location=location, access=self.user)
         self.assertEqual(response.status_code,200)
 
-    @unittest.skip("https://github.com/0-complexity/openvcloud/issues/1355")
-    def test009_Update_non_exist_account(self):
+    def test011_Update_non_exist_account(self):
         """ OVC-000
         *Test case for Update account .*
 
         **Test Scenario:**       
         #. Update name of non-exist account [C1],should fail.
-        #. Update deleted account. should fail.
         """
         random_account= random.randint(3000,5000)
 
         self.lg.info("update non-exist account, should fail.")      
         data, response= self.api.cloudbroker.accounts.update(random_account)
         self.assertEqual(response.status_code, 404)
-        
+
+
+    @unittest.skip("https://github.com/0-complexity/openvcloud/issues/1355")
+    def test012_Update_deleted_account(self):
+        """ OVC-000
+        *Test case for Update deleted account .*
+
+        **Test Scenario:**       
+        #. Update deleted account. should fail.
+        """
+
         self.lg.info(" Update deleted account. should fail.")
         response= self.api.cloudbroker.accounts.delete(self.response.json())
         self.assertEqual(response.status_code, 200)
@@ -262,7 +290,7 @@ class Test(TestcasesBase):
         self.assertEqual(response.status_code, 404)
 
 
-    def test010_Update_account(self):
+    def test013_Update_account(self):
         """ OVC-000
         #. Create account [C1].
         #. Update account [C1] name, should succeed.

@@ -7,11 +7,12 @@ from framework.utils.ovc_client import Client as api_client
 import random
 
 
-ip = config['main']['ip']
-port = int(config['main']['port'])
 
 class Client:
     def __init__(self, client_id=None, client_secret=None):
+
+        ip = config['main']['ip']
+        port = int(config['main']['port'])
         self.api_client = api_client(ip, port, client_id, client_secret)
         if client_id:
             self.api_client.load_swagger()
