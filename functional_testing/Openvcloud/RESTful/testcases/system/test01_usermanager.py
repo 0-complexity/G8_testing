@@ -24,11 +24,9 @@ class UsersTests(TestcasesBase):
         else:
             username = self.utils.random_string()
 
-        self.lg.info('Get user (U1), should succeed.')
         response = self.api.system.usermanager.userget(name=username)
         self.assertEqual(response.status_code, response_code, response.content)
 
-        self.lg.info('Check if user (U1) exists, should return true.')
         response = self.api.system.usermanager.userexists(name=username)
         self.assertEqual(response.status_code, 200, response.content)
         self.assertEqual(response.text, userexists)
@@ -60,7 +58,6 @@ class UsersTests(TestcasesBase):
         else:
             username = self.utils.random_string()
 
-        self.lg.info('Delete user (U1), should succeed')
         response = self.api.system.usermanager.delete(username=username)
         self.assertEqual(response.status_code, response_code, response.content)
 
