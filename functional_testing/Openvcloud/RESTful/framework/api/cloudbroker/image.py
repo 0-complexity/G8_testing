@@ -1,10 +1,10 @@
 import random
-from framework.api import api_client, utils
+from framework.api import  utils
 
 class Image:
-    def __init__(self):
+    def __init__(self, api_client):
         self._api = api_client
-    
+
     def delete(self,imageId):
         return self._api.cloudbroker.image.delete(imageId=imageId)
     

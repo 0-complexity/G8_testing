@@ -17,16 +17,20 @@ class BaseResource(object):
         return response
 
 class Client(BaseResource):
-    def __init__(self, ip, port, client_id, client_secret):
+    def __init__(self, ip, port, client_id=None, client_secret=None):
         # Generate the jwt
         session = requests.Session()
-        jwt = self._generate_jwt(client_id, client_secret)
-        session.headers['Authorization'] = 'Bearer {}'.format(jwt)
+
+        if client_id and client_secret:
+            jwt = self._generate_jwt(client_id, client_secret)
+            session.headers['Authorization'] = 'Bearer {}'.format(jwt)
+
         # Generate the url
         protocol = "https" if port == 443 else "http"
         url = "{protocol}://{ip}:{port}/restmachine".format(protocol=protocol, ip=ip, port=port)
 
         super(Client, self).__init__(session, url)
+
 
     def _generate_jwt(self, client_id, client_secret):
         params = {
@@ -62,3 +66,6 @@ class Client(BaseResource):
             api.__doc__ = docstring
 
         return swagger
+
+    def lg(self, msg):
+        self._logger.info(msg)

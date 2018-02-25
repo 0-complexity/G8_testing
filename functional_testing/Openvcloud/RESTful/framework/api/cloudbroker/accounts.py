@@ -1,8 +1,8 @@
 import random
-from framework.api import api_client, utils
+from framework.api import utils
 
 class Accounts:
-    def __init__(self):
+    def __init__(self, api_client):
         self._api = api_client
 
     def addUser(self, username, accountId, **kwargs):
@@ -12,7 +12,7 @@ class Accounts:
             'accesstype': random.choice(['R','RCX','ARCX'])
         }
         data.update(** kwargs)
-        return data, self._api.cloudbroker.accounts.addUser(** data)
+        return data, self._api.cloudbroker.account.addUser(** data)
 
     def create(self, username, **kwargs):
         data = {
@@ -25,15 +25,15 @@ class Accounts:
             "maxNumPublicIP": -1
         }
         data.update(** kwargs)
-        return data, self._api.cloudbroker.accounts.create(**data)
+        return data, self._api.cloudbroker.account.create(**data)
 
     def delete(self, accountId, **kwargs):
         reason = kwargs.get('reason', utils.random_string())
-        return self._api.cloudbroker.accounts.delete(accountId=accountId,reason=reason)
+        return self._api.cloudbroker.account.delete(accountId=accountId,reason=reason)
     
     def deleteAccounts(self, accountIds, **kwargs):
         reason = kwargs.get('reason', utils.random_string())
-        return self._api.cloudbroker.accounts.deleteAccounts(accountIds=accountIds, reason=reason)
+        return self._api.cloudbroker.account.deleteAccounts(accountIds=accountIds, reason=reason)
 
     def update(self, accountId, **kwargs):
         data = {
@@ -46,17 +46,17 @@ class Accounts:
             'maxNumPublicIP': -1
         }
         data.update(** kwargs)
-        return data, self._api.cloudbroker.accounts.update(** data)
+        return data, self._api.cloudbroker.account.update(** data)
 
     def deleteUser(self, accountId, userId, recursivedelete=False):        
-        return self._api.cloudbroker.accounts.deleteUser(
+        return self._api.cloudbroker.account.deleteUser(
             accountId=accountId,
             userId=userId,
             recursivedelete=recursivedelete
         )
 
     def updateUser(self, accountId, userId, accesstype):
-        return self._api.cloudbroker.accounts.addUser(
+        return self._api.cloudbroker.account.addUser(
             accountId=accountId,
             userId=userId,
             accesstype=accesstype
@@ -64,8 +64,8 @@ class Accounts:
 
     def disable(self, accountId, **kwargs):
         reason = kwargs.get('reason', utils.random_string())
-        return self._api.cloudbroker.accounts.disable(accountId=accountId, reason=reason)
+        return self._api.cloudbroker.account.disable(accountId=accountId, reason=reason)
 
     def enable(self, accountId, **kwargs):
         reason = kwargs.get('reason', utils.random_string())
-        return self._api.cloudbroker.accounts.enable(accountId=accountId, reason=reason)
+        return self._api.cloudbroker.account.enable(accountId=accountId, reason=reason)
