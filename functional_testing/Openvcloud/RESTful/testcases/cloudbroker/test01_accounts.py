@@ -10,7 +10,7 @@ class Test(TestcasesBase):
     def setUp(self):
         super().setUp()
         self.user="{}@itsyouonline".format(self.whoami) 
-        self.account,self.response=self.api.cloudbroker.accounts.create(self.user)
+        self.account,self.response=self.api.cloudbroker.account.create(self.user)
         self.assertEqual(self.response.status_code, 200)
         self.CLEANUP['accounts'].append(self.response.json())
 
@@ -35,7 +35,7 @@ class Test(TestcasesBase):
                                "maxCPUCapacity": random.randint(2, 1000) * factor,
                                "maxNetworkPeerTransfer": random.randint(2, 1000) * factor,
                                "maxNumPublicIP": random.randint(2, 1000) * factor}
-        data, response = self.api.cloudbroker.accounts.create(username=self.user, **accounts_limitation)
+        data, response = self.api.cloudbroker.account.create(username=self.user, **accounts_limitation)
         self.assertEqual(response.status_code, return_code, "A resource limit should be a positive number or -1 (unlimited).")
         if return_code == 200:
             self.CLEANUP['accounts'].append(response.json())
@@ -51,7 +51,7 @@ class Test(TestcasesBase):
         """
         self.lg.info(" Create account with non-exist user, should fail.")
         fake_user = self.utils.random_string()
-        data, response = self.api.cloudbroker.accounts.create(username=fake_user)
+        data, response = self.api.cloudbroker.account.create(username=fake_user)
         self.assertEqual(response.status_code, 400, "Email address is required for new users.")
 
     @parameterized.expand([('R',200,403,403),
@@ -82,7 +82,7 @@ class Test(TestcasesBase):
         self.assertEqual(response.status_code,200)
 
         self.lg.info("Add user[U1] to [C1]with access[accesstype], should succeed.")
-        data, response = self.api.cloudbroker.accounts.addUser(username=user_data["username"], accountId=self.response.json(),accesstype=accesstype)
+        data, response = self.api.cloudbroker.account.addUser(username=user_data["username"], accountId=self.response.json(),accesstype=accesstype)
         self.assertEqual(response.status_code, 200)
 
         self.user_api.system.usermanager.authenticate(user_data["username"], user_data["password"])
@@ -112,7 +112,7 @@ class Test(TestcasesBase):
         #. Delete account [C1] again, should fail.
         """
         self.lg.info("Delete account [C1], should succeed.")
-        response = self.api.cloudbroker.accounts.delete(self.response.json())
+        response = self.api.cloudbroker.account.delete(self.response.json())
         self.assertEqual(response.status_code, 200)
         self.CLEANUP['accounts'].remove(self.response.json())
 
@@ -121,12 +121,12 @@ class Test(TestcasesBase):
         self.assertEqual(response.json()["status"],"DESTROYED")
 
         self.lg.info("Delete account [C1] again, should fail.")
-        response = self.api.cloudbroker.accounts.delete(self.response.json())
+        response = self.api.cloudbroker.account.delete(self.response.json())
         self.assertEqual(response.status_code, 404)
 
     def test005_delete_accounts(self):
         """ OVC-000
-        *Test case for deleting multiple accounts.*
+        *Test case for deleting multiple account.*
 
         **Test Scenario:**
 
@@ -138,16 +138,16 @@ class Test(TestcasesBase):
         """
         accounts=[self.response.json()]
         for _ in range(3):
-            data,response=self.api.cloudbroker.accounts.create(self.user)
+            data,response=self.api.cloudbroker.account.create(self.user)
             accounts.append(response.json())
-        response= self.api.cloudbroker.accounts.delete(accounts[0])
+        response= self.api.cloudbroker.account.delete(accounts[0])
         self.assertEqual(response.status_code, 200)
         self.CLEANUP['accounts'].remove(self.response.json())
         
-        response= self.api.cloudbroker.accounts.deleteAccounts([accounts[1],accounts[0]])
+        response= self.api.cloudbroker.account.deleteAccounts([accounts[1],accounts[0]])
         self.assertEqual(response.status_code, 404)
 
-        response= self.api.cloudbroker.accounts.deleteAccounts([accounts[2],accounts[3]])
+        response= self.api.cloudbroker.account.deleteAccounts([accounts[2],accounts[3]])
         self.assertEqual(response.status_code, 200)
 
         for accountID in accounts:
@@ -164,7 +164,7 @@ class Test(TestcasesBase):
    
         self.lg.info("Disable non-exist account, should fail.")
         random_account= random.randint(3000,5000)
-        response= self.api.cloudbroker.accounts.disable(random_account)
+        response= self.api.cloudbroker.account.disable(random_account)
         self.assertEqual(response.status_code, 404)  
 
 
@@ -179,11 +179,11 @@ class Test(TestcasesBase):
         """
    
         self.lg.info("Disable deleted account ,should fail.")
-        response= self.api.cloudbroker.accounts.delete(self.response.json())
+        response= self.api.cloudbroker.account.delete(self.response.json())
         self.assertEqual(response.status_code, 200)
         self.CLEANUP['accounts'].remove(self.response.json())
 
-        response= self.api.cloudbroker.accounts.disable(self.response.json())
+        response= self.api.cloudbroker.account.disable(self.response.json())
         self.assertEqual(response.status_code, 404)
 
 
@@ -197,7 +197,7 @@ class Test(TestcasesBase):
         """
         self.lg.info("Enable non-exist account, should fail.")
         random_account= random.randint(3000,5000)
-        response= self.api.cloudbroker.accounts.enable(random_account)
+        response= self.api.cloudbroker.account.enable(random_account)
         self.assertEqual(response.status_code, 404)  
 
     def test009_enable_deleted_acount(self):
@@ -210,11 +210,11 @@ class Test(TestcasesBase):
         """
 
         self.lg.info("Enable Deleted account, should fail.")
-        response= self.api.cloudbroker.accounts.delete(self.response.json())
+        response= self.api.cloudbroker.account.delete(self.response.json())
         self.assertEqual(response.status_code, 200)
         self.CLEANUP['accounts'].remove(self.response.json())
 
-        response= self.api.cloudbroker.accounts.enable(self.response.json())
+        response= self.api.cloudbroker.account.enable(self.response.json())
         self.assertEqual(response.status_code, 404)
 
 
@@ -232,17 +232,17 @@ class Test(TestcasesBase):
         """
 
         self.lg.info(" Create account [C1] and user[U1].")
-        data,response=self.api.cloudbroker.accounts.create(self.user)
+        data,response=self.api.cloudbroker.account.create(self.user)
         c1_id=response.json()
         self.CLEANUP['accounts'].append(c1_id)
         user_data,response = self.api.cloudbroker.user.create(groups=["user"])
         self.CLEANUP['users'].append(user_data["username"])
         self.user_api.system.usermanager.authenticate(user_data["username"], user_data["password"])
-        data, response = self.api.cloudbroker.accounts.addUser(username=user_data["username"], accountId=c1_id,accesstype="ARCXDU")
+        data, response = self.api.cloudbroker.account.addUser(username=user_data["username"], accountId=c1_id,accesstype="ARCXDU")
         self.assertEqual(response.status_code, 200)
         
         self.lg.info("Disable account [C1], should succeed.")
-        response= self.api.cloudbroker.accounts.disable(c1_id)
+        response= self.api.cloudbroker.account.disable(c1_id)
         self.assertEqual(response.status_code, 200)    
 
         self.lg.info("Try to create cloudspace on [C1], should fail.")
@@ -251,7 +251,7 @@ class Test(TestcasesBase):
         self.assertEqual(response.status_code,403, "Only READ actions can be executed on account (or one of its cloudspace or machines) with status DISABLED.")
 
         self.lg.info(" Enable account [C1], should succeed.")
-        response= self.api.cloudbroker.accounts.enable(c1_id)
+        response= self.api.cloudbroker.account.enable(c1_id)
         self.assertEqual(response.status_code, 200)    
 
         self.lg.info("Try to create cloudspace on [C1], should succeed.")
@@ -268,7 +268,7 @@ class Test(TestcasesBase):
         random_account= random.randint(3000,5000)
 
         self.lg.info("update non-exist account, should fail.")      
-        data, response= self.api.cloudbroker.accounts.update(random_account)
+        data, response= self.api.cloudbroker.account.update(random_account)
         self.assertEqual(response.status_code, 404)
 
 
@@ -282,11 +282,11 @@ class Test(TestcasesBase):
         """
 
         self.lg.info(" Update deleted account. should fail.")
-        response= self.api.cloudbroker.accounts.delete(self.response.json())
+        response= self.api.cloudbroker.account.delete(self.response.json())
         self.assertEqual(response.status_code, 200)
         self.CLEANUP['accounts'].remove(self.response.json())
 
-        data, response= self.api.cloudbroker.accounts.update(self.response.json())
+        data, response= self.api.cloudbroker.account.update(self.response.json())
         self.assertEqual(response.status_code, 404)
 
 
@@ -298,7 +298,7 @@ class Test(TestcasesBase):
          
         """
         self.lg.info(" Update account [C1] name, should succeed.")
-        data,response= self.api.cloudbroker.accounts.update(self.response.json())
+        data,response= self.api.cloudbroker.account.update(self.response.json())
         self.assertEqual(response.status_code, 200)    
 
         self.lg.info("Check that account name updated, should succeed.")

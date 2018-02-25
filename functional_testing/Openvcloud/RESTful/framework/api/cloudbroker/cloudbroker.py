@@ -1,6 +1,6 @@
 from framework.api import utils
-from framework.api.cloudbroker.accounts import Accounts
-from framework.api.cloudbroker.cloudspaces import Cloudspaces
+from framework.api.cloudbroker.account import Account
+from framework.api.cloudbroker.cloudspace import Cloudspace
 from framework.api.cloudbroker.diagnostics import Diagnostics
 from framework.api.cloudbroker.health import Health
 from framework.api.cloudbroker.iaas import Iaas
@@ -13,8 +13,8 @@ from framework.api.cloudbroker.user import User
 class Cloudbroker:
 
     def __init__(self, api_client):
-        self.accounts = Accounts(api_client)
-        self.cloudspaces = Cloudspaces(api_client)
+        self.account = Account(api_client)
+        self.cloudspace = Cloudspace(api_client)
         self.diagnostics = Diagnostics(api_client)
         self.health = Health(api_client)
         self.iaas = Iaas(api_client)

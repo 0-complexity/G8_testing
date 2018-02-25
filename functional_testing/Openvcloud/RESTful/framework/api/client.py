@@ -21,6 +21,7 @@ class Client:
         self.cloudbroker = Cloudbroker(self.api_client)
         self.libcloud = Libcloud(self.api_client)
         self.system = System(self.api_client)
+        self._whoami = config['main']['username']
 
 
     def set_auth_header(self, value):

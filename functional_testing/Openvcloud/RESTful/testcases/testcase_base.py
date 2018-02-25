@@ -43,7 +43,7 @@ class TestcasesBase(TestCase):
         self._endTime = time.time()
         self._duration = int(self._endTime - self._startTime)
         for accountId in self.CLEANUP['accounts']:
-            self.api.cloudbroker.accounts.delete(accountId)
+            self.api.cloudbroker.account.delete(accountId)
         
         for user in self.CLEANUP['users']:
             self.api.cloudbroker.user.delete(user)

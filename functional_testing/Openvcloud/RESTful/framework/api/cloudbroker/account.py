@@ -1,7 +1,7 @@
 import random
 from framework.api import utils
 
-class Accounts:
+class Account:
     def __init__(self, api_client):
         self._api = api_client
 
