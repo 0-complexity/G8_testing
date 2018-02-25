@@ -1,8 +1,8 @@
 import random
-from framework.api import api_client, utils 
+from framework.api import utils 
 
-class Cloudspace:
-    def __init__(self):
+class Cloudspaces:
+    def __init__(self, api_client):
         self._api = api_client
 
     def addExtraIP(self, cloudspaceId, ipaddress):
@@ -80,7 +80,7 @@ class Cloudspace:
         reason = kwargs.get('reason',utils.random_string())       
         return self._api.cloudbroker.cloudspace.deployVFW(accountId=accountId, cloudspaceId=cloudspaceId, reason=reason)
 
-    def destroyCloudSpaces(self, cloudspaceIds, **kwargs):
+    def destroycloudspaces(self, cloudspaceIds, **kwargs):
         reason = kwargs.get('reason',utils.random_string())       
         return self._api.cloudbroker.cloudspace.deployVFW(cloudspaceIds=cloudspaceIds, reason=reason)
 
