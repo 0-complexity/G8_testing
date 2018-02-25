@@ -9,10 +9,10 @@ class UserManager:
 
     def create(self, **kwargs):
         data = {
-            'name': utils.random_string(),
-            'secret': utils.random_string(),
+            'username': utils.random_string(),
+            'password': utils.random_string(),
             'groups': ['admin'],
-            'emails': [utils.random_string()],
+            'emails': ['{}@test.com'.format(utils.random_string())],
             'domain': utils.random_string(),
             'provider': utils.random_string()
         }
