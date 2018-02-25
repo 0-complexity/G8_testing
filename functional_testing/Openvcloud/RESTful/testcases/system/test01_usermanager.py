@@ -3,7 +3,6 @@ from testcases import *
 from nose_parameterized import parameterized
 
 class UsersTests(TestcasesBase):
-
     def setUp(self):
         super().setUp()
         self.data, self.response = self.api.system.usermanager.create(provider=None)
@@ -69,9 +68,7 @@ class UsersTests(TestcasesBase):
         self.assertEqual(response.status_code, 200, response.content)
         self.assertEqual(response.text, 'false')
 
-
 class GroupsTests(TestcasesBase):
-
     def setUp(self):
         super().setUp()
         self.data, self.response = self.api.system.usermanager.createGroup()
@@ -96,8 +93,7 @@ class GroupsTests(TestcasesBase):
 
         data, response = self.api.system.usermanager.editGroup(name=name)    
         self.assertEqual(response.status_code, response_code, response.content)
-
-    
+  
     @parameterized.expand([('exists', 200), ('non-exist', 404)])
     @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1367')    
     def test02_delete_group(self, case, response_code):
