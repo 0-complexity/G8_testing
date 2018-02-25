@@ -63,7 +63,7 @@ class LibCloudBasicTests(TestcasesBase):
         """
         gid = self.gid
         start = random.randint(10000, 50000)
-        end = random.randint(10000, 50000)
+        end = start + 2
 
         if case in ['valid_newtwork_id', 'invalid_network_id']:
 
@@ -76,33 +76,19 @@ class LibCloudBasicTests(TestcasesBase):
             cloudspace_id = self.api.create_cloudspace(accountId=account_id, location=self.location)
             self.assertTrue(cloudspace_id)
 
-            for _ in range(20):
-                response = self.api.cloudapi.cloudspaces.get(cloudspaceId=cloudspace_id)
-                if response.json()['status'] == 'DEPLOYED':
-                    break
-                time.sleep(5)
-            else:
-                self.fail('Can\'t create cloudspace')
-
             response = self.api.cloudbroker.cloudspace.getVFW(cloudspaceId=cloudspace_id)
             self.assertEqual(response.status_code, 200)
             network_id = int(response.json()['id'])
 
-            if case == 'valid_network_id':
+            if case == 'invalid_network_id':
                 start = network_id - 1
                 end = network_id + 1
-            else:
-                start = random.randint(10000, 20000)
-                end = start + 2
 
             self.lg.info('Register network id, should succeed')
             data, response = self.api.libcloud.libvirt.registerNetworkIdRange(gid=gid, start=start, end=end)
             self.assertEqual(response.status_code, response_code)
 
         else:
-            start = random.randint(10000, 50000)
-            end = random.randint(10000, 50000)
-
             if case == 'invalid_gid':
                 gid = self.utils.random_string()
             elif case == 'invalid_start':
@@ -113,7 +99,7 @@ class LibCloudBasicTests(TestcasesBase):
             data, response = self.api.libcloud.libvirt.registerNetworkIdRange(gid=gid, start=start, end=end)
             self.assertEqual(response.status_code, response_code)
 
-    @parameterized.expand([(3, False), (None, True)])
+    @parameterized.expand([(3, False), (0, True)])
     def test04_store_retreive_info(self, timeout, reset):
         """ OVC-004
         #. Store info without timeout, should succeed.
@@ -128,7 +114,7 @@ class LibCloudBasicTests(TestcasesBase):
         data = self.utils.random_string()
 
         self.lg.info('Store info, should succeed')
-        response = self.api.libcloud.libvirt.storeInfo(data=data)
+        response = self.api.libcloud.libvirt.storeInfo(data=data, timeout=timeout)
         key = response.text.replace('"', '')
         self.assertEqual(response.status_code, 200)
 

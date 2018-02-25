@@ -3,6 +3,7 @@ from framework.api.system.system import System
 from framework.api.libcloud.libcloud import Libcloud
 from framework.api.cloudbroker.cloudbroker import Cloudbroker
 from testconfig import config
+import time
 
 class Client:
     def __init__(self):
@@ -28,6 +29,15 @@ class Client:
             return False
 
         cloudspace_id = int(response.text)
+
+        for _ in range(20):
+            response = self.cloudapi.cloudspaces.get(cloudspaceId=cloudspace_id)
+            if response.json()['status'] == 'DEPLOYED':
+                break
+            time.sleep(5)
+        else:
+            return False
+
         return cloudspace_id
         
 
