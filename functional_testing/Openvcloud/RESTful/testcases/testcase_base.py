@@ -16,6 +16,7 @@ class TestcasesBase(TestCase):
         cls.api = Client()
         cls.utils = Utils()
         cls.whoami = config['main']['username']
+        cls.CLEANUP = {'users':[], 'accounts':[], 'groups':[]}
   
     @classmethod
     def tearDownClass(cls):
@@ -36,6 +37,14 @@ class TestcasesBase(TestCase):
         self._endTime = time.time()
         self._duration = int(self._endTime - self._startTime)
         self.lg.info('Testcase [{}] is ended, Duration: {} seconds'.format(self._testID, self._duration))
+
+        for accountId in self.CLEANUP['accounts']:
+            self.lg.info('[TearDown] Deleting account: {}'.format(accountId))
+            self.api.cloudbroker.account.delete(accountId=accountId)
+
+        for username in self.CLEANUP['users']:
+            self.lg.info('[TearDown] Deleting user: {}'.format(username))
+            self.api.cloudbroker.user.delete(username=username)
 
     def logger(self):
         logger = logging.getLogger('OVC')
