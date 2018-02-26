@@ -21,7 +21,8 @@ class TestcasesBase(TestCase):
         cls.utils = Utils()
         cls.whoami = config['main']['username']
         cls.CLEANUP = {'users':[], 'accounts':[], 'groups':[]}
-  
+        cls.location =  cls.api.get_location()
+        
     @classmethod
     def tearDownClass(cls):
         pass

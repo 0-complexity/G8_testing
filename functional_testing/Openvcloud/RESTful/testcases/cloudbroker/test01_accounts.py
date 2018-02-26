@@ -89,8 +89,7 @@ class Test(TestcasesBase):
         response=self.user_api.cloudapi.accounts.get(self.response.json())
         self.assertEqual(response.status_code,get_code)
 
-        location = self.api.get_location()
-        data,response = self.user_api.cloudapi.cloudspaces.create(accountId=self.response.json(), location=location, access=user_data["username"])
+        data,response = self.user_api.cloudapi.cloudspaces.create(accountId=self.response.json(), location=self.location, access=user_data["username"])
         self.assertEqual(response.status_code,cloudspace_code)
 
         new_account_name = self.utils.random_string()
@@ -245,8 +244,7 @@ class Test(TestcasesBase):
         self.assertEqual(response.status_code, 200)    
 
         self.lg.info("Try to create cloudspace on [C1], should fail.")
-        location = self.api.get_location()
-        data,response = self.user_api.cloudapi.cloudspaces.create(accountId=c1_id, location=location, access=user_data["username"])
+        data,response = self.user_api.cloudapi.cloudspaces.create(accountId=c1_id, location=self.location, access=user_data["username"])
         self.assertEqual(response.status_code,403, "Only READ actions can be executed on account (or one of its cloudspace or machines) with status DISABLED.")
 
         self.lg.info(" Enable account [C1], should succeed.")
@@ -254,7 +252,7 @@ class Test(TestcasesBase):
         self.assertEqual(response.status_code, 200)    
 
         self.lg.info("Try to create cloudspace on [C1], should succeed.")
-        data,response = self.user_api.cloudapi.cloudspaces.create(accountId=c1_id, location=location, access=self.user)
+        data,response = self.user_api.cloudapi.cloudspaces.create(accountId=c1_id, location=self.location, access=self.user)
         self.assertEqual(response.status_code,200)
 
     def test011_Update_non_exist_account(self):
