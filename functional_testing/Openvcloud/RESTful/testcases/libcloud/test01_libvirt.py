@@ -67,12 +67,12 @@ class LibCloudBasicTests(TestcasesBase):
 
         if case in ['valid_newtwork_id', 'invalid_network_id']:
 
-            self.lg.info('Create account (AC1), should succeed')
+            self.log.info('Create account (AC1), should succeed')
             account_id = self.api.create_account()
             self.assertTrue(account_id)
             self.CLEANUP['accounts'].append(account_id)
 
-            self.lg.info('Create cloudspace (CS1), should succeed')
+            self.log.info('Create cloudspace (CS1), should succeed')
             cloudspace_id = self.api.create_cloudspace(accountId=account_id, location=self.location)
             self.assertTrue(cloudspace_id)
 
@@ -84,7 +84,7 @@ class LibCloudBasicTests(TestcasesBase):
                 start = network_id - 1
                 end = network_id + 1
 
-            self.lg.info('Register network id, should succeed')
+            self.log.info('Register network id, should succeed')
             data, response = self.api.libcloud.libvirt.registerNetworkIdRange(gid=gid, start=start, end=end)
             self.assertEqual(response.status_code, response_code)
 
@@ -113,25 +113,25 @@ class LibCloudBasicTests(TestcasesBase):
         """
         data = self.utils.random_string()
 
-        self.lg.info('Store info, should succeed')
+        self.log.info('Store info, should succeed')
         response = self.api.libcloud.libvirt.storeInfo(data=data, timeout=timeout)
         key = response.text.replace('"', '')
         self.assertEqual(response.status_code, 200)
 
-        self.lg.info('Retreive info, should succeed')
+        self.log.info('Retreive info, should succeed')
         response = self.api.libcloud.libvirt.retreiveInfo(key=key, reset=reset)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.text.replace('"', ''), data)
 
         if reset:
-            self.lg.info('Retreive info again, info should be null')
+            self.log.info('Retreive info again, info should be null')
             response = self.api.libcloud.libvirt.retreiveInfo(key=key, reset=reset)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.text, 'null')
 
         if timeout:
             time.sleep(timeout + 1)
-            self.lg.info('Retreive the info after the timeout, should be null')
+            self.log.info('Retreive the info after the timeout, should be null')
             response = self.api.libcloud.libvirt.retreiveInfo(key=key)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.text, 'null')
