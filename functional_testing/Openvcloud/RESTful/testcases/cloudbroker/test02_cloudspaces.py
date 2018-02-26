@@ -14,14 +14,6 @@ class cloudspace(TestcasesBase):
 
     def setUp(self):
         super().setUp()
-        self.lg(" [*] Create account")
-        self.user = self.whoami
-        self.account, self.response = self.api.cloudbroker.accounts.create(self.user)
-        self.assertEqual(self.response.status_code, 200)
-
-        self.lg(" [*] Create cloudspace.")
-        self.api.cloudbroker.cloudspaces.create(accountId=self.account, location=self.api.get_random_locations(),
-                                                access=self.user)
 
     def tearDown(self):
         super().tearDown()
