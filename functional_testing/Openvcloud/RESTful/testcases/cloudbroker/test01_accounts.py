@@ -1,7 +1,6 @@
 from testcases import *
 from nose_parameterized import parameterized
 import random, unittest
-#from framework.api.client import Client
 
 
 
@@ -9,7 +8,7 @@ class Test(TestcasesBase):
 
     def setUp(self):
         super().setUp()
-        self.user="{}@itsyouonline".format(self.whoami) 
+        self.user=self.whoami
         self.account,self.response=self.api.cloudbroker.account.create(self.user)
         self.assertEqual(self.response.status_code, 200)
         self.CLEANUP['accounts'].append(self.response.json())

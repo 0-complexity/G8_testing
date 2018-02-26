@@ -15,7 +15,7 @@ class cloudspace(TestcasesBase):
     def setUp(self):
         super().setUp()
         self.lg(" [*] Create account")
-        self.user = "{}@itsyouonline".format(self.whoami)
+        self.user = self.whoami
         self.account, self.response = self.api.cloudbroker.accounts.create(self.user)
         self.assertEqual(self.response.status_code, 200)
 
@@ -36,6 +36,7 @@ class cloudspace(TestcasesBase):
         #. Add Extra IP on cloudspace[cs1], should succeed.
         #. Check thar IP added to cloudspace [CS1], should succeed.
         """
+        pass
 
     @parameterized.expand(['read', 'write', 'admin'])
     def test002_add_user_to_cloudspace(self, accesstype):

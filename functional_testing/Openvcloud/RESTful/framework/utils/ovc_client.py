@@ -66,6 +66,3 @@ class Client(BaseResource):
             api.__doc__ = docstring
 
         return swagger
-
-    def lg(self, msg):
-        self._logger.info(msg)

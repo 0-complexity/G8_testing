@@ -50,7 +50,7 @@ class Cloudspace:
         return data, self._api.cloudbroker.cloudspace.update(** data)
 
     def applyConfig(self, cloudspaceId):
-        return self._api.cloudbroker.cloudspace.appapplyConfig(cloudspaceId=cloudspaceId)
+        return self._api.cloudbroker.cloudspace.applyConfig(cloudspaceId=cloudspaceId)
 
     def delete(self, cloudspaceId):
         return self._api.cloudbroker.cloudspace.delete(cloudspaceId=cloudspaceId)
@@ -78,11 +78,11 @@ class Cloudspace:
       
     def destroy(self, cloudspaceId, accountId, **kwargs):
         reason = kwargs.get('reason',utils.random_string())       
-        return self._api.cloudbroker.cloudspace.deployVFW(accountId=accountId, cloudspaceId=cloudspaceId, reason=reason)
+        return self._api.cloudbroker.cloudspace.destroy(accountId=accountId, cloudspaceId=cloudspaceId, reason=reason)
 
-    def destroycloudspaces(self, cloudspaceIds, **kwargs):
+    def destroyCloudSpaces(self, cloudspaceIds, **kwargs):
         reason = kwargs.get('reason',utils.random_string())       
-        return self._api.cloudbroker.cloudspace.deployVFW(cloudspaceIds=cloudspaceIds, reason=reason)
+        return self._api.cloudbroker.cloudspace.destroyCloudSpaces(cloudspaceIds=cloudspaceIds, reason=reason)
 
     def destroyVFW(self, cloudspaceId):
         return self._api.cloudbroker.cloudspace.destroyVFW(cloudspaceId=cloudspaceId)
