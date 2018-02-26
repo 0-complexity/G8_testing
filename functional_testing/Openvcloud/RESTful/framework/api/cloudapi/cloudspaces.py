@@ -1,7 +1,7 @@
-from framework.api import api_client, utils
+from framework.api import utils
 
 class Cloudspaces:
-    def __init__(self):
+    def __init__(self, api_client):
         self._api = api_client
 
     def list(self):

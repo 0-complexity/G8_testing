@@ -1,8 +1,8 @@
 import random
-from framework.api import api_client, utils
+from framework.api import utils
 
 class Portforwarding:
-    def __init__(self):
+    def __init__(self,api_client):
         self._api = api_client
 
     def __get_cloudspace_publicIp(self, cloudspaceId):
