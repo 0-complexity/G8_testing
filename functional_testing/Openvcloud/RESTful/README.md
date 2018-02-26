@@ -16,6 +16,7 @@ Travis CI build uses the environment's controller to execute the tests from it, 
   - ```ctrl_ipaddress```: controller's ip address (zerotier ip in case your using zerotier).
   - ```ctrl_user```: controller's non-root user (default: gig)
   - ```ctrl_user_password```: controller user ssh password.
+  - ```environment```: environment's location code.
   - ```restful_ip```: the ip of the api server
   - ```restful_port```: the port of the api server
   - ```username```: [itsyou.online](https://itsyou.online) username
