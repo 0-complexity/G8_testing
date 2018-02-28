@@ -170,15 +170,11 @@ class user_group(ACLACCOUNT):
         #. try to delete user1 from this account  by himself should be bad request as user is last admin
         #. add user2 to this account by user1 should succeed
         #. delete user1 from this account by user1 should succeed
-        #. delete created account by user1 should be forbidden
         #. create cloudspace by user2
         #. add user1 to created cloud space by user 1 should succeed
         #. try delete user1 from created cloudspace by user 1 should succeed
         #. try delete cloudspace by user1 should return forbidden
         """
-
-
-
         self.lg('%s STARTED' % self._testID)
         self.user1 = self.cloudbroker_user_create(group = 'user')
         self.user2 = self.cloudbroker_user_create(group = 'user')
@@ -205,27 +201,20 @@ class user_group(ACLACCOUNT):
         response=self.user1_api.cloudapi.accounts.deleteUser(accountId=accountId,userId=self.user1)
         self.assertTrue(response)
 
-        self.lg('6--delete created account by user1')
-        try:
-            response=self.user1_api.cloudapi.accounts.delete(accountId=accountId)
-            self.assertFalse(response)
-        except ApiError as e :
-            self.lg('-expected error raised %s' % e.message)
-            self.assertEqual(e.message, '403 Forbidden')
-        self.lg('7-create cloudspace by user2')
+        self.lg('6-create cloudspace by user2')
 
         cloudspaceId = self.cloudapi_cloudspace_create(account_id=accountId, location=self.location, access=self.user2,api=self.user2_api)
 
         self.lg('creat cloudspace  with Id %s' % cloudspaceId)
         self.assertTrue(cloudspaceId)
-        self.lg('8- add user1 to created cloudspace ')
+        self.lg('7- add user1 to created cloudspace ')
         response = self.user2_api.cloudapi.cloudspaces.addUser(cloudspaceId=cloudspaceId,userId=self.user1,accesstype='ARCXDU')
         self.assertTrue(response)
-        self.lg('9- delete user1 from created cloud space ')
+        self.lg('8- delete user1 from created cloud space ')
 
         respopnse=self.user1_api.cloudapi.cloudspaces.deleteUser(cloudspaceId=cloudspaceId,userId=self.user1)
         self.assertTrue(response)
-        self.lg('10- try to delete created cloud space by user 2')
+        self.lg('9- try to delete created cloud space by user 2')
         try:
             response=self.user1_api.cloudapi.cloudspaces.delete(cloudspaceId=cloudspaceId)
             self.assertFalse(response)

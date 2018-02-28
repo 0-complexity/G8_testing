@@ -23,10 +23,6 @@ class UsersBasicTests(BasicACLTest):
         #. Create user (U1) with admin access.
         #. Authenticate U1,should return session key[user1_key] .
         #. Use U1's key to list the accounts for U1, should succeed.
-        #. Use U1's key to update U1's password, should succeed.
-        #. Check that user1's password has been reset successfully.
-        #. Use U1's key again to list the accounts for U1, should succeed.
-
         """
         self.lg('%s STARTED' % self._testID)
 
@@ -39,19 +35,6 @@ class UsersBasicTests(BasicACLTest):
         self.assertTrue(user1_key)
 
         self.lg("-  Use U1's key to list the accounts for U1, should succeed.")
-        accounts_list = user1_key.cloudapi.accounts.list()
-        self.assertEqual(accounts_list, [])
-
-        self.lg("- Use U1's key to update U1's password, should succeed.")
-        new_password = str(uuid.uuid4()).replace('-', '')[0:10]
-        response = user1_key.cloudapi.users.updatePassword(oldPassword=old_password, newPassword=new_password)
-        self.assertIn("Your password has been changed.", response)
-
-        self.lg("- Check that user1's password has been reset successfully.")
-        user1_key = self.get_authenticated_user_api(username=user1, password=new_password)
-        self.assertTrue(user1_key)
-
-        self.lg("- Use U1's key again to list the accounts for U1, should succeed.")
         accounts_list = user1_key.cloudapi.accounts.list()
         self.assertEqual(accounts_list, [])
 
