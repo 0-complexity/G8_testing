@@ -1023,6 +1023,7 @@ class Admin(ACLCLOUDSPACE):
 
         self.lg('%s ENDED' % self._testID)
 
+    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1389')
     def test005_cloudspace_update_delete(self):
         """ ACL-29
         *Test case for update/delete cloudspace api with user has admin access.*

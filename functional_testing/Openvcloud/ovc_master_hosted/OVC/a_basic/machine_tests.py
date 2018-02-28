@@ -48,8 +48,7 @@ class BasicTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @parameterized.expand(['Ubuntu 14.04 x64',
-                           'Ubuntu 15.10 x64',
+    @parameterized.expand(['Ubuntu 15.10 x64',
                            'Ubuntu 16.04 x64',
                            'Windows 2012r2 Standard'])
     def test002_create_vmachine_withbig_disk(self, image_name):
@@ -227,8 +226,7 @@ class BasicTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @parameterized.expand(['Ubuntu 14.04 x64',
-                           'Ubuntu 15.10 x64',
+    @parameterized.expand(['Ubuntu 15.10 x64',
                            'Windows 2012r2 Standard'])
     def test005_add_disks_to_vmachine(self, image_name):
         """ OVC-005

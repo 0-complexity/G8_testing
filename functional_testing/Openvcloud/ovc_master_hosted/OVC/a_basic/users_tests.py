@@ -118,43 +118,6 @@ class UsersBasicTests(BasicACLTest):
         self.assertFalse([x for x in matching_users_names if x["username"]==user2_name ])
         self.assertFalse([x for x in matching_users_names if x["username"]==user1_name ])
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/955')
-    def test004_password_reset(self):
-        """ OVC-035
-        * Test case for check password reset.
-
-        **Test Scenario:**
-
-        #. Create user1 with Email (E1).
-        #. Send ResetPasswordLink to E1 with cloudapi/users/sendResetPasswordLink API,should succeed.
-        #. Check validation of received ResetPassword token with /cloudapi/users/getResetPasswordInformation API,should succeed.
-        #. Use received  ResetPassword token to  reset password, should succeed.
-        #. Check that password of user1 has been reset successfully.
-
-        """
-        self.lg("Create user1 with Email (E1).")
-        user1_email = self.test_email
-        user1_name = self.cloudbroker_user_create(email=user1_email)
-
-        self.lg("Send ResetPasswordLink to E1 with cloudapi/users/sendResetPasswordLink API,should succeed.")
-        response = self.api.cloudapi.users.sendResetPasswordLink(emailaddress=user1_email)
-
-        self.assertIn("Reset password email send", response)
-        data = self.get_email_data(user1_email, self.email_password)
-        password_token = (data.split("token="))[1].split('\r')[0]
-
-        self.lg("Check validation of received ResetPassword token with /cloudapi/users/getResetPasswordInformation API,should succeed.")
-        response = self.api.cloudapi.users.getResetPasswordInformation(resettoken=password_token)
-        self.assertIn(" valid token", response)
-
-        self.lg(" Use received  ResetPassword token to  reset password, should succeed.")
-        newpassword = str(uuid.uuid4()).replace('-', '')[0:10]
-        self.api.cloudapi.users.resetPassword(resettoken=password_token, newpassword=newpassword)
-
-        self.lg("Check that password of user1 has been reset successfully.")
-        user1_key = self.get_authenticated_user_api(username=user1_name, password=newpassword)
-        self.assertTrue(user1_key)
-
     def test005_create_users_with_same_specs(self):
         """ OVC-034
         * Test case for check creation of more than one user with same specs .
