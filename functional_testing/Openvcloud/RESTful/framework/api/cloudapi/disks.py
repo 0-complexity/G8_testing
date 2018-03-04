@@ -1,10 +1,11 @@
 from framework.api import  utils
+import random
 
 class Disks:
     def __init__(self, api_client):
         self._api = api_client
 
-    def list(self, accountId):
+    def list(self, accountId, ** kwargs):
         disktype = kwargs.get('type')
         return self._api.cloudapi.disks.list(accountId=accountId, type=disktype)
     
@@ -28,6 +29,6 @@ class Disks:
     def resize(self, diskId, size):
         return self._api.cloudapi.disks.resize(diskId=diskId, size=size)
 
-    def delete(self, diskId, detach):
-        detach = kwargs.get('detach')
+    def delete(self, diskId, ** kwargs):
+        detach = kwargs.get('detach', False)
         return self._api.cloudapi.disks.delete(diskId=diskId, detach=detach)

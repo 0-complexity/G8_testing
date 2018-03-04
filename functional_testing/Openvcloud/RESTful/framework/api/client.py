@@ -54,12 +54,12 @@ class Client:
 
         return cloudspace_id
 
-    def get_location(self):
+    def get_environment(self):
         env_location = config['main']['location']
         locations = (self.api_client.cloudapi.locations.list()).json()
         for location in locations:
             if env_location == location['locationCode']:
-                return  location['locationCode']
+                return location
         else:
             raise Exception("can't find the %s environment location in grid" % env_location)
 
