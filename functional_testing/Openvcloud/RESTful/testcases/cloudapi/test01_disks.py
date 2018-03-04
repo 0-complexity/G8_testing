@@ -62,6 +62,10 @@ class DisksTests(TestcasesBase):
         response = self.api.cloudapi.disks.get(diskId=diskId)
         self.assertEqual(response.status_code, response_code, response.content)
 
+        if case == "exists_disk":
+            self.assertEqual(response.json()['name'], self.disk_data['name'])
+            self.assertEqual(response.json()['descr'], self.disk_data['description'])
+            self.assertEqual(response.json()['type'], self.disk_data['type'])
 
     @parameterized.expand([
         ('exists_disk', 200),
@@ -84,6 +88,11 @@ class DisksTests(TestcasesBase):
 
         response = self.api.cloudapi.disks.resize(diskId=diskId, size=size)
         self.assertEqual(response.status_code, response_code, response.content)
+
+        if case == "exists_disk":
+            response = self.api.cloudapi.disks.get(diskId=diskId)
+            self.assertEqual(response.status_code, response_code, response.content)
+            self.assertEqual(response.json()['sizeMax'], size)
 
     @parameterized.expand([
         ('exists_disk', 200),
