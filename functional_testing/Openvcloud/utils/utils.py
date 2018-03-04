@@ -537,7 +537,7 @@ class BaseTest(unittest.TestCase):
         for stackId in stacks_list:
             nodeId = ccl.stack.get(stackId).referenceId
             node = scl.node.get(int(nodeId))
-            if node.active:
+            if node.status == 'ENABLED':
                 return stackId
         return False
 
