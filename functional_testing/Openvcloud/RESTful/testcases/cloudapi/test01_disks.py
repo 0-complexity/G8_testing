@@ -2,8 +2,8 @@ import time, random, unittest
 from testcases import *
 from nose_parameterized import parameterized
 
-class DisksTests(TestcasesBase):
 
+class DisksTests(TestcasesBase):
     def setUp(self):
         super().setUp()
         self.account_id = self.api.create_account()
