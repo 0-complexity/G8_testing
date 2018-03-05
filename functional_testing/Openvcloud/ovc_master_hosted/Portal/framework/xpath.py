@@ -285,7 +285,7 @@ elements = {
             'create_machine_button': ['XPATH', ".//*[@id='singlebutton']"],
             'account_enable_reason': ['XPATH', ".//*[@id='action-Enable']/div/div[2]/div[3]/div/input"],
             'account_first_user_name': ['XPATH', 'html/body/div[2]/div/div/table[3]/tbody/tr/td[1]/a'],
-            'destroy_machine': ['XPATH', ".//*[@id='actions']/div/div[2]/ul/li[10]/a"],
+            'destroy_machine': ['XPATH', ".//*[@id='actions']/div/div[2]/ul/li[11]/a"],
             'send_ctrl/alt/del_button': ['XPATH', ".//*[@id='noVNC_buttons']"],
             'knowledge_base_line2_tab_header': ['XPATH',
                                                 ".//*[@id='wrap']/div/tour/div[3]/div[2]/div/div/div/div[2]/h1"],
