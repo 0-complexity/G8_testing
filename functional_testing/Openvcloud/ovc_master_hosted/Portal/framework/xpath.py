@@ -124,7 +124,7 @@ elements = {
             'account_table_first_element': ['XPATH', ".//*[@id='table_cloudbroker_account']/tbody/tr[1]/td[2]"],
             'cloud_space_user_name': ['XPATH', ".//*[@id='create_space']/div/div[2]/div[3]/div[2]/input"],
             'account_enable': ['LINK_TEXT', 'Enable'],
-            'virtual machine search': ['XPATH', '//*[@id="table_cloudbroker_vmachine"]/tfoot/td[1]/input'],
+            'virtual machine search': ['XPATH', '//*[@id="table_cloudbroker_vmachine"]/tfoot/td[2]/input'],
             'cloud_spaces': ['XPATH', ".//*[@id='collapse-2']/li[2]/a"],
             'cloud_space_table_first_element_1': ['XPATH', ".//*[@id='table_cloudbroker_cloudspace']/tbody/tr/td[1]/a"],
             'system_sub_api': ['XPATH', ".//*[@id='collapse-6']/li[7]/a"], 'knowledge_base_line5_tab_image1': ['XPATH',

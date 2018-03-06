@@ -57,7 +57,6 @@ class ImagesTests(Framework):
         self.assertTrue(self.Tables.check_next_previous_buttons('images'))
 
     @parameterized.expand(['Name',
-                           'Type',
                            'Status'])
     def test04_image_page_searchbox(self, column):
         """ PRTL-044
