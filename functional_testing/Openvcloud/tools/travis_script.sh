@@ -13,7 +13,7 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
         memberid=$(sudo zerotier-cli info | awk '{print $3}')
         curl -s -H "Content-Type: application/json" -H "Authorization: Bearer ${zerotier_token}" -X POST -d '{"config": {"authorized": true}}' https://my.zerotier.com/api/network/${zerotier_network}/member/${memberid} > /dev/null
        
-        ping -c 30 ${ctrl_ipaddress}
+        ping -c1 -w30 ${ctrl_ipaddress}
 
         if [ $? -eq 1 ]; then
             echo "Can't reach the controller using this ip address ${ctrl_ipaddress}"
