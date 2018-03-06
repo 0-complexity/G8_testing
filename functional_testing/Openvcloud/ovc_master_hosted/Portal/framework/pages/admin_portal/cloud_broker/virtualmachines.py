@@ -70,6 +70,7 @@ class virtualmachines():
                                                                machine_name)
         vm_id = self.framework.get_text("virtual_machine_table_first_element")
         self.framework.click('virtual_machine_table_first_element')
+        self.framework.wait_until_page_title_is('GBGrid - Virtual Machine')
         self.framework.element_in_url(vm_id)
 
     def delete_virtual_machine(self, cloudspace='', machine_name=''):

@@ -55,6 +55,7 @@ class accounts():
 
         account_id = self.framework.get_text("account_first_id")
         self.framework.click("account_first_id")
+        self.framework.wait_until_page_title_is('GBGrid - Account')
         self.framework.element_in_url(account_id)
 
     def account_edit(self, account, edit_item, edit_value):

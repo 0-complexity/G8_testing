@@ -51,6 +51,7 @@ class cloudspaces():
                                                                cloudspace)
         cloudspace_id = self.framework.get_text("cloud_space_table_first_element_1")
         self.framework.click("cloud_space_table_first_element_1")
+        self.framework.wait_until_page_title_is('GBGrid - Cloud Space')
         self.framework.element_in_url(cloudspace_id)
 
     def delete_cloudspace(self, cloudspace=''):

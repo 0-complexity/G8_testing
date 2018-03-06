@@ -58,6 +58,7 @@ class users():
         username_id = self.framework.get_text("username_table_first")
 
         self.framework.click("username_table_first")
+        self.framework.wait_until_page_title_is('GBGrid - User')
         self.framework.element_in_url(username_id)
 
     def delete_user(self, username):
