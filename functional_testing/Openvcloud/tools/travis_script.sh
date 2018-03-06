@@ -7,13 +7,18 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
     if [[ ${action} == "before" ]]; then
 
         echo "[+] Joining zerotier network : ${zerotier_network}"
-        sudo zerotier-cli join ${zerotier_network}; sleep 20
+        sudo zerotier-cli join ${zerotier_network}; sleep 10
 
         echo "[+] Authorizing zerotier member"
         memberid=$(sudo zerotier-cli info | awk '{print $3}')
         curl -s -H "Content-Type: application/json" -H "Authorization: Bearer ${zerotier_token}" -X POST -d '{"config": {"authorized": true}}' https://my.zerotier.com/api/network/${zerotier_network}/member/${memberid} > /dev/null
        
-        sleep 50
+        nc -z -w 50 ${ctrl_ipaddress} 22
+
+        if [ $? -eq 1 ]; then
+            echo "Can't reach the controller using this ip address ${ctrl_ipaddress}"
+            exit 1  
+        fi
 
         echo "[+] Cloning G8_testing repo"
         cmd="mkdir ${testsuite_repo_path}; cd ${testsuite_repo_path}; rm -rf G8_testing; git clone -b ${TRAVIS_BRANCH} https://github.com/0-complexity/G8_testing; chown -R ${ctrl_user}:${ctrl_user} ."
