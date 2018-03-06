@@ -12,10 +12,18 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
         echo "[+] Authorizing zerotier member"
         memberid=$(sudo zerotier-cli info | awk '{print $3}')
         curl -s -H "Content-Type: application/json" -H "Authorization: Bearer ${zerotier_token}" -X POST -d '{"config": {"authorized": true}}' https://my.zerotier.com/api/network/${zerotier_network}/member/${memberid} > /dev/null
+       
+        for i in {1..20}; do
+            ping -c1 ${ctrl_ipaddress} > /dev/null && break
+        done
+
+        if [ $? -gt 0 ]; then
+            echo "Can't reach the controller using this ip address ${ctrl_ipaddress}"; exit 1  
+        fi
 
         echo "[+] Cloning G8_testing repo"
         cmd="mkdir ${testsuite_repo_path}; cd ${testsuite_repo_path}; rm -rf G8_testing; git clone -b ${TRAVIS_BRANCH} https://github.com/0-complexity/G8_testing; chown -R ${ctrl_user}:${ctrl_user} ."
-        sshpass -p "${ctrl_root_password}" ssh -t -o ConnectTimeout=60 -o StrictHostKeyChecking=no ${ctrl_root_user}@${ctrl_ipaddress} "${cmd}"
+        sshpass -p "${ctrl_root_password}" ssh -t -o StrictHostKeyChecking=no ${ctrl_root_user}@${ctrl_ipaddress} "${cmd}"
 
         echo "[+] Install requirements"
         cmd="cd ${testsuite_repo_path}/G8_testing; pip install -r requirements.txt"
