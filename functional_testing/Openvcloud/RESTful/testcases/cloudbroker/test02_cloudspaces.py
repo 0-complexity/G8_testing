@@ -1,6 +1,6 @@
 from testcases import *
 from nose_parameterized import parameterized
-import random , unittest
+import random , unittest, time 
 
 class cloudspace(TestcasesBase):
 
@@ -20,10 +20,12 @@ class cloudspace(TestcasesBase):
         self.assertEqual(response.status_code, 200)       
         self.cloudspaceId = response.json()
 
+
     @parameterized.expand([('R',200,403,403),
                            ('RCX',200,403,200),
                             ('ARCXDU',200,200,200)
                             ])
+    @unittest.skip("https://github.com/0-complexity/openvcloud/issues/1436")
     def test001_add_user_to_cloudspace(self,accesstype,get_code,update_code, vm_code):
         """ OVC-000
         *Test case for adding user to cloudspace with different accesstypes.*
@@ -55,15 +57,13 @@ class cloudspace(TestcasesBase):
         response= self.user_api.cloudapi.cloudspaces.get(self.cloudspaceId)
         self.assertEqual(response.status_code,403)       
 
-        self.log.info("Add user[U1] to [CS1] with access[accesstype], should succeed.")
+        self.log.info("Add user[U1] to [CS1] with access[%s], should succeed."%accesstype)
         data, response = self.api.cloudbroker.cloudspace.addUser(username=user_data["username"], cloudspaceId=self.cloudspaceId,accesstype=accesstype)
         self.assertEqual(response.status_code, 200)
 
         self.log.info("Check that user get the right % access on cs "%accesstype)
-        self.user_api.system.usermanager.authenticate(user_data["username"], user_data["password"])
         response=self.user_api.cloudapi.cloudspaces.get(self.cloudspaceId)
         self.assertEqual(response.status_code,get_code)
-
         data,response = self.user_api.cloudapi.machines.create(self.cloudspaceId)
         self.assertEqual(response.status_code,vm_code)
 
@@ -105,30 +105,7 @@ class cloudspace(TestcasesBase):
         response = self.api.cloudbroker.cloudspace.deleteUser(cloudspaceId=self.cloudspaceId, username=self.user)
         self.assertEqual(response.status_code, 404)
 
-    def test004_start_stop_non_exist_fireWall(self):
-        """ OVC-000
-        *Test case  for testing enable and disable virtual firewall*
-
-        **Test Scenario:**
-
-        #. create a cloud space
-        #. deploy VFW to  the created cloudspace.
-        #. stop the Virtual fire wall, should succeed,
-        #. start the virtual fire wall, should succeed.
-        """
-        fake_cloudspaceId = random.randint(3000,5000)
-
-        response = self.api.cloudbroker.cloudspace.deployVFW(fake_cloudspaceId)
-        self.assertEqual(response.status_code, 404)
-
-        response = self.api.cloudbroker.cloudspace.startVFW(fake_cloudspaceId)
-        self.assertEqual(response.status_code, 404)
-
-        response = self.api.cloudbroker.cloudspace.stopVFW(fake_cloudspaceId)
-        self.assertEqual(response.status_code, 404)
-
-
-    def test005_enable_disable_fireWall(self):
+    def test004_start_stop_fireWall(self):
         """ OVC-000
         *Test case  for testing enable and disable virtual firewall*
 
@@ -136,20 +113,23 @@ class cloudspace(TestcasesBase):
 
         #. create a cloud space
         #. deploy VFW to  the created cloudspace
-        #. stop the Virtual fire wall, should succeed,
+        #. stop the Virtual fire wall, should succeed.
         #. start the virtual fire wall, should succeed.
         """
-
+        self.assertEqual(self.api.wait_for_cloudspace_status(self.cloudspaceId),"DEPLOYED")
+        self.log.info ("Deploy VFW to  the created cloudspace")
         response = self.api.cloudbroker.cloudspace.deployVFW(self.cloudspaceId)
         self.assertEqual(response.status_code, 200)
 
+        self.log.info("Stop the Virtual fire wall, should succeed.")
         response = self.api.cloudbroker.cloudspace.startVFW(self.cloudspaceId)
         self.assertEqual(response.status_code, 200)
 
+        self.log.info("Start the virtual fire wall, should succeed.")
         response = self.api.cloudbroker.cloudspace.stopVFW(self.cloudspaceId)
         self.assertEqual(response.status_code, 200)       
 
-    def test006_create_cloudspace_with_nonexist_user(self):
+    def test005_create_cloudspace_with_nonexist_user(self):
         """ OVC-000
         *Test case for testing creating account wuth different options .*
 
@@ -163,7 +143,7 @@ class cloudspace(TestcasesBase):
 
     @parameterized.expand([("Negative values", -1, 400),
                            ("Positive values", 1, 200)])    
-    def test007_create_cloudspace_with_different_options(self, type, factor, return_code):
+    def test006_create_cloudspace_with_different_options(self, type, factor, return_code):
         """ OVC-000
         *Test case for testing creating cloudspace with different options .*
 
@@ -184,7 +164,7 @@ class cloudspace(TestcasesBase):
 
 
     @unittest.skip("https://github.com/0-complexity/openvcloud/issues/1435")
-    def test008_create_cloudspace_with_limitations(self):
+    def test007_create_cloudspace_with_limitations(self):
         """ OVC-000
         *Test case for testing creating account wuth different options .*
 

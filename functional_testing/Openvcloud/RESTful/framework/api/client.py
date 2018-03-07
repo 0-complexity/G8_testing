@@ -65,3 +65,22 @@ class Client:
 
     def get_random_locations(self):
         return random.choice(self.cloudapi.locations.list())['locationCode']
+
+    def wait_for_cloudspace_status(self,cloudspaceId,status= "DEPLOYED", timeout=300):
+        """
+        A generic utility method that gets a resource and wait for resource status
+
+        :param status: the status to wait for
+        :param func: the function used to get the resource
+        :param kwargs: the parameters to be sent to func to get resource
+        """
+        response = self.cloudapi.cloudspaces.get(cloudspaceId=cloudspaceId)
+        cs_status=response.json()["status"]
+        for _ in range(timeout):
+            if cs_status == status:
+                break
+            time.sleep(1)
+            response = self.api_client.cloudapi.cloudspaces.get(cloudspaceId=cloudspaceId)
+            cs_status=response.json()["status"]
+
+        return cs_status
