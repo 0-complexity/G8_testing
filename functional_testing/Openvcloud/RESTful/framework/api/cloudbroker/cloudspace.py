@@ -63,10 +63,10 @@ class Cloudspace:
             protocol=protocol
         )
 
-    def deleteUser(self, cloudspaceId, userId, recursivedelete=False):        
+    def deleteUser(self, cloudspaceId, username, recursivedelete=False):        
         return self._api.cloudbroker.cloudspace.deleteUser(
             cloudspaceId=cloudspaceId,
-            userId=userId,
+            username=username,
             recursivedelete=recursivedelete
         )
 
