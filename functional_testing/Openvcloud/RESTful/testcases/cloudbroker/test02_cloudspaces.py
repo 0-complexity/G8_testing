@@ -1,13 +1,13 @@
 from testcases import *
 from nose_parameterized import parameterized
-import random 
+import random , unittest
 
 class cloudspace(TestcasesBase):
 
     def setUp(self):
         super().setUp()
         self.log.info(" [*] Create account")
-        self.user = "{}@itsyouonline".format(self.whoami)
+        self.user = self.whoami
         self.account, response = self.api.cloudbroker.account.create(self.user)
         self.assertEqual(response.status_code, 200)
         self.accountId = response.json()
@@ -179,24 +179,43 @@ class cloudspace(TestcasesBase):
                                "maxCPUCapacity": random.randint(2, 1000) * factor,
                                "maxNetworkPeerTransfer": random.randint(2, 1000) * factor,
                                "maxNumPublicIP": random.randint(2, 1000) * factor}
-        data, response = self.api.cloudbroker.account.create(accountId=self.accountId, location=self.location,access=self.user, **cloudspace_limitation)
+        data, response = self.api.cloudbroker.cloudspace.create(accountId=self.accountId, location=self.location,access=self.user, **cloudspace_limitation)
         self.assertEqual(response.status_code, return_code, "A resource limit should be a positive number or -1 (unlimited).")
 
 
-
-    def test006_create_cloudspace_with_limitations(self):
+    @unittest.skip("https://github.com/0-complexity/openvcloud/issues/1435")
+    def test008_create_cloudspace_with_limitations(self):
         """ OVC-000
         *Test case for testing creating account wuth different options .*
 
         **Test Scenario:**
 
         #. Create account[C1] with certain limits and max_IPs equal 1, should succeed.
-        #. Create cloudspace [CS2] that exceeds account's max_cores, should fail
-        #. Create cloudspace [CS3] that exceeds account's max_memory, should fail
-        #. Create cloudspace [CS4] that exceeds account's max_vdisks, should fail
-        #. Create cloudspace [CS5] that exceeds account's max_IPs, should fail
-        #. Create cloudspace [CS6] that doesn't exceed account's limits, should succeed.
-        #. Create another cloudspace [CS7] that doesn't exceed account's limits , should fail as max_IPs equal 1.
+        #. Create cloudspace [CS2] that exceeds one of account limitations , should fail.
+        #. Create cloudspace [CS3] that doesn't exceed account's limits, should succeed.
+        #. Create another cloudspace [CS4] that doesn't exceed account's limits , should fail as max_IPs equal 1.
         
         """
-        pass
+        self.log.info("Create account[C1] with certain limits and max_IPs equal 1, should succeed.")
+        account_limitation = {"maxMemoryCapacity": random.randint(2, 1000) ,
+                               "maxVDiskCapacity": random.randint(2, 1000) ,
+                               "maxNetworkPeerTransfer": random.randint(2, 1000) ,
+                               "maxNumPublicIP": 1}        
+        data, account = self.api.cloudbroker.account.create(username=self.user, **account_limitation)
+        self.assertEqual(account.status_code, 200)
+        self.CLEANUP['accounts'].append(account.json())
+
+        self.log.info("Create cloudspace [CS2] that exceeds one of account limitations , should fail")
+        cloudspacelimit = random.choice(list(account_limitation))
+        cloudspace_limitation = {cloudspacelimit: account_limitation[cloudspacelimit]+1}
+        data, response = self.api.cloudbroker.cloudspace.create(accountId=account.json(), location=self.location,access=self.user, **cloudspace_limitation)
+        self.assertEqual(response.status_code, 400)
+
+        self.log.info(" Create cloudspace [CS3] that doesn't exceed account's limits, should succeed. ")
+        data, response = self.api.cloudbroker.cloudspace.create(accountId=account.json(), location=self.location,access=self.user)
+        self.assertEqual(response.status_code, 200)
+
+        self.log.info("Create another cloudspace [CS4] that doesn't exceed account's limits , should fail as max_IPs equal 1.")
+        data, response = self.api.cloudbroker.cloudspace.create(accountId=account.json(), location=self.location,access=self.user)
+
+        self.assertEqual(response.status_code, 200)       
