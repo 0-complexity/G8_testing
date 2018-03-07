@@ -30,3 +30,23 @@ Travis CI build uses the environment's controller to execute the tests from it, 
     - ```zerotier_network```: zerotier network id.
     - ```zerotier_token```: zerotier account token.
 
+#### Steps to add new test case:
+To implement any test case in REST APIs test suite please, create a new task with the following pattern:
+
+````yaml
+TC name:
+TC ID:
+API:
+
+SCENARIOS:
+  1- ACL scenario.
+       Parameterize [permitted user do correct actions > success, 
+                            permitted user do incorrect actions > fail,
+                            non-permitted user do actions > fail]
+  2- Function scenarioS:
+      You can create any number of test cases to be sure that it will cover almost all use cases of this API.
+
+NOSETEST COMMAND:
+   nosetest command to fire these test cases.
+```
+
