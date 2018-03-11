@@ -1,4 +1,5 @@
 from framework.api import utils
+import random
 
 class Accounts:
     def __init__(self, api_client):
@@ -40,12 +41,15 @@ class Accounts:
             recursivedelete=recursivedelete
         )
 
-    def updateUser(self, accountId, userId, accesstype):
-        return self._api.cloudapi.accounts.addUser(
-            accountId=accountId,
-            userId=userId,
-            accesstype=accesstype
-        )
+    def updateUser(self, accountId, userId, **kwargs):
+        accesstype = self._api.cloudapi.accounts.get
+        data = {
+            'accountId': accountId,
+            'userId': userId,
+            'accesstype':random.choice(['R', 'RCX', 'ARCXDU'])
+        }
+        data.update(**kwargs)
+        return data, self._api.cloudapi.accounts.updateUser(** data)
 
     def listTemplates(self, accountId):
         return self._api.cloudapi.accounts.listTemplates(accountId=accountId)

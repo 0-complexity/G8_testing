@@ -27,6 +27,14 @@ class Client:
     def set_auth_header(self, value):
         self.api_client._session.headers['Authorization'] = value
 
+    def create_user(self, **kwargs):
+        data, response = self.cloudbroker.user.create(**kwargs)
+
+        if response.status_code != 200:
+            return False
+
+        return data['username'], data['password']
+
     def create_account(self, **kwargs):
         data, response = self.cloudbroker.account.create(username=self._whoami, ** kwargs)
 
@@ -65,3 +73,13 @@ class Client:
 
     def get_random_locations(self):
         return random.choice(self.cloudapi.locations.list())['locationCode']
+
+
+    def authenticate_user(self, username=None, password=None, **kwargs):
+        if not username or password:
+            username, password = self.create_user(**kwargs)
+
+        api = Client()
+        response = api.system.usermanager.authenticate(name=username, secret=password)
+        response.raise_for_status
+        return api, username
