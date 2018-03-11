@@ -32,3 +32,24 @@ class Disks:
     def delete(self, diskId, ** kwargs):
         detach = kwargs.get('detach', False)
         return self._api.cloudapi.disks.delete(diskId=diskId, detach=detach)
+
+    def limitIO(self, diskId, **kwargs):
+        data = {
+            'diskId': diskId,
+            'iops': random.randint(100, 5000),
+            'total_bytes_sec':random.randint(100, 5000),
+            'read_bytes_sec':random.randint(100, 5000),
+            'write_bytes_sec':random.randint(100, 5000),
+            'total_iops_sec':random.randint(100, 5000),
+            'read_iops_sec':random.randint(100, 5000),
+            'write_iops_sec':random.randint(100, 5000),
+            'total_bytes_sec_max':random.randint(100, 5000),
+            'read_bytes_sec_max':random.randint(100, 5000),
+            'write_bytes_sec_max':random.randint(100, 5000),
+            'total_iops_sec_max':random.randint(100, 5000),
+            'read_iops_sec_max':random.randint(100, 5000),
+            'write_iops_sec_max':random.randint(100, 5000),
+            'size_iops_sec':random.randint(100, 5000)
+        }
+        data.update(**kwargs)
+        return data, self._api.cloudapi.disks.limitIO(** data)
