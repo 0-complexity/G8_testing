@@ -46,8 +46,8 @@ class AdminMenu(Framework):
         self.LeftNavigationMenu.compare_original_list_with_exist_list("grid_arrow", "grid_menu", grid_menu)
         self.lg("check system menu")
         self.LeftNavigationMenu.compare_original_list_with_exist_list("system_arrow", "system_menu", system_menu)
-        self.lg("check storage menu")
-        self.LeftNavigationMenu.compare_original_list_with_exist_list("storage_arrow", "storage_menu", storage_menu)
+        # self.lg("check storage menu")
+        # self.LeftNavigationMenu.compare_original_list_with_exist_list("storage_arrow", "storage_menu", storage_menu)
 
         self.lg("check ays items redirect page")
         self.LeftNavigationMenu.check_redirect_page("ays_text", "AYS")
@@ -67,11 +67,12 @@ class AdminMenu(Framework):
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_groups", "groups")
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_vm", "Virtual Machines")
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_sr", "Storage Routers")
+        self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_0_access", "0-access")
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_sv", "Version")
 
-        self.lg("check statistics items redirect page")
-        self.LeftNavigationMenu.check_redirect_page("statistics", "home/external")
-        self.get_page(self.base_page)
+        # self.lg("check statistics items redirect page")
+        # self.LeftNavigationMenu.check_redirect_page("statistics", "home/external")
+        # self.get_page(self.base_page)
 
         self.lg("check grid items redirect page")
         self.LeftNavigationMenu.check_redirect_page("grid_text", "grid")

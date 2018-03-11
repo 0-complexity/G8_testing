@@ -37,7 +37,6 @@ class accounts():
             self.framework.set_text("account_maxmemory", max_memory)
 
         self.framework.click("account_confirm")
-        self.framework.wait_until_element_attribute_has_text('create_account_dialog', 'style', 'display: none;')
         self.framework.get_page(self.framework.driver.current_url)
         self.framework.set_text("account_search", account)
         self.framework.wait_until_element_located_and_has_text("account_table_first_element", account)
@@ -56,6 +55,7 @@ class accounts():
 
         account_id = self.framework.get_text("account_first_id")
         self.framework.click("account_first_id")
+        self.framework.wait_until_page_title_is('GBGrid - Account')
         self.framework.element_in_url(account_id)
 
     def account_edit(self, account, edit_item, edit_value):
@@ -82,7 +82,6 @@ class accounts():
         self.framework.driver.find_element_by_name(name).clear()
         self.framework.driver.find_element_by_name(name).send_keys(edit_value)
         self.framework.click('account_action_edit_page_confirm')
-        self.framework.wait_until_element_attribute_has_text('edit_account_dialog', 'style', 'display: none;')
         self.framework.get_page(self.framework.driver.current_url)
 
     def account_edit_all_items(self, account):
@@ -189,7 +188,6 @@ class accounts():
             self.framework.click('account_delete')
             self.framework.set_text('account_delete_reason', "Test")
             self.framework.click("account_delete_confirm")
-            self.framework.wait_until_element_attribute_has_text('delete_account_dialog', 'style', 'display: none;')
             self.framework.get_page(self.framework.driver.current_url)
             self.framework.wait_until_element_located_and_has_text("account_page_status",
                                                                    "DESTROYED")

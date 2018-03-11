@@ -48,8 +48,7 @@ class BasicTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @parameterized.expand(['Ubuntu 14.04 x64',
-                           'Ubuntu 15.10 x64',
+    @parameterized.expand(['Ubuntu 15.10 x64',
                            'Ubuntu 16.04 x64',
                            'Windows 2012r2 Standard'])
     def test002_create_vmachine_withbig_disk(self, image_name):
@@ -208,7 +207,7 @@ class BasicTests(BasicACLTest):
 
         for size in sizes:
 
-            if size['id'] not in range(1, 7):
+            if size['id'] not in range(1, 5):
                 continue
 
             machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
@@ -227,8 +226,7 @@ class BasicTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @parameterized.expand(['Ubuntu 14.04 x64',
-                           'Ubuntu 15.10 x64',
+    @parameterized.expand(['Ubuntu 15.10 x64',
                            'Windows 2012r2 Standard'])
     def test005_add_disks_to_vmachine(self, image_name):
         """ OVC-005
@@ -459,8 +457,12 @@ class BasicTests(BasicACLTest):
         self.assertEqual(output.split('\n')[0], 'space_%s' % NetId_hexa)
 
         self.lg('check if the routeros on the same node')
-        output = self.execute_command_on_physical_node('virsh list --all | grep -o -F routeros_%s'
-                                                       % NetId_hexa, nodeID)
+        try:
+            output = self.execute_command_on_physical_node('virsh list --all | grep -o -F routeros_%s'
+                                                        % NetId_hexa, nodeID)
+        except:
+            output = False
+            
         if not output:
             self.lg('3- stop the virtual machine')
             self.account_owner_api.cloudapi.machines.stop(machineId=machineId)
@@ -596,7 +598,7 @@ class BasicTests(BasicACLTest):
         """
         self.lg('- create virtual machine with name: \'dockervm\'')
         machine_id = self.cloudapi_create_machine(self.cloudspace_id, self.account_owner_api,
-                                                       'dockervm', disksize=10)
+                                                       'dockervm', disksize=10, image_id=8)
 
         self.lg('- add portforward for the created virtual machine')
         cs_publicip = self.add_portforwarding(machine_id, api=self.account_owner_api, cs_publicport=3000, vm_port=22)

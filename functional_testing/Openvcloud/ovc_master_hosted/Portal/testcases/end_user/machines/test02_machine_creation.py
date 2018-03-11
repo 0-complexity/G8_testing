@@ -75,7 +75,6 @@ class Read(Framework):
 
     '''
     @parameterized.expand(["Ubuntu 16.04 x64",
-                           "Ubuntu 14.04 x64",
                            "Ubuntu 15.10 x64",
                            "Windows 2012r2 Standard"
                            ])

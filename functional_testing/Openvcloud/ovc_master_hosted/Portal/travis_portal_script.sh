@@ -23,4 +23,4 @@ echo "${ctrl_password}" | sudo -S bash -c "$(declare -f install_portal_requireme
 
 echo "Run Tests ..."
 cd functional_testing/Openvcloud/ovc_master_hosted/Portal
-xvfb-run -a nosetests3 -v -s  --logging-level=WARNING ${directory} --tc-file=config.ini --tc=main.passwd:${passwd} --tc=main.secret:${secret} --tc=main.env:${environment} --tc=main.location:${location} --tc=main.admin:${admin} --tc=main.browser:${browser} 
+xvfb-run -a nosetests-2.7 -v -s  --logging-level=WARNING ${directory} --tc-file=config.ini --tc=main.passwd:${passwd} --tc=main.secret:${secret} --tc=main.env:${environment} --tc=main.location:${location} --tc=main.admin:${admin} --tc=main.browser:${browser} 
