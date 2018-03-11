@@ -39,11 +39,11 @@ TC ID:
 API:
 
 SCENARIOS:
-  1- ACL scenario.
+  1- PERMISSION scenario.
        Parameterize [permitted user do correct actions > success, 
                             permitted user do incorrect actions > fail,
                             non-permitted user do actions > fail]
-  2- Function scenarioS:
+  2- OPERATION scenarioS:
       You can create any number of test cases to be sure that it will cover almost all use cases of this API.
 
 NOSETEST COMMAND:
