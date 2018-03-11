@@ -57,8 +57,13 @@ class Accounts:
     def getConsumedCloudUnits(self, accountId):
         return self._api.cloudapi.accounts.getConsumedCloudUnits(accountId=accountId)
     
-    def getConsumedCloudUnitsByType(self, accountId, cutype):
-        return self._api.cloudapi.accounts.getConsumedCloudUnitsByType(accountId=accountId, cutype=cutype)
+    def getConsumedCloudUnitsByType(self, accountId, **kwargs):
+        data = {
+            'accountId':accountId,
+            'cutype': random.choice(['CU_M', 'CU_C', 'CU_D', 'CU_S', 'CU_A', 'CU_NO', 'CU_NP', 'CU_I'])
+        }
+        data.update(**kwargs)
+        return self._api.cloudapi.accounts.getConsumedCloudUnitsByType(** data)
 
     def getConsumption(self, accountId, start, end):
         return self._api.cloudapi.accounts.getConsumption(

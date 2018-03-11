@@ -1,4 +1,4 @@
-import random
+import random, time
 from testcases import *
 from nose_parameterized import parameterized
 from framework.api.client import Client
@@ -70,3 +70,33 @@ class PermissionsTests(TestcasesBase):
         api = self.admin_api if role == 'admin' else self.user_api
         response = api.cloudapi.accounts.deleteUser(accountId=self.account_id, userId=userId)
         self.assertEqual(response.status_code, status_code, response.content)
+
+    @parameterized.expand([('admin', 200), ('user', 403)])
+    def test06_get_consumed_cloud_units(self, role, status_code):
+        """ OVC-006
+        """        
+        api = self.admin_api if role == 'admin' else self.user_api
+        response = api.cloudapi.accounts.getConsumedCloudUnits(accountId=self.account_id)
+        self.assertEqual(response.status_code, status_code, response.content)
+
+    @parameterized.expand([('admin', 200), ('user', 403)])
+    def test07_get_consumed_cloud_units_by_type(self, role, status_code):
+        """ OVC-007
+        """        
+        api = self.admin_api if role == 'admin' else self.user_api
+        response = api.cloudapi.accounts.getConsumedCloudUnitsByType(accountId=self.account_id)
+        self.assertEqual(response.status_code, status_code, response.content)
+
+    @parameterized.expand([('admin', 200), ('user', 403)])
+    def test08_get_consumption(self, role, status_code):
+        """ OVC-008
+        """        
+        now = time.time()
+        delta = 60 * 60 * 3
+        start = now - delta        
+        end = now + delta
+        
+        api = self.admin_api if role == 'admin' else self.user_api
+        response = api.cloudapi.accounts.getConsumption(accountId=self.account_id, start=start, end=end)
+        self.assertEqual(response.status_code, status_code, response.content)
+
