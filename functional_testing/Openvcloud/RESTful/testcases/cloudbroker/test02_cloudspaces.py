@@ -2,13 +2,217 @@ from testcases import *
 from nose_parameterized import parameterized
 import random , unittest, time 
 
-class cloudspace(TestcasesBase):
+class permission(TestcasesBase):
 
     def setUp(self):
         super().setUp()
-        self.log.info(" [*] Create account")
-        self.user = self.whoami
+        self.admin_user = self.whoami
+        
+        self.log.info("Create user[U2] with user group. ")
+        user_data,response = self.api.cloudbroker.user.create(groups=["user"])
+        self.user= user_data["username"]
+        self.CLEANUP['users'].append(user_data["username"])
+        self.user_api.system.usermanager.authenticate(user_data["username"], user_data["password"])
+        
+        self.log.info("[*] Create account ")
         self.account, response = self.api.cloudbroker.account.create(self.user)
+        self.assertEqual(response.status_code, 200)
+        self.accountId = response.json()
+        self.CLEANUP["accounts"].append(self.accountId)
+
+        self.log.info(" [*] Create cloudspace.")
+        self.cloudspace, response = self.api.cloudbroker.cloudspace.create(accountId=self.accountId, location=self.location,
+                                                access=self.user)
+        self.assertEqual(response.status_code, 200)       
+        self.cloudspaceId = response.json()
+        self.assertEqual(self.api.wait_for_cloudspace_status(self.cloudspaceId ),"DEPLOYED")
+
+    @parameterized.expand([('user', 403), ('admin', 200)])
+    def test001_adduser_with_diff_users_access(self, access , return_code):
+        """ OVC-000
+        *Test case for adding user to cloudspace with [admin, user] user.*
+
+        **Test Scenario:**
+        #. Create user[U2] with user group.
+        #. Create user[U3] with user group . 
+        #. Add user to the cloudspace with admin user , should succeed.
+        #  Add user to the cloudspace with user with user group . should fail. 
+        """
+        
+        self.log.info(" Create user[U3] with user group.")
+        user_data,response = self.api.cloudbroker.user.create(groups=["user"])
+        self.CLEANUP['users'].append(user_data["username"])
+
+
+        api = self.api if access == "admin" else self.user_api 
+ 
+        self.log.info("Add user to the cloudspace with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
+        data, response = api.cloudbroker.cloudspace.addUser(username=user_data["username"], cloudspaceId=self.cloudspaceId,accesstype="R")
+        self.assertEqual(response.status_code, return_code)       
+
+    @parameterized.expand([('user', 403), ('admin', 200)])
+    def test002_delete_user_with_diff_users_access(self,access, return_code):
+        """ OVC-000
+        *Test case for .*
+
+        **Test Scenario:**
+        #. Create user[U2] with user group.
+        #. Delete user[U1] from  the cloudspace with admin user , should succeed.
+        #  Delete user[U1] from  the cloudspace with user with user group . should fail. 
+        """
+        api = self.api if access == "admin" else self.user_api 
+
+        self.log.info("delete user from the cloudspace with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
+        response = api.cloudbroker.cloudspace.deleteUser(cloudspaceId=self.cloudspaceId,username=self.user)
+        self.assertEqual(response.status_code, return_code)  
+
+    @parameterized.expand([('user', 403), ('admin', 200)])
+    def test003_create_cloudspace_with_diff_users_access(self, access, return_code):
+        """ OVC-000
+        *Test case for testing creating account wuth different users.*
+
+        **Test Scenario:*
+        #. Create cloudspace[CS] with admin user, should succeed.
+        #. Create cloudspace[CS] with user with user group, should fail.
+
+        """
+
+        api = self.api if access == "admin" else self.user_api 
+
+        self.log.info("Create cloudspace with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
+        data, response = api.cloudbroker.cloudspace.create(accountId=self.accountId, location=self.location,
+                                                access=self.user)
+        self.assertEqual(response.status_code, return_code)         
+
+    @parameterized.expand([('user', 403), ('admin', 200)])  
+    def test004_destroy_cloudspace_with_different_users_access(self, access, return_code):
+        """ OVC-000
+        *Test case for testing destroy  account with different users .*
+
+        **Test Scenario:*
+        #. Destroy cloudspace[CS] with admin user, should succeed.
+        #. Destroy cloudspace[CS] with user with user group, should fail.
+
+        """
+
+        api = self.api if access == "admin" else self.user_api 
+
+        self.log.info("Destroy cloudspace with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
+        response = api.cloudbroker.cloudspace.destroy(accountId=self.accountId, cloudspaceId= self.cloudspaceId)
+        self.assertEqual(response.status_code, return_code)         
+
+    @parameterized.expand([('user', 403), ('admin', 200)])  
+    def test005_start_stop_fireWall(self, access, return_code):
+        """ OVC-000
+        *Test case  for testing enable and disable virtual firewall*
+
+        **Test Scenario:**
+
+        #. create a cloud space
+        #. deploy,stop and start fire wall in cloudspace with admin user, should succeed. 
+        #. deploy,stop and start fire wall in cloudspace with user group, should fail.
+
+        """
+        api = self.api if access == "admin" else self.user_api 
+
+        self.log.info("Deploy VFW with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
+        response = api.cloudbroker.cloudspace.deployVFW(self.cloudspaceId)
+        self.assertEqual(response.status_code, return_code)
+
+        self.log.info("Stop VFW with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
+        response = api.cloudbroker.cloudspace.startVFW(self.cloudspaceId)
+        self.assertEqual(response.status_code, return_code)
+
+        self.log.info("Start VFW with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
+        response = api.cloudbroker.cloudspace.stopVFW(self.cloudspaceId)
+        self.assertEqual(response.status_code, return_code)   
+
+    @parameterized.expand([('user', 403), ('admin', 200)])  
+    def test006_destroy_cloudspaces(self, access, return_code):
+        """ OVC-00
+        *Test case for deleting multiple cloudspaces.*
+
+        **Test Scenario:**
+
+        #. Create cloudspaces [CS1] and [CS2],  should succeed .
+        #. Destroy cloudspaces[CS1] and [CS2] with user with user group, should fail.
+        #. Destroy cloudspaces[CS1] and [CS2] with admin user, should succeed.
+
+        """
+        api = self.api if access == "admin" else self.user_api 
+
+        self.log.info(" Destroy  cloudspaces with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
+        cloudspaces = [self.cloudspaceId]
+        data,response=self.api.cloudbroker.cloudspace.create(accountId=self.accountId, location=self.location,
+                                                access=self.user)
+        self.assertEqual(response.status_code, 200)
+        cloudspaces.append(response.json())
+        
+        self.log.info(" Delete cloudspaces [CS1], [CS2], should fail.")
+        response= api.cloudbroker.cloudspace.destroyCloudSpaces([cloudspaces[1],cloudspaces[0]])
+        self.assertEqual(response.status_code, return_code)
+
+
+    @parameterized.expand([('user', 403), ('admin', 200)])  
+    def test007_destroy_VFW_with_different_users_access(self, access, return_code):
+        """ OVC-000
+        *Test case for testing destroy  account with different users .*
+
+        **Test Scenario:*
+        #. Destroy VFW with admin user, should succeed.
+        #. Destroy VFW with user with user group, should fail.
+
+        """
+
+        api = self.api if access == "admin" else self.user_api 
+
+        self.log.info("Destroy cloudspace with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
+        response = api.cloudbroker.cloudspace.destroyVFW(cloudspaceId= self.cloudspaceId)
+        self.assertEqual(response.status_code, return_code)     
+
+    @parameterized.expand([('user', 403), ('admin', 200)])  
+    def test008_get_VFW_with_different_users_access(self, access, return_code):
+        """ OVC-000
+        *Test case for testing destroy  account with different users .*
+
+        **Test Scenario:*
+        #. Get VFW with admin user, should succeed.
+        #. Get VFW with user with user group, should fail.
+
+        """
+
+        api = self.api if access == "admin" else self.user_api 
+
+        self.log.info("Destroy cloudspace with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
+        response = api.cloudbroker.cloudspace.getVFW(cloudspaceId= self.cloudspaceId)
+        self.assertEqual(response.status_code, return_code)     
+
+
+    @parameterized.expand([('user', 403), ('admin', 200)])  
+    def test009_update_cloudspace_with_different_users_access(self, access, return_code):
+        """ OVC-000
+        *Test case for testing destroy  account with different users .*
+
+        **Test Scenario:*
+        #. Get VFW with admin user, should succeed.
+        #. Get VFW with user with user group, should fail.
+
+        """
+
+        api = self.api if access == "admin" else self.user_api 
+
+        self.log.info("Destroy cloudspace with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
+        data, response = api.cloudbroker.cloudspace.update(cloudspaceId= self.cloudspaceId)
+        self.assertEqual(response.status_code, return_code)     
+
+
+class operations(TestcasesBase):
+
+    def setUp(self):
+        super().setUp()
+        self.user = self.whoami
+        self.log.info("[*] Create account ")
+        self.account, response = self.api.cloudbroker.account.create(username=self.user)
         self.assertEqual(response.status_code, 200)
         self.accountId = response.json()
         self.CLEANUP["accounts"].append(self.accountId)
@@ -19,14 +223,37 @@ class cloudspace(TestcasesBase):
                                                 access=self.user)
         self.assertEqual(response.status_code, 200)       
         self.cloudspaceId = response.json()
+        self.assertEqual(self.api.wait_for_cloudspace_status(self.cloudspaceId ),"DEPLOYED")
 
+    @parameterized.expand(['deleted','non-exist'])  
+    def test001_add_nonexistuser_to_cloudspace(self, status):
+        """ OVC-000
+        *Test case for adding non-exist user to cloudspace .*
 
+        **Test Scenario:**
+        #. Add non-exist user to cloudspace [CS1], should fail. 
+        #. Create user [U1] then delete him . 
+        #. Add deleted user[ U1] to cloudspace [CS1], should fail . 
+        """
+
+        user = self.utils.random_string()
+        if status == "deleted":
+            self.log.info("Deleted user [U1] ")
+            response = self.api.cloudbroker.user.delete(self.user)
+            self.assertEqual(response.status_code, 200)
+            user =self.user
+
+        self.log.info("Add %s user to cloudspace [CS1], should fail. "%status)
+        import ipdb; ipdb.set_trace()
+        data, response = self.api.cloudbroker.cloudspace.addUser(username=user, cloudspaceId=self.cloudspaceId,accesstype="R")
+        self.assertEqual(response.status_code, 404) 
+  
     @parameterized.expand([('R',200,403,403),
                            ('RCX',200,403,200),
                             ('ARCXDU',200,200,200)
                             ])
     @unittest.skip("https://github.com/0-complexity/openvcloud/issues/1436")
-    def test001_add_user_to_cloudspace(self,accesstype,get_code,update_code, vm_code):
+    def test002_add_user_to_cloudspace(self,accesstype,get_code,update_code, vm_code):
         """ OVC-000
         *Test case for adding user to cloudspace with different accesstypes.*
 
@@ -71,79 +298,44 @@ class cloudspace(TestcasesBase):
         self.assertEqual(response.status_code, update_code)
 
 
-    def test002_delete_non_exist_user_from_cloudspace(self):
-        """ OVC-000
-        *Test case for deleting non-exist user from cloudspace. *
-
-        **Test Scenario:**
-        #. Create cloudspace [CS1].
-        #. Delete non-exist user from [CS1], should fail.
-        """
-        fake_user=self.utils.random_string()
-        response = self.api.cloudbroker.cloudspace.deleteUser(cloudspaceId=self.cloudspaceId, username=fake_user)
-        self.assertEqual(response.status_code, 404)
-
-
-    def test003_delete_user_from_cloudspace(self):
-        """ OVC-000
-        *Test case for deleting user from cloudspace. *
-
-        **Test Scenario:**
-        #. Create user[U1] .
-        #. Create cloudspace [CS1].
-        #. Delete user from [CS1], should succeed. 
-        #. Delete user[U1] again from [CS1] , should fail.
-        """
-
-        self.log.info("Delete  user from [CS1], should succeed.")
- 
-        response = self.api.cloudbroker.cloudspace.deleteUser(cloudspaceId=self.cloudspaceId, username=self.user)
-        self.assertEqual(response.status_code, 200)
-
-        self.log.info("Delete  user[U1]  again from [CS1], should fail .")
- 
-        response = self.api.cloudbroker.cloudspace.deleteUser(cloudspaceId=self.cloudspaceId, username=self.user)
-        self.assertEqual(response.status_code, 404)
-
-    def test004_start_stop_fireWall(self):
+    @parameterized.expand([('non-exist',404),
+                           ('exist',200),
+                           ('deleted',404)
+                            ])
+    def test003_start_stop_fireWall(self, value, return_code):
         """ OVC-000
         *Test case  for testing enable and disable virtual firewall*
 
         **Test Scenario:**
 
         #. create a cloud space
-        #. deploy VFW to  the created cloudspace
-        #. stop the Virtual fire wall, should succeed.
-        #. start the virtual fire wall, should succeed.
+        #. deploy,stop and start fire wall in exist cloudspace, should succeed. 
+        #. deploy,stop and start fire wall in none-exist cloudspace, should fail.
         """
-        self.assertEqual(self.api.wait_for_cloudspace_status(self.cloudspaceId),"DEPLOYED")
-        self.log.info ("Deploy VFW to  the created cloudspace")
-        response = self.api.cloudbroker.cloudspace.deployVFW(self.cloudspaceId)
-        self.assertEqual(response.status_code, 200)
+        if value == "non-exist":
+            cloudspaceId = random.randint(2000,3000)
+        elif value == "deleted":
+            response = self.api.cloudbroker.cloudspace.destroy(self.accountId, self.cloudspaceId)            
+            cloudspaceId = self.cloudspaceId
+        else:
+            cloudspaceId = self.cloudspaceId
 
-        self.log.info("Stop the Virtual fire wall, should succeed.")
-        response = self.api.cloudbroker.cloudspace.startVFW(self.cloudspaceId)
-        self.assertEqual(response.status_code, 200)
+
+        self.log.info ("Deploy VFW to %s cloudspace , should %s"%(value, "fail" if value != "exist" else "succeed"))
+        response = self.api.cloudbroker.cloudspace.deployVFW(cloudspaceId)
+        self.assertEqual(response.status_code, return_code)
+
+        self.log.info("Stop VFW to %s cloudspace , should %s"%(value, "fail" if value != "exist" else "succeed"))
+        response = self.api.cloudbroker.cloudspace.startVFW(cloudspaceId)
+        self.assertEqual(response.status_code, return_code)
 
         self.log.info("Start the virtual fire wall, should succeed.")
-        response = self.api.cloudbroker.cloudspace.stopVFW(self.cloudspaceId)
-        self.assertEqual(response.status_code, 200)       
-
-    def test005_create_cloudspace_with_nonexist_user(self):
-        """ OVC-000
-        *Test case for testing creating account wuth different options .*
-
-        **Test Scenario:*
-        #. Create cloudspace[CS] with non-exist user, should fail.
-        """
-        fake_user = self.utils.random_string()
-        data, response = self.api.cloudbroker.cloudspace.create(accountId=self.accountId, location=self.location,
-                                                access=fake_user)
-        self.assertEqual(response.status_code, 404)       
+        response = self.api.cloudbroker.cloudspace.stopVFW(cloudspaceId)
+        self.assertEqual(response.status_code, return_code)       
 
     @parameterized.expand([("Negative values", -1, 400),
                            ("Positive values", 1, 200)])    
-    def test006_create_cloudspace_with_different_options(self, type, factor, return_code):
+    def test004_create_cloudspace_with_different_options(self, type, factor, return_code):
         """ OVC-000
         *Test case for testing creating cloudspace with different options .*
 
@@ -164,7 +356,7 @@ class cloudspace(TestcasesBase):
 
 
     @unittest.skip("https://github.com/0-complexity/openvcloud/issues/1435")
-    def test007_create_cloudspace_with_limitations(self):
+    def test005_create_cloudspace_with_limitations(self):
         """ OVC-000
         *Test case for testing creating account wuth different options .*
 
@@ -199,3 +391,163 @@ class cloudspace(TestcasesBase):
         data, response = self.api.cloudbroker.cloudspace.create(accountId=account.json(), location=self.location,access=self.user)
 
         self.assertEqual(response.status_code, 200)       
+
+
+    @parameterized.expand([("exist", 200),
+                           ("Non-exist", 404)])    
+    def test006_destroy_cloudspace(self,status, return_code):
+        """ovc-000
+        *Test case for testing destroy exist and non-exist cloudspace .*
+        
+        **Test Scenario:**
+
+        #. Destroy cloudspace[CS1], should succeed.
+        #. Check that cloudspace destroyed sucessfully.
+
+        """
+        if status == "exist" :
+            cloudspaceId = self.cloudspaceId
+        else :
+            cloudspaceId = random.randint(2000,3000)
+
+        self.log.info("Destroy  %s cloudspace, should %s"%( status, "succeed"if status== "exist" else "fail"))
+        response = self.api.cloudbroker.cloudspace.destroy(self.accountId, cloudspaceId)
+        self.assertEqual(response.status_code, return_code)
+        
+        if status == "exist":
+            self.log.info("Check that cloudspace destroyed successfully. ")
+            response = self.api.cloudapi.cloudspaces.get(cloudspaceId)
+            self.assertEqual(response["status"], "DESTROYED")
+
+            self.log.info("Try to destroy cloudspace [CS1] again, should fail ")
+            response = self.api.cloudbroker.cloudspace.destroy(self.accountId, cloudspaceId)
+            self.assertEqual(response.status_code, 404)            
+
+    def test007_destroy_cloudspaces(self):
+        """ OVC-000
+        *Test case for deleting multiple account.*
+
+        **Test Scenario:**
+
+        #. Create cloudspaces [CS1],[CS2] , [CS3] and [CS4], should succeed .
+        #. Delete cloudspace [CS1], should succeed.
+        #. Delete cloudspaces [CS1], [CS2], should fail.
+        #. Delete [CS2] and [CS3] cloudspaces using destroy cloudspaces  api, should succeed. 
+        #. Check that the four cloudspaces deleted ,should succeed.
+        """
+        self.log.info(" Create cloudspaces [CS1],[CS2] , [CS3] and [CS4], should succeed .")
+        cloudspaces = [self.cloudspaceId]
+        for _ in range(3):
+            data,response=self.api.cloudbroker.cloudspace.create(self.accountId, self.cloudspaceId, self.user)
+            self.assertEqual(response.status_code, 200)
+            cloudspaces.append(response.json())
+
+        self.log.info("Delete cloudspace [CS1], should succeed.")
+        response= self.api.cloudbroker.cloudspace.destroy(self.accountId, cloudspaces[0])
+        self.assertEqual(response.status_code, 200)
+        
+        self.log.info(" Delete cloudspaces [CS1], [CS2], should fail.")
+        response= self.api.cloudbroker.cloudspace.destroyCloudSpaces([cloudspaces[1],cloudspaces[0]])
+        self.assertEqual(response.status_code, 404)
+
+        self.log.info("Delete [CS2] and [CS3] cloudspaces using destroy cloudspaces  api, should succeed. ")
+        response= self.api.cloudbroker.cloudspace.destroyCloudSpaces([cloudspaces[2],cloudspaces[3]])
+        self.assertEqual(response.status_code, 200)
+
+        self.log.info("Check that the four cloudspaces deleted ,should succeed.")
+        for cloudspaceId in cloudspaces:
+            response = self.api.cloudapi.cloudspaces.get(cloudspaceId)
+            self.assertEqual(response.json()["status"],"DESTROYED")
+
+    @parameterized.expand([("exist", 200),
+                           ("Non-exist", 404)])   
+    def test008_destroy_VFW(self, status, return_code):
+        """ OVC-000
+        *Test case for destroy vfw for non-exist and exist cloudspace .*
+
+        **Test Scenario:**
+
+        #. Create cloudspaces [CS1].
+        #. Destroy VFW for non-exist cloudspace, should fail.
+        #. Destroy VFW of this cloudspace, should succeed.
+        #. Check that VFW of cloudspace destroyed , should succeed. 
+        """
+        if status == "exist" :
+            cloudspaceId = self.cloudspaceId
+        else :
+            cloudspaceId = random.randint(2000,3000)
+
+        self.log.info(" Destroy VFW of this cloudspace, should succeed.")
+        response = self.api.cloudbroker.cloudspace.destroyVFW(cloudspaceId)
+        self.assertEqual(response.json(), return_code)
+
+        if status == "exist":
+            self.log.info(" Check that VFW of cloudspace destroyed , should succeed. ")
+            response = self.api.cloudapi.cloudspaces.get(cloudspaceId)
+            self.assertEqual(response.json()["status"], "VIRTUAL")
+
+
+    @parameterized.expand([('non-exist',404),
+                           ('exist',200),
+                           ('deleted',404)
+                            ])
+    def test009_delete_non_exist_user_from_cloudspace(self):
+        """ OVC-000
+        *Test case for deleting non-exist user from cloudspace. *
+
+        **Test Scenario:**
+        #. Create cloudspace [CS1].
+        #. Delete non-exist user from [CS1], should fail.
+        """
+        fake_user=self.utils.random_string()
+        response = self.api.cloudbroker.cloudspace.deleteUser(cloudspaceId=self.cloudspaceId, username=fake_user)
+        self.assertEqual(response.status_code, 404)
+
+
+    def test010_delete_user_from_cloudspace(self):
+        """ OVC-000
+        *Test case for deleting user from cloudspace. *
+
+        **Test Scenario:**
+        #. Create user[U1] .
+        #. Create cloudspace [CS1]
+        #. Delete non-exist user from [CS1], should fail.
+        #. Add user[U1] to cloudspace[CS1], should succeed.
+        #. Delete user[U1] from [CS1], should succeed.
+        #. Delete user[U1] again from [CS1], should fail .
+        
+        """
+        self.log.info("Create user [u1].")
+        user_data,response = self.api.cloudbroker.user.create(groups=["user"])
+        self.CLEANUP['users'].append(user_data["username"])
+ 
+        self.log.info("Add user[U1] to [CS1] , should succeed")
+        data, response = self.api.cloudbroker.cloudspace.addUser(username=user_data["username"], cloudspaceId=self.cloudspaceId,accesstype='R')
+        self.assertEqual(response.status_code, 200)
+
+        self.log.info(" Delete non-exist user from [CS1], should fail. ")
+        fake_user= self.utils.random_string()
+        response = self.user_api.cloudbroker.cloudspace.deleteUser(cloudspaceId=self.cloudspaceId, username=fake_user)
+        self.assertEqual(response.status_code, 404)        
+
+        self.log.info("Delete user[U1] from [CS1], should succeed.")
+        response = self.api.cloudbroker.cloudspace.deleteUser(cloudspaceId=self.cloudspaceId, username=self.user)
+        self.assertEqual(response.status_code, 200)
+
+        self.log.info("Delete  user[U1]  again from [CS1], should fail .")
+ 
+        response = self.api.cloudbroker.cloudspace.deleteUser(cloudspaceId=self.cloudspaceId, username=self.user)
+        self.assertEqual(response.status_code, 404)
+
+    def test011_create_cloudspace_with_nonexist_user(self):
+        """ OVC-000
+        *Test case for testing creating account wuth different options .*
+
+        **Test Scenario:*
+        #. Create cloudspace[CS] with non-exist user, should fail.
+        """
+        fake_user = self.utils.random_string()
+        data, response = self.api.cloudbroker.cloudspace.create(accountId=self.accountId, location=self.location,
+                                                access=fake_user)
+        self.assertEqual(response.status_code, 404) 
+
