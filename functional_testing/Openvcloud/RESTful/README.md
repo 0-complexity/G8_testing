@@ -38,17 +38,15 @@ ip=be-g8-3.demo.greenitglobe.com
 port=443
 username=gig_qa_1@itsyouonline
 client_id=********************************
-client_secret=****************
-```
+client_secret=****************************
 location=be-g8-3
-
+```
 then you can fire it using nosetests. 
 
 #### Example
 ```bash
 nosetests-3.4 -sv  --logging-level=WARNING --rednose  testcases/cloudapi/test01_disks.py --tc-file config.ini
 ```
-
 
 #### Steps to add new test case:
 To implement any test case in REST APIs test suite please, create a new task with the following pattern:
