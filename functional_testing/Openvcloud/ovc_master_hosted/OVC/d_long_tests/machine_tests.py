@@ -99,6 +99,9 @@ class MachineLongTests(BasicACLTest):
 
             self.wait_for_status('RUNNING', self.api.cloudapi.machines.get, machineId=imported_vm_id)
 
+            imported_vm_info = self.api.cloudapi.machines.get(machineId=imported_vm_id)
+            self.assertTrue(all([x['name'] for x in imported_vm_info]))
+
             self.lg('Check that file (F1) exists in the imported virtual machine')
             imported_vm_client = VMClient(
                 imported_vm_id[0],
