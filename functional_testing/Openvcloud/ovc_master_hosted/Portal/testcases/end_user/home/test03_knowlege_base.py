@@ -35,7 +35,7 @@ class KnowledgeBase(Framework):
         self.assertEqual(self.get_text("knowledge_base_line6_tab"),
                          "PPTP Connection To Space From Windows 10")
         self.assertEqual(self.get_text("knowledge_base_line7_tab"),
-                         "Getting Started with JumpScale")
+                         "Using the API")
         self.assertEqual(self.get_text("knowledge_base_subheader_label"),
                          "Welcome")
         self.assertEqual(self.get_text("knowledge_base_subheader_email"),
@@ -404,35 +404,10 @@ class KnowledgeBase(Framework):
         #. check all technical tutorials seventh tab page elements, should succeed
         """
         self.lg('%s STARTED' % self._testID)
-        self.assertEqual(self.get_text("knowledge_base_header_label"),
-                         "Technical Tutorials")
-        self.assertEqual(self.get_text("knowledge_base_line7_tab"),
-                         "Getting Started with JumpScale")
+
+        self.assertEqual(self.get_text("knowledge_base_header_label"), "Technical Tutorials")
+        self.assertEqual(self.get_text("knowledge_base_line7_tab"), "Using the API")
         self.click("knowledge_base_line7_tab")
-        self.assertEqual(self.get_text("knowledge_base_line7_tab_header"),
-                         "Getting Started with JumpScale")
-        self.assertEqual(self.get_text("knowledge_base_line7_tab_header1"),
-                         "To Install JSBOX")
-        self.assertEqual(self.get_text("knowledge_base_line7_tab_line1"),
-                         "(Tested on 13.10 & 14.04 64 bit. Also works on equavelant mint "
-                         "distro 64 bit)")
-        self.assertEqual(self.get_text("knowledge_base_line7_tab_header2"),
-                         "Update your apt repository & make sure some basic requirements are met")
-        self.assertEqual(self.get_text("knowledge_base_line7_tab_line2"),
-                         "In your terminal:")
-        self.assertEqual(self.get_text("knowledge_base_line7_tab_header3"),
-                         "Install the sandbox")
-        self.assertEqual(self.get_text("knowledge_base_line7_tab_line3"),
-                         "This installs JumpScale and puts it in sandboxed mode.")
-        self.assertEqual(self.get_text("knowledge_base_line7_tab_header4"),
-                         "To be able to use all tools from sandbox:")
-        self.assertEqual(self.get_text("knowledge_base_line7_tab_header5"),
-                         "Update the jpackage metadata")
-        self.assertEqual(self.get_text("knowledge_base_line7_tab_line4"),
-                         "Now you'll have the automation framework JumpScale installed and "
-                         "sandboxed and jpackages ready to use!")
-        self.assertEqual(self.get_text("knowledge_base_line7_tab_line5"),
-                         "To know more about JumpScale, see JumpScale")
-        self.assertEqual(self.element_link("knowledge_base_line7_tab_line5_link"),
-                         "http://www.jumpscale.org/")
+        self.assertEqual(self.get_text("knowledge_base_line7_tab_header"), "Using the API")
+
         self.lg('%s ENDED' % self._testID)

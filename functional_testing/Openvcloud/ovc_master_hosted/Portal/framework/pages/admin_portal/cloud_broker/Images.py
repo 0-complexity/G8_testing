@@ -32,6 +32,7 @@ class images():
         self.framework.set_text("image_search", image)
         if self.framework.wait_until_element_located_and_has_text("image_table_first_element", image):
             self.framework.click('image_table_first_element')
+            self.framework.wait_until_page_title_is('GBGrid - Image')
             return True
         else:
             self.framework.lg('can\'t find image %s' % image)

@@ -20,7 +20,6 @@ class TestcasesBase(TestCase):
         cls.api= Client(client_id=client_id, client_secret=client_secret)
         cls.utils = Utils()
         cls.whoami = config['main']['username']
-        cls.CLEANUP = {'users':[], 'accounts':[], 'groups':[]}
         cls.environment =  cls.api.get_environment()
         cls.location = cls.environment['locationCode']
         cls.gid = cls.environment['gid']
@@ -34,8 +33,8 @@ class TestcasesBase(TestCase):
         self._startTime = time.time()
         self.log.info('====== Testcase [{}] is started ======'.format(self._testID))
         self.user_api = Client()
-        self.CLEANUP = {'users':[], 'accounts':[]}
-
+        self.CLEANUP = {'users':[], 'accounts':[], 'groups':[], 'disks':[]}
+        
         def timeout_handler(signum, frame):
             raise TimeExpired('Timeout expired before end of test %s' % self._testID)
 
@@ -47,6 +46,10 @@ class TestcasesBase(TestCase):
         self._duration = int(self._endTime - self._startTime)
             
         self.log.info('Testcase [{}] is ended, Duration: {} seconds'.format(self._testID, self._duration))
+
+        for diskId in self.CLEANUP['disks']:
+            self.log.info('[TearDown] Deleting disk: {}'.format(diskId))
+            self.api.cloudapi.disks.delete(diskId=diskId)
         
         for accountId in self.CLEANUP['accounts']:
             self.log.info('[TearDown] Deleting account: {}'.format(accountId))

@@ -44,7 +44,6 @@ class users():
             user_group.click()
 
         self.framework.click("confirm_add_user")
-        self.framework.wait_until_element_attribute_has_text('create_user_dialog', 'style', 'display: none;')
         self.framework.get_page(self.framework.driver.current_url)
         self.framework.set_text("username_search", username)
         self.framework.wait_until_element_located_and_has_text("username_table_first", username)
@@ -59,6 +58,7 @@ class users():
         username_id = self.framework.get_text("username_table_first")
 
         self.framework.click("username_table_first")
+        self.framework.wait_until_page_title_is('GBGrid - User')
         self.framework.element_in_url(username_id)
 
     def delete_user(self, username):

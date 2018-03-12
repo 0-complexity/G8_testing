@@ -225,6 +225,15 @@ class BaseTest(unittest.TestCase):
         else:
             return False
 
+    def wait_until_page_title_is(self, text, timeout=15):
+        for _ in range(timeout):
+            if self.driver.title == text:
+                return True
+            else:
+                time.sleep(1)
+        else:
+            return False
+
     def wait_until_element_located_and_has_text(self, element, text):
         method = self.elements[element][0]
         value = self.elements[element][1]
