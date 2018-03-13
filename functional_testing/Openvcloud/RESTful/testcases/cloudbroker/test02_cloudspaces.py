@@ -226,6 +226,23 @@ class permission(TestcasesBase):
         self.assertEqual(response.status_code, return_code)   
 
 
+    @parameterized.expand([('user', 403), ('admin', 200)])  
+    def test011_update_cloudspace(self, access, return_code):
+        """ OVC-000
+        *Test case for testing update  cloudspace with different users with [admin, user] user .*
+
+        **Test Scenario:*
+        #. Try to moveVirtualFirewallToFirewallNode  with admin user, should succeed.
+        #. Get moveVirtualFirewallToFirewallNode  with user with user group, should fail.
+
+        """
+
+        api = self.api if access == "admin" else self.user_api 
+
+        self.log.info("update with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
+        response = api.cloudbroker.cloudspace.update(self.cloudspaceId)
+        self.assertEqual(response.status_code, return_code)   
+
 class operations(TestcasesBase):
     def setUp(self):
         super().setUp()
@@ -607,3 +624,34 @@ class operations(TestcasesBase):
             new_nid= self.api.cloudbroker.cloudspace.getVFW(self.cloudspaceId).json()["nid"]
             self.assertEqual(new_nid, targetNid)
             
+
+    @parameterized.expand([("non-exist", 404),
+                           ("deleted", 404),
+                           ("exist",200)])   
+    def test009_update_cloudspace(self, status, return_code):
+        """ OVC-000
+        *Test case for update non-exist and exist cloudspace .*
+
+        **Test Scenario:**
+
+        #. Create cloudspaces [CS1].
+        #. Update non-exist cloudspace name , should fail. 
+        #. Update Deleted cloudspace name , should fail . 
+        #. Update exist cloudspace name , should succeed.
+        #. Check that cloudspace name updated successfully.
+    
+        """
+
+        cloudspaceId = self.cloudspaceId
+        if status == "non-exist":
+            cloudspaceId = random.randint(3000,5000) 
+        elif status == "deleted":
+            self.skipTest("https://github.com/0-complexity/openvcloud/issues/1439")
+            response = self.api.cloudbroker.cloudspace.destroy(self.accountId, self.cloudspaceId) 
+        
+        data, response= self.api.cloudbroker.cloudspace.update(cloudspaceId)
+        self.assertEqual(response.status_code, return_code)       
+
+        if status == "exist":
+            response = self.api.cloudapi.cloudspaces.get(cloudspaceId)
+            self.assertEqual(data["name"], response.json()["name"])
