@@ -42,7 +42,6 @@ class Accounts:
         )
 
     def updateUser(self, accountId, userId, **kwargs):
-        accesstype = self._api.cloudapi.accounts.get
         data = {
             'accountId': accountId,
             'userId': userId,
