@@ -94,3 +94,12 @@ class Client:
         response = api.system.usermanager.authenticate(name=username, secret=password)
         response.raise_for_status
         return api, username
+
+
+    def get_running_nodeId(self, except_nodeid=None):
+        nodes = self.api_client.cloudbroker.computenode.list().json()
+        for node in nodes:
+            if int(node['referenceId']) != except_nodeid and node['status'] == 'ENABLED':
+                return int(node['referenceId'])
+        else:
+            return None

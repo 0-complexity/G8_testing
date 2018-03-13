@@ -206,6 +206,26 @@ class permission(TestcasesBase):
         self.assertEqual(response.status_code, return_code)     
 
 
+    @parameterized.expand([('user', 403), ('admin', 200)])  
+    def test010_moveVirtualFirewallToFirewallNode(self, access, return_code):
+        """ OVC-000
+        *Test case for testing update  cloudspace with different users with [admin, user] user .*
+
+        **Test Scenario:*
+        #. Try to moveVirtualFirewallToFirewallNode  with admin user, should succeed.
+        #. Get moveVirtualFirewallToFirewallNode  with user with user group, should fail.
+
+        """
+
+        api = self.api if access == "admin" else self.user_api 
+
+        reouteros_nid= self.api.cloudbroker.cloudspace.getVFW(self.cloudspaceId).json()["nid"]
+        targetNid = self.api.get_running_nodeId(reouteros_nid)      
+        self.log.info("MoveVirtualFirewallToFirewallNode with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
+        response = api.cloudbroker.cloudspace.moveVirtualFirewallToFirewallNode(self.cloudspaceId, targetNid)
+        self.assertEqual(response.status_code, return_code)   
+
+
 class operations(TestcasesBase):
 
     def setUp(self):
@@ -486,10 +506,6 @@ class operations(TestcasesBase):
             self.assertEqual(response.json()["status"], "VIRTUAL")
 
 
-    @parameterized.expand([('non-exist',404),
-                           ('exist',200),
-                           ('deleted',404)
-                            ])
     def test009_delete_non_exist_user_from_cloudspace(self):
         """ OVC-000
         *Test case for deleting non-exist user from cloudspace. *
@@ -550,3 +566,45 @@ class operations(TestcasesBase):
                                                 access=fake_user)
         self.assertEqual(response.status_code, 404) 
 
+
+    @parameterized.expand([("non-exist-cloudspace", 404),
+                           ("Non-exist-node", 404),
+                           ("deleted-cloudspace",404),
+                           ("exist-cloudspace&node",200)])   
+    def test008_moveVirtualFirewallToFirewallNode(self, status, return_code):
+        """ OVC-000
+        *Test case for destroy vfw for non-exist and exist cloudspace .*
+
+        **Test Scenario:**
+
+        #. Create cloudspaces [CS1].
+        #. Get random target node .
+        #. Try to moveVirtualFirewall of deleted  cloudspace To FirewallNode, should fail.
+        #. Try to moveVirtualFirewall of non-exist cloudspace To FirewallNode, should fail.
+        #. Try to moveVirtualFirewall To non-exist Node, should fail .
+        #. Try to moveVirtualFirewall of exist cloudspace To FirewallNode, should succeed .
+        #. Check that firewall moved successfully.
+        """
+        routeros_nid= self.api.cloudbroker.cloudspace.getVFW(self.cloudspaceId).json()["nid"]
+        targetNid = self.api.get_running_nodeId(routeros_nid)      
+        cloudspaceId = self.cloudspaceId
+
+        if status == "Non-exist-node" :
+            self.skipTest("https://github.com/0-complexity/openvcloud/issues/1447")
+            targetNid= random.randint(100,200)
+
+        elif status == "non-exist-cloudspace":
+            cloudspaceId = random.randint(2000,3000)
+        elif status == "deleted-cloudspace":
+            self.skipTest("https://github.com/0-complexity/openvcloud/issues/1439")
+            response = self.api.cloudbroker.cloudspace.destroy(self.accountId, self.cloudspaceId)            
+
+        self.log.info("MoveVirtualFirewallToFirewallNode with %s , should %s  "%(status, "succeed" if status == "exist-cloudspace" else "fail" ))
+        response = self.api.cloudbroker.cloudspace.moveVirtualFirewallToFirewallNode(cloudspaceId, targetNid)
+        self.assertEqual(response.status_code, return_code)   
+
+        if status =="exist-cloudspace&node":
+            self.log.info("Check that firewall moved successfully.")
+            new_nid= self.api.cloudbroker.cloudspace.getVFW(self.cloudspaceId).json()["nid"]
+            self.assertEqual(new_nid, targetNid)
+            
