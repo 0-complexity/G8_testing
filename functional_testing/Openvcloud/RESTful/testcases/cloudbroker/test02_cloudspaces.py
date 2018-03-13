@@ -3,7 +3,6 @@ from nose_parameterized import parameterized
 import random , unittest, time 
 
 class permission(TestcasesBase):
-
     def setUp(self):
         super().setUp()
         self.admin_user = self.whoami
@@ -47,7 +46,8 @@ class permission(TestcasesBase):
         api = self.api if access == "admin" else self.user_api 
  
         self.log.info("Add user to the cloudspace with %s level user, should %s  "%(access, "succeed" if access== "admin" else "fail" ))
-        data, response = api.cloudbroker.cloudspace.addUser(username=user_data["username"], cloudspaceId=self.cloudspaceId,accesstype="R")
+        accesstype= random.choice(['R','RCX' ,'ARCXDU'])
+        data, response = api.cloudbroker.cloudspace.addUser(username=user_data["username"], cloudspaceId=self.cloudspaceId,accesstype=accesstype)
         self.assertEqual(response.status_code, return_code)       
 
     @parameterized.expand([('user', 403), ('admin', 200)])
@@ -227,7 +227,6 @@ class permission(TestcasesBase):
 
 
 class operations(TestcasesBase):
-
     def setUp(self):
         super().setUp()
         self.user = self.whoami
@@ -457,7 +456,7 @@ class operations(TestcasesBase):
         self.log.info(" Create cloudspaces [CS1],[CS2] , [CS3] and [CS4], should succeed .")
         cloudspaces = [self.cloudspaceId]
         for _ in range(3):
-            data,response=self.api.cloudbroker.cloudspace.create(self.accountId, self.cloudspaceId, self.user)
+            data,response=self.api.cloudbroker.cloudspace.create(self.accountId, self.location, self.user)
             self.assertEqual(response.status_code, 200)
             cloudspaces.append(response.json())
 
@@ -498,7 +497,7 @@ class operations(TestcasesBase):
 
         self.log.info(" Destroy VFW of this cloudspace, should succeed.")
         response = self.api.cloudbroker.cloudspace.destroyVFW(cloudspaceId)
-        self.assertEqual(response.json(), return_code)
+        self.assertEqual(response.status_code, return_code)
 
         if status == "exist":
             self.log.info(" Check that VFW of cloudspace destroyed , should succeed. ")

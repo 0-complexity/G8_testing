@@ -57,8 +57,11 @@ class Machines:
         sizes =response.json()
 
         basic_sizes=[512, 1024, 4096, 8192, 16384, 2048]
-        import ipdb;ipdb.set_trace
-        size = [ size for size in sizes if size['memory'] in basic_sizes][0]
+        for _ in range(len(sizes)) :
+            size = random.choice(sizes)
+            if size["memory"] in basic_sizes:
+                break
+                
         data['disksize']= random.choice(size['disks'])
         data['sizeId']=size['id']
   
