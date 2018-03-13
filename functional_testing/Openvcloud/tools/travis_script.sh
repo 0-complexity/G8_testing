@@ -13,7 +13,13 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
         memberid=$(sudo zerotier-cli info | awk '{print $3}')
         curl -s -H "Content-Type: application/json" -H "Authorization: Bearer ${zerotier_token}" -X POST -d '{"config": {"authorized": true}}' https://my.zerotier.com/api/network/${zerotier_network}/member/${memberid} > /dev/null
        
-        sleep 50
+        for i in {1..20}; do
+            ping -c1 ${ctrl_ipaddress} > /dev/null && break
+        done
+
+        if [ $? -gt 0 ]; then
+            echo "Can't reach the controller using this ip address ${ctrl_ipaddress}"; exit 1  
+        fi
 
         echo "[+] Cloning G8_testing repo"
         cmd="mkdir ${testsuite_repo_path}; cd ${testsuite_repo_path}; rm -rf G8_testing; git clone -b ${TRAVIS_BRANCH} https://github.com/0-complexity/G8_testing; chown -R ${ctrl_user}:${ctrl_user} ."
@@ -35,7 +41,7 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
             if [[ "${testsuite}" == "acl" || "${testsuite}" == "ovc" ]]; then
 
-                cmd="export PYTHONPATH=${python_path}; cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud; nosetests -s -v ${testsuite_path} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
+                cmd="export PYTHONPATH=${python_path}; cd ${testsuite_repo_path}/G8_testing/functional_testing/Openvcloud; nosetests-2.7 -s -v ${testsuite_path} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
                 sshpass -p ${ctrl_root_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_root_user}@${ctrl_ipaddress} "${cmd}"
 
             elif [[ "${testsuite}" == "restful" ]]; then
@@ -49,8 +55,8 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
             elif [[ "${testsuite}" == "portal" ]]; then
 
-                cmd="cd ${testsuite_repo_path}/G8_testing; bash functional_testing/Openvcloud/ovc_master_hosted/Portal/travis_portal_script.sh ${environment} ${portal_admin} ${portal_password} ${portal_secret} ${testsuite_path} ${portal_browser} ${ctrl_password}"
-                sshpass -p ${ctrl_user_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_user}@${ctrl_ipaddress} "${cmd}"
+                cmd="cd ${testsuite_repo_path}/G8_testing; bash functional_testing/Openvcloud/ovc_master_hosted/Portal/travis_portal_script.sh ${environment} ${portal_admin} ${portal_password} ${portal_secret} ${testsuite_path} ${portal_browser} ${ctrl_user_password}"
+                sshpass -p "${ctrl_user_password}" ssh -t -o StrictHostKeyChecking=no ${ctrl_user}@${ctrl_ipaddress} "${cmd}"
 
             fi
 

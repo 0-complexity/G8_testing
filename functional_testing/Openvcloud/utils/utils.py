@@ -537,7 +537,7 @@ class BaseTest(unittest.TestCase):
         for stackId in stacks_list:
             nodeId = ccl.stack.get(stackId).referenceId
             node = scl.node.get(int(nodeId))
-            if node.active:
+            if node.status == 'ENABLED':
                 return stackId
         return False
 
@@ -577,7 +577,7 @@ class BaseTest(unittest.TestCase):
         for stackId in stacks:
             nodeId = int(ccl.stack.get(stackId).referenceId)
             node = scl.node.get(int(nodeId))
-            if node.active and 'fw' in node.roles and nodeId != current_VFW_nodeId:
+            if node.status == 'ENABLED' and 'fw' in node.roles and nodeId != current_VFW_nodeId:
                 return nodeId
         else:
             return False

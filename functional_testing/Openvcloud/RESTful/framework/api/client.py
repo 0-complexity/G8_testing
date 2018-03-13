@@ -74,7 +74,6 @@ class Client:
     def get_random_locations(self):
         return random.choice(self.cloudapi.locations.list())['locationCode']
 
-
     def authenticate_user(self, username=None, password=None, **kwargs):
         if not username or password:
             username, password = self.create_user(**kwargs)
