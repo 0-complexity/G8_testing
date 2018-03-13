@@ -53,7 +53,7 @@ class permission(TestcasesBase):
     @parameterized.expand([('user', 403), ('admin', 200)])
     def test002_delete_user_with_diff_users_access(self,access, return_code):
         """ OVC-000
-        *Test case for .*
+        *Test case for testing delete user from cloudspace with [admin, user] user .*
 
         **Test Scenario:**
         #. Create user[U2] with user group.
@@ -69,7 +69,7 @@ class permission(TestcasesBase):
     @parameterized.expand([('user', 403), ('admin', 200)])
     def test003_create_cloudspace_with_diff_users_access(self, access, return_code):
         """ OVC-000
-        *Test case for testing creating account wuth different users.*
+        *Test case for testing creating cloudspace with different users with [admin, user] user.*
 
         **Test Scenario:*
         #. Create cloudspace[CS] with admin user, should succeed.
@@ -87,7 +87,7 @@ class permission(TestcasesBase):
     @parameterized.expand([('user', 403), ('admin', 200)])  
     def test004_destroy_cloudspace_with_different_users_access(self, access, return_code):
         """ OVC-000
-        *Test case for testing destroy  account with different users .*
+        *Test case for testing destroy  cloudspace with different users with [admin, user] user .*
 
         **Test Scenario:*
         #. Destroy cloudspace[CS] with admin user, should succeed.
@@ -104,7 +104,7 @@ class permission(TestcasesBase):
     @parameterized.expand([('user', 403), ('admin', 200)])  
     def test005_start_stop_fireWall(self, access, return_code):
         """ OVC-000
-        *Test case  for testing enable and disable virtual firewall*
+        *Test case  for testing enable and disable virtual firewall with [admin, user] user *
 
         **Test Scenario:**
 
@@ -130,7 +130,7 @@ class permission(TestcasesBase):
     @parameterized.expand([('user', 403), ('admin', 200)])  
     def test006_destroy_cloudspaces(self, access, return_code):
         """ OVC-00
-        *Test case for deleting multiple cloudspaces.*
+        *Test case for deleting multiple cloudspaces with [admin, user] user .*
 
         **Test Scenario:**
 
@@ -156,7 +156,7 @@ class permission(TestcasesBase):
     @parameterized.expand([('user', 403), ('admin', 200)])  
     def test007_destroy_VFW_with_different_users_access(self, access, return_code):
         """ OVC-000
-        *Test case for testing destroy  account with different users .*
+        *Test case for testing destroy  VFW with different users with [admin, user] user .*
 
         **Test Scenario:*
         #. Destroy VFW with admin user, should succeed.
@@ -173,7 +173,7 @@ class permission(TestcasesBase):
     @parameterized.expand([('user', 403), ('admin', 200)])  
     def test008_get_VFW_with_different_users_access(self, access, return_code):
         """ OVC-000
-        *Test case for testing destroy  account with different users .*
+        *Test case for testing get VFW with different users .*
 
         **Test Scenario:*
         #. Get VFW with admin user, should succeed.
@@ -191,7 +191,7 @@ class permission(TestcasesBase):
     @parameterized.expand([('user', 403), ('admin', 200)])  
     def test009_update_cloudspace_with_different_users_access(self, access, return_code):
         """ OVC-000
-        *Test case for testing destroy  account with different users .*
+        *Test case for testing update  cloudspace with different users with [admin, user] user .*
 
         **Test Scenario:*
         #. Get VFW with admin user, should succeed.
@@ -244,7 +244,6 @@ class operations(TestcasesBase):
             user =self.user
 
         self.log.info("Add %s user to cloudspace [CS1], should fail. "%status)
-        import ipdb; ipdb.set_trace()
         data, response = self.api.cloudbroker.cloudspace.addUser(username=user, cloudspaceId=self.cloudspaceId,accesstype="R")
         self.assertEqual(response.status_code, 404) 
   
@@ -358,7 +357,7 @@ class operations(TestcasesBase):
     @unittest.skip("https://github.com/0-complexity/openvcloud/issues/1435")
     def test005_create_cloudspace_with_limitations(self):
         """ OVC-000
-        *Test case for testing creating account wuth different options .*
+        *Test case for testing creating cloudspace wuth different limitations .*
 
         **Test Scenario:**
 
