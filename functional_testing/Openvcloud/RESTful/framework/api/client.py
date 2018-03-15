@@ -74,6 +74,18 @@ class Client:
     def get_random_locations(self):
         return random.choice(self.cloudapi.locations.list())['locationCode']
 
+    def wait_for_cloudspace_status(self,cloudspaceId,status= "DEPLOYED", timeout=300):
+        response = self.cloudapi.cloudspaces.get(cloudspaceId=cloudspaceId)
+        cs_status=response.json()["status"]
+        for _ in range(timeout):
+            if cs_status == status:
+                break
+            time.sleep(1)
+            response = self.api_client.cloudapi.cloudspaces.get(cloudspaceId=cloudspaceId)
+            cs_status=response.json()["status"]
+
+        return cs_status
+
     def authenticate_user(self, username=None, password=None, **kwargs):
         if not username or password:
             username, password = self.create_user(**kwargs)
@@ -82,3 +94,12 @@ class Client:
         response = api.system.usermanager.authenticate(name=username, secret=password)
         response.raise_for_status
         return api, username
+
+
+    def get_running_nodeId(self, except_nodeid=None):
+        nodes = self.api_client.cloudbroker.computenode.list().json()
+        for node in nodes:
+            if int(node['referenceId']) != except_nodeid and node['status'] == 'ENABLED':
+                return int(node['referenceId'])
+        else:
+            return None

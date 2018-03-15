@@ -1,6 +1,7 @@
 import random
 from framework.api import utils
 
+
 class Machine:
     def __init__(self, api_client):
         self._api = api_client
@@ -12,7 +13,7 @@ class Machine:
         data = {
             'username': username,
             'machineId': machineId,
-            'accesstype': random.choice['R','RCX','ARCX']
+            'accesstype': random.choice(['R','RCX','ARCX'])
         }
         data.update(** kwargs)
         return data, self._api.cloudbroker.machine.addUser(** data)

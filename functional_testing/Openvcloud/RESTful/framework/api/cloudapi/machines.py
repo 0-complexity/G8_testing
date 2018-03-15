@@ -1,4 +1,5 @@
 from framework.api import utils
+import random 
 
 class Machines:
     def __init__(self, api_client):
@@ -47,15 +48,25 @@ class Machines:
         }
         response = self._api.cloudapi.images.list()
         response.raise_for_status()
-        image = random.choice([x for x in response.json() if x.startswith(('Window', 'Linux'))])
+        image = random.choice([x for x in response.json() if x["type"].startswith(('Window', 'Linux'))])
         data['imageId'] = image['id']
+        response.raise_for_status()
 
+        response = self._api.cloudapi.sizes.list(cloudspaceId=cloudspaceId)
+        response.raise_for_status()
+        sizes =response.json()
+
+        basic_sizes=[512, 1024, 4096, 8192, 16384, 2048]
+        for _ in range(len(sizes)) :
+            size = random.choice(sizes)
+            if size["memory"] in basic_sizes:
+                break
+                
+        data['disksize']= random.choice(size['disks'])
+        data['sizeId']=size['id']
+  
         data.update(** kwargs)
-
-        return self._api.cloudapi.machines.create(
-            sizeId=sizeId,
-            disksize=disksize,
-        )
+        return data,self._api.cloudbroker.machine.create(**data)
 
     def delete(self, machineId):   
         return self._api.cloudapi.machines.delete(machineId=machineId)
