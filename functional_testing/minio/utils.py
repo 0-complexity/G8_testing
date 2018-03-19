@@ -1,7 +1,6 @@
 import os, uuid, time, hashlib
 
 class Utils:
-
     def get_file_md5(self, file_path):
         filehash = hashlib.md5()
         filehash.update(open(file_path).read().encode('utf-8'))
@@ -25,7 +24,6 @@ class Utils:
             'stat':os.stat(file_path),
             'md5':self.get_file_md5(file_path)
         }
-        
         return file_obj
 
     def delete_file(self, file_path):
@@ -42,5 +40,4 @@ class Utils:
         for _ in range(levels):
             level_name = self.random_string()
             prefix = os.path.join(prefix, level_name)
-        
         return prefix

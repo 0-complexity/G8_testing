@@ -1,5 +1,5 @@
 import time, random, unittest, os
-from minio.error import NoSuchBucket, BucketAlreadyOwnedByYou, InvalidBucketError, NoSuchKey
+from minio.error import NoSuchBucket, BucketAlreadyOwnedByYou, InvalidBucketError, NoSuchKey, InvalidArgument
 from testcase_base import *
 from datetime import datetime
 
@@ -125,8 +125,29 @@ class ObjectsTests(TestcasesBase):
         """ MIN-013
         #. Create bucket (B1), should succeed.
         #. Create object (O1) in bucket (B1), should succeed.
+        #. Create bucket (B2), should succeed.
+        #. Copy object (O1) to bucket (B2) as object (O2), should succeed.
+        #. Check the data of object (O2) is correct, should succeed.
+        #. Try to copy non-existing object to bucket (B2), should fail.
         """
-        pass
+        self.log.info('Create bucket (B2), should succeed')
+        new_bucket_name = self.utils.random_string()
+        self.minio.make_bucket(new_bucket_name)
+
+        self.log.info('Copy object (O1) to bucket (B2) as object (O2), should succeed')
+        new_object_name = self.utils.random_string()
+        source_object_path = os.path.join(self.bucket_name, self.object['prefix'])
+        self.minio.copy_object(new_bucket_name, new_object_name, source_object_path)
+
+        self.log.info('Check the data of object (O2) is correct, should succeed')
+        file_path = '/tmp/{}'.format(self.utils.random_string())
+        self.minio.fget_object(new_bucket_name, new_object_name, file_path)
+        self.CLEANUP['local_files'].append(file_path)
+        self.assertEqual(self.utils.get_file_md5(file_path), self.object['md5'])
+
+        self.log.info('Try to copy non-existing object to bucket (B2), should fail')
+        with self.assertRaises(InvalidArgument):
+            self.minio.copy_object(new_bucket_name, new_object_name, self.utils.random_string())
 
     def test07_stat_object(self):
         """ MIN-014

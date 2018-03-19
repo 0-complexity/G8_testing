@@ -51,7 +51,7 @@ class BucketsTests(TestcasesBase):
         fake_bucket = self.utils.random_string()
         self.assertFalse(self.minio.bucket_exists(fake_bucket))
 
-    def test04_remove_exists(self):
+    def test04_remove_bucket(self):
         """ MIN-004
         #. Create bucket (B1), should succeed.
         #. Remove bucket (B1), should succeed.
@@ -61,16 +61,15 @@ class BucketsTests(TestcasesBase):
         self.minio.remove_bucket(self.bucket_name)
 
         self.log.info('Try to remove non-existing bucket, should fail')
-        fake_bucket = self.utils.random_string()
         with self.assertRaises(NoSuchBucket):
-            self.minio.remove_bucket(fake_bucket)
+            self.minio.remove_bucket(self.utils.random_string())
 
     def test05_list_objects(self):
         """ MIN-005
         #. Create bucket (B1), should succeed.
         #. Add object (O1) to bucket (B1), should succeed.
         #. List bucket (B1) objects, Object (O1) should be listed.
-        #. List bucket (B1) objects recursively, Object (O1) should be listed
+        #. List bucket (B1) objects recursively, Object (O1) should be listed.
         """
         self.log.info('Add object (O1) to bucket (B1), should succeed')        
         obj = self.utils.create_object()
@@ -84,8 +83,8 @@ class BucketsTests(TestcasesBase):
 
         self.log.info('List bucket (B1) objects recursively, Object (O1) should be listed')
         objects = self.minio.list_objects(self.bucket_name, recursive=True)
-        self.assertIn(obj['prefix'], [obj.object_name for obj in objects])    
-
+        self.assertIn(obj['prefix'], [obj.object_name for obj in objects])
+ 
     def test06_list_objects_v2(self):
         """ MIN-006
         #. Create bucket (B1), should succeed.
