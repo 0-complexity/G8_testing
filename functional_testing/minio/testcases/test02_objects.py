@@ -18,7 +18,7 @@ class ObjectsTests(TestcasesBase):
         self.CLEANUP['local_files'].append(self.object['path'])
 
     def test01_get_object(self):
-        """ MIN-01
+        """ MIN-008
         #. Create bucket (B1), should succeed.
         #. Create object (O1) in bucket (B1), should succeed.
         #. Get object (O1), should succeed.
@@ -33,7 +33,7 @@ class ObjectsTests(TestcasesBase):
             self.minio.get_object(self.bucket_name, self.utils.random_string())
 
     def test02_fget_object(self):
-        """ MIN-02
+        """ MIN-009
         #. Create bucket (B1), should succeed.
         #. Create object (O1) in bucket (B1), should succeed.
         #. Download object (O1), should succeed.
@@ -53,7 +53,7 @@ class ObjectsTests(TestcasesBase):
             self.minio.fget_object(self.bucket_name, self.utils.random_string(), file_path)
 
     def test03_get_partial_object(self):
-        """ MIN-03
+        """ MIN-010
         #. Create bucket (B1), should succeed.
         #. Create object (O1) in bucket (B1), should succeed.
         #. Get partial data of object (O1), should succeed.
@@ -73,7 +73,7 @@ class ObjectsTests(TestcasesBase):
             self.minio.get_object(self.bucket_name, self.utils.random_string())
         
     def test04_put_object(self):
-        """ MIN-04
+        """ MIN-011
         #. Create bucket (B1), should succeed.
         #. Create file (F1).
         #. Put file (F1) to bucket (B1) as object (O1), should succeed.
@@ -98,7 +98,7 @@ class ObjectsTests(TestcasesBase):
         self.assertEqual(downloaded_obj.etag, etag)
 
     def test05_fput_object(self):
-        """ MIN-05
+        """ MIN-012
         #. Create bucket (B1), should succeed.
         #. Create file (F1).
         #. Upload file (F1) to bucket (B1) as object (O1), should succeed.
@@ -123,14 +123,14 @@ class ObjectsTests(TestcasesBase):
         self.assertEqual(downloaded_obj.etag, etag)
 
     def test06_copy_object(self):
-        """ MIN-06
+        """ MIN-013
         #. Create bucket (B1), should succeed.
         #. Create object (O1) in bucket (B1), should succeed.
         """
         pass
 
     def test07_stat_object(self):
-        """ MIN-07
+        """ MIN-014
         #. Create bucket (B1), should succeed.
         #. Create object (O1) in bucket (B1), should succeed.
         #. Get stat of object (O1), should succeed.
@@ -146,7 +146,7 @@ class ObjectsTests(TestcasesBase):
             self.minio.stat_object(self.bucket_name, self.utils.random_string())
 
     def test08_remove_object(self):
-        """ MIN-08
+        """ MIN-015
         #. Create bucket (B1), should succeed.
         #. Create object (O1) in bucket (B1), should succeed.
         #. Remove object (O1), should succeed.
@@ -160,7 +160,7 @@ class ObjectsTests(TestcasesBase):
         self.assertNotIn(self.object['prefix'], [obj.object_name for obj in objects]) 
 
     def test09_remove_objects(self):
-        """ MIN-09
+        """ MIN-016
         #. Create bucket (B1), should succeed.
         #. Create 3 object in bucket (B1).
         #. Delete all the 3 files. should succeed.
@@ -184,8 +184,7 @@ class ObjectsTests(TestcasesBase):
         self.assertEqual([obj.object_name for obj in objects], [self.object['prefix']]) 
         
     def test10_remove_incomplete_upload(self):
-        """ MIN-10
+        """ MIN-017
         #. Create bucket (B1), should succeed.
         """
         pass
-        
