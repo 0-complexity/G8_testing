@@ -74,14 +74,15 @@ class BucketsTests(TestcasesBase):
         #. List bucket (B1) objects recursively, Object (O1) should be listed
         """
         self.log.info('Add object (O1) to bucket (B1), should succeed')        
-        file_path, file_data = self.utils.create_file()
-        obj_name = self.utils.random_prefix()
-        self.minio.fput_object(self.bucket_name, obj_name, file_path)
+        obj = self.utils.create_object()
+        self.CLEANUP['local_files'].append(obj['path'])
+
+        self.minio.fput_object(self.bucket_name, obj['prefix'], obj['path'])
 
         self.log.info('List bucket (B1) objects, Object (O1) should be listed')
         objects = self.minio.list_objects(self.bucket_name)
-        self.assertIn(obj_name[:obj_name.find('/')+1], [obj.object_name for obj in objects])
+        self.assertIn(obj['prefix'][:obj['prefix'].find('/')+1], [obj.object_name for obj in objects])
 
         self.log.info('List bucket (B1) objects recursively, Object (O1) should be listed')
         objects = self.minio.list_objects(self.bucket_name, recursive=True)
-        self.assertIn(obj_name, [obj.object_name for obj in objects])    
+        self.assertIn(obj['prefix'], [obj.object_name for obj in objects])    

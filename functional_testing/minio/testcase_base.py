@@ -1,4 +1,4 @@
-import logging, time
+import logging, time, os
 from utils import Utils
 from unittest import TestCase
 from testconfig import config
@@ -24,7 +24,7 @@ class TestcasesBase(TestCase):
     def setUp(self):
         self._testID = self._testMethodName
         self._startTime = time.time()
-        self.CLEANUP = {'buckets':[]}
+        self.CLEANUP = {'buckets':[], 'local_files':[]}
         self.log.info('====== Testcase [{}] is started ======'.format(self._testID))
 
     def tearDown(self):
@@ -38,7 +38,12 @@ class TestcasesBase(TestCase):
                 objects = self.minio.list_objects(bucket_name, recursive=True) 
                 for error in self.minio.remove_objects(bucket_name, [obj.object_name for obj in objects]):
                     self.log.error(error)
-                self.minio.remove_bucket(bucket_name) 
+                self.minio.remove_bucket(bucket_name)
+        
+        for file_path in self.CLEANUP['local_files']:
+            self.log.info('[TearDown] Deleting file {}'.format(file_path))
+            if os.path.exists(file_path):
+                os.remove(file_path)
 
     def logger(self):
         logger = logging.getLogger('Minio')
