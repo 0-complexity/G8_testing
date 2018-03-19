@@ -17,5 +17,5 @@ secret_key = # secret key
 ### Run tests
 ```bash
 cd G8_testing/functional_testing/minio
-nosetests -s -v testcases --tc-file config.ini
+nosetests -s -v testsuite --tc-file config.ini
 ```
