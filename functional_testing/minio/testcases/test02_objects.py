@@ -2,7 +2,6 @@ import time, random, unittest, os
 from minio.error import NoSuchBucket, BucketAlreadyOwnedByYou, InvalidBucketError, NoSuchKey
 from testcase_base import *
 from datetime import datetime
-from nose_parameterized import parameterized
 
 class ObjectsTests(TestcasesBase):
     def setUp(self):

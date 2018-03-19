@@ -1,4 +1,3 @@
 nose
 nose-testconfig
-nose-parameterized
 minio

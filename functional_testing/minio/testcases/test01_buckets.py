@@ -1,7 +1,6 @@
 import time, random, unittest
 from minio.error import NoSuchBucket, BucketAlreadyOwnedByYou, InvalidBucketError
 from testcase_base import *
-from nose_parameterized import parameterized
 
 class BucketsTests(TestcasesBase):
     def setUp(self):
