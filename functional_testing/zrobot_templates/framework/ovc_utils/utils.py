@@ -9,7 +9,8 @@ class OVC_BaseTest(constructor):
     env = config['main']['environment']
 
     def __init__(self, *args, **kwargs):
-        super(OVC_BaseTest, self).__init__(*args, **kwargs)
+        templatespath = './framework/ovc_utils/templates'
+        super(OVC_BaseTest, self).__init__(templatespath, **kwargs)
         self.ovc_client = self.ovc_client()
 
     def setUp(self):
@@ -26,7 +27,7 @@ class OVC_BaseTest(constructor):
 
     def ovc_client(self):
         data = {'address': OVC_BaseTest.env,
-                'port': 443
+                'port': 443,
                 'jwt_': self.iyo_jwt()}
         return j.clients.openvcloud.get(instance='main', data=data)
 
