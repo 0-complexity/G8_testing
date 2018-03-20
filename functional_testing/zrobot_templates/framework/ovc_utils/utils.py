@@ -10,7 +10,7 @@ class OVC_BaseTest(constructor):
 
     def __init__(self, *args, **kwargs):
         templatespath = './framework/ovc_utils/templates'
-        super(OVC_BaseTest, self).__init__(templatespath, **kwargs)
+        super(OVC_BaseTest, self).__init__(templatespath, *args, **kwargs)
         self.ovc_client = self.ovc_client()
 
     def setUp(self):

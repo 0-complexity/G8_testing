@@ -13,8 +13,8 @@ from zerorobot.cli import utils
 
 class constructor(unittest.TestCase):
 
-    def __init__(self, templatespath, **kwargs):
-        super(constructor, self).__init__(**kwargs)
+    def __init__(self, templatespath, *args, **kwargs):
+        super(constructor, self).__init__(*args, **kwargs)
         self.j2_env = Environment(loader=FileSystemLoader(searchpath=templatespath), trim_blocks=True)
         self.j2_env.globals.update(random_string=self.random_string)
         self.j2_env.globals.update(config_params=self.config_params)
