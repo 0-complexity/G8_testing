@@ -2,7 +2,7 @@ import time
 from testconfig import config
 from framework.constructor import constructor
 from js9 import j
-
+from framework.ovc_utils import *
 
 class OVC_BaseTest(constructor):
 
@@ -11,6 +11,9 @@ class OVC_BaseTest(constructor):
     def __init__(self, *args, **kwargs):
         templatespath = './framework/ovc_utils/templates'
         super(OVC_BaseTest, self).__init__(templatespath, *args, **kwargs)
+        self.ovc_data = {'address': OVC_BaseTest.env,
+                         'port': 443,
+                         }
         self.ovc_client = self.ovc_client()
 
     def setUp(self):
@@ -25,12 +28,10 @@ class OVC_BaseTest(constructor):
         ito_client = j.clients.itsyouonline.get(instance="main")
         return ito_client.jwt
 
+    @catch_exception_decoration_return
     def ovc_client(self):
-        data = {'address': OVC_BaseTest.env,
-                'port': 443,
-                'jwt_': self.iyo_jwt()}
-        return j.clients.openvcloud.get(instance='main', data=data)
-
+        return j.clients.openvcloud.get(instance='main', data=self.ovc_data)
+        
     def handle_blueprint(self, yaml, **kwargs):
         kwargs['token'] = self.iyo_jwt()
         blueprint = self.create_blueprint(yaml, **kwargs)
