@@ -1,6 +1,24 @@
-{% for key, value in temp_actions.items() %}
-  - template: github.com/openvcloud/0-templates/{{key}}/{{config_params('version')}}
-{% for key2, value2 in value.items() %}
-    {{key2}}: {{value2}}
+{% for action, value in temp_actions.items() %}
+  - template: github.com/openvcloud/0-templates/{{action}}/{{config_params('version')}}
+{% for actions_param, value2 in value.items() %}
+{% if value2 is mapping %}
+    {{actions_param}}:
+{% for args_param, value3 in value2.items() %}
+{% if value3 is mapping %}
+      {{args_param}}:
+{% for port_param, value4 in value3.items() %}
+{% if port_param == 'destination' %}
+        - {{port_param}}: {{value4}}
+{% else %}
+          {{port_param}}: {{value4}}
+{% endif %}
+{% endfor %}
+{% else %}
+      {{args_param}}: {{value3}}
+{% endif %}
+{% endfor %}
+{% else %}
+    {{actions_param}}: {{value2}}
+{% endif %}
 {% endfor %}
 {% endfor %}
