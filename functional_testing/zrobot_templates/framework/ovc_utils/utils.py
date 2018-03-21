@@ -12,6 +12,7 @@ class OVC_BaseTest(constructor):
         templatespath = './framework/ovc_utils/templates'
         super(OVC_BaseTest, self).__init__(templatespath, *args, **kwargs)
         self.ovc_client = self.ovc_client()
+        self.CLEANUP = {'users':[], 'accounts':[]}
 
     def setUp(self):
         super(OVC_BaseTest, self).setUp()
@@ -20,6 +21,15 @@ class OVC_BaseTest(constructor):
         self.vdcusers = {'gig_qa_1': {'openvcloud': self.openvcloud,
                                       'provider': 'itsyouonline',
                                       'email': 'dina.magdy.mohammed+123@gmail.com'}}
+
+    def tearDown(self):
+        for acc in self.CLEANUP['accounts']:
+            if self.check_if_service_exist(acc):
+                self.temp_actions = {'account': {'actions': ['uninstall']}}
+                account={acc:{'openvcloud': self.openvcloud}}
+                self.create_account(openvcloud=self.openvcloud, vdcusers=self.vdcusers,
+                                    accounts=account, temp_actions=self.temp_actions)
+        self.delete_services()
 
     def iyo_jwt(self):
         ito_client = j.clients.itsyouonline.get(instance="main")
