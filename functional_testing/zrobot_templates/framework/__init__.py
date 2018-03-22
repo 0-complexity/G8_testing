@@ -20,6 +20,6 @@ secret = config['main']['secret']
 data = {
     "baseurl": "https://itsyou.online/api",
     "application_id_": app_id,
-    "secret_": secret
+    "secret_": secret or os.environ["IYO_SECRET"]
 }
 j.clients.itsyouonline.get(instance="main", data=data)
