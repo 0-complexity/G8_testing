@@ -12,7 +12,7 @@ class OVC_BaseTest(constructor):
         templatespath = './framework/ovc_utils/templates'
         super(OVC_BaseTest, self).__init__(templatespath, *args, **kwargs)
         self.ovc_client = self.ovc_client()
-        self.CLEANUP = {'users':[], 'accounts':[]}
+        self.CLEANUP = {'users': [], 'accounts': []}
 
     def setUp(self):
         super(OVC_BaseTest, self).setUp()
@@ -26,7 +26,7 @@ class OVC_BaseTest(constructor):
         for acc in self.CLEANUP['accounts']:
             if self.check_if_service_exist(acc):
                 self.temp_actions = {'account': {'actions': ['uninstall']}}
-                account={acc:{'openvcloud': self.openvcloud}}
+                account = {acc: {'openvcloud': self.openvcloud}}
                 self.create_account(openvcloud=self.openvcloud, vdcusers=self.vdcusers,
                                     accounts=account, temp_actions=self.temp_actions)
         self.delete_services()
@@ -52,6 +52,9 @@ class OVC_BaseTest(constructor):
     def create_cs(self, **kwargs):
         return self.handle_blueprint('vdc.yaml', **kwargs)
 
+    def create_user(self, **kwargs):
+        return self.handle_blueprint('vdcuser.yaml', **kwargs)
+
     def create_vm(self, **kwargs):
         return self.handle_blueprint('node.yaml', key=self.key, openvcloud=self.openvcloud,
                                      vdcusers=self.vdcusers, **kwargs)
@@ -64,6 +67,12 @@ class OVC_BaseTest(constructor):
                 return self.ovc_client.api.cloudapi.cloudspaces.get(cloudspaceId=cs['id'])
         return False
 
+    def get_portforward_list(self, cloudspacename, machinename):
+        time.sleep(2)
+        cloudspaceId = self.get_cloudspace(cloudspacename)['id']
+        machineId = self.get_vm(cloudspaceId, machinename)['id']
+        return self.ovc_client.api.cloudapi.portforwarding.list(cloudspaceId=cloudspaceId, machineId=machineId)
+    
     def get_account(self, name):
         time.sleep(2)
         accounts = self.ovc_client.api.cloudapi.accounts.list()
@@ -78,4 +87,14 @@ class OVC_BaseTest(constructor):
         for vm in vms:
             if vm['name'] == vmname:
                 return self.ovc_client.api.cloudapi.machines.get(machineId=vm['id'])
+        return False
+
+    def wait_for_cloudspace_status(self, cs, status="DEPLOYED", timeout=200):
+        cloudspace = self.get_cloudspace(cs)
+        for _ in range(timeout):
+            time.sleep(1)
+            if cloudspace["status"] == status:
+                return True
+            else:
+                cloudspace = self.get_cloudspace(cs)
         return False
