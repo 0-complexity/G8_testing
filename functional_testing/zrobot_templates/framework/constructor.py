@@ -72,21 +72,18 @@ class constructor(unittest.TestCase):
             for service in robot.services.names.values():
                 service.delete()
 
-    def wait_for_service_action_status(self, servicename, task_guid,
-                                       action='install', timeout=100):
+    def wait_for_service_action_status(self, servicename, task_guid, timeout=100):
         for r in self.api.robots.keys():
             robot = self.api.robots[r]
             service = robot.services.names[servicename]
             task = service.task_list.get_task_by_guid(task_guid)
-            if task.action_name == action:
-                for i in range(timeout):
-                    time.sleep(1)
-                    if task.state == 'ok':
-                        break
-                    elif task.state == 'error':
-                        self.log(task.eco.printTraceback())
-                        break
-                break
+            for i in range(timeout):
+                time.sleep(1)
+                if task.state == 'ok':
+                    break
+                elif task.state == 'error':
+                    self.log(task.eco.printTraceback())
+                    break
 
     def check_if_service_exist(self, servicename):
         for r in self.api.robots.keys():
