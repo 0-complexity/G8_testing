@@ -6,11 +6,13 @@
 {% for args_param, value3 in value2.items() %}
 {% if value3 is mapping %}
       {{args_param}}:
-{% for port_param, value4 in value3.items() %}
-{% if port_param == 'destination' %}
-        - {{port_param}}: {{value4}}
+{% for port_group_param, value4 in value3.items() %}
+{% if port_group_param == 'destination' %}
+        - {{port_group_param}}: {{value4}}
+{% elif args_param == 'groups' %}
+        - {{port_group_param}}
 {% else %}
-          {{port_param}}: {{value4}}
+          {{port_group_param}}: {{value4}}
 {% endif %}
 {% endfor %}
 {% else %}
