@@ -55,7 +55,10 @@ class constructor(unittest.TestCase):
             tasks, _ = client.api.blueprints.ExecuteBlueprint(data)
             result = dict()
             for task in tasks:
-                result[task.service_name] = task.guid
+                if task.service_name in result.keys():
+                    result[task.service_name].update({task.action_name: task.guid})
+                else:
+                    result[task.service_name] = {task.action_name: task.guid}
             return result
         except HTTPError as err:
             msg = err.response.json()['message']
