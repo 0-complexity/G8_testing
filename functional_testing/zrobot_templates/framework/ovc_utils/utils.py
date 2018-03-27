@@ -50,7 +50,8 @@ class OVC_BaseTest(constructor):
         return self.handle_blueprint('account.yaml', **kwargs)
 
     def create_cs(self, **kwargs):
-        return self.handle_blueprint('vdc.yaml', **kwargs)
+        return self.handle_blueprint('vdc.yaml', key=self.key, openvcloud=self.openvcloud,
+                                     vdcusers=self.vdcusers, **kwargs)
 
     def create_user(self, **kwargs):
         return self.handle_blueprint('vdcuser.yaml', **kwargs)
@@ -89,12 +90,10 @@ class OVC_BaseTest(constructor):
                 return self.ovc_client.api.cloudapi.machines.get(machineId=vm['id'])
         return False
 
-    def wait_for_cloudspace_status(self, cs, status="DEPLOYED", timeout=200):
-        cloudspace = self.get_cloudspace(cs)
+    def wait_for_cloudspace_status(self, cs, status="DEPLOYED", timeout=100):
         for _ in range(timeout):
+            cloudspace = self.get_cloudspace(cs)
             time.sleep(1)
             if cloudspace["status"] == status:
                 return True
-            else:
-                cloudspace = self.get_cloudspace(cs)
         return False
