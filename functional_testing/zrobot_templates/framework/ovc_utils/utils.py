@@ -4,8 +4,8 @@ from framework.constructor import constructor
 from js9 import j
 from framework.ovc_utils import *
 
-class OVC_BaseTest(constructor):
 
+class OVC_BaseTest(constructor):
     env = config['main']['environment']
 
     def __init__(self, *args, **kwargs):
