@@ -29,6 +29,7 @@ class OVC_BaseTest(constructor):
                 account = {acc: {'openvcloud': self.openvcloud}}
                 self.create_account(openvcloud=self.openvcloud, vdcusers=self.vdcusers,
                                     accounts=account, temp_actions=self.temp_actions)
+                self.wait_for_service_action_status(acc, res[acc]['uninstall'], timeout=20)
         self.delete_services()
 
     def iyo_jwt(self):
