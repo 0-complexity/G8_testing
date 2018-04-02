@@ -45,8 +45,7 @@ class constructor(unittest.TestCase):
         return blueprint
 
     def execute_blueprint(self, blueprint):
-        os.system('echo "{0}" >> /tmp/{1}_{2}.yaml'.format(blueprint, self._testID,
-                                                           self.random_string()))
+        os.system('echo "{0}" >> /tmp/{1}.yaml'.format(blueprint, self.random_string()))
         instance, _ = utils.get_instance()
         client = j.clients.zrobot.get(instance)
         content = j.data.serializer.yaml.loads(blueprint)

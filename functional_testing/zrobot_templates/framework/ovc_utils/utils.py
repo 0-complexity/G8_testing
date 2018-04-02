@@ -75,7 +75,13 @@ class OVC_BaseTest(constructor):
         cloudspaceId = self.get_cloudspace(cloudspacename)['id']
         machineId = self.get_vm(cloudspaceId, machinename)['id']
         return self.ovc_client.api.cloudapi.portforwarding.list(cloudspaceId=cloudspaceId, machineId=machineId)
-    
+
+    def get_snapshots_list(self, cloudspacename, machinename):
+        time.sleep(2)
+        cloudspaceId = self.get_cloudspace(cloudspacename)['id']
+        machineId = self.get_vm(cloudspaceId, machinename)['id']
+        return self.ovc_client.api.cloudapi.machines.listSnapshots(machineId=machineId)
+        
     def get_account(self, name):
         time.sleep(2)
         accounts = self.ovc_client.api.cloudapi.accounts.list()
