@@ -63,7 +63,6 @@ class OVC_BaseTest(constructor):
                                      vdcusers=self.vdcusers, **kwargs)
 
     def get_cloudspace(self, name):
-        time.sleep(2)
         cloudspaces = self.ovc_client.api.cloudapi.cloudspaces.list()
         for cs in cloudspaces:
             if cs['name'] == name:
@@ -71,13 +70,16 @@ class OVC_BaseTest(constructor):
         return False
 
     def get_portforward_list(self, cloudspacename, machinename):
-        time.sleep(2)
         cloudspaceId = self.get_cloudspace(cloudspacename)['id']
         machineId = self.get_vm(cloudspaceId, machinename)['id']
         return self.ovc_client.api.cloudapi.portforwarding.list(cloudspaceId=cloudspaceId, machineId=machineId)
-    
+
+    def get_snapshots_list(self, cloudspacename, machinename):
+        cloudspaceId = self.get_cloudspace(cloudspacename)['id']
+        machineId = self.get_vm(cloudspaceId, machinename)['id']
+        return self.ovc_client.api.cloudapi.machines.listSnapshots(machineId=machineId)
+        
     def get_account(self, name):
-        time.sleep(2)
         accounts = self.ovc_client.api.cloudapi.accounts.list()
         for account in accounts:
             if account['name'] == name:
@@ -85,7 +87,6 @@ class OVC_BaseTest(constructor):
         return False
 
     def get_vm(self, cloudspaceId, vmname):
-        time.sleep(3)
         vms = self.ovc_client.api.cloudapi.machines.list(cloudspaceId=cloudspaceId)
         for vm in vms:
             if vm['name'] == vmname:
