@@ -625,8 +625,8 @@ class BasicACLTest(BaseTest):
                     self.wait_for_status('DESTROYED', self.api.cloudapi.accounts.get,
                                          accountId=self.account_id)
                 except HTTPError as e:
-                    # Account is already deleted
-                    self.assertEqual(e.status_code, 404)
+                    pass
+
         users = self.CLEANUP.get('username')
         if users:
             for user in users:
