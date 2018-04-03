@@ -23,7 +23,7 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
         echo "[+] Cloning G8_testing repo"
         cmd="mkdir ${testsuite_repo_path}; cd ${testsuite_repo_path}; rm -rf G8_testing; git clone -b ${TRAVIS_BRANCH} https://github.com/0-complexity/G8_testing; chown -R ${ctrl_user}:${ctrl_user} ."
-        sshpass -p "${ctrl_root_password}" ssh -t -o StrictHostKeyChecking=no ${ctrl_root_user}@${ctrl_ipaddress} "${cmd}"
+        sshpass -p "${ctrl_root_password}" ssh -o StrictHostKeyChecking=no ${ctrl_root_user}@${ctrl_ipaddress} "${cmd}"
 
         echo "[+] Install requirements"
         cmd="cd ${testsuite_repo_path}/G8_testing; pip install -r requirements.txt"
