@@ -206,7 +206,7 @@ class BasicTests(BasicACLTest):
 
         for size in sizes:
 
-            if size['id'] not in range(1, 5):
+            if size['id'] not in range(1, 7):
                 continue
 
             machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
@@ -596,8 +596,11 @@ class BasicTests(BasicACLTest):
         #. run the machine script , should return True
         """
         self.lg('- create virtual machine with name: \'dockervm\'')
+        images = self.api.cloudapi.images.list()
+        image = [image for image in images if image['name'] == 'Ubuntu 16.04 x64'][0]
+
         machine_id = self.cloudapi_create_machine(self.cloudspace_id, self.account_owner_api,
-                                                       'dockervm', disksize=10, image_id=8)
+                                                       'dockervm', disksize=10, image_id=image['id'])
 
         self.lg('- add portforward for the created virtual machine')
         cs_publicip = self.add_portforwarding(machine_id, api=self.account_owner_api, cs_publicport=3000, vm_port=22)
