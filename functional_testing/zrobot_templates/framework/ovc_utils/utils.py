@@ -31,7 +31,7 @@ class OVC_BaseTest(constructor):
                 self.temp_actions = {'account': {'actions': ['uninstall']}}
                 account = {acc: {'openvcloud': self.openvcloud}}
                 res = self.create_account(openvcloud=self.openvcloud, vdcusers=self.vdcusers,
-                                    accounts=account, temp_actions=self.temp_actions)
+                                          accounts=account, temp_actions=self.temp_actions)
                 self.wait_for_service_action_status(acc, res[acc]['uninstall'], timeout=20)
         self.delete_services()
 
