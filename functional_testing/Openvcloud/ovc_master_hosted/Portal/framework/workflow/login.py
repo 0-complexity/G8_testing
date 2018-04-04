@@ -7,12 +7,13 @@ class login():
         self.framework = framework
 
     def GetIt(self):
-        for _ in range(5):
-            if self.framework.environment_url[-1] == '/':
-                self.login_url = self.framework.environment_url + 'restmachine/system/oauth/authenticate'
-            else:
-                self.login_url = self.framework.environment_url + '/restmachine/system/oauth/authenticate'
-                
+        if self.framework.environment_url[-1] == '/':
+            self.login_url = self.framework.environment_url + 'restmachine/system/oauth/authenticate'
+        else:
+            self.login_url = self.framework.environment_url + '/restmachine/system/oauth/authenticate'
+
+        self.framework.get_page(self.login_url)
+
     def IsAt(self):
         for temp in range(5):
             if self.framework.wait_until_element_located("username_textbox"):
