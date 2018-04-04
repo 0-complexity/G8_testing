@@ -815,4 +815,8 @@ elements = {
             'zero_access_nodes_first_element': ['XPATH', "//*[@id='DataTables_Table_0']/tbody/tr[1]/td[1]"],
             'zero_access_sessions_first_element': ['XPATH', "//*[@id='DataTables_Table_1']/tbody/tr[1]/td[1]"],
 
+            'next_button': ['XPATH', "(//button[@type='button'])[6]"],
+            'authentication_method': ['XPATH', '//md-card-content/div'],
+            'authentication_menu': ['XPATH', "//md-select-value[@id='select_value_label_6']/span"],
+            'authentication_app': ['XPATH', '//*[@id="select_option_9"]']
             }
