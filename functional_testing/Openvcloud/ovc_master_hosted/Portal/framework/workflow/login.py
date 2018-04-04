@@ -13,7 +13,7 @@ class login():
             self.login_url = self.framework.environment_url + '/restmachine/system/oauth/authenticate'
 
         self.framework.get_page(self.login_url)
-        time.sleep(5)
+        time.sleep(10)
 
     def IsAt(self):
         for temp in range(5):
