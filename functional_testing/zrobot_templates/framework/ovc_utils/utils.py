@@ -30,8 +30,8 @@ class OVC_BaseTest(constructor):
             if self.check_if_service_exist(acc):
                 self.temp_actions = {'account': {'actions': ['uninstall']}}
                 account = {acc: {'openvcloud': self.openvcloud}}
-                self.create_account(openvcloud=self.openvcloud, vdcusers=self.vdcusers,
-                                    accounts=account, temp_actions=self.temp_actions)
+                res = self.create_account(openvcloud=self.openvcloud, vdcusers=self.vdcusers,
+                                          accounts=account, temp_actions=self.temp_actions)
                 self.wait_for_service_action_status(acc, res[acc]['uninstall'], timeout=20)
         self.delete_services()
 
@@ -60,6 +60,10 @@ class OVC_BaseTest(constructor):
 
     def create_vm(self, **kwargs):
         return self.handle_blueprint('node.yaml', key=self.key, openvcloud=self.openvcloud,
+                                     vdcusers=self.vdcusers, **kwargs)
+
+    def create_disk(self, **kwargs):
+        return self.handle_blueprint('disk.yaml', key=self.key, openvcloud=self.openvcloud,
                                      vdcusers=self.vdcusers, **kwargs)
 
     def get_cloudspace(self, name):
@@ -92,6 +96,10 @@ class OVC_BaseTest(constructor):
             if vm['name'] == vmname:
                 return self.ovc_client.api.cloudapi.machines.get(machineId=vm['id'])
         return False
+
+    def get_disks_list(self, account_name):
+        accountId = self.get_account(account_name)['id']
+        return self.ovc_client.api.cloudapi.diks.list(accountId=accountId)
 
     def wait_for_cloudspace_status(self, cs, status="DEPLOYED", timeout=100):
         for _ in range(timeout):
