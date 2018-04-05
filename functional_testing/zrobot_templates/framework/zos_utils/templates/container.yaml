@@ -1,0 +1,19 @@
+{% include 'node.yaml'%}
+
+{% for container_name, value in containers.items() %}
+  - github.com/zero-os/0-templates/container/{{config_params('version')}}__{{container_name}}:
+{% for container_param, value2 in value.items() %}
+{% if value2 is mapping %}
+      {{container_param}}:
+{% for param, value3 in value2.items() %}
+{% if loop.index == 1 %}
+        - {{param}}: {{value3}}
+{% else %}
+          {{param}}: {{value3}}
+{% endif %}
+{% endfor %}
+{% else %}
+      {{container_param}}: {{value2}}
+{% endif %}
+{% endfor %}
+{% endfor %}

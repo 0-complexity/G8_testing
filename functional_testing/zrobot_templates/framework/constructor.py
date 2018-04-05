@@ -26,7 +26,8 @@ class constructor(unittest.TestCase):
         self._logger = logging.LoggerAdapter(logging.getLogger('openvcloud_testsuite'),
                                              {'testid': self.shortDescription() or self._testID})
 
-    def random_string(self):
+    @staticmethod
+    def random_string():
         return str(uuid.uuid4())[0:8]
 
     def config_params(self, param):
