@@ -9,7 +9,7 @@ class OVC_BaseTest(constructor):
     env = config['main']['environment']
 
     def __init__(self, *args, **kwargs):
-        templatespath = './framework/ovc_utils/templates'
+        templatespath = ['./framework/ovc_utils/templates', './framework/base_templates']
         super(OVC_BaseTest, self).__init__(templatespath, *args, **kwargs)
         self.ovc_data = {'address': OVC_BaseTest.env,
                          'port': 443,
@@ -42,7 +42,7 @@ class OVC_BaseTest(constructor):
     @catch_exception_decoration_return
     def ovc_client(self):
         return j.clients.openvcloud.get(instance='main', data=self.ovc_data)
-        
+
     def handle_blueprint(self, yaml, **kwargs):
         kwargs['token'] = self.iyo_jwt()
         blueprint = self.create_blueprint(yaml, **kwargs)
@@ -82,7 +82,7 @@ class OVC_BaseTest(constructor):
         cloudspaceId = self.get_cloudspace(cloudspacename)['id']
         machineId = self.get_vm(cloudspaceId, machinename)['id']
         return self.ovc_client.api.cloudapi.machines.listSnapshots(machineId=machineId)
-        
+
     def get_account(self, name):
         accounts = self.ovc_client.api.cloudapi.accounts.list()
         for account in accounts:
