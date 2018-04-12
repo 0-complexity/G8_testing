@@ -24,9 +24,8 @@ class AdminMenu(Framework):
 
         compo_menu = ["At Your Service", "Cloud Broker", "Statistics", "Grid", "Storage", "System", "End User"]
         ays_menu = ['Services', 'Templates']
-        cloud_broker_menu = ['Accounts', 'Cloud Spaces', 'Locations', 'Stacks', 'Images', 'External Networks',
-                             'Private Networks', 'Users', 'Groups', 'Virtual Machines', 'Software Versions',
-                             'Storage Routers']
+        cloud_broker_menu = ['Accounts', 'Cloud Spaces', 'Locations', 'Images', 'External Networks',
+                             'Private Networks', 'Users', 'Groups', 'Virtual Machines', 'Software Versions']
         grid_menu = ['Audits', 'Error Conditions', 'Jobs', 'Job Queues', 'JumpScripts', 'Logs', 'Grid Nodes',
                      'Status Overview', 'Virtual Machines']
 
@@ -46,8 +45,8 @@ class AdminMenu(Framework):
         self.LeftNavigationMenu.compare_original_list_with_exist_list("grid_arrow", "grid_menu", grid_menu)
         self.lg("check system menu")
         self.LeftNavigationMenu.compare_original_list_with_exist_list("system_arrow", "system_menu", system_menu)
-        self.lg("check storage menu")
-        self.LeftNavigationMenu.compare_original_list_with_exist_list("storage_arrow", "storage_menu", storage_menu)
+        # self.lg("check storage menu")
+        # self.LeftNavigationMenu.compare_original_list_with_exist_list("storage_arrow", "storage_menu", storage_menu)
 
         self.lg("check ays items redirect page")
         self.LeftNavigationMenu.check_redirect_page("ays_text", "AYS")
@@ -59,14 +58,13 @@ class AdminMenu(Framework):
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_accounts", "accounts")
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_cs", "Cloud Spaces")
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_locations", "locations")
-        self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_stacks", "Stacks")
+        self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_physical_nodes", "physicalnodes")
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_images", "images")
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_public_nw", "External Networks")
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_private_nw", "private networks")
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_users", "users")
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_groups", "groups")
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_vm", "Virtual Machines")
-        self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_sr", "Storage Routers")
         self.LeftNavigationMenu.check_redirect_page("cloudbroker_sub_sv", "Version")
 
         self.lg("check statistics items redirect page")

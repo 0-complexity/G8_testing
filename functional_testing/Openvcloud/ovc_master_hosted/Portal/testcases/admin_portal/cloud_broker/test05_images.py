@@ -56,11 +56,7 @@ class ImagesTests(Framework):
         self.assertTrue(self.Images.is_at())
         self.assertTrue(self.Tables.check_next_previous_buttons('images'))
 
-    @parameterized.expand(['Name',
-                           'Location',
-                           'Type',
-                           'Status',
-                           'Size'])
+    @parameterized.expand(['Name', 'Status'])
     def test04_image_page_searchbox(self, column):
         """ PRTL-044
         *Test case to make sure that search boxes of images page are working as expected*
@@ -70,10 +66,7 @@ class ImagesTests(Framework):
         #. go to images page.
         #. try use the search box in every column and  verfiy it return the right value
         """
-
-        if (column == 'Location') or (column == 'Size'):
-            self.skipTest('https://github.com/0-complexity/openvcloud/issues/696')
-
+        
         self.lg('1- go to Images page')
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
@@ -130,9 +123,7 @@ class ImagesTests(Framework):
                            'GridID',
                            'Name',
                            'Status',
-                           'Reference ID',
-                           'Type',
-                           'Description'])
+                           'Reference ID'])
     def test07_search_boxes_in_stack_in_image_page_test(self, column):
         """ PRTL-047
         *Test case to make sure that search boxes of stack table  image page are working as expected*
@@ -145,8 +136,7 @@ class ImagesTests(Framework):
         """
         if column == 'GridID':
             self.skipTest('https://github.com/0-complexity/openvcloud/issues/696')
-        if column == 'Reference ID':
-            self.skipTest('https://github.com/0-complexity/openvcloud/issues/696')
+
         self.lg('1- go to Images page')
         self.Images.get_it()
         self.Images.open_image_page()
@@ -169,8 +159,9 @@ class ImagesTests(Framework):
         #. open one random  image page
         #. try use the search box in every column and  verfiy it return the right value in VM table
         """
-        if column == 'Cloud Space':
-            self.skipTest('https://github.com/0-complexity/openvcloud/issues/696')
+        # if column == 'Cloud Space':
+        #     self.skipTest('https://github.com/0-complexity/openvcloud/issues/696')
+        
         self.lg('1- go to Images page')
         self.Images.get_it()
         self.assertTrue(self.Images.is_at())
