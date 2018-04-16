@@ -21,7 +21,8 @@ class OVC_BaseTest(constructor):
         super(OVC_BaseTest, self).setUp()
         self.key = self.random_string()
         self.openvcloud = self.random_string()
-        self.vdcusers = {'gig_qa_1': {'openvcloud': self.openvcloud,
+        self.vdcusers = {'gig_qa_1': {'name':'gig_qa_1',
+                                      'openvcloud': self.openvcloud,
                                       'provider': 'itsyouonline',
                                       'email': 'dina.magdy.mohammed+123@gmail.com'}}
 
@@ -37,7 +38,7 @@ class OVC_BaseTest(constructor):
 
     def iyo_jwt(self):
         ito_client = j.clients.itsyouonline.get(instance="main")
-        return ito_client.jwt
+        return ito_client.jwt_get(refreshable=True)
 
     @catch_exception_decoration_return
     def ovc_client(self):
@@ -104,6 +105,14 @@ class OVC_BaseTest(constructor):
     def wait_for_cloudspace_status(self, cs, status="DEPLOYED", timeout=100):
         for _ in range(timeout):
             cloudspace = self.get_cloudspace(cs)
+            time.sleep(1)
+            if cloudspace["status"] == status:
+                return True
+        return False
+
+    def wait_for_vm_status(self, cs, vm, status="RUNNING", timeout=100):
+        for _ in range(timeout):
+            cloudspace = self.get_vm(cs, vm)
             time.sleep(1)
             if cloudspace["status"] == status:
                 return True
