@@ -27,7 +27,7 @@ if [ "$TRAVIS_EVENT_TYPE" == "cron" ] || [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 
         echo "[+] Install requirements"
         cmd="cd ${testsuite_repo_path}/G8_testing; pip install -r requirements.txt"
-        sshpass -p "${ctrl_root_password}" ssh -t -o StrictHostKeyChecking=no ${ctrl_root_user}@${ctrl_ipaddress} "${cmd}"
+        sshpass -p "${ctrl_root_password}" ssh -o StrictHostKeyChecking=no ${ctrl_root_user}@${ctrl_ipaddress} "${cmd}"
 
     elif [[ ${action} == "test" ]]; then
 
