@@ -26,13 +26,13 @@ elif [[ ${action} == "ovc" ]] && echo "${jobs}" | grep -q "ovc"; then
     execute "${cmd}"
 
 elif [[ ${action} == "portal" ]] && echo "${jobs}" | grep -q "portal"; then
-
+    ctrl_username="gig"
     cmd="cd ${working_path}/G8_testing \; bash functional_testing/Openvcloud/ovc_master_hosted/Portal/travis_portal_script.sh ${environment} ${portal_admin} ${portal_password} ${portal_secret} ${testsuite_path} ${portal_browser} ${ctrl_user_password}"
     execute "${cmd}"
 
 elif [[ ${action} == "restful" ]] && echo "${jobs}" | grep -q "restful"; then
 
-    cmd="cd ${working_path}/G8_testing \; bash functional_testing/Openvcloud/ovc_master_hosted/Portal/travis_portal_script.sh ${environment} ${portal_admin} ${portal_password} ${portal_secret} ${testsuite_path} ${portal_browser} ${ctrl_user_password}"
+    cmd="cd ${working_path}/G8_testing/functional_testing/Openvcloud/RESTful \; nosetests -s -v ${restful_testsuite_dir} --tc-file config.ini --tc=main.ip:${restful_ip} --tc=main.port:${restful_port} --tc=main.username:${username} --tc=main.client_id:${client_id} --tc=main.client_secret:${client_secret} --tc=main.location:${environment}"
     execute "${cmd}"
 
 else
