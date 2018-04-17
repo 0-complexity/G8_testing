@@ -4,7 +4,7 @@ python_path='/opt/jumpscale7/lib:/opt/jumpscale7/lib/lib-dynload/:/opt/jumpscale
 
 execute(){
     sshpass -p ${jumpserver_password} ssh -o StrictHostKeyChecking=no -t -l ${jumpserver_username} ${jumpserver_ipaddress} \
-    sshpass -p ${ctrl_password} ssh -o StrictHostKeyChecking=no -t -l ${ctrl_username} ${ctrl_ipaddress} "${1}"
+    sshpass -p ${ctrl_password} ssh -o StrictHostKeyChecking=no -t -l ${ctrl_username} ${ctrl_ipaddress} ${1}
 }
 
 if [[ ${action} == "setup" ]]; then
@@ -17,22 +17,22 @@ if [[ ${action} == "setup" ]]; then
 
 elif [[ ${action} == "acl" ]] && echo "${jobs}" | grep -q "acl"; then
 
-    cmd="export PYTHONPATH=${python_path}; cd ${working_path}/G8_testing/functional_testing/Openvcloud; nosetests-2.7 -s -v ${acl_testsuite_dir} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
+    cmd="export PYTHONPATH=${python_path} \; cd ${working_path}/G8_testing/functional_testing/Openvcloud; nosetests-2.7 -s -v ${acl_testsuite_dir} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
     execute "${cmd}"
 
 elif [[ ${action} == "ovc" ]] && echo "${jobs}" | grep -q "ovc"; then
 
-    cmd="export PYTHONPATH=${python_path}; cd ${working_path}/G8_testing/functional_testing/Openvcloud; nosetests-2.7 -s -v ${ovc_testsuite_dir} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
+    cmd="export PYTHONPATH=${python_path} \; cd ${working_path}/G8_testing/functional_testing/Openvcloud; nosetests-2.7 -s -v ${ovc_testsuite_dir} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
     execute "${cmd}"
 
 elif [[ ${action} == "portal" ]] && echo "${jobs}" | grep -q "portal"; then
 
-    cmd="cd ${working_path}/G8_testing; bash functional_testing/Openvcloud/ovc_master_hosted/Portal/travis_portal_script.sh ${environment} ${portal_admin} ${portal_password} ${portal_secret} ${testsuite_path} ${portal_browser} ${ctrl_user_password}"
+    cmd="cd ${working_path}/G8_testing \; bash functional_testing/Openvcloud/ovc_master_hosted/Portal/travis_portal_script.sh ${environment} ${portal_admin} ${portal_password} ${portal_secret} ${testsuite_path} ${portal_browser} ${ctrl_user_password}"
     execute "${cmd}"
 
 elif [[ ${action} == "restful" ]] && echo "${jobs}" | grep -q "restful"; then
 
-    cmd="cd ${working_path}/G8_testing; bash functional_testing/Openvcloud/ovc_master_hosted/Portal/travis_portal_script.sh ${environment} ${portal_admin} ${portal_password} ${portal_secret} ${testsuite_path} ${portal_browser} ${ctrl_user_password}"
+    cmd="cd ${working_path}/G8_testing \; bash functional_testing/Openvcloud/ovc_master_hosted/Portal/travis_portal_script.sh ${environment} ${portal_admin} ${portal_password} ${portal_secret} ${testsuite_path} ${portal_browser} ${ctrl_user_password}"
     execute "${cmd}"
 
 else
