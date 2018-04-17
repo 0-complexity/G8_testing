@@ -25,12 +25,12 @@ elif [[ ${action} == "ovc" ]] && echo "${jobs}" | grep -q "ovc"; then
     cmd="export PYTHONPATH=${python_path} \; cd ${working_path}/G8_testing/functional_testing/Openvcloud \; nosetests-2.7 -s -v ${ovc_testsuite_dir} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
     execute "${cmd}"
 
-elif [[ ${action} == "portal" && echo "${jobs}" | grep -q "portal" ]]; then
+elif [[ ${action} == "portal" ]] && echo "${jobs}" | grep -q "portal"; then
 
     cmd="cd ${working_path}/G8_testing \; bash functional_testing/Openvcloud/ovc_master_hosted/Portal/travis_portal_script.sh ${environment} ${portal_admin} ${portal_password} ${portal_secret} ${testsuite_path} ${portal_browser} ${ctrl_user_password}"
     execute "${cmd}"
 
-elif [[ ${action} == "restful" && echo "${jobs}" | grep -q "restful" ]]; then
+elif [[ ${action} == "restful" ]] && echo "${jobs}" | grep -q "restful"; then
 
     cmd="cd ${working_path}/G8_testing \; bash functional_testing/Openvcloud/ovc_master_hosted/Portal/travis_portal_script.sh ${environment} ${portal_admin} ${portal_password} ${portal_secret} ${testsuite_path} ${portal_browser} ${ctrl_user_password}"
     execute "${cmd}"
