@@ -17,14 +17,12 @@ if [[ ${action} == "setup" ]]; then
 
 elif [[ ${action} == "acl" ]] && echo "${jobs}" | grep -q "acl"; then
 
-    # cmd="export PYTHONPATH=${python_path}; cd ${working_path}/G8_testing/functional_testing/Openvcloud; nosetests-2.7 -s -v ${acl_testsuite_dir} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
-    cmd="echo acl"
+    cmd="export PYTHONPATH=${python_path}; cd ${working_path}/G8_testing/functional_testing/Openvcloud; nosetests-2.7 -s -v ${acl_testsuite_dir} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
     execute "${cmd}"
 
 elif [[ ${action} == "ovc" ]] && echo "${jobs}" | grep -q "ovc"; then
 
-    # cmd="export PYTHONPATH=${python_path}; cd ${working_path}/G8_testing/functional_testing/Openvcloud; nosetests-2.7 -s -v ${ovc_testsuite_dir} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
-    cmd="echo ovc"
+    cmd="export PYTHONPATH=${python_path}; cd ${working_path}/G8_testing/functional_testing/Openvcloud; nosetests-2.7 -s -v ${ovc_testsuite_dir} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
     execute "${cmd}"
 
 elif [[ ${action} == "portal" ]] && echo "${jobs}" | grep -q "portal"; then

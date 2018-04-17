@@ -2,11 +2,11 @@ language: python
 dist: trusty
 sudo: true
 if: type IN (api, cron)
+install: sudo apt install sshpass -y
 
 jobs:
   include:
   - stage: Prepare
-    install: sudo apt install sshpass -y
     script: bash functional_testing/Openvcloud/tools/travis_script.sh setup
       
   - stage: Tests
