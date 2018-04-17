@@ -1,23 +1,26 @@
 language: python
-sudo: true
 dist: trusty
-matrix:
+sudo: true
+if: type IN (api, cron)
+
+jobs:
   include:
-    - python: "2.7"
-      script: bash functional_testing/Openvcloud/tools/travis_script.sh test acl ${acl_testsuite_dir}
-
-    - python: "2.7"
-      script: bash functional_testing/Openvcloud/tools/travis_script.sh test ovc ${ovc_testsuite_dir}
-
-    - python: "3.5"
-      script: bash functional_testing/Openvcloud/tools/travis_script.sh test restful ${restful_testsuite_dir}
-
-    - python: "3.5"
-      script: bash functional_testing/Openvcloud/tools/travis_script.sh test portal ${portal_testsuite_dir}
+  - stage: Prepare
+    install: sudo apt install sshpass -y
+    script: ./functional_testing/Openvcloud/tools/travis_script.sh setup
       
-install:
-  - sudo apt install git sshpass -y
-  - curl -s https://install.zerotier.com/ | sudo bash
+  - stage: Tests
+    python: 2.7
+    script: ./functional_testing/Openvcloud/tools/travis_script.sh acl
+  
+  - stage: Tests
+    python: 2.7
+    script: ./functional_testing/Openvcloud/tools/travis_script.sh ovc
 
-before_script: bash functional_testing/Openvcloud/tools/travis_script.sh before
-after_script: bash functional_testing/Openvcloud/tools/travis_script.sh after
+  - stage: Tests
+    python: 2.7
+    script: ./functional_testing/Openvcloud/tools/travis_script.sh portal
+
+  - stage: Tests
+    python: 3.5
+    script: ./functional_testing/Openvcloud/tools/travis_script.sh restful
