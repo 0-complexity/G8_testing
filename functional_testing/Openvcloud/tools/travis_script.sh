@@ -3,7 +3,7 @@ working_path="/tmp/travis_${TRAVIS_BUILD_NUMBER}"
 python_path='/opt/jumpscale7/lib:/opt/jumpscale7/lib/lib-dynload/:/opt/jumpscale7/bin:/opt/jumpscale7/lib/python.zip:/opt/jumpscale7/lib/plat-x86_64-linux-gnu'
 
 execute(){
-    sudo sshpass -p ${jumpserver_password} ssh -o StrictHostKeyChecking=no -t -l ${jumpserver_username} ${jumpserver_ipaddress} \
+    sshpass -p ${jumpserver_password} ssh -o StrictHostKeyChecking=no -t -l ${jumpserver_username} ${jumpserver_ipaddress} \
     sshpass -p ${ctrl_password} ssh -o StrictHostKeyChecking=no -t -l ${ctrl_username} ${ctrl_ipaddress} ${1}
 }
 

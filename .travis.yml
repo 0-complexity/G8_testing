@@ -7,20 +7,20 @@ jobs:
   include:
   - stage: Prepare
     install: sudo apt install sshpass -y
-    script: ./functional_testing/Openvcloud/tools/travis_script.sh setup
+    script: sudo ./functional_testing/Openvcloud/tools/travis_script.sh setup
       
   - stage: Tests
     python: 2.7
-    script: ./functional_testing/Openvcloud/tools/travis_script.sh acl
+    script: sudo ./functional_testing/Openvcloud/tools/travis_script.sh acl
   
   - stage: Tests
     python: 2.7
-    script: ./functional_testing/Openvcloud/tools/travis_script.sh ovc
+    script: sudo ./functional_testing/Openvcloud/tools/travis_script.sh ovc
 
   - stage: Tests
     python: 2.7
-    script: ./functional_testing/Openvcloud/tools/travis_script.sh portal
+    script: sudo ./functional_testing/Openvcloud/tools/travis_script.sh portal
 
   - stage: Tests
     python: 3.5
-    script: ./functional_testing/Openvcloud/tools/travis_script.sh restful
+    script: sudo ./functional_testing/Openvcloud/tools/travis_script.sh restful
