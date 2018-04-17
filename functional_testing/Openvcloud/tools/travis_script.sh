@@ -4,7 +4,7 @@ python_path='/opt/jumpscale7/lib:/opt/jumpscale7/lib/lib-dynload/:/opt/jumpscale
 
 execute(){
     sshpass -p ${jumpserver_password} ssh -o StrictHostKeyChecking=no -t -l ${jumpserver_username} ${jumpserver_ipaddress} \
-    sshpass -p ${ctrl_password} ssh -o StrictHostKeyChecking=no -t -l ${ctrl_username} ${ctrl_ipaddress} ${1}
+    sshpass -p ${ctrl_password} ssh -o StrictHostKeyChecking=no -t -l ${ctrl_username} ${ctrl_ipaddress} "${1}"
 }
 
 if [[ ${action} == "setup" ]]; then
