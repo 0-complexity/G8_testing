@@ -43,11 +43,8 @@ class AgentController(TestcasesBase):
         cmd = "stress-ng --vm-method rowhammer -r 768 &"
         self.api.system.agentcontroller.executeJumpscript(gid=gid, cmd=cmd, timeout=60, nid=node_id)
 
-        import ipdb;
-        ipdb.set_trace()
-
-        self.log.info(' [*] sleep for 10 mins.')
-        for i in range(10):
+        self.log.info(' [*] sleep for 20 mins.')
+        for i in range(20):
             print(' [*] sleeping %d ... ' % i)
             time.sleep(60)
 
@@ -55,8 +52,13 @@ class AgentController(TestcasesBase):
         response = self.api.system.health.getDetailedStatus(nid=node_id)
         self.assertEqual(response.status_code, 200, response.content)
         node_status = response.json()
+        swap_data = [data for data in node_status['System Load']['data'] if "Swap used value is" in data['msg']][0]
+        swap_status = swap_data['status']
 
         self.log.info(' [*] Kill stress-ng')
         cmd = "pkill -9 stress-ng"
         response = self.api.system.agentcontroller.executeJumpscript(gid=gid, cmd=cmd, nid=node_id)
         self.assertEqual(response.status_code, 200, response.content)
+
+        self.log.info(' [*] Check swap value')
+        self.assertNotEqual(swap_status, 'OK', swap_data)
