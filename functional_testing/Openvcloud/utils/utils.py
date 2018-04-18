@@ -622,10 +622,8 @@ class BasicACLTest(BaseTest):
                 self.lg('Teardown -- delete account: %s' % account)
                 try:
                     api.cloudbroker.account.delete(accountId=account, reason="Teardown delete")
-                    self.wait_for_status('DESTROYED', self.api.cloudapi.accounts.get,
-                                         accountId=self.account_id)
                 except HTTPError as e:
-                    pass
+                    self.lg('Error when deleting account {}'.format(account))
 
         users = self.CLEANUP.get('username')
         if users:
