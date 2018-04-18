@@ -9,7 +9,7 @@ def catch_exception_decoration_return(func):
             return func(self, *args, **kwargs)
         except ApiError as e:
             if e.response.status_code == 401:
-                jwt = j.clients.itsyouonline.get(instance="main").jwt
+                jwt = j.clients.itsyouonline.get(instance="main").jwt_get(refreshable=True)
                 self.ovc_data["jwt_"] = jwt
                 return wrapper(self, *args, **kwargs)
             else:
