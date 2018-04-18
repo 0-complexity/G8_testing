@@ -27,7 +27,7 @@ elif [[ ${action} == "ovc" ]] && echo "${jobs}" | grep -q "ovc"; then
 
 elif [[ ${action} == "portal" ]] && echo "${jobs}" | grep -q "portal"; then
     ctrl_username="gig"
-    cmd="cd ${working_path}/G8_testing \; bash functional_testing/Openvcloud/ovc_master_hosted/Portal/travis_portal_script.sh ${environment} ${portal_admin} ${portal_password} ${portal_secret} ${portal_testsuite_dir} ${portal_browser} ${ctrl_user_password}"
+    cmd="cd ${working_path}/G8_testing \; bash functional_testing/Openvcloud/ovc_master_hosted/Portal/travis_portal_script.sh ${environment} ${portal_admin} ${portal_password} ${portal_secret} ${portal_testsuite_dir} ${portal_browser} ${ctrl_password}"
     execute "${cmd}"
 
 elif [[ ${action} == "restful" ]] && echo "${jobs}" | grep -q "restful"; then
