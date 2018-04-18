@@ -17,12 +17,12 @@ if [[ ${action} == "setup" ]]; then
 
 elif [[ ${action} == "acl" ]] && echo "${jobs}" | grep -q "acl"; then
 
-    cmd="export PYTHONPATH=${python_path} \; cd ${working_path}/G8_testing/functional_testing/Openvcloud \; nosetests-2.7 -s -v ${acl_testsuite_dir} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
+    cmd="export PYTHONPATH=${python_path} \; cd ${working_path}/G8_testing/functional_testing/Openvcloud \; nosetests-2.7 -s -v --exe ${acl_testsuite_dir} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
     execute "${cmd}"
 
 elif [[ ${action} == "ovc" ]] && echo "${jobs}" | grep -q "ovc"; then
 
-    cmd="export PYTHONPATH=${python_path} \; cd ${working_path}/G8_testing/functional_testing/Openvcloud \; nosetests-2.7 -s -v ${ovc_testsuite_dir} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
+    cmd="export PYTHONPATH=${python_path} \; cd ${working_path}/G8_testing/functional_testing/Openvcloud \; nosetests-2.7 -s -v --exe ${ovc_testsuite_dir} --tc-file config.ini --tc=main.email:${test_email} --tc=main.email_password:${test_email_password} --tc=main.environment:${environment}"
     execute "${cmd}"
 
 elif [[ ${action} == "portal" ]] && echo "${jobs}" | grep -q "portal"; then
@@ -32,7 +32,7 @@ elif [[ ${action} == "portal" ]] && echo "${jobs}" | grep -q "portal"; then
 
 elif [[ ${action} == "restful" ]] && echo "${jobs}" | grep -q "restful"; then
 
-    cmd="cd ${working_path}/G8_testing/functional_testing/Openvcloud/RESTful \; nosetests -s -v ${restful_testsuite_dir} --tc-file config.ini --tc=main.ip:${restful_ip} --tc=main.port:${restful_port} --tc=main.username:${username} --tc=main.client_id:${client_id} --tc=main.client_secret:${client_secret} --tc=main.location:${environment}"
+    cmd="cd ${working_path}/G8_testing/functional_testing/Openvcloud/RESTful \; nosetests -s -v --exe ${restful_testsuite_dir} --tc-file config.ini --tc=main.ip:${restful_ip} --tc=main.port:${restful_port} --tc=main.username:${username} --tc=main.client_id:${client_id} --tc=main.client_secret:${client_secret} --tc=main.location:${environment}"
     execute "${cmd}"
 
 else
