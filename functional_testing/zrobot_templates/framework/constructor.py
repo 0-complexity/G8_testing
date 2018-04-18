@@ -26,7 +26,8 @@ class constructor(unittest.TestCase):
         self._logger = logging.LoggerAdapter(logging.getLogger('openvcloud_testsuite'),
                                              {'testid': self.shortDescription() or self._testID})
 
-    def random_string(self):
+    @staticmethod
+    def random_string():
         return str(uuid.uuid4())[0:8]
 
     def config_params(self, param):
@@ -76,14 +77,14 @@ class constructor(unittest.TestCase):
             robot = self.api.robots[r]
             service = robot.services.names[servicename]
             task = service.task_list.get_task_by_guid(task_guid)
-            for i in range(timeout):
+            for _ in range(timeout):
                 time.sleep(1)
                 if task.state == 'ok':
                     break
                 elif task.state == 'error':
                     self.log(task.eco.printTraceback())
-                    break
-
+                    return task.eco.errormessage
+                    
     def check_if_service_exist(self, servicename):
         for r in self.api.robots.keys():
             robot = self.api.robots[r]
