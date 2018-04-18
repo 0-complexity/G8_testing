@@ -12,6 +12,7 @@ if [[ ${action} == "setup" ]]; then
     execute "mkdir -p ${working_path}"
     execute "git clone -b ${TRAVIS_BRANCH} https://github.com/0-complexity/G8_testing ${working_path}/G8_testing"
     execute "chmod -R 666 ${working_path}/G8_testing"
+    execute "chown -R gig:gig ${working_path}/G8_testing"
     execute "pip install -r ${working_path}/G8_testing/requirements.txt"
     execute "pip3 install -r ${working_path}/G8_testing/functional_testing/Openvcloud/RESTful/requirements.txt"
 
