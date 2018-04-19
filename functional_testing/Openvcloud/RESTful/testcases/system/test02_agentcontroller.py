@@ -1,12 +1,13 @@
 import time, random, unittest
 from testcases import *
 from nose_parameterized import parameterized
-
+from unittest import skip
 
 class AgentController(TestcasesBase):
     def setUp(self):
         pass
 
+    @skip('This test case should be execute manually.')
     def test001_swap_consuming(self):
         """ OVC-011
         #. Get grid nodes info, should succeed.
