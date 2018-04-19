@@ -55,10 +55,12 @@ class AgentController(TestcasesBase):
         swap_data = [data for data in node_status['System Load']['data'] if "Swap used value is" in data['msg']][0]
         swap_status = swap_data['status']
 
+        self.log.info(' [*] Check swap value')
+        self.assertNotEqual(swap_status, 'OK', swap_data)
+
+    def tearDown(self):
+        super().tearDown()
         self.log.info(' [*] Kill stress-ng')
         cmd = "pkill -9 stress-ng"
         response = self.api.system.agentcontroller.executeJumpscript(gid=gid, cmd=cmd, nid=node_id)
         self.assertEqual(response.status_code, 200, response.content)
-
-        self.log.info(' [*] Check swap value')
-        self.assertNotEqual(swap_status, 'OK', swap_data)
