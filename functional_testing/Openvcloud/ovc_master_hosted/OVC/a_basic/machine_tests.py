@@ -48,8 +48,7 @@ class BasicTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @parameterized.expand(['Ubuntu 15.10 x64',
-                           'Ubuntu 16.04 x64',
+    @parameterized.expand(['Ubuntu 16.04 x64',
                            'Windows 2012r2 Standard'])
     def test002_create_vmachine_withbig_disk(self, image_name):
         """ OVC-002
@@ -206,7 +205,7 @@ class BasicTests(BasicACLTest):
 
         for size in sizes:
 
-            if size['id'] not in range(1, 5):
+            if size['id'] not in range(1, 7):
                 continue
 
             machineInfo = self.api.cloudapi.machines.get(machineId=machineId)
@@ -225,7 +224,7 @@ class BasicTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @parameterized.expand(['Ubuntu 15.10 x64',
+    @parameterized.expand(['Ubuntu 16.04 x64',
                            'Windows 2012r2 Standard'])
     def test005_add_disks_to_vmachine(self, image_name):
         """ OVC-005
@@ -596,8 +595,11 @@ class BasicTests(BasicACLTest):
         #. run the machine script , should return True
         """
         self.lg('- create virtual machine with name: \'dockervm\'')
+        images = self.api.cloudapi.images.list()
+        image = [image for image in images if image['name'] == 'Ubuntu 16.04 x64'][0]
+
         machine_id = self.cloudapi_create_machine(self.cloudspace_id, self.account_owner_api,
-                                                       'dockervm', disksize=10, image_id=8)
+                                                       'dockervm', disksize=10, image_id=image['id'])
 
         self.lg('- add portforward for the created virtual machine')
         cs_publicip = self.add_portforwarding(machine_id, api=self.account_owner_api, cs_publicport=3000, vm_port=22)
@@ -721,7 +723,7 @@ class BasicTests(BasicACLTest):
         self.assertTrue(imageId, 'No windows image found on the environment')
         self.lg('- Get all sizes')
         diskSizes = self.api.cloudapi.sizes.list(cloudspaceId)[0]['disks']
-        basic_sizes = [10, 20, 25]
+        basic_sizes = [10, 20]
         for diskSize in basic_sizes:
             self.lg('- Create a new machine with disk size %s' % diskSize)
             with self.assertRaises(HTTPError) as e:

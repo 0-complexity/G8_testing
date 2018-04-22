@@ -12,7 +12,7 @@ class ExtendedTests(BasicACLTest):
         super(ExtendedTests, self).setUp()
         self.default_setup()
 
-    @parameterized.expand(['Ubuntu 15.10 x64', 'Ubuntu 16.04 x64'])
+    @parameterized.expand(['Ubuntu 16.04 x64'])
     def test001_create_vmachine_with_all_disks(self, image_name):
         """ OVC-013
         *Test case for create machine with Linux image available.*

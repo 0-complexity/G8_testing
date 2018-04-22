@@ -134,11 +134,6 @@ class level1_group(ACLACCOUNT):
         response= self.user1_api.cloudbroker.cloudspace.update(cloudspaceId = cloudspaceId1,name=self.account_owner)
         self.assertTrue(response)
 
-        self.lg('- add extraIP for cloudspace1')
-
-
-        response= self.user1_api.cloudbroker.cloudspace.addExtraIP(cloudspaceId = cloudspaceId1,ipaddress='192.168.21.115')
-        self.assertTrue(response)
         self.lg('- deploy VFW')
         try:
             self.user1_api.cloudbroker.cloudspace.deployVFW(cloudspaceId = cloudspaceId1)

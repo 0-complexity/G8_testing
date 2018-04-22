@@ -103,8 +103,7 @@ class NetworkBasicTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
     
-    @parameterized.expand(['Ubuntu 15.10 x64',
-                           'Ubuntu 16.04 x64',
+    @parameterized.expand(['Ubuntu 16.04 x64',
                            'Windows 2012r2 Standard'])
     def test003_port_forwarding_creation(self, image_name):
         '''OVC- 007

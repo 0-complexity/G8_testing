@@ -151,7 +151,7 @@ class MachineTests(BasicACLTest):
         stdin, stdout, stderr = vm1_client.execute("ls /")
         self.assertIn('bin', stdout.read())
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1113')
+    #@unittest.skip('https://github.com/0-complexity/openvcloud/issues/1113')
     def test004_migrate_vm_in_middle_of_writing_file(self):
         """ OVC-039
         *Test case for checking data integrity after migrating vm in the middle of writing a file*
@@ -324,7 +324,7 @@ class MachineTests(BasicACLTest):
 
         self.lg('%s ENDED' % self._testID)
 
-    @unittest.skip('https://github.com/0-complexity/openvcloud/issues/1113')
+    #@unittest.skip('https://github.com/0-complexity/openvcloud/issues/1113')
     def test009_restart_vm_after_migration(self):
         """ OVC_037
         *Test case for checking VM status after restarting it after migration*
