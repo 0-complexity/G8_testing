@@ -111,7 +111,6 @@ class BasicTests(BasicACLTest):
         self.lg('%s ENDED' % self._testID)
 
     @parameterized.expand(['online', 'offline'])    
-    @unittest.skip("https://github.com/0-complexity/openvcloud/issues/1151")
     def test003_create_machine_with_resize(self, machine_status):
         """ OVC-003
         *Test case for testing resize operation with all combinations*

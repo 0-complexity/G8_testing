@@ -1,5 +1,5 @@
 from pytractor.exceptions import AngularNotFoundException
-import time
+import time, requests
 import pyotp
 
 class login():
@@ -7,13 +7,19 @@ class login():
         self.framework = framework
 
     def GetIt(self):
-        if self.framework.environment_url[-1] == '/':
-            self.login_url = self.framework.environment_url + 'restmachine/system/oauth/authenticate'
+        for _ in range(5):
+            self.framework.get_page(self.framework.environment_url)
+            time.sleep(5)
+            try:
+                self.framework.click('landing_page_login')
+            except:
+                time.sleep(2)
+            else:
+                break
         else:
-            self.login_url = self.framework.environment_url + '/restmachine/system/oauth/authenticate'
-
-        self.framework.get_page(self.login_url)
-        time.sleep(10)
+            self.framework.click('landing_page_login')
+        if not self.IsAt():
+            self.framework.fail("The login page isn't loading well.")
 
     def IsAt(self):
         for temp in range(5):
@@ -29,7 +35,7 @@ class login():
         GAuth_code = totp.now()
         return GAuth_code
 
-    def Login(self, username='', password=''):
+    def Login(self, username='', password=''):      
         username = username or self.framework.admin_username
         password = password or self.framework.admin_password
         self.GetIt()
@@ -46,10 +52,11 @@ class login():
             else:
                 break
 
-        if self.framework.get_text(element='authentication_method') == 'Authentication method\nAuthenticator application':
-            self.framework.click('authentication_menu')
-            self.framework.click('authentication_app')
-            self.framework.click('next_button')
+        if self.framework.find_elements('authentication_method'):
+            if self.framework.get_text(element='authentication_method') == 'Authentication method\nAuthenticator application':
+                self.framework.click('authentication_menu')
+                self.framework.click('authentication_app')
+                self.framework.click('next_button')
 
         if len(self.framework.find_elements('GAuth_textbox')) > 0:
             self.framework.set_text('GAuth_textbox', self.get_GAuth_code())
