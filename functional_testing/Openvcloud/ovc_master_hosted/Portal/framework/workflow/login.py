@@ -1,6 +1,6 @@
 from pytractor.exceptions import AngularNotFoundException
 import time
-import pyotp
+import pyotp, requests
 
 class login():
     def __init__(self, framework):
@@ -35,25 +35,41 @@ class login():
         GAuth_code = totp.now()
         return GAuth_code
 
-    def Login(self, username='', password=''):
-        username = username or self.framework.admin_username
-        password = password or self.framework.admin_password
-        self.GetIt()
+    def Login(self, username='', password='', cookies_login=False):
+    
+        if cookies_login:       
+            self.framework.lg('Generate beaker session id')
+            session = requests.session()
+            params = {
+                "user_login_":self.framework.admin_username + "@itsyouonline",
+                "passwd":self.framework.admin_password
+            }
 
-        self.framework.lg('check the login page title, should succeed')
-        self.framework.assertEqual(self.framework.driver.title, 'Log in - It\'s You Online')
-        self.framework.lg('Do login using')
-        self.framework.set_text('username_textbox', username)
-        self.framework.set_text('password_textbox', password)
-        self.framework.click('login_button')
-        for _ in range(20):
-            if 'itsyou.online' in self.framework.driver.current_url:
-                time.sleep(1)
-            else:
-                break
+            response = session.post('https://be-g8-3.demo.greenitglobe.com/system/login', params=params)
+            response.raise_for_status
 
-        if len(self.framework.find_elements('GAuth_textbox')) > 0:
-            self.framework.set_text('GAuth_textbox', self.get_GAuth_code())
+            self.framework.beaker_session_id = session.cookies.get('beaker.session.id')
+
+            self.framework.lg('Open environment url')
+            self.framework.get_page(self.framework.environment_url)
+            
+            self.framework.lg('Inject cookies into driver')            
+            cookies = {'name':'beaker.session.id', 'value':self.framework.beaker_session_id}
+            self.framework.driver.add_cookie(cookies)
+
+            self.framework.lg('Reload page')
+            self.framework.driver.refresh()
+
+        else:      
+            username = username or self.framework.admin_username
+            password = password or self.framework.admin_password
+            self.GetIt()
+
+            self.framework.lg('check the login page title, should succeed')
+            self.framework.assertEqual(self.framework.driver.title, 'Log in - It\'s You Online')
+            self.framework.lg('Do login using')
+            self.framework.set_text('username_textbox', username)
+            self.framework.set_text('password_textbox', password)
             self.framework.click('login_button')
             for _ in range(20):
                 if 'itsyou.online' in self.framework.driver.current_url:
@@ -61,15 +77,24 @@ class login():
                 else:
                     break
 
-        if len(self.framework.find_elements("authorize_button")) > 0:
-            self.framework.click('authorize_button')
+            if len(self.framework.find_elements('GAuth_textbox')) > 0:
+                self.framework.set_text('GAuth_textbox', self.get_GAuth_code())
+                self.framework.click('login_button')
+                for _ in range(20):
+                    if 'itsyou.online' in self.framework.driver.current_url:
+                        time.sleep(1)
+                    else:
+                        break
 
-        for _ in range(25):
-            if not self.framework.driver.title:
-                time.sleep(1)
-            else:
-                self.framework.assertEqual(self.framework.driver.title, 'OpenvCloud - Decks', "Can't Login")
-        self.framework.maximize_window()
+            if len(self.framework.find_elements("authorize_button")) > 0:
+                self.framework.click('authorize_button')
+
+            for _ in range(25):
+                if not self.framework.driver.title:
+                    time.sleep(1)
+                else:
+                    self.framework.assertEqual(self.framework.driver.title, 'OpenvCloud - Decks', "Can't Login")
+            self.framework.maximize_window()
 
     def LoginFail(self, username='', password=''):
         username = username
