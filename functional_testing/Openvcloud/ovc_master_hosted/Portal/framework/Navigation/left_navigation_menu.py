@@ -38,8 +38,8 @@ class CloudBroker():
     def VirtualMachines(self):
         self.framework.open_base_page("cloud_broker","cloudbroker_sub_vm")
 
-    def StorageRouters(self):
-        self.framework.open_base_page("cloud_broker","cloudbroker_sub_sr")
+    def PhysicalNodes(self):
+        self.framework.open_base_page("cloud_broker","cloudbroker_sub_physical_nodes")
 
     def ZeroAccess(self):
         self.framework.open_base_page("cloud_broker","cloudbroker_sub_0_access")

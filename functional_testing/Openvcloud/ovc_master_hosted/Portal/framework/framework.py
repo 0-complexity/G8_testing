@@ -13,7 +13,7 @@ from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.workflow.l
 from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.workflow.logout import logout
 from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.workflow.tables import tables
 from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.pages.admin_portal.cloud_broker.Images import images
-from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.pages.admin_portal.cloud_broker.storagerouters import storagerouters
+from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.pages.admin_portal.cloud_broker.physical_nodes import physical_nodes
 from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.pages.admin_portal.cloud_broker.zero_access import zero_access
 
 class Framework(BaseTest):
@@ -26,7 +26,7 @@ class Framework(BaseTest):
         self.CloudSpaces = cloudspaces(self)
         self.VirtualMachines = virtualmachines(self)
         self.Images = images(self)
-        self.StorageRouters = storagerouters(self)
+        self.PhysicalNodes = physical_nodes(self)
         #Pages.AdminPortal.grid
         self.ErrorConditions = errorConditions(self)
         self.StatusOverview = statusOverview(self)

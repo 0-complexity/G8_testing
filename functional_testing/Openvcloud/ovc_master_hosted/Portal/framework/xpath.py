@@ -53,11 +53,11 @@ elements = {
             'table_external_network_pagination':['ID','table_cloudbroker_externalnetwork_paginate'],
             'table_external_network_search_box':['XPATH','//*[@id="table_cloudbroker_externalnetwork_filter"]/label/input'],
 
-            'table_storge_routers_data':['ID','DataTables_Table_0'],
-            'table_storge_routers_info':['ID','table_system_node_info'],
-            'table_storge_routers_selector':['NAME','table_system_node_length', 0],
-            'table_storge_routers_pagination':['ID','DataTables_Table_0_paginate'],
-            'table_storge_routers_search_box':['XPATH','//*[@id="DataTables_Table_0_filter"]/label/input'],
+            'table_physicalnodes_data':['ID','table_system_node'],
+            'table_physicalnodes_info':['ID','table_system_node_info'],
+            'table_physicalnodes_selector':['NAME','table_system_node_length', 0],
+            'table_physicalnodes_pagination':['ID','table_system_node_paginate'],
+            'table_physicalnodes_search_box':['XPATH','//*[@id="table_system_node_filter"]/label/input'],
 
             'table_groups_data':['ID','DataTables_Table_0'],
             'table_groups_info':['ID','DataTables_Table_0_info'],
