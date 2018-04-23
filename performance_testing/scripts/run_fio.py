@@ -71,6 +71,11 @@ def main(options):
     vms_index = set()
     ovc = j.clients.openvcloud.get(options.environment, options.username, options.password)
     cloudspaces_per_user = ovc.api.cloudapi.cloudspaces.list()
+    cloudspaces_ids = options.cloudspaces
+    if cloudspaces_ids:
+        cloudspaces_ids = [int(_id) for _id in cloudspaces_ids.split(',')]
+        cloudspaces_per_user = [cs for cs in cloudspaces_per_user if cs['id'] in cloudspaces_ids]
+
     for cs in cloudspaces_per_user:
         if cs['name'] == 'template_space':
             continue
@@ -157,6 +162,8 @@ if __name__ == "__main__":
                         help="amount of concurrency to execute the job")
     parser.add_argument("-s", "--ts", dest="testsuite", default="../Testsuite",
                         help="location to find Testsuite directory")
+    parser.add_argument("-cs", "--cloudspaces", dest="cloudspaces",
+                        help="comma separated of cloudspaces ids")
 
     options = parser.parse_args()
     gevent.signal(signal.SIGQUIT, gevent.kill)
