@@ -38,26 +38,9 @@ class login():
     def Login(self, username='', password='', cookies_login=False):
     
         if cookies_login:       
-            self.framework.lg('Generate beaker session id')
-            session = requests.session()
-            params = {
-                "user_login_":self.framework.admin_username + "@itsyouonline",
-                "passwd":self.framework.admin_password
-            }
-
-            response = session.post('https://be-g8-3.demo.greenitglobe.com/system/login', params=params)
-            response.raise_for_status
-
-            self.framework.beaker_session_id = session.cookies.get('beaker.session.id')
-
-            self.framework.lg('Open environment url')
             self.framework.get_page(self.framework.environment_url)
-            
-            self.framework.lg('Inject cookies into driver')            
             cookies = {'name':'beaker.session.id', 'value':self.framework.beaker_session_id}
             self.framework.driver.add_cookie(cookies)
-
-            self.framework.lg('Reload page')
             self.framework.driver.refresh()
 
         else:      
