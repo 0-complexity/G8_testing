@@ -26,13 +26,13 @@ def main():
     USERNAME = config.get("perf_parameters", "username")
     ACCOUNTNAME = str(uuid.uuid4())[0:8]
     Res_dir = config.get("perf_parameters", "Res_dir")
-    j.do.execute('mkdir -p %s' % Res_dir)
-    if j.do.exists('/test_results'):
-        j.do.execute('rm -rf /test_results/*')
-    j.do.execute('mkdir -p /test_results')
+    j.sal.process.execute('mkdir -p %s' % Res_dir)
+    j.sal.fs.exists('/test_results'):
+        j.sal.process.execute('rm -rf /test_results/*')
+    j.sal.process.execute('mkdir -p /test_results')
     sys.path.append(os.getcwd())
     from utils import utils
-    j.do.execute('apt-get install sshpass')
+    j.sal.process.execute('apt-get install sshpass')
 
     stacks = utils.remove_ovsnodes_from_stacks(utils.get_stacks(ccl), ccl)
     #current_stack = ccl.stack.search({'referenceId': str(j.application.whoAmI.nid), 'gid': j.application.whoAmI.gid})[1]
@@ -74,7 +74,7 @@ def main():
         machineId = vm.keys()[0]
         cloudspace_publicip=vm[machineId][0]
         cloudspace_publicport=vm[machineId][1]
-        j.do.execute('ssh-keygen -f "/root/.ssh/known_hosts" -R [%s]:%s'
+        j.sal.process.execute('ssh-keygen -f "/root/.ssh/known_hosts" -R [%s]:%s'
                      %(cloudspace_publicip, cloudspace_publicport))
 
 if __name__ == "__main__":

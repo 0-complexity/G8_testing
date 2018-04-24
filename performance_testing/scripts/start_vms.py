@@ -9,12 +9,9 @@ import signal
 
 
 def main(options):
-    from JumpScale import j
-
-    ovc = j.clients.openvcloud.get(options.environment,
-                                   options.username,
-                                   options.password)
-
+    from js9 import j
+    j.clients.itsyouonline.get(data={'application_id_': options.application_id, 'secret_': options.secret})
+    ovc = j.clients.openvcloud.get(data = {'address': options.environment, 'account': options.username})
     def print_message(message):
         def _run(_):
             print(message)
@@ -58,6 +55,10 @@ if __name__ == "__main__":
                       help="environment to login on the OVC api")
     parser.add_option("-n", "--con", dest="concurrency", default=2, type="int",
                       help="amount of concurrency to execute the job")
+    parser.add_option("-appid", "--application_id", dest="application_id",
+                        help="itsyouonline Application Id")
+    parser.add_option("-secret", "--secret", dest="secret",
+                        help="itsyouonline Secret")
 
     (options, args) = parser.parse_args()
     if not options.username or not options.password or not options.environment:
