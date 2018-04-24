@@ -20,6 +20,7 @@ import requests
 
 
 class BaseTest(unittest.TestCase):
+    beaker_session_id = None
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.environment_url = config['main']['env']
