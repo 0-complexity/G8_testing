@@ -6,7 +6,7 @@ class VirtualMachinesTest(Framework):
 
     def setUp(self):
         super(VirtualMachinesTest, self).setUp()
-        self.Login.Login(username=self.admin_username, password=self.admin_password)
+        self.Login.Login(cookies_login=True)
         self.navigation_bar = 'navigation bar'
         self.lg('go to virtual machines page')
         self.VirtualMachines.get_it()

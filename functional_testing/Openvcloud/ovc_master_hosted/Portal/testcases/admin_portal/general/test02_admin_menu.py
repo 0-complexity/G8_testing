@@ -7,7 +7,7 @@ class AdminMenu(Framework):
 
     def setUp(self):
         super(AdminMenu, self).setUp()
-        self.Login.Login()
+        self.Login.Login(cookies_login=True)
         self.get_page(self.base_page)
 
     def test01_admin_menu_items(self):
