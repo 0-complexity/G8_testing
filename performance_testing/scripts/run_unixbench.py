@@ -88,7 +88,7 @@ def unixbench_test(options, count, machine_id, publicip, publicport, account, cp
 
 
 def main(options):
-    from JumpScale import j
+    from js9 import j
 
     # Check dependencies
     if not os.path.exists(options.results_dir):
@@ -109,7 +109,8 @@ def main(options):
     # list virtual and deployed cloudspaces
     vms = []
     vms_index = set()
-    ovc = j.clients.openvcloud.get(options.environment, options.username, options.password)
+    j.clients.itsyouonline.get(data={'application_id_': options.application_id, 'secret_': options.secret})
+    ovc = j.clients.openvcloud.get(data = {'address': options.environment, 'account': options.username})
     cloudspaces_per_user = ovc.api.cloudapi.cloudspaces.list()
     for cs in cloudspaces_per_user:
         portforwards = ovc.api.cloudapi.portforwarding.list(cloudspaceId=cs['id'])
@@ -188,6 +189,10 @@ if __name__ == "__main__":
                       help="amount of concurrency to execute the job")
     parser.add_option("-s", "--ts", dest="testsuite", default="../Testsuite", type="string",
                       help="location to find Testsuite directory")
+    parser.add_option("-appid", "--application_id", dest="application_id",
+                        help="itsyouonline Application Id")
+    parser.add_option("-secret", "--secret", dest="secret",
+                        help="itsyouonline Secret")
 
     (options, args) = parser.parse_args()
     if not options.username or not options.password or not options.environment:
