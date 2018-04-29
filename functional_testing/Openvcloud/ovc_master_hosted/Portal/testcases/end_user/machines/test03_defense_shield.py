@@ -13,7 +13,7 @@ class DefenseShield(Framework):
 
     def setUp(self):
         super(DefenseShield, self).setUp()
-        self.Login.Login()
+        self.Login.Login(cookies_login=True)
         self.EUMachines.create_default_account_cloudspace(self.admin_username, self.account, self.cloudspace)
         self.assertTrue(self.EUMachines.end_user_create_virtual_machine(machine_name=self.machine_name))
         self.EUHome.get_it()

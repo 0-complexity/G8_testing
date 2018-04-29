@@ -8,7 +8,7 @@ from random import *
 class ImagesTests(Framework):
     def setUp(self):
         super(ImagesTests, self).setUp()
-        self.Login.Login(username=self.admin_username, password=self.admin_password)
+        self.Login.Login(cookies_login=True)
 
     def test01_image_page_paging_table(self):
         """ PRTL-041

@@ -6,7 +6,7 @@ from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework 
 class CloudspacesTests(Framework):
     def setUp(self):
         super(CloudspacesTests, self).setUp()
-        self.Login.Login(username=self.admin_username, password=self.admin_password)
+        self.Login.Login(cookies_login=True)
         self.navigation_bar = 'navigation bar'
         self.lg('go to cloudspaces page')
         self.CloudSpaces.get_it()

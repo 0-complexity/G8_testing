@@ -20,8 +20,9 @@ import requests
 
 
 class BaseTest(unittest.TestCase):
+    beaker_session_id = None
     def __init__(self, *args, **kwargs):
-        super(BaseTest, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.environment_url = config['main']['env']
         self.environment_storage = config['main']['location']
         self.admin_username = config['main']['admin']
@@ -33,6 +34,17 @@ class BaseTest(unittest.TestCase):
         self.elements = xpath.elements.copy()
         self.api_url = self.environment_url.replace('http://', 'https://') + '/restmachine'
         self.session = requests.Session()
+
+    @classmethod
+    def setUpClass(cls):
+        self = cls()
+        self._logger = logging.LoggerAdapter(logging.getLogger('portal_testsuite'),{'testid':'setUpClass'})
+        self.set_browser()
+        self.driver.set_window_size(1800, 1000)
+        self.wait = WebDriverWait(self.driver, 15)
+        self.Login.Login()  
+        cls.beaker_session_id = self.driver.get_cookie('beaker.session.id')['value']
+        self.driver.close()
 
     def setUp(self):
         self.CLEANUP = {"users":[], "accounts":[], "groups":[]}
@@ -53,18 +65,7 @@ class BaseTest(unittest.TestCase):
         self.password = str(uuid.uuid4()).replace('-', '')[0:10]
         self.email = str(uuid.uuid4()).replace('-', '')[0:10] + "@g.com"
         self.group = 'user'
-
-
-    def AuthorizeApi(self):
-        login_url = '%s/system/usermanager/authenticate' % self.api_url
-        credential = {'name': '%s@itsyouonline' % self.admin_username, 'secret': self.admin_password}
-        r = self.session.post(url=login_url, data=credential)
-
-        if r.status_code == 200:
-            self.lg('user is authorized')
-        else:
-            self.lg('Error when authorizing user %s - status code: %d' % (self.admin_username ,r.status_code))
-
+        self.session.cookies.set("beaker.session.id", self.beaker_session_id)
 
     def deleteUserApi(self, username):
         url = '%s/cloudbroker/user/delete' % self.api_url
@@ -105,8 +106,6 @@ class BaseTest(unittest.TestCase):
         if hasattr(self, '_startTime'):
             executionTime = time.time() - self._startTime
         self.lg('Testcase %s ExecutionTime is %s sec.' % (self._testID, executionTime))
-
-        self.AuthorizeApi()
 
         for account in self.CLEANUP['accounts']:
             self.deleteAccountApi(account)

@@ -5,7 +5,7 @@ from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework 
 class ZeroAccessTests(Framework):
     def setUp(self):
         super(ZeroAccessTests, self).setUp()
-        self.Login.Login(username=self.admin_username, password=self.admin_password)
+        self.Login.Login(cookies_login=True)
         self.navigation_bar = 'navigation bar'
         self.lg('go to zero access page')
         self.ZeroAccess.get_it()
