@@ -100,7 +100,7 @@ class OVC_BaseTest(constructor):
 
     def get_disks_list(self, account_name):
         accountId = self.get_account(account_name)['id']
-        return self.ovc_client.api.cloudapi.diks.list(accountId=accountId)
+        return self.ovc_client.api.cloudapi.disks.list(accountId=accountId)
 
     def wait_for_cloudspace_status(self, cs, status="DEPLOYED", timeout=100):
         for _ in range(timeout):
@@ -110,10 +110,23 @@ class OVC_BaseTest(constructor):
                 return True
         return False
 
-    def wait_for_vm_status(self, cs, vm, status="RUNNING", timeout=100):
+    def wait_for_vm_status(self, cs, vm_name, status="RUNNING", timeout=100):
         for _ in range(timeout):
-            cloudspace = self.get_vm(cs, vm)
+            vm = self.get_vm(cs, vm_name)
             time.sleep(1)
-            if cloudspace["status"] == status:
+            if vm["status"] == status:
                 return True
+        return False
+
+    def wait_for_disk(self, cs, vm_name, disk_name, status="exist", timeout=100):
+        for _ in range(timeout):
+            vm = self.get_vm(cs, vm_name)
+            disks = [disk['name'] for disk in vm['disks']]
+            time.sleep(1)
+            if disk_name in disks:
+                if status == "exist":
+                    return True
+            else:
+                if status == "non-exist":
+                    return True
         return False
