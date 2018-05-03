@@ -65,6 +65,7 @@ class tables():
         max_sort_value = 100
         self.framework.select(table['selector'] , max_sort_value)
         self.wait_until_table_reload(table, 0, max_sort_value)
+        time.sleep(10)
         tableData = []
         table_rows = self.framework.get_table_rows(table['data'])
         self.framework.assertTrue(table_rows)
