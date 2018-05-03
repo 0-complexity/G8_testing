@@ -6,7 +6,7 @@ import time
 class AccountsTests(Framework):
     def setUp(self):
         super(AccountsTests, self).setUp()
-        self.Login.Login(username=self.admin_username, password=self.admin_password)
+        self.Login.Login(cookies_login=True)
 
     def test01_edit_account(self):
         """ PRTL-023

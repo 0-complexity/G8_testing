@@ -6,7 +6,7 @@ class Account(Framework):
 
     def setUp(self):
         super(Account, self).setUp()
-        self.Login.Login()
+        self.Login.Login(cookies_login=True)
 
     def test01_create_account_user_cs_vm(self):
         """ PRTL-027

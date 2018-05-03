@@ -7,7 +7,7 @@ class Read(Framework):
 
     def setUp(self):
         super(Read, self).setUp()
-        self.Login.Login()
+        self.Login.Login(cookies_login=True)
         self.EUMachines.create_default_account_cloudspace(self.admin_username, self.account, self.cloudspace)
 
     def tearDown(self):

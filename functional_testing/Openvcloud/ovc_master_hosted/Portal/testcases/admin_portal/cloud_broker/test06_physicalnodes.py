@@ -3,9 +3,9 @@ from nose_parameterized import parameterized
 from functional_testing.Openvcloud.ovc_master_hosted.Portal.framework.framework import Framework
 
 
-class StorageRoutersTests(Framework):
+class PhysicalNodesTests(Framework):
     def setUp(self):
-        super(StorageRoutersTests, self).setUp()
+        super(PhysicalNodesTests, self).setUp()
         self.Login.Login(username=self.admin_username, password=self.admin_password)
         self.navigation_bar = 'navigation bar'
         self.lg('go to Physical nodes page')
