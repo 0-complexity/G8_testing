@@ -49,16 +49,16 @@ class login():
             self.GetIt()
 
             self.framework.lg('check the login page title, should succeed')
-                self.framework.assertEqual(self.framework.driver.title, 'Log in - It\'s You Online')
-                self.framework.lg('Do login using')
-                self.framework.set_text('username_textbox', username)
-                self.framework.set_text('password_textbox', password)
-                self.framework.click('login_button')
-                for _ in range(20):
-                    if 'itsyou.online' in self.framework.driver.current_url:
-                        time.sleep(1)
-                    else:
-                        break
+            self.framework.assertEqual(self.framework.driver.title, 'Log in - It\'s You Online')
+            self.framework.lg('Do login using')
+            self.framework.set_text('username_textbox', username)
+            self.framework.set_text('password_textbox', password)
+            self.framework.click('login_button')
+            for _ in range(20):
+                if 'itsyou.online' in self.framework.driver.current_url:
+                    time.sleep(1)
+                else:
+                    break
 
             if self.framework.find_elements('authentication_method'):
                 if self.framework.get_text(element='authentication_method') == 'Authentication method\nAuthenticator application':
