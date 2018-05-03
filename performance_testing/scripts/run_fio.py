@@ -10,6 +10,7 @@ monkey.patch_all()
 from libtest import run_cmd_via_gevent  # noqa: E402
 from libtest import check_package, push_results_to_repo  # noqa: E402
 from libtest import mount_disks, prepare_test  # noqa: E402
+from js9 import j
 
 
 machines_running = set()
@@ -48,8 +49,6 @@ def assemble_fio_test_results(results_dir, account, publicport, cloudspace_publi
 
 
 def main(options):
-    from JumpScale import j
-
     # Check dependencies
     if not os.path.exists(options.results_dir):
         print("Not all dependencies are met. Make sure the result directory exists.")
@@ -69,8 +68,14 @@ def main(options):
     # list virtual and deployed cloudspaces
     vms = []
     vms_index = set()
-    ovc = j.clients.openvcloud.get(options.environment, options.username, options.password)
+    j.clients.itsyouonline.get(data={'application_id_': options.application_id, 'secret_': options.secret})
+    ovc = j.clients.openvcloud.get(data = {'address': options.environment, 'account': options.username})
     cloudspaces_per_user = ovc.api.cloudapi.cloudspaces.list()
+    cloudspaces_ids = options.cloudspaces
+    if cloudspaces_ids:
+        cloudspaces_ids = [int(_id) for _id in cloudspaces_ids.split(',')]
+        cloudspaces_per_user = [cs for cs in cloudspaces_per_user if cs['id'] in cloudspaces_ids]
+
     for cs in cloudspaces_per_user:
         if cs['name'] == 'template_space':
             continue
@@ -110,10 +115,10 @@ def main(options):
         for key, value in vars(options).items():
             params.write("- **{}**: {}\n".format(key, value))
     cwd = os.getcwd()
-    j.do.copyFile('{}/1_fio_vms/collect_results.py'.format(options.testsuite), results_dir)
+    j.sal.fs.copyFile('{}/1_fio_vms/collect_results.py'.format(options.testsuite), results_dir)
     os.chdir(results_dir)
-    j.do.execute('python3 collect_results.py {} {} {} {}'.format(results_dir, options.environment,
-                                                                 options.username, options.password))
+    j.sal.process.execute('python3 collect_results.py -dir {} -env{} -u {} -appid {} -secret {}'.format(results_dir, options.environment,
+                                                                 options.username, options.application_id, options.secret))
 
     # pushing results to env_repo
     os.chdir(cwd)
@@ -125,8 +130,8 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("-u", "--user", dest="username", required=True,
                         help="username to login on the OVC api")
-    parser.add_argument("-p", "--pwd", dest="password", required=True,
-                        help="password to login on the OVC api")
+    # parser.add_argument("-p", "--pwd", dest="password", required=True,
+    #                     help="password to login on the OVC api")
     parser.add_argument("-e", "--env", dest="environment", required=True,
                         help="environment to login on the OVC api")
     parser.add_argument("-d", "--ds", dest="data_size", type=int,
@@ -157,6 +162,13 @@ if __name__ == "__main__":
                         help="amount of concurrency to execute the job")
     parser.add_argument("-s", "--ts", dest="testsuite", default="../Testsuite",
                         help="location to find Testsuite directory")
+    parser.add_argument("-cs", "--cloudspaces", dest="cloudspaces",
+                        help="comma separated of cloudspaces ids")
+    parser.add_argument("-appid", "--application_id", dest="application_id",required=True,
+                        help="itsyouonline Application Id")
+    parser.add_argument("-secret", "--secret", dest="secret",required=True,
+                        help="itsyouonline Secret")
+
 
     options = parser.parse_args()
     gevent.signal(signal.SIGQUIT, gevent.kill)

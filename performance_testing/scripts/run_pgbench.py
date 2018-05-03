@@ -36,7 +36,7 @@ def pgbench(options, machine_id, publicip, publicport, account):
 
 
 def main(options):
-    from JumpScale import j
+    from js9 import j
 
     # Check dependencies
     if not os.path.exists(options.results_dir):
@@ -57,7 +57,8 @@ def main(options):
     # list virtual and deployed cloudspaces
     vms = []
     vms_index = set()
-    ovc = j.clients.openvcloud.get(options.environment, options.username, options.password)
+    j.clients.itsyouonline.get(data={'application_id_': options.application_id, 'secret_': options.secret})
+    ovc = j.clients.openvcloud.get(data = {'address': options.environment, 'account': options.username})
     cloudspaces_per_user = ovc.api.cloudapi.cloudspaces.list()
     for cs in cloudspaces_per_user:
         if cs['name'] == 'template_space':
@@ -113,8 +114,6 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("-u", "--user", dest="username", required=True,
                         help="username to login on the OVC api")
-    parser.add_argument("-p", "--pwd", dest="password", required=True,
-                        help="password to login on the OVC api")
     parser.add_argument("-e", "--env", dest="environment", required=True,
                         help="environment to login on the OVC api")
     parser.add_argument("-t", "--run_time", dest="testrun_time", type=int,
@@ -133,6 +132,10 @@ if __name__ == "__main__":
                         help="number of threads that run the test simultaniously")
     parser.add_argument("-l", "--cc", dest="clientcount", default="10",
                         help="number of client connections to the database")
+    parser.add_argument("-appid", "--application_id", dest="application_id",
+                        help="itsyouonline Application Id")
+    parser.add_argument("-secret", "--secret", dest="secret",
+                        help="itsyouonline Secret")
 
     options = parser.parse_args()
     gevent.signal(signal.SIGQUIT, gevent.kill)

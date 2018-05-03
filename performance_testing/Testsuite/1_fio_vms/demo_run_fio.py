@@ -28,15 +28,15 @@ direct_io = int(config.get("perf_parameters", "direct_io"))
 rate_iops = int(config.get("perf_parameters", "rate_iops"))
 numjobs=int(config.get("perf_parameters", "numjobs"))
 IO_type = config.get("perf_parameters", "IO_type")
-hostname = j.do.execute('hostname')[1].replace("\n","")
+hostname = j.sal.process.execute('hostname')[1].replace("\n","")
 test_num = len(os.listdir('%s'%Res_dir))+1
 test_folder = "/"+datetime.datetime.today().strftime('%Y-%m-%d')+"_"+hostname+"_testresults_%s"%test_num
 Res_dir = Res_dir + test_folder
 
-if not j.do.exists('%s' % Res_dir):
-    j.do.execute('mkdir -p %s' % Res_dir)
-j.do.execute('cp Testsuite/1_fio_vms/Perf_parameters.cfg %s' %Res_dir)
-j.do.execute('cp /test_results/VMs_creation_time.csv %s' %Res_dir)
+if not j.sal.fs.exists('%s' % Res_dir):
+    j.sal.process.execute('mkdir -p %s' % Res_dir)
+j.sal.process.execute('cp Testsuite/1_fio_vms/Perf_parameters.cfg %s' %Res_dir)
+j.sal.process.execute('cp /test_results/VMs_creation_time.csv %s' %Res_dir)
 
 ccl = j.clients.osis.getNamespace('cloudbroker')
 pcl = j.clients.portal.getByInstance('main')
@@ -75,11 +75,11 @@ for vm in vms_list:
     machineId = vm.keys()[0]
     cloudspace_publicip=vm[machineId][0]
     cloudspace_publicport=vm[machineId][1]
-    j.do.execute('ssh-keygen -f "/root/.ssh/known_hosts" -R [%s]:%s'
+    j.sal.process.execute('ssh-keygen -f "/root/.ssh/known_hosts" -R [%s]:%s'
                  %(cloudspace_publicip, cloudspace_publicport))
 
-j.do.execute('cp Testsuite/1_fio_vms/collect_results.py %s' %Res_dir)
-j.do.chdir('%s' %Res_dir)
-j.do.execute('python collect_results.py %s' %Res_dir)
+j.sal.process.execute('cp Testsuite/1_fio_vms/collect_results.py %s' %Res_dir)
+j.sal.fs.changeDir('%s' %Res_dir)
+j.sal.process.execute('python collect_results.py %s' %Res_dir)
 utils.push_results_to_repo(Res_dir, test_type='demo_run_fio')
 

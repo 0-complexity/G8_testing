@@ -64,7 +64,7 @@ def safe_get_vm(ovc, concurrency, machine_id):
 
 
 def push_results_to_repo(res_dir, location):
-    from JumpScale import j
+    from js9 import j
     config = configparser.ConfigParser()
     config.read("locations.cfg")
     if location not in config.options('locations'):
@@ -74,16 +74,16 @@ def push_results_to_repo(res_dir, location):
     repo = config.get("locations", location)
     repo_dir = '/tmp/' + str(uuid.uuid4()) + '/'
     res_folder_name = res_dir.split('/')[-1]
-    j.do.execute('mkdir -p %s' % repo_dir)
-    j.do.execute('cd %s; git clone %s' % (repo_dir, repo))
-    repo_path = j.do.listDirsInDir(repo_dir)[0]
+    j.sal.process.execute('mkdir -p %s' % repo_dir)
+    j.sal.process.execute('cd %s; git clone %s' % (repo_dir, repo))
+    repo_path = j.sal.fs.listDirsInDir(repo_dir)[0]
     repo_result_dir = repo_path + '/testresults/'
-    j.do.execute('mkdir -p %s' % repo_result_dir)
-    j.do.execute('cp -rf %s %s' % (res_dir, repo_result_dir))
-    j.do.chdir(repo_result_dir + res_folder_name)
-    j.do.execute('git add *.csv parameters.md')
-    j.do.execute("git commit -a -m 'Pushing new results' ")
-    j.do.execute('git push')
+    j.sal.process.execute('mkdir -p %s' % repo_result_dir)
+    j.sal.process.execute('cp -rf %s %s' % (res_dir, repo_result_dir))
+    j.sal.fs.changeDir(repo_result_dir + res_folder_name)
+    j.sal.process.execute('git add *.csv parameters.md')
+    j.sal.process.execute("git commit -a -m 'Pushing new results' ")
+    j.sal.process.execute('git push')
 
 
 def execute_async_ovc(ovc, function, **kwargs):

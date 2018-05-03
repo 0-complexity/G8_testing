@@ -5,7 +5,7 @@ import os
 from prettytable import PrettyTable
 import itertools
 import csv
-
+from argparse import ArgumentParser
 
 def get_vm_ovs_node(vmid, ovc):
     # make sure vmid is int
@@ -110,13 +110,16 @@ def table_print(iter, arrays, Res_dir):
         writer.writerows(result)
 
 
-def main():
-    Res_dir = sys.argv[1]
-    environment = sys.argv[2]
-    username = sys.argv[3]
-    password = sys.argv[4]
-    from JumpScale import j
-    ovc = j.clients.openvcloud.get(environment, username, password)
+def main(options):
+    Res_dir = options.res_dir
+    environment = options.environment
+    username = options.username
+    application_id = options.applications_id
+    secret = options.secret
+    from js9 import j
+    j.clients.itsyouonline.get(data={'application_id_': application_id, 'secret_': secret})
+    ovc = j.clients.openvcloud.get(data = {'address': environment, 'account': username})
+
     # working from inside Res_dir
     # iterate on each machine results
     # Assuming RAID0 for calculating the total IOPS
@@ -293,4 +296,16 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = ArgumentParser()
+    parser.add_argument("-dir", "--resources_dir", dest="res_dir",
+                        help="Resources dir", required=True)
+    parser.add_argument("-env", "--environment", dest="environment",
+                        help="OVC environment", required=True)
+    parser.add_argument("-u", "--user", dest="username",
+                        help="ovc username", required=True)
+    parser.add_argument("-appid", "--application_id", dest="application_id",
+                        help="itsyouonline Application Id")
+    parser.add_argument("-secret", "--secret", dest="secret",
+                        help="itsyouonline Secret")
+    options = parser.parse_args()
+    main(options)

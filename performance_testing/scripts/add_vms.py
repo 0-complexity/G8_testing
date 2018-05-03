@@ -9,7 +9,7 @@ import time
 import os
 import sys
 from gevent.lock import BoundedSemaphore
-from JumpScale import j
+from js9 import j
 _cloudspace_semaphores = dict()
 _stats = dict(deployed_vms=0, deployed_cloudspaces=0)
 _vmnamecache = dict()
@@ -33,9 +33,8 @@ class Deployer(object):
 
     def __init__(self, options):
         self.options = options
-        self.ovc = j.clients.openvcloud.get(options.environment,
-                                            options.username,
-                                            options.password)
+        j.clients.itsyouonline.get(data={'application_id_': options.application_id, 'secret_': options.secret})
+        self.ovc = j.clients.openvcloud.get(data = {'address': options.environment, 'account': options.username})
 
         # Get account id
         print('Getting account id')
@@ -267,7 +266,6 @@ def main(options):
         print("Not all dependencies are met. Make sure the install_deps.sh script" +
               " is in the current directory and sshpass is installed.")
         return
-
     deployer = Deployer(options)
     # Can we find the image we need ?
     template_details = deployer.create_performance_test_image()
@@ -327,6 +325,10 @@ if __name__ == "__main__":
                         help="maximum of iops of the disks for the virtual machines")
     parser.add_argument("-n", "--con", dest="concurrency", default=2, type=int,
                         help="amount of concurrency to execute the job")
+    parser.add_argument("-appid", "--application_id", dest="application_id",
+                        help="itsyouonline Application Id")
+    parser.add_argument("-secret", "--secret", dest="secret",
+                        help="itsyouonline Secret")
 
     options = parser.parse_args()
     concurrency = BoundedSemaphore(options.concurrency)
