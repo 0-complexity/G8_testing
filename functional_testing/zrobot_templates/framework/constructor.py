@@ -19,14 +19,14 @@ class constructor(unittest.TestCase):
         self.j2_env.globals.update(random_string=self.random_string)
         self.j2_env.globals.update(config_params=self.config_params)
         self.api = ZeroRobotAPI()
-        instance, _ = utils.get_instance()
-        self.zrobot_client = j.clients.zrobot.get(instance)
 
     def setUp(self):
         self._testID = self._testMethodName
         self._startTime = time.time()
         self._logger = logging.LoggerAdapter(logging.getLogger('openvcloud_testsuite'),
                                              {'testid': self.shortDescription() or self._testID})
+        instance, _ = utils.get_instance()
+        self.zrobot_client = j.clients.zrobot.get(instance)
 
     @staticmethod
     def random_string():
@@ -47,7 +47,7 @@ class constructor(unittest.TestCase):
                                                                  **kwargs)
         return blueprint
 
-    def update_zrobot_client_secrets(response):
+    def update_zrobot_client_secrets(self, response):
         header = 'Bearer '
         for service in response.services:
             header += '%s ' % service.secret
@@ -88,9 +88,9 @@ class constructor(unittest.TestCase):
         task = self.zrobot_client.api.services.GetTask(task_guid, service.guid)[0]
         for _ in range(timeout):
             time.sleep(1)
-            if task.state == 'ok':
+            if task.state.value == 'ok':
                 break
-            elif task.state == 'error':
+            elif task.state.value == 'error':
                 self.log(task.eco.printTraceback())
                 return task.eco.errormessage
 
