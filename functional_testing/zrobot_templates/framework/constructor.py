@@ -19,6 +19,8 @@ class constructor(unittest.TestCase):
         self.j2_env.globals.update(random_string=self.random_string)
         self.j2_env.globals.update(config_params=self.config_params)
         self.api = ZeroRobotAPI()
+        instance, _ = utils.get_instance()
+        self.zrobot_client = j.clients.zrobot.get(instance)
 
     def setUp(self):
         self._testID = self._testMethodName
@@ -45,16 +47,21 @@ class constructor(unittest.TestCase):
                                                                  **kwargs)
         return blueprint
 
+    def update_zrobot_client_secrets(response):
+        header = 'Bearer '
+        for service in response.services:
+            header += '%s ' % service.secret
+        self.zrobot_client.api.security_schemes.passthrough_client_zrobot.set_zrobot_header(header)
+
     def execute_blueprint(self, blueprint):
         os.system('echo "{0}" >> /tmp/{1}.yaml'.format(blueprint, self.random_string()))
-        instance, _ = utils.get_instance()
-        client = j.clients.zrobot.get(instance)
         content = j.data.serializer.yaml.loads(blueprint)
         data = {'content': content}
         try:
-            tasks, _ = client.api.blueprints.ExecuteBlueprint(data)
+            response, _ = self.zrobot_client.api.blueprints.ExecuteBlueprint(data)
+            self.update_zrobot_client_secrets(response)
             result = dict()
-            for task in tasks:
+            for task in response.tasks:
                 if task.service_name in result.keys():
                     result[task.service_name].update({task.action_name: task.guid})
                 else:
@@ -73,18 +80,20 @@ class constructor(unittest.TestCase):
                 service.delete()
 
     def wait_for_service_action_status(self, servicename, task_guid, timeout=100):
-        for r in self.api.robots.keys():
-            robot = self.api.robots[r]
-            service = robot.services.names[servicename]
-            task = service.task_list.get_task_by_guid(task_guid)
-            for _ in range(timeout):
-                time.sleep(1)
-                if task.state == 'ok':
-                    break
-                elif task.state == 'error':
-                    self.log(task.eco.printTraceback())
-                    return task.eco.errormessage
-                    
+        for service in self.zrobot_client.api.services.listServices()[0]:
+            if service.name == servicename:
+                break
+        else:
+            raise ValueError('service not found')
+        task = self.zrobot_client.api.services.GetTask(task_guid, service.guid)[0]
+        for _ in range(timeout):
+            time.sleep(1)
+            if task.state == 'ok':
+                break
+            elif task.state == 'error':
+                self.log(task.eco.printTraceback())
+                return task.eco.errormessage
+
     def check_if_service_exist(self, servicename):
         for r in self.api.robots.keys():
             robot = self.api.robots[r]
