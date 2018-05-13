@@ -86,9 +86,9 @@ class constructor(unittest.TestCase):
                 break
         else:
             raise ValueError('service not found')
-        task = self.zrobot_client.api.services.GetTask(task_guid, service.guid)[0]
         for _ in range(timeout):
             time.sleep(1)
+            task = self.zrobot_client.api.services.GetTask(task_guid, service.guid)[0]
             if task.state.value == 'ok':
                 break
             elif task.state.value == 'error':
