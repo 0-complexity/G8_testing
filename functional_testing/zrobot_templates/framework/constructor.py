@@ -27,6 +27,7 @@ class constructor(unittest.TestCase):
                                              {'testid': self.shortDescription() or self._testID})
         instance, _ = utils.get_instance()
         self.zrobot_client = j.clients.zrobot.get(instance)
+        self.secrets = []
 
     @staticmethod
     def random_string():
@@ -48,9 +49,11 @@ class constructor(unittest.TestCase):
         return blueprint
 
     def update_zrobot_client_secrets(self, response):
-        header = 'Bearer '
         for service in response.services:
-            header += '%s ' % service.secret
+            self.secrets.append(service.secret)
+        header = 'Bearer '
+        for secret in self.secrets:
+            header += '%s ' % secret
         self.zrobot_client.api.security_schemes.passthrough_client_zrobot.set_zrobot_header(header)
 
     def execute_blueprint(self, blueprint):
@@ -74,10 +77,8 @@ class constructor(unittest.TestCase):
             return msg
 
     def delete_services(self):
-        for r in self.api.robots.keys():
-            robot = self.api.robots[r]
-            for service in robot.services.names.values():
-                service.delete()
+        for service in self.zrobot_client.api.services.listServices()[0]:
+            self.zrobot_client.api.services.DeleteService(service.guid)
 
     def wait_for_service_action_status(self, servicename, task_guid, timeout=100):
         for service in self.zrobot_client.api.services.listServices()[0]:
@@ -95,8 +96,7 @@ class constructor(unittest.TestCase):
                 return task.eco.errormessage
 
     def check_if_service_exist(self, servicename):
-        for r in self.api.robots.keys():
-            robot = self.api.robots[r]
-            if servicename in robot.services.names.keys():
+        for service in self.zrobot_client.api.services.listServices()[0]:
+            if service.name == servicename:
                 return True
-            return False
+        return False
