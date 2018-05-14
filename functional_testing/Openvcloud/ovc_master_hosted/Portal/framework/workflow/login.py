@@ -62,9 +62,9 @@ class login():
 
             if self.framework.find_elements('authentication_method'):
                 if self.framework.get_text(element='authentication_method') == 'Authentication method\nAuthenticator application':
-                self.framework.click('authentication_menu')
-                self.framework.click('authentication_app')
-                self.framework.click('next_button')
+                    self.framework.click('authentication_menu')
+                    self.framework.click('authentication_app')
+                    self.framework.click('next_button')
 
             if len(self.framework.find_elements('GAuth_textbox')) > 0:
                 self.framework.set_text('GAuth_textbox', self.get_GAuth_code())
