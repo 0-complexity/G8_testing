@@ -3,11 +3,11 @@ working_path="/tmp/travis_${TRAVIS_BUILD_NUMBER}"
 python_path='/opt/jumpscale7/lib:/opt/jumpscale7/lib/lib-dynload/:/opt/jumpscale7/bin:/opt/jumpscale7/lib/python.zip:/opt/jumpscale7/lib/plat-x86_64-linux-gnu'
 
 execute(){
-    sshpass -p ${ctrl_password} ssh -t -o StrictHostKeyChecking=no ${ctrl_username}@${ctrl_ipaddress} ${1}
+    sshpass -p ${ctrl_password} ssh -o StrictHostKeyChecking=no -t ${ctrl_username}@${ctrl_ipaddress} ${1}
 }
 
 execute_as_root(){
-    sshpass -p ${ctrl_root_password} ssh -t -o StrictHostKeyChecking=no root@${ctrl_ipaddress} ${1}
+    sshpass -p ${ctrl_root_password} ssh -o StrictHostKeyChecking=no -t root@${ctrl_ipaddress} ${1}
 }
 
 join_zerotier_network(){
@@ -17,11 +17,19 @@ join_zerotier_network(){
     curl -s -H "Content-Type: application/json" -H "Authorization: Bearer ${2}" -X POST -d '{"config": {"authorized": true}}' https://my.zerotier.com/api/network/${1}/member/${memberid} > /dev/null
     # fix for travis - zerotier issue 
     sudo ifconfig "$(ls /sys/class/net | grep zt)" mtu 1280 
+
+    for i in {1..20}; do
+        ping -c1 ${ctrl_ipaddress} > /dev/null && break
+    done
+    
+    if [ $? -gt 0 ]; then
+        echo "Can't reach the controller using this ip address ${ctrl_zt_ipaddress}"; exit 1
+    fi
 }
 
-if [[ ${action} == "setup" ]]; then
+join_zerotier_network ${zerotier_network} ${zerotier_token}
 
-    join_zerotier_network ${zerotier_network} ${zerotier_token}
+if [[ ${action} == "setup" ]]; then
 
     execute "mkdir -p ${working_path}"
     execute "git clone -b ${TRAVIS_BRANCH} https://github.com/0-complexity/G8_testing ${working_path}/G8_testing"
