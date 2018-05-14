@@ -1,15 +1,16 @@
 #!/usr/bin/python3
 import requests, os, json
-import sys
 import uuid, random
+import argparse
 
-env = sys.argv[1]
-env_location = sys.argv[2]
-port = sys.argv[3]
-client_id = sys.argv[4]
-client_secret = sys.argv[5]
-username = sys.argv[6]
-
+parser = argparse.ArgumentParser()
+parser.add_argument(dest="env", help="environment url")
+parser.add_argument(dest="env_location", help="the environment location")
+parser.add_argument(dest="port", help="environment port")
+parser.add_argument(dest="client_id", help="client id of itsyouonline user")
+parser.add_argument(dest="client_secret", help="secert id of itsyouonline user")
+parser.add_argument(dest="username", help="itsyouonline user name")
+args = parser.parse_args()
 
 class BaseResource(object):
     def __init__(self, session, url):
@@ -33,11 +34,11 @@ class Client(BaseResource):
         # Generate the jwt
         session = requests.Session()
 
-        jwt = self._generate_jwt(client_id, client_secret)
+        jwt = self._generate_jwt(args.client_id, args.client_secret)
         session.headers['Authorization'] = 'Bearer {}'.format(jwt)
 
         # Generate the url
-        url = "https://{}:{}/restmachine".format(env, port)
+        url = "https://{}:{}/restmachine".format(args.env, args.port)
 
         super(Client, self).__init__(session, url)
 
@@ -78,7 +79,7 @@ class ovc_methods(Client):
         response = self.api_client.cloudapi.sizes.list(cloudspaceId=cloudspaceId)
         response.raise_for_status()
         sizes = response.json()
-        basic_sizes=[512, 1024, 4096, 8192, 16384, 2048]
+        basic_sizes = [512, 1024, 4096, 8192, 16384, 2048]
         for _ in range(len(sizes)):
             size = random.choice(sizes)
             if size["memory"] in basic_sizes:
@@ -114,7 +115,7 @@ class ovc_methods(Client):
     def create_account(self, access='ARCXDU', **kwargs):
         data = {
             'name': self.random_string(),
-            'username': username,
+            'username': args.username,
             'access': access,
             'maxMemoryCapacity': -1,
             'maxVDiskCapacity': -1,
@@ -128,10 +129,13 @@ class ovc_methods(Client):
     def get_environment(self):
         locations = (self.api_client.cloudapi.locations.list()).json()
         for location in locations:
-            if env_location == location['locationCode']:
+            if args.env_location == location['locationCode']:
                 return location
         else:
-            raise Exception("can't find the %s environment location in grid" % env_location)
+            raise Exception("can't find the %s environment location in grid" % args.env_location)
 
     def random_string(self, length=10):
         return str(uuid.uuid4()).replace('-', '')[0:length]
+
+x=ovc_methods()
+print(x.create_vm())
