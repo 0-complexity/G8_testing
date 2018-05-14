@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+"""
+Automation script to automate the creation of account , cloudspace and virtualmachine.so it contains three main methods:
+create account, create cloudspace, create vm. 
+"""
 import requests, os, json
 import uuid, random
 import argparse
@@ -17,7 +21,7 @@ class BaseResource(object):
         self._url = url
         self._method = 'POST'
         self._session = session
-
+a
     def __getattr__(self, item):
         url = os.path.join(self._url, item)
         resource = BaseResource(self._session, url)
