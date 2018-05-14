@@ -8,10 +8,10 @@ browser=${6}
 ctrl_password=${7}
 
 install_portal_requirements(){
-    pip install virtualenv
+    pip3 install virtualenv
     virtualenv env
     source env/bin/activate
-    pip install -r requirements.txt
+    pip3 install -r requirements.txt
     apt-get install -y xvfb chromium-chromedriver
     # curl -o 'https://chromedriver.storage.googleapis.com/2.33/chromedriver_linux64.zip' /tmp/chromedriver_linux64.zip && unzip /tmp/chromedriver_linux64.zip -o /usr/lib/chromium-browser/
     ln -fs /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
@@ -23,4 +23,4 @@ echo "${ctrl_password}" | sudo -S bash -c "$(declare -f install_portal_requireme
 
 echo "Run Tests ..."
 cd functional_testing/Openvcloud/ovc_master_hosted/Portal
-xvfb-run -a nosetests-2.7 -v -s --exe --logging-level=WARNING ${directory} --tc-file=config.ini --tc=main.passwd:${passwd} --tc=main.secret:${secret} --tc=main.env:${environment} --tc=main.location:${location} --tc=main.admin:${admin} --tc=main.browser:${browser} 
+xvfb-run -a nosetests-3.4 -v -s --exe --logging-level=WARNING ${directory} --tc-file=config.ini --tc=main.passwd:${passwd} --tc=main.secret:${secret} --tc=main.env:${environment} --tc=main.location:${location} --tc=main.admin:${admin} --tc=main.browser:${browser} 
