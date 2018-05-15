@@ -12,6 +12,7 @@ from zerorobot.cli import utils
 
 
 class constructor(unittest.TestCase):
+    version = config['main']['version']
 
     def __init__(self, templatespath, *args, **kwargs):
         super(constructor, self).__init__(*args, **kwargs)
@@ -19,6 +20,7 @@ class constructor(unittest.TestCase):
         self.j2_env.globals.update(random_string=self.random_string)
         self.j2_env.globals.update(config_params=self.config_params)
         self.api = ZeroRobotAPI()
+        self.robot = [r for r in self.api.robots.values()][0]
 
     def setUp(self):
         self._testID = self._testMethodName

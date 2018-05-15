@@ -7,6 +7,8 @@ from framework.ovc_utils import *
 
 class OVC_BaseTest(constructor):
     env = config['main']['environment']
+    location = config['main']['location']
+    repo = 'github.com/openvcloud/0-templates'
 
     def __init__(self, *args, **kwargs):
         templatespath = ['./framework/ovc_utils/templates', './framework/base_templates']
