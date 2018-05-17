@@ -14,6 +14,10 @@ from zerorobot.cli import utils
 class constructor(unittest.TestCase):
     version = config['main']['version']
 
+    instance, _ = utils.get_instance()
+    zrobot_client = j.clients.zrobot.get(instance)
+    secrets = []
+
     def __init__(self, templatespath, *args, **kwargs):
         super(constructor, self).__init__(*args, **kwargs)
         self.j2_env = Environment(loader=FileSystemLoader(searchpath=templatespath), trim_blocks=True)
@@ -27,9 +31,6 @@ class constructor(unittest.TestCase):
         self._startTime = time.time()
         self._logger = logging.LoggerAdapter(logging.getLogger('openvcloud_testsuite'),
                                              {'testid': self.shortDescription() or self._testID})
-        instance, _ = utils.get_instance()
-        self.zrobot_client = j.clients.zrobot.get(instance)
-        self.secrets = []
 
     @staticmethod
     def random_string():

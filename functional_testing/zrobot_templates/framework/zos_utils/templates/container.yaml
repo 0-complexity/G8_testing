@@ -1,5 +1,3 @@
-{% include 'node.yaml'%}
-
 {% for container_name, value in containers.items() %}
   - github.com/zero-os/0-templates/container/{{config_params('version')}}__{{container_name}}:
 {% for container_param, value2 in value.items() %}
