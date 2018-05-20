@@ -95,7 +95,7 @@ class constructor(unittest.TestCase):
             if task.state.value == 'ok':
                 break
             elif task.state.value == 'error':
-                print(task.eco.as_json())
+                #print(task.eco.as_json())
                 return task.eco.errormessage
 
     def check_if_service_exist(self, servicename):
