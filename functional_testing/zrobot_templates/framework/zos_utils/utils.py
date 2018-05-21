@@ -15,6 +15,7 @@ class ZOS_BaseTest(constructor):
     def setUpClass(cls):
         cls.zos_client = cls.zos_client(cls, cls.zos_redisaddr)
         cls.cont_flist = 'https://hub.gig.tech/gig-official-apps/ubuntu1604.flist'
+        cls.vm_flist = 'https://hub.gig.tech/gig-bootable/ubuntu:16.04.flist'
         cls.cont_storage = 'ardb://hub.gig.tech:16379'
 
     @classmethod
