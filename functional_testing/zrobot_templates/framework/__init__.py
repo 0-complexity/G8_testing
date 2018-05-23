@@ -13,3 +13,14 @@ formatter = logging.Formatter('%(asctime)s [%(testid)s] [%(levelname)s] %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
+
+
+# configure itsyouonline instance
+app_id = config['main']['app_id']
+secret = config['main']['secret']
+data = {
+    "baseurl": "https://itsyou.online/api",
+    "application_id_": app_id,
+    "secret_": secret or os.environ["IYO_SECRET"]
+}
+j.clients.itsyouonline.get(instance="main", data=data)
