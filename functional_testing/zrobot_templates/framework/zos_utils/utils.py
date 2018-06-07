@@ -43,8 +43,8 @@ class ZOS_BaseTest(constructor):
     def create_vm(self, **kwargs):
         return self.handle_blueprint('vm.yaml', **kwargs)
 
-    def check_vnc(self, vnc_ip):
-        vnc = 'vncdotool -s %s' % vnc_ip
+    def check_vnc_connection(self, vnc_ip_port):
+        vnc = 'vncdotool -s %s' % vnc_ip_port
         result,error = self.execute_shell_commands(cmd="%s type %s key enter" % (vnc, repr('ls')))
         if 'timeout caused connection failure' in error:
             return False
@@ -52,7 +52,7 @@ class ZOS_BaseTest(constructor):
         
     def enable_ssh_access(self, vnc_ip, username=None, password=None):
         '''
-        this method to enable ssh with password by using vncdotool to enable PasswordAuthentication and permit root login on ssh config file .
+        this method to enable ssh with password by using vncdotool through enable PasswordAuthentication and permit root login on ssh config file .
         '''
         username = username or self.vm_username
         password = password or self.vm_password
