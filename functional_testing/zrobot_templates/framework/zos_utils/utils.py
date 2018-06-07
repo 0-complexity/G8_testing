@@ -3,6 +3,7 @@ from framework.constructor import constructor
 from js9 import j
 from framework.zos_utils import *
 import time
+import subprocess
 
 class ZOS_BaseTest(constructor):
     zos_redisaddr = config['main']['redisaddr']
@@ -44,25 +45,25 @@ class ZOS_BaseTest(constructor):
 
     def check_vnc(self, vnc_ip):
         vnc = 'vncdotool -s %s' % vnc_ip
-        result,error = self.execute_shell_commands(cmd="%s type %s key enter" % (vnc, repr('ls')))       
-        return error 
+        result,error = self.execute_shell_commands(cmd="%s type %s key enter" % (vnc, repr('ls')))
+        if 'timeout caused connection failure' in error:
+            return False
+        return True 
         
     def enable_ssh_access(self, vnc_ip, username=None, password=None):
-
+        '''
+        this method to enable ssh with password by using vncdotool to enable PasswordAuthentication and permit root login on ssh config file .
+        '''
         username = username or self.vm_username
         password = password or self.vm_password
-
-        """
-            Add ssh key to a vm with active vnc protocol.
-        """
-        vnc = 'vncdotool -s %s' % vnc_ip
+        vnc = 'vncdotool --force-caps -s %s' % vnc_ip
         commands = [
             '%s' % username,
             '%s' % password,
             'sudo su',
             '%s' % password,
             'sed -i "s/^#PasswordAuthentication yes/PasswordAuthentication yes/g" /etc/ssh/sshd',
-            'sed -i "s/PermitRootLogin yes/PermitRootLogin yes/g" /etc/ssh/sshd',            
+            'sed -i "s/PermitRootLogin prohibit-password/PermitRootLogin yes/g" /etc/ssh/sshd',            
             'service sshd restart'
         ]
         for cmd in commands:
@@ -70,14 +71,15 @@ class ZOS_BaseTest(constructor):
                 self.execute_shell_commands(cmd="%s type %s" % (vnc, repr(cmd)))
                 self.execute_shell_commands(cmd="%s key shift-_ type config key enter" % vnc)
                 time.sleep(1)
-            elif 'https' in cmd:
-                self.execute_shell_commands(cmd="%s type %s" % (vnc, repr(cmd)))
-                self.execute_shell_commands(cmd="%s key shift-:" % vnc)
             else:
                 self.execute_shell_commands(cmd="%s type %s key enter" % (vnc, repr(cmd)))
                 time.sleep(1)
 
     def execute_command_inside_vm(self, client, vmip,  cmd, username=None, password=None):
+        '''
+        client: container client  which has sshpass backage.
+        vmip: default ip for vm.
+        '''
         username = username or self.vm_username
         password = password or self.vm_password
 
@@ -96,7 +98,7 @@ class ZOS_BaseTest(constructor):
         out, error = process.communicate()
         return out.decode('utf-8'), error.decode('utf-8')
 
-    def vm_info(self, vm_name):
+    def get_vm(self, vm_name):
         vms = self.zos_client.kvm.list()
         vm = [vm for vm in vms if vm['name'] == vm_name]
         return vm
