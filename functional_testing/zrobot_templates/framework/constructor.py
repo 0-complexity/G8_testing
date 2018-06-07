@@ -57,7 +57,7 @@ class constructor(unittest.TestCase):
         header = 'Bearer '
         for secret in self.secrets:
             header += '%s ' % secret
-        self.zrobot_client.api.security_schemes.passthrough_client_zrobot.set_zrobot_header(header)
+        self.zrobot_client.api.security_schemes.passthrough_client_service.set_zrobotsecret_header(header)
 
     def execute_blueprint(self, blueprint):
         os.system('echo "{0}" >> /tmp/{1}.yaml'.format(blueprint, self.random_string()))
@@ -95,7 +95,7 @@ class constructor(unittest.TestCase):
             if task.state.value == 'ok':
                 break
             elif task.state.value == 'error':
-                #print(task.eco.as_json())
+                self.log(task.eco.as_json())
                 return task.eco.errormessage
 
     def check_if_service_exist(self, servicename):
