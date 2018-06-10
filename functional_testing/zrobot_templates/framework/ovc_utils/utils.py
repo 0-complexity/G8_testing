@@ -31,7 +31,7 @@ class OVC_BaseTest(constructor):
     def tearDown(self):
         for acc in self.CLEANUP['accounts']:
             if self.check_if_service_exist(acc):
-                self.temp_actions = {'account': {'actions': ['uninstall']}}
+                self.temp_actions = {'account': {'actions': ['uninstall'], 'service': acc}}
                 account = {acc: {'openvcloud': self.openvcloud}}
                 res = self.create_account(openvcloud=self.openvcloud, vdcusers=self.vdcusers,
                                           accounts=account, temp_actions=self.temp_actions)
