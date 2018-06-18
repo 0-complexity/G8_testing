@@ -62,10 +62,16 @@ class OVC_BaseTest(constructor):
         return self.handle_blueprint('vdcuser.yaml', **kwargs)
 
     def create_vm(self, **kwargs):
+        if 'key' in kwargs.keys():
+            return self.handle_blueprint('node.yaml', openvcloud=self.openvcloud,
+                                         vdcusers=self.vdcusers, **kwargs)
         return self.handle_blueprint('node.yaml', key=self.key, openvcloud=self.openvcloud,
                                      vdcusers=self.vdcusers, **kwargs)
 
     def create_disk(self, **kwargs):
+        if 'key' in kwargs.keys():
+            return self.handle_blueprint('disk.yaml', openvcloud=self.openvcloud,
+                                         vdcusers=self.vdcusers, **kwargs)
         return self.handle_blueprint('disk.yaml', key=self.key, openvcloud=self.openvcloud,
                                      vdcusers=self.vdcusers, **kwargs)
 
