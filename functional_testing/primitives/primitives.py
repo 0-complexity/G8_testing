@@ -15,10 +15,18 @@ class PRIMITAVES:
         self.client_ovc = j.clients.openvcloud.get(data=ovc_data)
         self.zt_token = zt_token
         self.ssh_key = ssh_key
+        self.zt_members = {}
+
+    def install_zt_host(self):
+        print(colored(' [*] Install zerotier client', 'white'))
+        try:
+            j.tools.prefab.local.network.zerotier.install()
+        finally:
+            j.tools.prefab.local.network.zerotier.start()
 
     def create_zerotier_nw(self):
         zt_config_instance_name = str(uuid.uuid4()).replace('-', '')[:10]
-        nw_name = str(uuid.uuid4()).replace('-', '')[:10]
+        self.zt_name = str(uuid.uuid4()).replace('-', '')[:10]
         self.zt_client = j.clients.zerotier.get(instance=zt_config_instance_name, data={'token_': self.zt_token})
         self.zt_network = self.zt_client.network_create(public=False, name=nw_name, auto_assign=True,
                                                         subnet='10.147.19.0/24')
@@ -32,6 +40,7 @@ class PRIMITAVES:
         time.sleep(60)
         host_member = self.zt_network.member_get(address=zt_machine_addr)
         host_member.authorize()
+        self.zt_members[host_member.address] = host_member.private_ip
 
     def create_account(self):
         self.acount_name = str(uuid.uuid4()).replace('-', '')[:10]
@@ -41,23 +50,30 @@ class PRIMITAVES:
     def create_cloudspace(self):
         cs_name = str(uuid.uuid4()).replace('-', '')[:10]
         self.cs_client = self.account_client.space_get(cs_name)
-        print(' [*] CS: %s' % cs_name, 'green')
+        print(colored(' [*] CS: %s' % cs_name, 'green'))
 
     def create_zos_node(self):
         zos_name = str(uuid.uuid4()).replace('-', '')[:10]
         self.zos_vm = self.cs_client.machine_create(name=zos_name, memsize=8, disksize=10, datadisks=[10],
                                                     image='ipxe boot',
                                                     authorize_ssh=False, userdata=self.ipxe)
-        self.zos_ip = self.authorize_zos()
+        self.zos_ip = self._authorize_zos()
         zos_cfg = {"host": self.zos_ip}
         self.zos_client = j.clients.zos.get(instance=zos_name, data=zos_cfg)
         self.zos_node = j.clients.zos.sal.get_node(instance=zos_name)
         print(colored(' [*] ZOS: %s' % zos_name, 'green'))
 
-    def authorize_zos(self):
-        znw_member = self.zt_network.member_get(address=self.zt_network.members_list()[0].address)
-        znw_member.authorize()
-        return znw_member.private_ip
+        # print(colored(' [*] Forward port 6379', 'white'))
+        # self.zos_vm.portforward_create(6379, 6379)
+        # time.sleep(120)
+
+    def _authorize_zos(self):
+        zt_memebrs = self.zt_network.member_get(address=self.zt_network.members_list())
+        for zt_member in zt_memebrs:
+            if zt_member.address not in self.zt_members.keys():
+                zt_member.authorize()
+                self.zt_members[zt_member.address] = zt_member.private_ip
+                return zt_member.private_ip
 
     def create_gw_passthrough_zt(self):
         print(' [*] Create a GW with public and ZT networks')
@@ -75,7 +91,7 @@ class PRIMITAVES:
         self.public_net.ip.cidr = external_network_ip_address
         self.public_net.ip.gateway = external_gw_ip_address
 
-        print('[*] Create zerotier network interface')
+        print(colored('[*] private network is the zt network', 'white'))
         self.private_net = self.gw.networks.add_zerotier(self.zt_network)
         self.private_net.hosts.nameservers = ['8.8.8.8']
 
@@ -85,7 +101,7 @@ class PRIMITAVES:
         print(colored(' [*] Deploy ZDB disk', 'white'))
         destination_dict = str(uuid.uuid4()).replace('-', '')[:10]
         self.zos_node.client.bash('mkdir -p /var/cache/%s' % destination_dict)
-        zdb = self.zos_node.primitives.create_zerodb('myzdb', '/var/cache/zdb')
+        zdb = self.zos_node.primitives.create_zerodb('myzdb', '/var/cache/%s' % destination_dict)
         self.disk = self.zos_node.primitives.create_disk('mydisk', zdb, filesystem='btrfs')
         self.disk.deploy()
 
@@ -93,20 +109,19 @@ class PRIMITAVES:
         print(colored(' [*] Create an ubuntu machine.', 'white'))
         vm_name = str(uuid.uuid4()).replace('-', '')[:10]
         sshkey_instance = str(uuid.uuid4()).replace('-', '')[:10]
-        self.ubuntu_vm_ip = '192.168.103.%i' % random.randint(1, 254)
         self.ubuntu_vm = self.zos_node.primitives.create_virtual_machine(vm_name, 'ubuntu:latest')
+        print(colored(' [*] Add disk.', 'white'))
         self.ubuntu_vm.disks.add(self.disk)
+        print(colored(' [*] Add ssh key.', 'white'))
         self.ubuntu_vm.configs.add(sshkey_instance, '/root/.ssh/authorized_keys', self.ssh_key)
-
-        self.private_net.hosts.add(self.ubuntu_vm, self.ubuntu_vm_ip)
-        self.gw.portforwards.add('httpforward', (self.public_net, source_port), (self.ubuntu_vm_ip, destination_port))
-
-        self.gw.deploy()
+        print(colored(' [*] Join zt nw.', 'white'))
+        self.ubuntu_vm.nics.add_zerotier(self.zt_network)
         self.ubuntu_vm.deploy()
+        time.sleep(180)
+        ubutnu_vm_name = self.ubuntu_vm.zt_identity.split(':')[0]
+        self.ubuntu_vm.zt_ip = self.zt_network.member_get(ubutnu_vm_name).private_ip
+        print(colored(' [*] ubuntu IP : %s ' % self.ubuntu_vm.zt_ip, 'green'))
 
-    def install_zt_host(self):
-        print(colored(' [*] Install zerotier client', 'white'))
-        try:
-            j.tools.prefab.local.network.zerotier.install()
-        finally:
-            j.tools.prefab.local.network.zerotier.start()
+        print(colored(' [*] SSH forward from public to the ubuntu vm'))
+        self.gw.portforwards.add('sshforward', (self.public_net, 22022), (self.ubuntu_vm.zt_ip, 22))
+        self.gw.deploy()

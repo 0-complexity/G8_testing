@@ -27,13 +27,13 @@ SSHKEY = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCjPfKUsaFuaGJsnHvF3k0PbqQTr3GL2p
 IYO_CLIENT_ID = 'wrzcIurg4zXEjlJOA1z0CX806jKx'
 IYO_CLIENT_SECRET = 'WaKRgZgLTHdTfFEgkrSfieKkd734'
 PACKET_AUTH = 'vqzwphNXwsr7LrBCAEX87iaqSbSBWxeZ'
-ZT_TOKEN = 'qPRAg9ef6RCf1kFkYkUynJ3dk3ReBb9y'
+ZT_TOKEN = 'MyuDhfUYxCkc8eCH8cA4bt4WMgR6saWT'
 OVC_DATA = {"address": "be-g8-3.demo.greenitglobe.com",
             "location": "be-g8-3",
             "port": 443}
 
 
-print(colored(' [*] Get jwt', 'gray'))
+print(colored(' [*] Get jwt', 'grey'))
 get_jwt = requests.post(
     'https://itsyou.online/v1/oauth/access_token?grant_type=client_credentials&client_id=%s&client_secret=%s&response_type=id_token' % (
         IYO_CLIENT_ID, IYO_CLIENT_SECRET))
@@ -41,3 +41,6 @@ jwt = get_jwt.text
 
 OVC_DATA['jwt_'] = jwt
 
+obj = PRIMITAVES(ovc_data=OVC_DATA, zt_token=ZT_TOKEN, ssh_key=SSHKEY)
+
+import ipdb; ipdb.set_trace()
