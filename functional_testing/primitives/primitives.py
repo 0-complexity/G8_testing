@@ -28,7 +28,7 @@ class PRIMITAVES:
         zt_config_instance_name = str(uuid.uuid4()).replace('-', '')[:10]
         self.zt_name = str(uuid.uuid4()).replace('-', '')[:10]
         self.zt_client = j.clients.zerotier.get(instance=zt_config_instance_name, data={'token_': self.zt_token})
-        self.zt_network = self.zt_client.network_create(public=False, name=nw_name, auto_assign=True,
+        self.zt_network = self.zt_client.network_create(public=False, name=self.zt_name, auto_assign=True,
                                                         subnet='10.147.19.0/24')
         self.ipxe = 'ipxe: http://unsecure.bootstrap.gig.tech/ipxe/development/{}/console=ttyS1,115200%20development'.format(
             self.zt_network.id)
@@ -57,6 +57,7 @@ class PRIMITAVES:
         self.zos_vm = self.cs_client.machine_create(name=zos_name, memsize=8, disksize=10, datadisks=[10],
                                                     image='ipxe boot',
                                                     authorize_ssh=False, userdata=self.ipxe)
+        time.sleep(180)
         self.zos_ip = self._authorize_zos()
         zos_cfg = {"host": self.zos_ip}
         self.zos_client = j.clients.zos.get(instance=zos_name, data=zos_cfg)
@@ -68,7 +69,7 @@ class PRIMITAVES:
         # time.sleep(120)
 
     def _authorize_zos(self):
-        zt_memebrs = self.zt_network.member_get(address=self.zt_network.members_list())
+        zt_memebrs = self.zt_network.members_list()
         for zt_member in zt_memebrs:
             if zt_member.address not in self.zt_members.keys():
                 zt_member.authorize()
