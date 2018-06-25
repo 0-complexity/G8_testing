@@ -106,7 +106,7 @@ class PRIMITAVES:
         self.disk = self.zos_node.primitives.create_disk('mydisk', zdb, filesystem='btrfs')
         self.disk.deploy()
 
-    def create_ubuntu_vms(self, source_port, destination_port):
+    def create_ubuntu_vms_zt(self, source_port, destination_port):
         print(colored(' [*] Create an ubuntu machine.', 'white'))
         vm_name = str(uuid.uuid4()).replace('-', '')[:10]
         sshkey_instance = str(uuid.uuid4()).replace('-', '')[:10]
@@ -124,5 +124,15 @@ class PRIMITAVES:
         print(colored(' [*] ubuntu IP : %s ' % self.ubuntu_vm.zt_ip, 'green'))
 
         print(colored(' [*] SSH forward from public to the ubuntu vm'))
-        self.gw.portforwards.add('sshforward', (self.public_net, 22022), (self.ubuntu_vm.zt_ip, 22))
+        self.gw.portforwards.add('sshforward', (self.public_net, source_port), (self.ubuntu_vm.zt_ip, destination_port))
         self.gw.deploy()
+
+    # Block#2 (passthrough---GW---vlan---VM)
+    def create_ovs_container(self):
+        ovs_container_name = str(uuid.uuid4()).replace('-', '')[:10]
+        zos_node.network.configure(cidr='192.168.69.0/24', vlan_tag=2312, ovs_container_name=ovs_container_name)
+        self.ovs_container = zos_node.containers.get(name=ovs_container_name)
+
+
+    #def create_gw_passthrough_vlan(self):
+        
