@@ -23,11 +23,11 @@ args = parser.parse_args()
 NUMBER_OF_ZOS_NODES = args.zos_nodes
 NUMBER_OF_UBUNTU_VMS = args.ubuntu_vms
 
-SSHKEY = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCjPfKUsaFuaGJsnHvF3k0PbqQTr3GL2pNuddn/xQjsroF35ELJVEovAsd9IlsFWOmDWlL6B+JYFgj8g5IykklHCDfmTu6LcGXjdfAYVp+eXARmgoCJKxVyenSVHu6No9O1e+QKFvMJTiJXdl08fZD1Fd2kRetDRKAijCZ76pmB4/KwVFiJKCVVdsDW/0R+td0gNVJyCQyRTcWEPmBfGMW/JrvRCSHfxlLdqsD3txLOm9pHlQ/LmEwOP3bqEEpQU1jP32JbdAdreuD6BYB+YRp02yyU33gd1QbqIEgftcN+6TuZJOU3j2VRSiUQX8h5SjtWV1UXE15ELlIlhcFJYH6L root@islamtaha-TT'
-IYO_CLIENT_ID = ''
-IYO_CLIENT_SECRET = ''
+SSHKEY = 'ssh-rsa ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDcxh3D1DcfLQH2C4IgUTwaBAPkWI3stuYzunSZpjzq3GGkufgUHrxjSEzQ0RkEhs9LyrkTC+UJAQ2cG920J728KYiq+cBZgd5vRblXZ9niAe5pf71vFWN7OKj8zflF22XUdgbmQKLwIvl1gTQPB0WCMhY2j1iis1G0yPyxWmLFpxh4aPyEOvTjRWV1O6s9Yvv5Sqoqt4dwJwmbquHuz7Npo/86W0GN4qf4ZPft2KEYbtE5tCx7LWCvbUNPBf1215z81iDzkzQM5A8Sin0phexzEcU6Tegsw9VCvONOoPYKnYFaexvSB5XrrPLl7/2K7soOu2ieFoiOqsPwBFBMiFU5qKHfu/h4n+bk39gw9B64/S/Zk6WNALS18g+g26zXSAo3lFZdWw9X6bQmk7jEx6B/ZlpdegzYkQDN91dZU6DkAWWXg4XazdekOmcyEE86oJqOW8pJpBGTZ4qFYYOklgkgtXoiKpcHbVft9Dne1F3msVNDDZeEcaW2N43lArRf26EvD0y1DG76canGZJnfETzEv8LfkfH6AQ/StiMwRrA91Z6Y6zlYFPO7DVLxmpapWmJu8uVrhwPqbAq7PDQLmDH/t3eVc838be0BRMQ8A6jlfV9IW9OwZ73IThu5RenwatCLyyVYOmUV+aK/a5+HpPYxd2OIkTtwZB4xqM7n0cPWNw== /home/dina/.ssh/id_rsa'
+IYO_CLIENT_ID = 'x07qa5MpigcqjQWQY2X6cHW-O0Ly'
+IYO_CLIENT_SECRET = 'UnLW2HoTaWgmtmIRnabTwq2iPB42'
 PACKET_AUTH = ''
-ZT_TOKEN = ''
+ZT_TOKEN = 'jp5CUSmvwTWnuvJRz7T1tXKka1grUspu'
 OVC_DATA = {"address": "be-g8-3.demo.greenitglobe.com",
             "location": "be-g8-3",
             "port": 443}
@@ -42,5 +42,15 @@ jwt = get_jwt.text
 OVC_DATA['jwt_'] = jwt
 
 obj = PRIMITAVES(ovc_data=OVC_DATA, zt_token=ZT_TOKEN, ssh_key=SSHKEY)
-
+obj.install_zt_host()
+obj.create_zerotier_nw()
+obj.host_join_zt()
+import ipdb; ipdb.set_trace()
+obj.create_account()
+obj.create_cloudspace()
+obj.create_zos_node()
+obj.create_ovs_container()
+obj.create_gw_passthrough_vlan()
+obj.deploy_zdb_disk()
+obj.create_ubuntu_vms_vlan(22022,22)
 import ipdb; ipdb.set_trace()

@@ -76,6 +76,21 @@ class PRIMITAVES:
                 self.zt_members[zt_member.address] = zt_member.private_ip
                 return zt_member.private_ip
 
+    def deploy_zdb_disk(self):
+        print(colored(' [*] Deploy ZDB disk', 'white'))
+        destination_dict = str(uuid.uuid4()).replace('-', '')[:10]
+        self.zos_node.client.bash('mkdir -p /var/cache/%s' % destination_dict)
+        zdb = self.zos_node.primitives.create_zerodb('myzdb', '/var/cache/%s' % destination_dict)
+        self.disk = self.zos_node.primitives.create_disk('mydisk', zdb, filesystem='btrfs')
+        self.disk.deploy()
+
+    # create ovs container for vlan and vxlan network
+    def create_ovs_container(self):
+        ovs_container_name = str(uuid.uuid4()).replace('-', '')[:10]
+        self.zos_node.network.configure(cidr='192.168.69.0/24', vlan_tag=2312, ovs_container_name=ovs_container_name)
+        self.ovs_container = self.zos_node.containers.get(name=ovs_container_name)
+
+    ##Block#1 (passthrough---GW---zt---VM)
     def create_gw_passthrough_zt(self):
         print(' [*] Create a GW with public and ZT networks')
         gw_name = str(uuid.uuid4()).replace('-', '')[:10]
@@ -98,14 +113,6 @@ class PRIMITAVES:
 
         self.gw.deploy()
 
-    def deploy_zdb_disk(self):
-        print(colored(' [*] Deploy ZDB disk', 'white'))
-        destination_dict = str(uuid.uuid4()).replace('-', '')[:10]
-        self.zos_node.client.bash('mkdir -p /var/cache/%s' % destination_dict)
-        zdb = self.zos_node.primitives.create_zerodb('myzdb', '/var/cache/%s' % destination_dict)
-        self.disk = self.zos_node.primitives.create_disk('mydisk', zdb, filesystem='btrfs')
-        self.disk.deploy()
-
     def create_ubuntu_vms_zt(self, source_port, destination_port):
         print(colored(' [*] Create an ubuntu machine.', 'white'))
         vm_name = str(uuid.uuid4()).replace('-', '')[:10]
@@ -127,12 +134,141 @@ class PRIMITAVES:
         self.gw.portforwards.add('sshforward', (self.public_net, source_port), (self.ubuntu_vm.zt_ip, destination_port))
         self.gw.deploy()
 
-    # Block#2 (passthrough---GW---vlan---VM)
-    def create_ovs_container(self):
-        ovs_container_name = str(uuid.uuid4()).replace('-', '')[:10]
-        zos_node.network.configure(cidr='192.168.69.0/24', vlan_tag=2312, ovs_container_name=ovs_container_name)
-        self.ovs_container = zos_node.containers.get(name=ovs_container_name)
+    ##Block#2 (passthrough---GW---vlan---VM)
+    def create_gw_passthrough_vlan(self):
+        print(' [*] Create a GW with public and vlan networks')
+        gw_name = str(uuid.uuid4()).replace('-', '')[:10]
+        self.gw = self.zos_node.primitives.create_gateway(name=gw_name)
+        print(' [*] Create "passthrough" public network ')
+        self.zos_vm.externalnetwork_attach()
+        time.sleep(60)
+        external_network_ip_address = self.zos_vm.model['interfaces'][1]['ipAddress']
+        external_gw_ip_address = self.zos_vm.model['interfaces'][1]['params'].split()[0].rsplit(':')[1]
+        public_network_name = 'public'
+
+        self.public_net = self.gw.networks.add(name=public_network_name, type_='passthrough', networkid='eth1')
+        self.public_net.ip.cidr = external_network_ip_address
+        self.public_net.ip.gateway = external_gw_ip_address
+
+        print(colored('[*] private network is the vlan  network', 'white'))
+        vlan_tag = random.randint(1, 4094)
+        self.private = self.gw.network.add('private', 'vlan', vlan_tag)
+        self.private.private.ip.cidr = '192.168.103.1/24'
+        self.gw.deploy()
+
+    def create_ubuntu_vms_vlan(self, source_port, destination_port):
+        print(colored(' [*] Create an ubuntu machine.', 'white'))
+        vm_name = str(uuid.uuid4()).replace('-', '')[:10]
+        sshkey_instance = str(uuid.uuid4()).replace('-', '')[:10]
+        self.ubuntu_vm = self.zos_node.primitives.create_virtual_machine(vm_name, 'ubuntu:latest')
+        print(colored(' [*] Add disk.', 'white'))
+        self.ubuntu_vm.disks.add(self.disk)
+        print(colored(' [*] Add ssh key.', 'white'))
+        self.ubuntu_vm.configs.add(sshkey_instance, '/root/.ssh/authorized_keys', self.ssh_key)
+        print(colored(' [*] add vm to vlan network.', 'white'))
+        vlanhost = self.private.hosts.add(self.ubuntu_vm)
+        self.ubuntu_vm.deploy()
+     
+        print(colored(' [*] ubuntu IP : %s ' % vlanhost.ipaddress, 'green'))
+        print(colored(' [*] SSH forward from public to the ubuntu vm'))
+        self.gw.portforwards.add('sshforward', (self.public_net, source_port), (vlanhost.ipaddress, destination_port))
+        self.gw.deploy()
+
+    ## Block#3 (passthrough---GW---vxlan---VM)
+    def create_gw_passthrough_vxlan(self):
+        print(' [*] Create a GW with public and vlan networks')
+        gw_name = str(uuid.uuid4()).replace('-', '')[:10]
+        self.gw = self.zos_node.primitives.create_gateway(name=gw_name)
+
+        print(' [*] Create "passthrough" public network ')
+        self.zos_vm.externalnetwork_attach()
+        time.sleep(60)
+        external_network_ip_address = self.zos_vm.model['interfaces'][1]['ipAddress']
+        external_gw_ip_address = self.zos_vm.model['interfaces'][1]['params'].split()[0].rsplit(':')[1]
+        public_network_name = 'public'
+
+        self.public_net = self.gw.networks.add(name=public_network_name, type_='passthrough', networkid='eth1')
+        self.public_net.ip.cidr = external_network_ip_address
+        self.public_net.ip.gateway = external_gw_ip_address
+
+        print(colored('[*] private network is the vlan  network', 'white'))
+        vxlan_tag = random.randint(1, 100000)
+        self.private = self. gw.network.add('private', 'vxlan', vxlan_tag)
+        self.private.private.ip.cidr = '192.168.103.1/24'
+        self.gw.deploy()
+
+    def create_ubuntu_vms_vxlan(self, source_port, destination_port):
+        print(colored(' [*] Create an ubuntu machine.', 'white'))
+        vm_name = str(uuid.uuid4()).replace('-', '')[:10]
+        sshkey_instance = str(uuid.uuid4()).replace('-', '')[:10]
+        self.ubuntu_vm = self.zos_node.primitives.create_virtual_machine(vm_name, 'ubuntu:latest')
+        print(colored(' [*] Add disk.', 'white'))
+        self.ubuntu_vm.disks.add(self.disk)
+        print(colored(' [*] Add ssh key.', 'white'))
+        self.ubuntu_vm.configs.add(sshkey_instance, '/root/.ssh/authorized_keys', self.ssh_key)
+        print(colored(' [*] add vm to vxlan network.', 'white'))
+        vxlanhost = self.private.hosts.add(self.ubuntu_vm)
+        self.ubuntu_vm.deploy()
+     
+        print(colored(' [*] ubuntu IP : %s ' % vxlanhost.ipaddress, 'green'))
+        print(colored(' [*] SSH forward from public to the ubuntu vm'))
+        self.gw.portforwards.add('sshforward', (self.public_net, source_port), (vxlanhost.ipaddress, destination_port))
+        self.gw.deploy()
+
+    ##Block#4 (default---GW---vxlan---VM)
+    def create_gw_default_vxlan(self):
+        print(' [*] Create a GW with default public networks')
+        gw_name = str(uuid.uuid4()).replace('-', '')[:10]
+        self.gw = self.zos_node.primitives.create_gateway(name=gw_name)
+
+        print(' [*] Create "default" public network ')
+        public_network_name = 'public'
+        self.public_net = self.gw.networks.add(name=public_network_name, type_='default')
+        self.public_net.public = True
+
+        print(colored('[*] private network is the vxlan  network', 'white'))
+        vxlan_tag = random.randint(1, 100000)
+        self.private = self. gw.network.add('private', 'vxlan', vxlan_tag)
+        self.private.private.ip.cidr = '192.168.103.1/24'
+        self.gw.deploy()
+    ##def create_ubuntue_vms_vxlan
 
 
-    #def create_gw_passthrough_vlan(self):
-        
+    ##Block#5 (default---GW---vlan---VM)
+    def create_gw_default_vlan(self):
+        print(' [*] Create a GW with default public networks')
+        gw_name = str(uuid.uuid4()).replace('-', '')[:10]
+        self.gw = self.zos_node.primitives.create_gateway(name=gw_name)
+
+        print(' [*] Create "default" public network ')
+        public_network_name = 'public'
+        self.public_net = self.gw.networks.add(name=public_network_name, type_='default')
+        self.public_net.public = True
+
+        print(colored('[*] private network is the vlan  network', 'white'))
+        vlan_tag = random.randint(1, 4096)
+        self.private = self. gw.network.add('private', 'vlan', vlan_tag)
+        self.private.private.ip.cidr = '192.168.103.1/24'
+        self.gw.deploy()
+
+    ##def create_ubuntue_vms_vlan
+
+
+    ##block#6 (default---GW--zt--VM)
+    def create_gw_default_zt(self):
+        print(' [*] Create a GW with default public and ZT networks')
+        gw_name = str(uuid.uuid4()).replace('-', '')[:10]
+        self.gw = self.zos_node.primitives.create_gateway(name=gw_name)
+
+        print(' [*] Create "default" public network ')
+        public_network_name = 'public'
+        self.public_net = self.gw.networks.add(name=public_network_name, type_='default')
+        self.public_net.public = True
+
+        print(colored('[*] private network is the zt network', 'white'))
+        self.private_net = self.gw.networks.add_zerotier(self.zt_network)
+        self.private_net.hosts.nameservers = ['8.8.8.8']
+
+        self.gw.deploy()
+
+    ##def create_ubuntue_vms_zt
