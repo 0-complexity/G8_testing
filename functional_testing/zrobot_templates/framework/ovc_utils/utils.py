@@ -113,7 +113,7 @@ class OVC_BaseTest(constructor):
     def wait_for_cloudspace_status(self, cs, status="DEPLOYED", timeout=100):
         for _ in range(timeout):
             cloudspace = self.get_cloudspace(cs)
-            time.sleep(1)
+            time.sleep(5)
             if cloudspace["status"] == status:
                 return True
         return False
@@ -121,7 +121,7 @@ class OVC_BaseTest(constructor):
     def wait_for_vm_status(self, cs, vm_name, status="RUNNING", timeout=100):
         for _ in range(timeout):
             vm = self.get_vm(cs, vm_name)
-            time.sleep(1)
+            time.sleep(5)
             if vm["status"] == status:
                 return True
         return False
@@ -130,7 +130,7 @@ class OVC_BaseTest(constructor):
         for _ in range(timeout):
             vm = self.get_vm(cs, vm_name)
             disks = [disk['name'] for disk in vm['disks']]
-            time.sleep(1)
+            time.sleep(5)
             if disk_name in disks:
                 if status == "exist":
                     return True
