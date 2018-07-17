@@ -31,7 +31,7 @@ class OVC_BaseTest(constructor):
     def tearDown(self):
         for acc in self.CLEANUP['accounts']:
             if self.check_if_service_exist(acc):
-                self.temp_actions = {'account': {'actions': ['uninstall']}}
+                self.temp_actions = {'account': {'actions': ['uninstall'], 'service': acc}}
                 account = {acc: {'openvcloud': self.openvcloud}}
                 res = self.create_account(openvcloud=self.openvcloud, vdcusers=self.vdcusers,
                                           accounts=account, temp_actions=self.temp_actions)
@@ -62,10 +62,16 @@ class OVC_BaseTest(constructor):
         return self.handle_blueprint('vdcuser.yaml', **kwargs)
 
     def create_vm(self, **kwargs):
+        if 'key' in kwargs.keys():
+            return self.handle_blueprint('node.yaml', openvcloud=self.openvcloud,
+                                         vdcusers=self.vdcusers, **kwargs)
         return self.handle_blueprint('node.yaml', key=self.key, openvcloud=self.openvcloud,
                                      vdcusers=self.vdcusers, **kwargs)
 
     def create_disk(self, **kwargs):
+        if 'key' in kwargs.keys():
+            return self.handle_blueprint('disk.yaml', openvcloud=self.openvcloud,
+                                         vdcusers=self.vdcusers, **kwargs)
         return self.handle_blueprint('disk.yaml', key=self.key, openvcloud=self.openvcloud,
                                      vdcusers=self.vdcusers, **kwargs)
 
@@ -107,7 +113,7 @@ class OVC_BaseTest(constructor):
     def wait_for_cloudspace_status(self, cs, status="DEPLOYED", timeout=100):
         for _ in range(timeout):
             cloudspace = self.get_cloudspace(cs)
-            time.sleep(1)
+            time.sleep(5)
             if cloudspace["status"] == status:
                 return True
         return False
@@ -115,7 +121,7 @@ class OVC_BaseTest(constructor):
     def wait_for_vm_status(self, cs, vm_name, status="RUNNING", timeout=100):
         for _ in range(timeout):
             vm = self.get_vm(cs, vm_name)
-            time.sleep(1)
+            time.sleep(5)
             if vm["status"] == status:
                 return True
         return False
@@ -124,7 +130,7 @@ class OVC_BaseTest(constructor):
         for _ in range(timeout):
             vm = self.get_vm(cs, vm_name)
             disks = [disk['name'] for disk in vm['disks']]
-            time.sleep(1)
+            time.sleep(5)
             if disk_name in disks:
                 if status == "exist":
                     return True

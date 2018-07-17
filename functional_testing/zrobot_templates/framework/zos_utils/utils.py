@@ -5,8 +5,11 @@ from framework.zos_utils import *
 import time
 import subprocess
 
+
 class ZOS_BaseTest(constructor):
     zos_redisaddr = config['main']['redisaddr']
+    repo = 'github.com/zero-os/0-templates'
+
 
     def __init__(self, *args, **kwargs):
         templatespath = ['./framework/zos_utils/templates', './framework/base_templates']
