@@ -8,7 +8,6 @@ class PRIMITAVES:
         Goal: Create CSs, ZOSs, ubuntu machines
         Input: OVC account client, # ZOS, #ubuntu machines
         Output: CSs' clients, ZOs' clients, VMs' clients
-
     """
 
     def __init__(self, ovc_data, zt_token, ssh_key):
@@ -133,6 +132,7 @@ class PRIMITAVES:
         print(colored(' [*] SSH forward from public to the ubuntu vm'))
         self.gw.portforwards.add('sshforward', (self.public_net, source_port), (self.ubuntu_vm.zt_ip, destination_port))
         self.gw.deploy()
+        return  self.ubuntu_vm.zt_ip
 
     ##Block#2 (passthrough---GW---vlan---VM)
     def create_gw_passthrough_vlan(self):
