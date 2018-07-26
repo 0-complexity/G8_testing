@@ -4,12 +4,12 @@ from js9 import j
 from framework.zos_utils import *
 import time
 import subprocess
+from termcolor import colored
 
 
 class ZOS_BaseTest(constructor):
     zos_redisaddr = config['main']['redisaddr']
     repo = 'github.com/zero-os/0-templates'
-
 
     def __init__(self, *args, **kwargs):
         templatespath = ['./framework/zos_utils/templates', './framework/base_templates']
@@ -25,7 +25,8 @@ class ZOS_BaseTest(constructor):
         cls.vm_password = config['main']['password']
         cls.zt_token = config['main']['zt_token']
         cls.zt_id = config['main']['zt_id']
-        cls.ssh_key= config['main']['sshkey']
+        with open('/tmp/id_rsa_test.pub', 'r') as file:
+            cls.ssh_key = file.readline().replace('\n', '')
 
     @classmethod
     def tearDownClass(cls):
@@ -62,11 +63,19 @@ class ZOS_BaseTest(constructor):
         return vm
     
     def execute_command(self, ip, cmd):
-        target = "ssh -o 'StrictHostKeyChecking no' root@%s '%s'" % (ip, cmd)
-        ssh = subprocess.Popen(target,
-                               shell=True,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-        result = ssh.stdout.readlines()
-        error = ssh.stderr.readlines()
-        return result, error
+        for _ in range(10):
+            target = "ssh -o 'StrictHostKeyChecking no' root@%s '%s'" % (ip, cmd)
+            ssh = subprocess.Popen(target,
+                                   shell=True,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE)
+            result = ssh.stdout.readlines()
+            error = ssh.stderr.readlines()
+            if error:
+                print(colored(' [-] {}'.format(error), 'red'))
+                time.sleep(30)
+            else:
+                return str(result)
+        else:
+            raise RuntimeError(colored(' [-] {}'.format(error), 'red'))
+
