@@ -5,7 +5,7 @@ from framework.zos_utils import *
 import time
 import subprocess
 from termcolor import colored
-
+import os 
 
 class ZOS_BaseTest(constructor):
     zos_redisaddr = config['main']['redisaddr']
@@ -18,6 +18,7 @@ class ZOS_BaseTest(constructor):
     @classmethod
     def setUpClass(cls):
         cls.zos_client = cls.zos_client(cls, cls.zos_redisaddr)
+        cls.ssh_key = cls.load_ssh_key(cls)
         cls.cont_flist = 'https://hub.gig.tech/gig-official-apps/ubuntu1604.flist'
         cls.vm_flist = 'https://hub.gig.tech/gig-bootable/ubuntu:16.04.flist'
         cls.cont_storage = 'ardb://hub.gig.tech:16379'
@@ -25,8 +26,8 @@ class ZOS_BaseTest(constructor):
         cls.vm_password = config['main']['password']
         cls.zt_token = config['main']['zt_token']
         cls.zt_id = config['main']['zt_id']
-        with open('/tmp/id_rsa_test.pub', 'r') as file:
-            cls.ssh_key = file.readline().replace('\n', '')
+        # with open('/tmp/id_rsa_test.pub', 'r') as file:
+        #     cls.ssh_key = file.readline().replace('\n', '')
 
     @classmethod
     def tearDownClass(cls):
@@ -35,6 +36,17 @@ class ZOS_BaseTest(constructor):
     def setUp(self):
         super(ZOS_BaseTest, self).setUp()
 
+    def load_ssh_key(self):
+        if os.path.exists('/tmp/id_rsa.pub'):
+            with open('/tmp/id_rsa.pub', 'r') as file:
+                ssh = file.readline().replace('\n', '')
+        else:              
+            print(colored('[+] Generate sshkey.', 'white'))
+            cmd = 'ssh-keygen -t rsa -f /tmp/id_rsa -q -P ""; eval `ssh-agent -s`; ssh-add  /tmp/id_rsa'
+            subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            self.load_ssh_key(self)
+        return ssh    
+        
     def zos_client(self, ip):
         data = {'host': ip, 'port': 6379,
                 'timeout': 100, 'ssl': True}
@@ -73,7 +85,7 @@ class ZOS_BaseTest(constructor):
             error = ssh.stderr.readlines()
             if error:
                 print(colored(' [-] {}'.format(error), 'red'))
-                time.sleep(30)
+                time.sleep(25)
             else:
                 return str(result)
         else:
