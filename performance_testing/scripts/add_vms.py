@@ -325,9 +325,9 @@ if __name__ == "__main__":
                         help="maximum of iops of the disks for the virtual machines")
     parser.add_argument("-n", "--con", dest="concurrency", default=2, type=int,
                         help="amount of concurrency to execute the job")
-    parser.add_argument("-appid", "--application_id", dest="application_id",
+    parser.add_argument("-a", "--application_id", dest="application_id",
                         help="itsyouonline Application Id")
-    parser.add_argument("-secret", "--secret", dest="secret",
+    parser.add_argument("-s", "--secret", dest="secret",
                         help="itsyouonline Secret")
 
     options = parser.parse_args()
