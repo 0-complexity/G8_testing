@@ -164,9 +164,9 @@ if __name__ == "__main__":
                         help="location to find Testsuite directory")
     parser.add_argument("-cs", "--cloudspaces", dest="cloudspaces",
                         help="comma separated of cloudspaces ids")
-    parser.add_argument("-a", "--application_id", dest="application_id",required=True,
+    parser.add_argument("-appid", "--application_id", dest="application_id",required=True,
                         help="itsyouonline Application Id")
-    parser.add_argument("-s", "--secret", dest="secret",required=True,
+    parser.add_argument("-secret", "--secret", dest="secret",required=True,
                         help="itsyouonline Secret")
 
 
