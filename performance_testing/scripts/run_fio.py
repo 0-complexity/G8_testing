@@ -117,7 +117,7 @@ def main(options):
     cwd = os.getcwd()
     j.sal.fs.copyFile('{}/1_fio_vms/collect_results.py'.format(options.testsuite), results_dir)
     os.chdir(results_dir)
-    j.sal.process.execute('python3 collect_results.py -dir {} -env{} -u {} -appid {} -secret {}'.format(results_dir, options.environment,
+    j.sal.process.execute('python3 collect_results.py -dir {} -env {} -u {} -appid {} -secret {}'.format(results_dir, options.environment,
                                                                  options.username, options.application_id, options.secret))
 
     # pushing results to env_repo
